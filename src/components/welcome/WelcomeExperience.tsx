@@ -2,19 +2,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Detect if user prefers reduced motion or is on mobile
-const useReducedMotion = () => {
-  const [reduceMotion, setReduceMotion] = useState(false);
-  
-  useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    setReduceMotion(isMobile || prefersReducedMotion);
-  }, []);
-  
-  return reduceMotion;
-};
-
 // Scene 1: Chat bubbles appearing
 const ChatScene = () => {
   return (
@@ -321,7 +308,6 @@ interface WelcomeExperienceProps {
 export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
   const [currentScene, setCurrentScene] = useState(0);
   const [waitingForClick, setWaitingForClick] = useState(false);
-  const reduceMotion = useReducedMotion();
   
   useEffect(() => {
     // Don't auto-advance on the last scene (welcome)
@@ -330,14 +316,13 @@ export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
       return;
     }
     
-    // Faster timings on mobile for less wait time
-    const timings = reduceMotion ? [2500, 2200, 3000] : [3500, 3200, 4000];
+    const timings = [2500, 2200, 2500];
     const timer = setTimeout(() => {
       setCurrentScene(currentScene + 1);
     }, timings[currentScene]);
     
     return () => clearTimeout(timer);
-  }, [currentScene, reduceMotion]);
+  }, [currentScene]);
   
   const handleContinue = () => {
     onComplete();
@@ -359,157 +344,13 @@ export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{ background: "#0A0A0A" }}
     >
-      {/* Simplified background for mobile - static gradient, animated only on desktop */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {reduceMotion ? (
-          /* Static gradient for mobile - no animations */
-          <>
-            <div 
-              className="absolute w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 70%)',
-                filter: 'blur(60px)',
-                top: '10%',
-                left: '5%',
-                willChange: 'auto',
-              }}
-            />
-            <div 
-              className="absolute w-[250px] h-[250px] md:w-[500px] md:h-[500px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(219, 39, 119, 0.12) 0%, transparent 70%)',
-                filter: 'blur(60px)',
-                top: '20%',
-                right: '0%',
-                willChange: 'auto',
-              }}
-            />
-            <div 
-              className="absolute w-[280px] h-[280px] md:w-[550px] md:h-[550px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%)',
-                filter: 'blur(60px)',
-                bottom: '10%',
-                right: '10%',
-                willChange: 'auto',
-              }}
-            />
-          </>
-        ) : (
-          /* Full animations for desktop */
-          <>
-            {/* Large Orange Glow - Top Left */}
-            <motion.div 
-              className="absolute w-[600px] h-[600px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.18) 0%, rgba(249, 115, 22, 0.06) 40%, transparent 70%)',
-                filter: 'blur(80px)',
-                top: '5%',
-                left: '10%',
-                willChange: 'transform',
-              }}
-              animate={{
-                x: [0, 150, -100, 80, 0],
-                y: [0, -80, 100, -60, 0],
-                scale: [1, 1.2, 0.9, 1.1, 1],
-              }}
-              transition={{
-                duration: 15,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            
-            {/* Fuchsia Glow - Top Right */}
-            <motion.div 
-              className="absolute w-[500px] h-[500px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(219, 39, 119, 0.14) 0%, rgba(219, 39, 119, 0.05) 40%, transparent 70%)',
-                filter: 'blur(80px)',
-                top: '15%',
-                right: '5%',
-                willChange: 'transform',
-              }}
-              animate={{
-                x: [0, -120, 80, -60, 0],
-                y: [0, 100, -80, 60, 0],
-                scale: [1, 0.9, 1.15, 0.95, 1],
-              }}
-              transition={{
-                duration: 18,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            
-            {/* Orange Glow - Center */}
-            <motion.div 
-              className="absolute w-[700px] h-[700px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, rgba(234, 88, 12, 0.05) 40%, transparent 70%)',
-                filter: 'blur(100px)',
-                top: '30%',
-                left: '25%',
-                willChange: 'transform',
-              }}
-              animate={{
-                x: [0, -80, 120, -100, 0],
-                y: [0, 60, -100, 80, 0],
-                scale: [1, 1.1, 0.85, 1.05, 1],
-              }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            
-            {/* Fuchsia Glow - Bottom Left */}
-            <motion.div 
-              className="absolute w-[450px] h-[450px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(236, 72, 153, 0.14) 0%, rgba(219, 39, 119, 0.05) 40%, transparent 70%)',
-                filter: 'blur(70px)',
-                bottom: '10%',
-                left: '5%',
-                willChange: 'transform',
-              }}
-              animate={{
-                x: [0, 100, -60, 80, 0],
-                y: [0, -100, 60, -40, 0],
-                scale: [1, 1.15, 0.9, 1.1, 1],
-              }}
-              transition={{
-                duration: 16,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            
-            {/* Orange Glow - Bottom Right */}
-            <motion.div 
-              className="absolute w-[550px] h-[550px] rounded-full"
-              style={{ 
-                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.14) 0%, rgba(217, 119, 6, 0.05) 40%, transparent 70%)',
-                filter: 'blur(90px)',
-                bottom: '15%',
-                right: '10%',
-                willChange: 'transform',
-              }}
-              animate={{
-                x: [0, -100, 60, -80, 0],
-                y: [0, -60, 100, -80, 0],
-                scale: [1, 1.1, 0.9, 1.05, 1],
-              }}
-              transition={{
-                duration: 17,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          </>
-        )}
-      </div>
+      {/* Simple static background - no blur, no animations */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 30% 20%, rgba(249, 115, 22, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(219, 39, 119, 0.06) 0%, transparent 50%)',
+        }}
+      />
       
       {/* Progress indicator */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2">
