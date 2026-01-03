@@ -22,7 +22,7 @@ import { VoiceWidget } from "@/components/VoiceWidget";
 
 export default function Page() {
   return (
-    <main className="min-h-screen" style={{ background: '#0D0D0D' }}>
+    <main className="min-h-screen bg-black">
       <Navbar />
 
       <BraltoHeroSectionNoVideo />

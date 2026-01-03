@@ -1,27 +1,51 @@
 "use client";
-import { BraltoHeroSection } from "@/components/hero/BraltoHeroSection";
-import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
-import { BraltoFeaturesSection } from "@/components/sections/BraltoFeaturesSection";
-import { PlatformsCentralizationSection } from "@/components/sections/PlatformsCentralizationSection";
-import { DoneForYouSection } from "@/components/sections/DoneForYouSection";
-import { OfferPricingSection } from "@/components/sections/OfferPricingSection";
-import { ProblemSection } from "@/components/sections/ProblemSection";
-import { SolutionSection } from "@/components/sections/SolutionSection";
-import { AutomatedPipelineBoard } from "@/components/sections/AutomatedPipelineBoard";
-import { MetricsSection } from "@/components/sections/MetricsSection";
-import { FormSection } from "@/components/sections/FormSection";
-import { IntegrationsSection } from "@/components/sections/IntegrationsSection";
-import { TrustSection } from "@/components/sections/TrustSection";
-import GuaranteeSection from "@/components/sections/GuaranteeSection";
-import { FloatingCTA } from "@/components/ui/FloatingCTA";
-import { motion } from "framer-motion";
-import { AlertCircle } from "lucide-react";
-import React from "react";
-import { VoiceWidget } from "@/components/VoiceWidget";
+import dynamic from "next/dynamic";
+import { AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, Suspense } from "react";
+import { WelcomeExperience } from "@/components/welcome/WelcomeExperience";
+
+// Lazy load heavy components
+const BraltoHeroSection = dynamic(() => import("@/components/hero/BraltoHeroSection").then(mod => ({ default: mod.BraltoHeroSection })), { ssr: false });
+const HowItWorksSection = dynamic(() => import("@/components/sections/HowItWorksSection").then(mod => ({ default: mod.HowItWorksSection })), { ssr: false });
+const BraltoFeaturesSection = dynamic(() => import("@/components/sections/BraltoFeaturesSection").then(mod => ({ default: mod.BraltoFeaturesSection })), { ssr: false });
+const PlatformsCentralizationSection = dynamic(() => import("@/components/sections/PlatformsCentralizationSection").then(mod => ({ default: mod.PlatformsCentralizationSection })), { ssr: false });
+const DoneForYouSection = dynamic(() => import("@/components/sections/DoneForYouSection").then(mod => ({ default: mod.DoneForYouSection })), { ssr: false });
+const OfferPricingSection = dynamic(() => import("@/components/sections/OfferPricingSection").then(mod => ({ default: mod.OfferPricingSection })), { ssr: false });
+const ProblemSection = dynamic(() => import("@/components/sections/ProblemSection").then(mod => ({ default: mod.ProblemSection })), { ssr: false });
+const AutomatedPipelineBoard = dynamic(() => import("@/components/sections/AutomatedPipelineBoard").then(mod => ({ default: mod.AutomatedPipelineBoard })), { ssr: false });
+const FormSection = dynamic(() => import("@/components/sections/FormSection").then(mod => ({ default: mod.FormSection })), { ssr: false });
+const GuaranteeSection = dynamic(() => import("@/components/sections/GuaranteeSection"), { ssr: false });
+const TrustSection = dynamic(() => import("@/components/sections/TrustSection").then(mod => ({ default: mod.TrustSection })), { ssr: false });
+const FloatingCTA = dynamic(() => import("@/components/ui/FloatingCTA").then(mod => ({ default: mod.FloatingCTA })), { ssr: false });
+const VoiceWidget = dynamic(() => import("@/components/VoiceWidget").then(mod => ({ default: mod.VoiceWidget })), { ssr: false });
+
+const WELCOME_STORAGE_KEY = "bralto_welcome_seen";
 
 export default function VSLPage() {
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const hasSeenWelcome = localStorage.getItem(WELCOME_STORAGE_KEY);
+    if (hasSeenWelcome) {
+      setShowWelcome(false);
+    }
+  }, []);
+
+  const handleWelcomeComplete = () => {
+    localStorage.setItem(WELCOME_STORAGE_KEY, "1");
+    setShowWelcome(false);
+  };
+
   return (
-    <main className="min-h-screen" style={{ background: '#0D0D0D' }}>
+    <main className="min-h-screen bg-black">
+      {/* Welcome Experience Overlay */}
+      <AnimatePresence>
+        {isClient && showWelcome && (
+          <WelcomeExperience onComplete={handleWelcomeComplete} />
+        )}
+      </AnimatePresence>
       {/* Logo at the top */}
 
       <BraltoHeroSection />
