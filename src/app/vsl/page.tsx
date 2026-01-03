@@ -1,23 +1,23 @@
 "use client";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
-import React, { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { WelcomeExperience } from "@/components/welcome/WelcomeExperience";
 
-// Lazy load heavy components
-const BraltoHeroSection = dynamic(() => import("@/components/hero/BraltoHeroSection").then(mod => ({ default: mod.BraltoHeroSection })), { ssr: false });
-const HowItWorksSection = dynamic(() => import("@/components/sections/HowItWorksSection").then(mod => ({ default: mod.HowItWorksSection })), { ssr: false });
-const BraltoFeaturesSection = dynamic(() => import("@/components/sections/BraltoFeaturesSection").then(mod => ({ default: mod.BraltoFeaturesSection })), { ssr: false });
-const PlatformsCentralizationSection = dynamic(() => import("@/components/sections/PlatformsCentralizationSection").then(mod => ({ default: mod.PlatformsCentralizationSection })), { ssr: false });
-const DoneForYouSection = dynamic(() => import("@/components/sections/DoneForYouSection").then(mod => ({ default: mod.DoneForYouSection })), { ssr: false });
-const OfferPricingSection = dynamic(() => import("@/components/sections/OfferPricingSection").then(mod => ({ default: mod.OfferPricingSection })), { ssr: false });
-const ProblemSection = dynamic(() => import("@/components/sections/ProblemSection").then(mod => ({ default: mod.ProblemSection })), { ssr: false });
-const AutomatedPipelineBoard = dynamic(() => import("@/components/sections/AutomatedPipelineBoard").then(mod => ({ default: mod.AutomatedPipelineBoard })), { ssr: false });
-const FormSection = dynamic(() => import("@/components/sections/FormSection").then(mod => ({ default: mod.FormSection })), { ssr: false });
+// Lazy load heavy components for better performance
+const BraltoHeroSection = dynamic(() => import("@/components/hero/BraltoHeroSection").then(m => ({ default: m.BraltoHeroSection })), { ssr: false });
+const HowItWorksSection = dynamic(() => import("@/components/sections/HowItWorksSection").then(m => ({ default: m.HowItWorksSection })), { ssr: false });
+const BraltoFeaturesSection = dynamic(() => import("@/components/sections/BraltoFeaturesSection").then(m => ({ default: m.BraltoFeaturesSection })), { ssr: false });
+const PlatformsCentralizationSection = dynamic(() => import("@/components/sections/PlatformsCentralizationSection").then(m => ({ default: m.PlatformsCentralizationSection })), { ssr: false });
+const DoneForYouSection = dynamic(() => import("@/components/sections/DoneForYouSection").then(m => ({ default: m.DoneForYouSection })), { ssr: false });
+const OfferPricingSection = dynamic(() => import("@/components/sections/OfferPricingSection").then(m => ({ default: m.OfferPricingSection })), { ssr: false });
+const ProblemSection = dynamic(() => import("@/components/sections/ProblemSection").then(m => ({ default: m.ProblemSection })), { ssr: false });
+const AutomatedPipelineBoard = dynamic(() => import("@/components/sections/AutomatedPipelineBoard").then(m => ({ default: m.AutomatedPipelineBoard })), { ssr: false });
+const FormSection = dynamic(() => import("@/components/sections/FormSection").then(m => ({ default: m.FormSection })), { ssr: false });
 const GuaranteeSection = dynamic(() => import("@/components/sections/GuaranteeSection"), { ssr: false });
-const TrustSection = dynamic(() => import("@/components/sections/TrustSection").then(mod => ({ default: mod.TrustSection })), { ssr: false });
-const FloatingCTA = dynamic(() => import("@/components/ui/FloatingCTA").then(mod => ({ default: mod.FloatingCTA })), { ssr: false });
-const VoiceWidget = dynamic(() => import("@/components/VoiceWidget").then(mod => ({ default: mod.VoiceWidget })), { ssr: false });
+const TrustSection = dynamic(() => import("@/components/sections/TrustSection").then(m => ({ default: m.TrustSection })), { ssr: false });
+const FloatingCTA = dynamic(() => import("@/components/ui/FloatingCTA").then(m => ({ default: m.FloatingCTA })), { ssr: false });
+const VoiceWidget = dynamic(() => import("@/components/VoiceWidget").then(m => ({ default: m.VoiceWidget })), { ssr: false });
 
 const WELCOME_STORAGE_KEY = "bralto_welcome_seen";
 

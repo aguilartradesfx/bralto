@@ -6,18 +6,12 @@ import { PlatformsCentralizationSection } from "@/components/sections/PlatformsC
 import { DoneForYouSection } from "@/components/sections/DoneForYouSection";
 import { OfferPricingSection } from "@/components/sections/OfferPricingSection";
 import { ProblemSection } from "@/components/sections/ProblemSection";
-import { SolutionSection } from "@/components/sections/SolutionSection";
 import { AutomatedPipelineBoard } from "@/components/sections/AutomatedPipelineBoard";
-import { MetricsSection } from "@/components/sections/MetricsSection";
 import { FormSection } from "@/components/sections/FormSection";
-import { IntegrationsSection } from "@/components/sections/IntegrationsSection";
 import { TrustSection } from "@/components/sections/TrustSection";
 import GuaranteeSection from "@/components/sections/GuaranteeSection";
 import { FloatingCTA } from "@/components/ui/FloatingCTA";
 import { Navbar } from "@/components/navigation/Navbar";
-import { motion } from "framer-motion";
-import { AlertCircle } from "lucide-react";
-import React from "react";
 import { VoiceWidget } from "@/components/VoiceWidget";
 
 export default function Page() {
