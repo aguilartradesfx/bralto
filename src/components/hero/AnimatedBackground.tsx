@@ -1,8 +1,26 @@
 "use client";
 
 import { motion } from 'framer-motion';
+import { useMobileDetect } from '@/hooks/use-mobile-detect';
 
 export function AnimatedBackground() {
+  const isMobile = useMobileDetect();
+  
+  if (isMobile) {
+    // Ultra-lightweight version for mobile - no animations, no blur
+    return (
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-black" />
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 30% 20%, rgba(249, 115, 22, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(219, 39, 119, 0.06) 0%, transparent 50%)',
+          }}
+        />
+      </div>
+    );
+  }
+  
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       {/* Pure black background */}

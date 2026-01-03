@@ -4,20 +4,29 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedCTAButton } from "@/components/ui/AnimatedCTAButton";
 import { ArrowRight, X } from "lucide-react";
+import { useMobileDetect } from "@/hooks/use-mobile-detect";
 
 export function FloatingCTA() {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const isMobile = useMobileDetect();
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      // Show after scrolling past hero (approximately 100vh)
-      const scrollPosition = window.scrollY;
-      const shouldShow = scrollPosition > window.innerHeight && !isDismissed;
-      setIsVisible(shouldShow);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY;
+          const shouldShow = scrollPosition > window.innerHeight && !isDismissed;
+          setIsVisible(shouldShow);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isDismissed]);
 
@@ -25,6 +34,40 @@ export function FloatingCTA() {
     setIsDismissed(true);
     setIsVisible(false);
   };
+
+  if (isMobile) {
+    // Simpler version for mobile
+    return isVisible ? (
+      <div className="fixed bottom-4 right-4 left-4 z-50 transition-all duration-300">
+        <div className="relative p-4 rounded-xl backdrop-blur-sm" style={{ background: 'rgba(20,20,20,0.9)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <button
+            onClick={handleDismiss}
+            className="absolute top-2 right-2 p-1 rounded-lg bg-white/5 hover:bg-white/10"
+          >
+            <X className="w-4 h-4 text-gray-400" />
+          </button>
+
+          <div className="pr-8">
+            <h3 className="text-base font-bold text-white mb-2">
+              ¿Listo/a para iniciar?
+            </h3>
+            <p className="text-sm text-gray-400 mb-3">
+              Hoy no tiene que pagar nada.
+            </p>
+
+            <a
+              href="https://checkout.bralto.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-2.5 px-4 text-center font-semibold text-white rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 transition-all"
+            >
+              INICIAR PRUEBA GRATUITA
+            </a>
+          </div>
+        </div>
+      </div>
+    ) : null;
+  }
 
   return (
     <AnimatePresence>
