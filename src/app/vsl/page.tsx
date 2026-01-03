@@ -22,14 +22,14 @@ const VoiceWidget = dynamic(() => import("@/components/VoiceWidget").then(mod =>
 const WELCOME_STORAGE_KEY = "bralto_welcome_seen";
 
 export default function VSLPage() {
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
     const hasSeenWelcome = localStorage.getItem(WELCOME_STORAGE_KEY);
-    if (hasSeenWelcome) {
-      setShowWelcome(false);
+    if (!hasSeenWelcome) {
+      setShowWelcome(true);
     }
   }, []);
 
