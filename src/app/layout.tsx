@@ -1,24 +1,17 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
-import { CookieConsent } from "@/components/CookieConsent";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bralto.io"),
   title: "Agentes de IA 24/7 para Ventas y Leads | Bralto",
   description:
     "Automatiza ventas, califica leads y agenda citas 24/7 con agentes de inteligencia artificial. Bralto convierte tráfico en clientes sin equipos humanos.",
-  icons: {
-    icon: "https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/69587f1c748303fb4eb95de3.png",
-    shortcut: "https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/69587f1c748303fb4eb95de3.png",
-    apple: "https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/69587f1c748303fb4eb95de3.png",
-  },
   openGraph: {
     title: "Agentes de IA 24/7 para Ventas y Leads | Bralto",
-    description: "Respuesta instantánea, calificación automática y agendas que se llenan solas con IA.",
+    description:
+      "Respuesta instantánea, calificación automática y agendas que se llenan solas con IA.",
     url: "https://bralto.io",
     siteName: "Bralto",
-    type: "website",
-    locale: "es_ES",
     images: [
       {
         url: "https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/695872f4035c3a84ae6136da.jpg",
@@ -27,12 +20,17 @@ export const metadata: Metadata = {
         alt: "Bralto – Agentes de Inteligencia Artificial para Ventas",
       },
     ],
+    locale: "es_ES",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Agentes de IA 24/7 para Ventas y Leads | Bralto",
-    description: "Agendas llenas, leads calificados y ventas automáticas con IA.",
-    images: ["https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/695872f4035c3a84ae6136da.jpg"],
+    description:
+      "Agendas llenas, leads calificados y ventas automáticas con IA.",
+    images: [
+      "https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/695872f4035c3a84ae6136da.jpg",
+    ],
   },
 };
 
@@ -48,9 +46,33 @@ export default function RootLayout({
       suppressHydrationWarning
       style={{ backgroundColor: "#000000" }}
     >
+      {/* Google Tag Manager */}
+      <Script
+        id="gtm-script"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-KTGZ86BC');`,
+        }}
+      />
+      {/* End Google Tag Manager */}
+
       <body style={{ backgroundColor: "#000000" }}>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-KTGZ86BC"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
+
         {children}
-        <CookieConsent />
       </body>
     </html>
   );
