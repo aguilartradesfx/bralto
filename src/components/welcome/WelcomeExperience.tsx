@@ -2,6 +2,19 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Detect if user prefers reduced motion or is on mobile
+const useReducedMotion = () => {
+  const [reduceMotion, setReduceMotion] = useState(false);
+  
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setReduceMotion(isMobile || prefersReducedMotion);
+  }, []);
+  
+  return reduceMotion;
+};
+
 // Scene 1: Chat bubbles appearing
 const ChatScene = () => {
   return (
@@ -50,27 +63,15 @@ const ChatScene = () => {
         <p className="text-orange-300 text-sm">¡Perfecto! Déjame agendar una reunión con nuestro equipo...</p>
       </motion.div>
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 2.6, duration: 0.4 }}
         className="flex items-center gap-2 text-white/50 text-xs"
       >
         <div className="flex gap-1">
-          <motion.span
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-            className="w-1.5 h-1.5 bg-orange-400 rounded-full"
-          />
-          <motion.span
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-            className="w-1.5 h-1.5 bg-orange-400 rounded-full"
-          />
-          <motion.span
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-            className="w-1.5 h-1.5 bg-orange-400 rounded-full"
-          />
+          <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse" />
+          <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse [animation-delay:200ms]" />
+          <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse [animation-delay:400ms]" />
         </div>
         <span>Bralto está escribiendo...</span>
       </motion.div>
@@ -116,11 +117,7 @@ const CalendarScene = () => {
       >
         <div className="flex items-center justify-between mb-4">
           <span className="text-white/60 text-sm">Marzo 2025</span>
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full"
-          />
+          <div className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-xs text-white/40 mb-2">
           {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
@@ -129,11 +126,8 @@ const CalendarScene = () => {
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-sm">
           {Array.from({ length: 28 }, (_, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2 + i * 0.03 }}
               className={`p-1.5 rounded ${
                 i === 14
                   ? "bg-orange-500 text-white font-bold"
@@ -141,7 +135,7 @@ const CalendarScene = () => {
               }`}
             >
               {i + 1}
-            </motion.div>
+            </div>
           ))}
         </div>
       </motion.div>
@@ -245,18 +239,13 @@ const WelcomeScene = ({ onContinue }: WelcomeSceneProps) => (
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
     >
-      <motion.img
+      <img
         src="https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/6823c9f977a9d4672be32ac7.png"
         alt="Bralto"
         className="w-20 h-20 object-contain"
-        animate={{ 
-          filter: [
-            "drop-shadow(0 0 20px rgba(249,115,22,0.3))",
-            "drop-shadow(0 0 40px rgba(249,115,22,0.6))",
-            "drop-shadow(0 0 20px rgba(249,115,22,0.3))"
-          ]
+        style={{ 
+          filter: "drop-shadow(0 0 30px rgba(249,115,22,0.4))"
         }}
-        transition={{ duration: 2, repeat: Infinity }}
       />
     </motion.div>
     <motion.h1
@@ -286,20 +275,12 @@ const WelcomeScene = ({ onContinue }: WelcomeSceneProps) => (
       whileTap={{ scale: 0.95 }}
       className="relative mt-4 px-8 py-4 rounded-full font-semibold text-white overflow-hidden group"
     >
-      {/* Animated gradient background */}
-      <motion.div
+      {/* Gradient background */}
+      <div
         className="absolute inset-0 rounded-full"
         style={{
           background: "linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%)",
         }}
-        animate={{
-          background: [
-            "linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%)",
-            "linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)",
-            "linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%)",
-          ]
-        }}
-        transition={{ duration: 2, repeat: Infinity }}
       />
       
       {/* Glowing border effect */}
@@ -310,32 +291,24 @@ const WelcomeScene = ({ onContinue }: WelcomeSceneProps) => (
         }}
       />
       
-      {/* Shimmer effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)",
-        }}
-        animate={{
-          x: ["-100%", "100%"]
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          repeatDelay: 1,
-          ease: "easeInOut"
-        }}
-      />
+      {/* Shimmer effect - CSS only */}
+      <div
+        className="absolute inset-0 rounded-full overflow-hidden"
+      >
+        <div 
+          className="absolute inset-0 -translate-x-full animate-[shimmer_2s_ease-in-out_infinite]"
+          style={{
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)",
+          }}
+        />
+      </div>
       
       {/* Button text */}
       <span className="relative z-10 flex items-center gap-2 text-lg">
         Continuar
-        <motion.span
-          animate={{ x: [0, 5, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        >
+        <span className="animate-[bounceX_1s_ease-in-out_infinite]">
           →
-        </motion.span>
+        </span>
       </span>
     </motion.button>
   </div>
@@ -348,6 +321,7 @@ interface WelcomeExperienceProps {
 export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
   const [currentScene, setCurrentScene] = useState(0);
   const [waitingForClick, setWaitingForClick] = useState(false);
+  const reduceMotion = useReducedMotion();
   
   useEffect(() => {
     // Don't auto-advance on the last scene (welcome)
@@ -356,13 +330,14 @@ export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
       return;
     }
     
-    const timings = [3500, 3200, 4000]; // Extended timings for better appreciation
+    // Faster timings on mobile for less wait time
+    const timings = reduceMotion ? [2500, 2200, 3000] : [3500, 3200, 4000];
     const timer = setTimeout(() => {
       setCurrentScene(currentScene + 1);
     }, timings[currentScene]);
     
     return () => clearTimeout(timer);
-  }, [currentScene]);
+  }, [currentScene, reduceMotion]);
   
   const handleContinue = () => {
     onComplete();
@@ -380,132 +355,174 @@ export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{ background: "#0A0A0A" }}
     >
-      {/* Animated orange glow background - like hero section */}
+      {/* Simplified background for mobile - static gradient, animated only on desktop */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Large Orange Glow - Top Left */}
-        <motion.div 
-          className="absolute w-[600px] h-[600px] rounded-full"
-          style={{ 
-            background: 'radial-gradient(circle, rgba(249, 115, 22, 0.18) 0%, rgba(249, 115, 22, 0.06) 40%, transparent 70%)',
-            filter: 'blur(80px)',
-            top: '5%',
-            left: '10%',
-          }}
-          animate={{
-            x: [0, 150, -100, 80, 0],
-            y: [0, -80, 100, -60, 0],
-            scale: [1, 1.2, 0.9, 1.1, 1],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        {/* Fuchsia Glow - Top Right */}
-        <motion.div 
-          className="absolute w-[500px] h-[500px] rounded-full"
-          style={{ 
-            background: 'radial-gradient(circle, rgba(219, 39, 119, 0.14) 0%, rgba(219, 39, 119, 0.05) 40%, transparent 70%)',
-            filter: 'blur(80px)',
-            top: '15%',
-            right: '5%',
-          }}
-          animate={{
-            x: [0, -120, 80, -60, 0],
-            y: [0, 100, -80, 60, 0],
-            scale: [1, 0.9, 1.15, 0.95, 1],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        {/* Orange Glow - Center */}
-        <motion.div 
-          className="absolute w-[700px] h-[700px] rounded-full"
-          style={{ 
-            background: 'radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, rgba(234, 88, 12, 0.05) 40%, transparent 70%)',
-            filter: 'blur(100px)',
-            top: '30%',
-            left: '25%',
-          }}
-          animate={{
-            x: [0, -80, 120, -100, 0],
-            y: [0, 60, -100, 80, 0],
-            scale: [1, 1.1, 0.85, 1.05, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        {/* Fuchsia Glow - Bottom Left */}
-        <motion.div 
-          className="absolute w-[450px] h-[450px] rounded-full"
-          style={{ 
-            background: 'radial-gradient(circle, rgba(236, 72, 153, 0.14) 0%, rgba(219, 39, 119, 0.05) 40%, transparent 70%)',
-            filter: 'blur(70px)',
-            bottom: '10%',
-            left: '5%',
-          }}
-          animate={{
-            x: [0, 100, -60, 80, 0],
-            y: [0, -100, 60, -40, 0],
-            scale: [1, 1.15, 0.9, 1.1, 1],
-          }}
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        {/* Orange Glow - Bottom Right */}
-        <motion.div 
-          className="absolute w-[550px] h-[550px] rounded-full"
-          style={{ 
-            background: 'radial-gradient(circle, rgba(249, 115, 22, 0.14) 0%, rgba(217, 119, 6, 0.05) 40%, transparent 70%)',
-            filter: 'blur(90px)',
-            bottom: '15%',
-            right: '10%',
-          }}
-          animate={{
-            x: [0, -100, 60, -80, 0],
-            y: [0, -60, 100, -80, 0],
-            scale: [1, 1.1, 0.9, 1.05, 1],
-          }}
-          transition={{
-            duration: 17,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+        {reduceMotion ? (
+          /* Static gradient for mobile - no animations */
+          <>
+            <div 
+              className="absolute w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 70%)',
+                filter: 'blur(60px)',
+                top: '10%',
+                left: '5%',
+                willChange: 'auto',
+              }}
+            />
+            <div 
+              className="absolute w-[250px] h-[250px] md:w-[500px] md:h-[500px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(219, 39, 119, 0.12) 0%, transparent 70%)',
+                filter: 'blur(60px)',
+                top: '20%',
+                right: '0%',
+                willChange: 'auto',
+              }}
+            />
+            <div 
+              className="absolute w-[280px] h-[280px] md:w-[550px] md:h-[550px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%)',
+                filter: 'blur(60px)',
+                bottom: '10%',
+                right: '10%',
+                willChange: 'auto',
+              }}
+            />
+          </>
+        ) : (
+          /* Full animations for desktop */
+          <>
+            {/* Large Orange Glow - Top Left */}
+            <motion.div 
+              className="absolute w-[600px] h-[600px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.18) 0%, rgba(249, 115, 22, 0.06) 40%, transparent 70%)',
+                filter: 'blur(80px)',
+                top: '5%',
+                left: '10%',
+                willChange: 'transform',
+              }}
+              animate={{
+                x: [0, 150, -100, 80, 0],
+                y: [0, -80, 100, -60, 0],
+                scale: [1, 1.2, 0.9, 1.1, 1],
+              }}
+              transition={{
+                duration: 15,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            
+            {/* Fuchsia Glow - Top Right */}
+            <motion.div 
+              className="absolute w-[500px] h-[500px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(219, 39, 119, 0.14) 0%, rgba(219, 39, 119, 0.05) 40%, transparent 70%)',
+                filter: 'blur(80px)',
+                top: '15%',
+                right: '5%',
+                willChange: 'transform',
+              }}
+              animate={{
+                x: [0, -120, 80, -60, 0],
+                y: [0, 100, -80, 60, 0],
+                scale: [1, 0.9, 1.15, 0.95, 1],
+              }}
+              transition={{
+                duration: 18,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            
+            {/* Orange Glow - Center */}
+            <motion.div 
+              className="absolute w-[700px] h-[700px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, rgba(234, 88, 12, 0.05) 40%, transparent 70%)',
+                filter: 'blur(100px)',
+                top: '30%',
+                left: '25%',
+                willChange: 'transform',
+              }}
+              animate={{
+                x: [0, -80, 120, -100, 0],
+                y: [0, 60, -100, 80, 0],
+                scale: [1, 1.1, 0.85, 1.05, 1],
+              }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            
+            {/* Fuchsia Glow - Bottom Left */}
+            <motion.div 
+              className="absolute w-[450px] h-[450px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(236, 72, 153, 0.14) 0%, rgba(219, 39, 119, 0.05) 40%, transparent 70%)',
+                filter: 'blur(70px)',
+                bottom: '10%',
+                left: '5%',
+                willChange: 'transform',
+              }}
+              animate={{
+                x: [0, 100, -60, 80, 0],
+                y: [0, -100, 60, -40, 0],
+                scale: [1, 1.15, 0.9, 1.1, 1],
+              }}
+              transition={{
+                duration: 16,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            
+            {/* Orange Glow - Bottom Right */}
+            <motion.div 
+              className="absolute w-[550px] h-[550px] rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(249, 115, 22, 0.14) 0%, rgba(217, 119, 6, 0.05) 40%, transparent 70%)',
+                filter: 'blur(90px)',
+                bottom: '15%',
+                right: '10%',
+                willChange: 'transform',
+              }}
+              animate={{
+                x: [0, -100, 60, -80, 0],
+                y: [0, -60, 100, -80, 0],
+                scale: [1, 1.1, 0.9, 1.05, 1],
+              }}
+              transition={{
+                duration: 17,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </>
+        )}
       </div>
       
       {/* Progress indicator */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2">
         {scenes.map((_, index) => (
-          <motion.div
+          <div
             key={index}
-            className="h-1 rounded-full"
-            initial={{ width: 24, backgroundColor: "rgba(255,255,255,0.2)" }}
-            animate={{
+            className="h-1 rounded-full transition-colors duration-300"
+            style={{ 
+              width: 24,
               backgroundColor: index <= currentScene 
                 ? "rgba(249, 115, 22, 0.8)" 
                 : "rgba(255,255,255,0.2)"
             }}
-            transition={{ duration: 0.3 }}
-            style={{ width: 24 }}
           />
         ))}
       </div>
@@ -515,10 +532,10 @@ export function WelcomeExperience({ onComplete }: WelcomeExperienceProps) {
         <AnimatePresence mode="wait">
           <motion.div
             key={scenes[currentScene].key}
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -30, scale: 0.95 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
             className="w-full flex items-center justify-center"
           >
             {scenes[currentScene].component}
