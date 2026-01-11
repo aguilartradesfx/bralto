@@ -20,9 +20,9 @@ const TrustSection = dynamic(() => import("@/components/sections/TrustSection").
 const FloatingCTA = dynamic(() => import("@/components/ui/FloatingCTA").then(m => ({ default: m.FloatingCTA })), { ssr: false });
 const VoiceWidget = dynamic(() => import("@/components/VoiceWidget").then(m => ({ default: m.VoiceWidget })), { ssr: false });
 
-const WELCOME_STORAGE_KEY = "bralto_welcome_seen";
+const WELCOME_STORAGE_KEY = "bralto_lanzamiento_welcome_seen";
 
-export default function VSLPage() {
+export default function LanzamientoPage() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
