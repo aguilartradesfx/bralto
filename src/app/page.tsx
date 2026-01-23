@@ -13,11 +13,9 @@ import GuaranteeSection from "@/components/sections/GuaranteeSection";
 import { FloatingCTA } from "@/components/ui/FloatingCTA";
 import { Navbar } from "@/components/navigation/Navbar";
 import { VoiceWidget } from "@/components/VoiceWidget";
-import { AccessGate } from "@/components/AccessGate";
 
 export default function Page() {
   return (
-    <AccessGate>
     <main className="min-h-screen bg-black">
       <Navbar />
 
@@ -43,6 +41,5 @@ export default function Page() {
       <FloatingCTA />
       <VoiceWidget />
     </main>
-    </AccessGate>
   );
 }

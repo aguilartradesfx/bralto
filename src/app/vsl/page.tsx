@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { WelcomeExperience } from "@/components/welcome/WelcomeExperience";
-import { AccessGate } from "@/components/AccessGate";
 
 // Lazy load heavy components for better performance
 const BraltoHeroSection = dynamic(() => import("@/components/hero/BraltoHeroSection").then(m => ({ default: m.BraltoHeroSection })), { ssr: false });
@@ -40,7 +39,6 @@ export default function VSLPage() {
   };
 
   return (
-    <AccessGate>
     <main className="min-h-screen bg-black">
       {/* Welcome Experience Overlay */}
       <AnimatePresence>
@@ -72,6 +70,5 @@ export default function VSLPage() {
       <FloatingCTA />
       <VoiceWidget />
     </main>
-    </AccessGate>
   );
 }
