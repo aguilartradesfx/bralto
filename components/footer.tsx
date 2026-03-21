@@ -1,0 +1,128 @@
+'use client'
+import type { ComponentProps, ReactNode } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { InstagramIcon, LinkedinIcon } from 'lucide-react'
+import Image from 'next/image'
+
+interface FooterLink {
+  title: string
+  href: string
+  icon?: React.ComponentType<{ className?: string }>
+}
+
+interface FooterSection {
+  label: string
+  links: FooterLink[]
+}
+
+const footerLinks: FooterSection[] = [
+  {
+    label: 'Navegación',
+    links: [
+      { title: 'Inicio', href: '#inicio' },
+      { title: 'Cómo Funciona', href: '#como-funciona' },
+      { title: 'Plataforma', href: '#plataforma' },
+      { title: 'Done For You', href: '#done-for-you' },
+    ],
+  },
+  {
+    label: 'Legal',
+    links: [
+      { title: 'Política de Privacidad', href: '/privacidad' },
+      { title: 'Términos de Servicio', href: '/terminos' },
+    ],
+  },
+  {
+    label: 'Empezar',
+    links: [
+      { title: 'Agendar Llamada', href: '#contacto' },
+      { title: 'Empezar Ahora', href: 'https://checkout.bralto.io' },
+    ],
+  },
+  {
+    label: 'Redes Sociales',
+    links: [
+      { title: 'Instagram', href: '#', icon: InstagramIcon },
+      { title: 'LinkedIn', href: '#', icon: LinkedinIcon },
+    ],
+  },
+]
+
+export function Footer() {
+  return (
+    <footer className="relative w-full border-t border-white/[0.05] bg-[#080808] px-6 py-12 lg:py-16">
+      <div className="absolute inset-x-0 top-0 mx-auto h-px w-1/3 -translate-y-1/2 rounded-full bg-white/20 blur" />
+
+      <div className="mx-auto grid w-full max-w-6xl gap-8 xl:grid-cols-3 xl:gap-8">
+        {/* Brand */}
+        <AnimatedContainer className="space-y-4">
+          <Image
+            src="/logo.png"
+            alt="Bralto"
+            width={100}
+            height={30}
+            className="h-7 w-auto object-contain"
+          />
+          <p className="mt-4 text-sm leading-relaxed text-white/30 md:mt-0">
+            Infraestructura digital para que su negocio opere sin depender de personas.
+          </p>
+          <p className="text-xs text-white/20">
+            © {new Date().getFullYear()} Bralto. Todos los derechos reservados.
+          </p>
+        </AnimatedContainer>
+
+        {/* Links grid */}
+        <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
+          {footerLinks.map((section, index) => (
+            <AnimatedContainer key={section.label} delay={0.1 + index * 0.08}>
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/30">
+                  {section.label}
+                </h3>
+                <ul className="mt-4 space-y-2.5 text-sm">
+                  {section.links.map((link) => (
+                    <li key={link.title}>
+                      <a
+                        href={link.href}
+                        className="inline-flex items-center gap-1.5 text-white/40 transition-colors duration-200 hover:text-white/70"
+                      >
+                        {link.icon && <link.icon className="h-4 w-4" />}
+                        {link.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </AnimatedContainer>
+          ))}
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+type ViewAnimationProps = {
+  delay?: number
+  className?: ComponentProps<typeof motion.div>['className']
+  children: ReactNode
+}
+
+function AnimatedContainer({ className, delay = 0.1, children }: ViewAnimationProps) {
+  const shouldReduceMotion = useReducedMotion()
+
+  if (shouldReduceMotion) {
+    return <>{children}</>
+  }
+
+  return (
+    <motion.div
+      initial={{ filter: 'blur(4px)', translateY: -8, opacity: 0 }}
+      whileInView={{ filter: 'blur(0px)', translateY: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.8 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
