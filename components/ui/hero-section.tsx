@@ -78,7 +78,7 @@ export function Component() {
     // Floating elements on scroll — scoped to this component only
     let scrolled = false;
     function onScroll() {
-      if (!scrolled) {
+      if (!scrolled && container) {
         scrolled = true;
         container.querySelectorAll<HTMLElement>(".floating-element").forEach((el, index) => {
           setTimeout(() => {
