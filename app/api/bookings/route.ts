@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 
 // Redis key for permanently confirmed bookings
 const KEY = 'bralto:booked_slots'
@@ -163,23 +163,31 @@ export async function POST(req: Request) {
       } catch { /* Supabase save is non-critical — booking is already locked in Redis */ }
     }
 
-    // Fire-and-forget webhook to N8N
+    // Fire-and-forget webhook to N8N — uses after() so the function stays
+    // alive until the fetch completes even after the response is sent
     const webhookUrl = process.env.N8N_WEBHOOK_URL
     if (webhookUrl) {
       const { nombre, apellido, countryCode, telefono, email, answers } = body
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          slot_key: slot,
-          nombre,
-          apellido,
-          telefono: `${countryCode ?? ''}${telefono ?? ''}`,
-          email,
-          answers,
-          booked_at: new Date().toISOString(),
-        }),
-      }).catch((err) => console.error('[n8n webhook] failed:', err))
+      const payload = JSON.stringify({
+        slot_key: slot,
+        nombre,
+        apellido,
+        telefono: `${countryCode ?? ''}${telefono ?? ''}`,
+        email,
+        answers,
+        booked_at: new Date().toISOString(),
+      })
+      after(async () => {
+        try {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+          })
+        } catch (err) {
+          console.error('[n8n webhook] failed:', err)
+        }
+      })
     }
 
     return NextResponse.json({ success: true })
