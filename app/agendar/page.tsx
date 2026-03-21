@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
+import { GodRays } from '@paper-design/shaders-react'
+import { GlassCalendar } from '@/components/ui/glass-calendar'
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 
@@ -15,7 +18,7 @@ function getAvailableDays(): Date[] {
     const d = new Date(today)
     d.setDate(today.getDate() + offset)
     const dow = d.getDay()
-    if (dow !== 0 && dow !== 6) days.push(d) // skip Sunday (0) and Saturday (6)
+    if (dow !== 0 && dow !== 6) days.push(d)
     offset++
   }
   return days
@@ -129,7 +132,7 @@ interface FormData {
   answers: Record<string, string>
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function OptionCard({
   label,
@@ -213,13 +216,43 @@ export default function AgendarPage() {
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
+  const [lockedSlots, setLockedSlots] = useState<Set<string>>(new Set())
 
-  useEffect(() => {
+  const [sessionId] = useState<string>(() =>
+    typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36),
+  )
+
+  const [lockExpiresAt, setLockExpiresAt] = useState<number | null>(null)
+  const [countdown, setCountdown] = useState(0)
+
+  function refreshSlots() {
     fetch('/api/bookings')
       .then((r) => r.json())
-      .then((data) => setBookedSlots(new Set(data.booked ?? [])))
-      .catch(() => {/* silently ignore — worst case all slots appear available */})
-  }, [])
+      .then((data) => {
+        setBookedSlots(new Set(data.booked ?? []))
+        setLockedSlots(new Set(data.locked ?? []))
+      })
+      .catch(() => {})
+  }
+
+  useEffect(() => { refreshSlots() }, [])
+
+  useEffect(() => {
+    if (!lockExpiresAt) return
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((lockExpiresAt - Date.now()) / 1000))
+      setCountdown(remaining)
+      if (remaining === 0) {
+        clearInterval(interval)
+        setLockExpiresAt(null)
+        setErrors(['Su reserva temporal expiró. Por favor seleccione un nuevo horario.'])
+        setStep(0)
+        setForm((f) => ({ ...f, selectedDate: null, selectedTime: null }))
+        refreshSlots()
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [lockExpiresAt])
 
   const [form, setForm] = useState<FormData>({
     selectedDate: null,
@@ -266,16 +299,51 @@ export default function AgendarPage() {
     return errs
   }
 
-  function next() {
+  async function next() {
     const errs = validateStep()
     if (errs.length) { setErrors(errs); return }
     setErrors([])
+
+    if (step === 0) {
+      const key = slotKey(form.selectedDate!, form.selectedTime!)
+      try {
+        const res = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'lock', slot: key, sessionId }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          setErrors([data.error ?? 'Este horario ya no está disponible. Por favor elija otro.'])
+          refreshSlots()
+          return
+        }
+        setLockExpiresAt(data.expiresAt)
+        setCountdown(Math.floor((data.expiresAt - Date.now()) / 1000))
+      } catch {
+        // Network error — proceed optimistically
+      }
+    }
+
     setStep((s) => s + 1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function back() {
+  async function back() {
     setErrors([])
+
+    if (step === 1 && form.selectedDate && form.selectedTime) {
+      const key = slotKey(form.selectedDate, form.selectedTime)
+      fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'unlock', slot: key, sessionId }),
+      }).catch(() => {})
+      setLockExpiresAt(null)
+      setCountdown(0)
+      refreshSlots()
+    }
+
     setStep((s) => s - 1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -290,10 +358,21 @@ export default function AgendarPage() {
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slot: key }),
+        body: JSON.stringify({
+          action: 'confirm',
+          slot: key,
+          sessionId,
+          nombre: form.nombre,
+          apellido: form.apellido,
+          countryCode: form.countryCode,
+          telefono: form.telefono,
+          email: form.email,
+          answers: form.answers,
+        }),
       })
       if (res.status === 409) {
-        setErrors(['Este horario ya fue reservado mientras completaba el formulario. Por favor regrese y elija otro.'])
+        const data = await res.json()
+        setErrors([data.error ?? 'Este horario ya fue reservado. Por favor regrese y elija otro.'])
         setSubmitting(false)
         return
       }
@@ -307,20 +386,28 @@ export default function AgendarPage() {
     router.push('/confirmacion')
   }
 
-  const dayLabels = availableDays.map((d) => ({
-    date: d,
-    day: DAYS_ES[d.getDay()],
-    num: d.getDate(),
-    month: MONTHS_ES[d.getMonth()],
-  }))
-
   return (
     <div className="min-h-screen bg-[#080808]">
-      {/* Glow */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(249,115,22,0.05),transparent)]" />
+      {/* Hero background — same GodRays as home */}
+      <GodRays
+        colorBack="#00000000"
+        colors={['#a1a1aa40', '#e4e4e740', '#71717a40', '#52525b40']}
+        colorBloom="#a1a1aa"
+        offsetX={0.85}
+        offsetY={-1}
+        intensity={0.45}
+        spotty={0.45}
+        midSize={10}
+        midIntensity={0}
+        density={0.38}
+        bloom={0.3}
+        speed={0.4}
+        scale={1.6}
+        style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}
+      />
 
       {/* Top bar */}
-      <header className="relative z-10 border-b border-white/[0.05] bg-[#080808]/80 backdrop-blur-sm">
+      <header className="relative z-10 border-b border-white/[0.05] bg-[#080808]/60 backdrop-blur-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <a href="/" className="flex items-center gap-2">
             <Image
@@ -361,81 +448,88 @@ export default function AgendarPage() {
           <StepIndicator step={step} />
         </div>
 
+        {/* Countdown banner */}
+        {step > 0 && lockExpiresAt !== null && (
+          <div
+            className={`mb-6 flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-colors duration-300 ${
+              countdown < 60
+                ? 'border-red-500/25 bg-red-500/5 text-red-400'
+                : 'border-[#F97316]/20 bg-[#F97316]/5 text-[#F97316]/80'
+            }`}
+          >
+            <span>Horario reservado temporalmente</span>
+            <span className="font-mono font-semibold tabular-nums">
+              {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}
+            </span>
+          </div>
+        )}
+
         {/* ── Step 0: Fecha y hora ─────────────────────────── */}
         {step === 0 && (
           <div>
-            <h2 className="mb-6 text-lg font-semibold text-white">Seleccione una fecha</h2>
+            <h2 className="mb-5 text-lg font-semibold text-white">Seleccione una fecha</h2>
 
-            <div className="grid grid-cols-5 gap-2 mb-8">
-              {dayLabels.map(({ date, day, num, month }) => {
-                const selected =
-                  form.selectedDate?.toDateString() === date.toDateString()
-                return (
-                  <button
-                    key={date.toISOString()}
-                    onClick={() => update('selectedDate', date)}
-                    className={`flex flex-col items-center rounded-xl border py-4 gap-1 transition-all duration-150 ${
-                      selected
-                        ? 'border-[#F97316]/40 bg-[#F97316]/10'
-                        : 'border-white/[0.07] bg-white/[0.02] hover:border-white/[0.14]'
-                    }`}
-                  >
-                    <span
-                      className={`text-[10px] font-semibold uppercase tracking-wider ${
-                        selected ? 'text-[#F97316]' : 'text-white/30'
-                      }`}
-                    >
-                      {day}
-                    </span>
-                    <span
-                      className={`text-2xl font-bold ${
-                        selected ? 'text-white' : 'text-white/60'
-                      }`}
-                    >
-                      {num}
-                    </span>
-                    <span
-                      className={`text-[10px] ${
-                        selected ? 'text-[#F97316]/60' : 'text-white/25'
-                      }`}
-                    >
-                      {month}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
+            <GlassCalendar
+              selectedDate={form.selectedDate}
+              onDateSelect={(date) => {
+                update('selectedDate', date)
+                // Clear time if different date
+                update('selectedTime', null)
+              }}
+              selectableDates={availableDays}
+              className="max-w-full"
+            />
 
-            <h2 className="mb-4 text-lg font-semibold text-white">Seleccione un horario</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {TIME_SLOTS.map(({ id, label }) => {
-                const selected = form.selectedTime === id
-                const booked = form.selectedDate
-                  ? bookedSlots.has(slotKey(form.selectedDate, id))
-                  : false
-                return (
-                  <button
-                    key={id}
-                    disabled={booked}
-                    onClick={() => !booked && update('selectedTime', id)}
-                    className={`relative rounded-xl border py-3.5 text-sm font-semibold transition-all duration-150 ${
-                      booked
-                        ? 'border-white/[0.04] bg-white/[0.01] text-white/20 cursor-not-allowed'
-                        : selected
-                        ? 'border-[#F97316]/40 bg-[#F97316]/10 text-white'
-                        : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
-                    }`}
-                  >
-                    {label}
-                    {booked && (
-                      <span className="block text-[9px] font-normal text-white/20 mt-0.5">
-                        No disponible
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+            {/* Time slots — animate in when a date is selected */}
+            <AnimatePresence>
+              {form.selectedDate && (
+                <motion.div
+                  key="time-slots"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="mt-6"
+                >
+                  <h2 className="mb-4 text-base font-semibold text-white">
+                    Horarios disponibles —{' '}
+                    <span className="text-[#F97316]">
+                      {DAYS_ES[form.selectedDate.getDay()]}{' '}
+                      {form.selectedDate.getDate()} de{' '}
+                      {MONTHS_ES[form.selectedDate.getMonth()]}
+                    </span>
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {TIME_SLOTS.map(({ id, label }) => {
+                      const selected = form.selectedTime === id
+                      const booked = bookedSlots.has(slotKey(form.selectedDate!, id)) ||
+                        lockedSlots.has(slotKey(form.selectedDate!, id))
+                      return (
+                        <button
+                          key={id}
+                          disabled={booked}
+                          onClick={() => !booked && update('selectedTime', id)}
+                          className={`relative rounded-xl border py-3.5 text-sm font-semibold transition-all duration-150 ${
+                            booked
+                              ? 'border-white/[0.04] bg-white/[0.01] text-white/20 cursor-not-allowed'
+                              : selected
+                              ? 'border-[#F97316]/40 bg-[#F97316]/10 text-white'
+                              : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
+                          }`}
+                        >
+                          {label}
+                          {booked && (
+                            <span className="block text-[9px] font-normal text-white/20 mt-0.5">
+                              No disponible
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
@@ -545,7 +639,7 @@ export default function AgendarPage() {
           </div>
         )}
 
-        {/* ── Errors ─────────────────────────────────────────── */}
+        {/* Errors */}
         {errors.length > 0 && (
           <div className="mt-6 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
             {errors.map((e) => (
@@ -556,7 +650,7 @@ export default function AgendarPage() {
           </div>
         )}
 
-        {/* ── Navigation ─────────────────────────────────────── */}
+        {/* Navigation */}
         <div className="mt-8 flex items-center justify-between">
           {step > 0 ? (
             <button
@@ -590,7 +684,6 @@ export default function AgendarPage() {
           )}
         </div>
 
-        {/* Trust line */}
         <p className="mt-8 text-center text-xs text-white/20">
           30 minutos · Sin costo · Puede cancelar en cualquier momento
         </p>
