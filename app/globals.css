@@ -78,16 +78,6 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Hero robot responsive transform */
-.hero-robot-inner {
-  transform: scale(1.45) translateY(8%);
-}
-@media (max-width: 767px) {
-  .hero-robot-inner {
-    transform: scale(1.65) translateY(4%);
-  }
-}
-
 /* Gradient text utility */
 .text-gradient-orange {
   background: linear-gradient(135deg, #F97316, #fb923c);

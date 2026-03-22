@@ -89,7 +89,7 @@ export function Hero() {
       <div className="relative z-10 flex flex-col md:flex-row" style={{ minHeight: '90vh' }}>
 
         {/* Left: text */}
-        <div className="flex flex-col justify-center flex-1 px-8 pt-8 pb-2 md:pl-24 md:pr-8 md:py-20 gap-4 md:gap-12">
+        <div className="flex flex-col justify-center flex-1 px-8 py-16 md:pl-24 md:pr-8 md:py-20 gap-10 md:gap-12">
 
           {/* Top tagline */}
           <div>
@@ -178,10 +178,10 @@ export function Hero() {
         </div>
 
         {/* Right: robot */}
-        <div className="relative flex-shrink-0 w-full md:w-[46%] h-[65vh] md:h-auto">
+        <div className="relative flex-shrink-0 w-full md:w-[46%] h-[50vh] md:h-auto">
           <div
-            className="absolute inset-0 hero-robot-inner"
-            style={{ transformOrigin: 'center center' }}
+            className="absolute inset-0"
+            style={{ transform: 'scale(1.45) translateY(8%)', transformOrigin: 'center center' }}
           >
             <SplineScene
               scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
