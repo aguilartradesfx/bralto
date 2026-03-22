@@ -78,6 +78,16 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* Hero headline — desktop uses clamp, mobile uses fixed size so "Automatizamos sus" fits one line */
+.hero-headline {
+  font-size: clamp(3rem, 7vw, 6.5rem);
+}
+@media (max-width: 767px) {
+  .hero-headline {
+    font-size: 1.85rem;
+  }
+}
+
 /* Gradient text utility */
 .text-gradient-orange {
   background: linear-gradient(135deg, #F97316, #fb923c);

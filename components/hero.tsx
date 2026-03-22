@@ -86,10 +86,10 @@ export function Hero() {
       />
 
       {/* Split layout */}
-      <div className="relative z-10 flex flex-col md:flex-row" style={{ minHeight: '90vh' }}>
+      <div className="relative z-10 flex flex-col md:flex-row h-[90vh] md:min-h-[90vh] md:h-auto">
 
         {/* Left: text */}
-        <div className="flex flex-col justify-center flex-1 px-8 py-16 md:pl-24 md:pr-8 md:py-20 gap-10 md:gap-12">
+        <div className="flex flex-col justify-center flex-1 px-8 pt-5 pb-0 md:pl-24 md:pr-8 md:py-20 gap-2 md:gap-12">
 
           {/* Top tagline */}
           <div>
@@ -100,7 +100,7 @@ export function Hero() {
               <Word text="Digitales" delay={450} />
             </p>
             <div
-              className="mt-4 w-16 h-px mx-auto md:ml-0"
+              className="mt-2 md:mt-4 w-16 h-px mx-auto md:ml-0"
               style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)' }}
             />
           </div>
@@ -113,8 +113,7 @@ export function Hero() {
             >
               {/* Line 1 — static */}
               <div
-                className="text-white text-center md:text-left"
-                style={{ fontSize: 'clamp(3rem, 7vw, 6.5rem)' }}
+                className="hero-headline text-white text-center md:text-left"
               >
                 <Word text="Automatizamos" delay={800} />
                 <Word text="sus" delay={950} />
@@ -122,8 +121,8 @@ export function Hero() {
 
               {/* Line 2 — animated action word */}
               <div
-                className="relative overflow-hidden text-[#F97316] mb-3 md:mb-5"
-                style={{ fontSize: 'clamp(3rem, 7vw, 6.5rem)', height: '1.3em' }}
+                className="hero-headline relative overflow-hidden text-[#F97316] mb-3 md:mb-5"
+                style={{ height: '1.3em' }}
               >
                 <AnimatePresence mode="wait">
                   <motion.span
