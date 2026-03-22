@@ -33,7 +33,7 @@ export function FinalCta() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1] mb-8 min-h-[3em]"
+          className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1] mb-8"
         >
           <Typewriter
             text={CTA_PHRASES}
@@ -42,6 +42,7 @@ export function FinalCta() {
             waitTime={3800}
             cursorChar="_"
             cursorClassName="ml-1 text-[#F97316]"
+            stableSize
           />
         </motion.h2>
 

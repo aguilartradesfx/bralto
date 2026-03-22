@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
-import { useMotionValue, animate, motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useMotionValue, animate, motion, useInView } from 'framer-motion'
+import { useState, useEffect, useRef } from 'react'
 import useMeasure from 'react-use-measure'
 
 type InfiniteSliderProps = {
@@ -28,10 +28,20 @@ export function InfiniteSlider({
   const translation = useMotionValue(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [key, setKey] = useState(0)
+  const [isTabHidden, setIsTabHidden] = useState(false)
+  const outerRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(outerRef, { amount: 0 })
+
+  useEffect(() => {
+    const handler = () => setIsTabHidden(document.hidden)
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
+  }, [])
 
   useEffect(() => {
     let controls: ReturnType<typeof animate> | undefined
     const size = direction === 'horizontal' ? width : height
+    if (!size || !isInView || isTabHidden) return
     const contentSize = size + gap
     const from = reverse ? -contentSize / 2 : 0
     const to = reverse ? 0 : -contentSize / 2
@@ -59,7 +69,7 @@ export function InfiniteSlider({
     }
 
     return controls?.stop
-  }, [key, translation, currentDuration, width, height, gap, isTransitioning, direction, reverse])
+  }, [key, translation, currentDuration, width, height, gap, isTransitioning, direction, reverse, isInView, isTabHidden])
 
   const hoverProps = durationOnHover
     ? {
@@ -75,7 +85,7 @@ export function InfiniteSlider({
     : {}
 
   return (
-    <div className={cn('overflow-hidden', className)}>
+    <div ref={outerRef} className={cn('overflow-hidden', className)}>
       <motion.div
         className="flex w-max"
         style={{

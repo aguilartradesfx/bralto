@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 import {
   Plane, Printer, UtensilsCrossed, Stethoscope, PawPrint, Car,
   ChevronLeft, ChevronRight, Check, ArrowRight,
@@ -167,8 +167,11 @@ export function RobotSection() {
   const [progress, setProgress] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [direction, setDirection] = useState<'next' | 'prev'>('next')
+  const [isTabHidden, setIsTabHidden] = useState(false)
   const touchStartX = useRef(0)
   const touchEndX = useRef(0)
+  const sectionRef = useRef<HTMLElement>(null)
+  const isInView = useInView(sectionRef, { amount: 0 })
 
   const goToSlide = useCallback(
     (index: number, dir: 'next' | 'prev' = 'next') => {
@@ -188,11 +191,19 @@ export function RobotSection() {
   }, [currentIndex, goToSlide])
 
   useEffect(() => {
+    const handler = () => setIsTabHidden(document.hidden)
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
+  }, [])
+
+  useEffect(() => {
     setProgress(0)
   }, [currentIndex])
 
+  const shouldTick = isInView && !isTabHidden && !isPaused
+
   useEffect(() => {
-    if (isPaused) return
+    if (!shouldTick) return
     let elapsed = 0
     const timer = setInterval(() => {
       elapsed += TICK
@@ -204,7 +215,7 @@ export function RobotSection() {
       }
     }, TICK)
     return () => clearInterval(timer)
-  }, [currentIndex, isPaused])
+  }, [currentIndex, shouldTick])
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX
@@ -220,7 +231,7 @@ export function RobotSection() {
   const current = slides[currentIndex]
 
   return (
-    <section id="casos-reales" className="relative py-20 bg-[#080808]">
+    <section ref={sectionRef} id="casos-reales" className="relative py-20 bg-[#080808]">
 
       {/* Header — constrained width */}
       <div className="mx-auto max-w-6xl px-6">
@@ -585,7 +596,7 @@ export function RobotSection() {
 
       {/* Typewriter strip */}
       <div className="mx-auto max-w-4xl px-6 mt-16 text-center">
-        <div className="text-2xl md:text-3xl font-bold tracking-tight text-white min-h-[2em]">
+        <div className="text-2xl md:text-3xl font-bold tracking-tight text-white">
           <Typewriter
             text={CTA_PHRASES}
             speed={38}
@@ -593,6 +604,7 @@ export function RobotSection() {
             waitTime={3800}
             cursorChar="_"
             cursorClassName="ml-1 text-[#F97316]"
+            stableSize
           />
         </div>
       </div>

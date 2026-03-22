@@ -1,4 +1,6 @@
 'use client'
+import { useRef, useState, useEffect } from 'react'
+import { useInView } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 // TODO: Reemplazar con testimonios reales
@@ -111,12 +113,16 @@ interface ColumnProps {
   items: typeof testimonials
   speed?: string
   className?: string
+  isPlaying?: boolean
 }
 
-function Column({ items, speed = 'animate-scroll-up', className }: ColumnProps) {
+function Column({ items, speed = 'animate-scroll-up', className, isPlaying = true }: ColumnProps) {
   return (
     <div className={cn('flex flex-col', className)}>
-      <div className={cn('flex flex-col', speed)}>
+      <div
+        className={cn('flex flex-col', speed)}
+        style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
+      >
         {[...items, ...items].map((t, i) => (
           <TestimonialCard key={i} {...t} />
         ))}
@@ -130,19 +136,32 @@ export function TestimonialsColumns() {
   const col2 = testimonials.slice(3, 6)
   const col3 = testimonials.slice(6, 9)
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(containerRef, { amount: 0.1 })
+  const [isTabHidden, setIsTabHidden] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setIsTabHidden(document.hidden)
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
+  }, [])
+
+  const isPlaying = isInView && !isTabHidden
+
   return (
     <div
+      ref={containerRef}
       className="relative flex gap-4 overflow-hidden"
       style={{ height: '560px', maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
     >
       <div className="flex-1 overflow-hidden">
-        <Column items={col1} speed="animate-scroll-up" />
+        <Column items={col1} speed="animate-scroll-up" isPlaying={isPlaying} />
       </div>
       <div className="flex-1 overflow-hidden hidden md:block">
-        <Column items={col2} speed="animate-scroll-up-fast" />
+        <Column items={col2} speed="animate-scroll-up-fast" isPlaying={isPlaying} />
       </div>
       <div className="flex-1 overflow-hidden hidden lg:block">
-        <Column items={col3} speed="animate-scroll-up-slow" />
+        <Column items={col3} speed="animate-scroll-up-slow" isPlaying={isPlaying} />
       </div>
     </div>
   )

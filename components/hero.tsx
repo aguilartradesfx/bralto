@@ -39,6 +39,15 @@ function Word({
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
   const [actionIndex, setActionIndex] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     const words = sectionRef.current?.querySelectorAll<HTMLElement>('.word')
@@ -80,8 +89,9 @@ export function Hero() {
         midIntensity={0}
         density={0.38}
         bloom={0.3}
-        speed={0.4}
+        speed={isMobile ? 0 : 0.4}
         scale={1.6}
+        maxPixelRatio={isMobile ? 1 : undefined}
         style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
       />
 
@@ -150,6 +160,7 @@ export function Hero() {
                   cursorChar="_"
                   cursorClassName="ml-0.5 text-[#F97316]"
                   className="font-thin"
+                  stableSize
                 />
               </div>
             </h1>
@@ -182,10 +193,13 @@ export function Hero() {
             className="absolute inset-0"
             style={{ transform: 'scale(1.45) translateY(8%)', transformOrigin: 'center center' }}
           >
-            <SplineScene
-              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-              className="w-full h-full"
-            />
+            {/* Skip 3D scene on mobile — heaviest GPU consumer */}
+            {!isMobile && (
+              <SplineScene
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full"
+              />
+            )}
           </div>
         </div>
 
