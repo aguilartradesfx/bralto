@@ -91,7 +91,7 @@ export function Hero() {
         bloom={0.3}
         speed={isMobile ? 0 : 0.4}
         scale={1.6}
-        maxPixelRatio={isMobile ? 1 : undefined}
+        minPixelRatio={isMobile ? 1 : undefined}
         style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
       />
 
