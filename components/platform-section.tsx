@@ -206,7 +206,7 @@ export function PlatformSection() {
                 <p className="text-xs text-white/50 mb-4 leading-relaxed max-w-xs mx-auto">
                   La plataforma viene <span className="text-white/70 font-medium">incluida con cada implementación</span>. También está disponible de forma independiente.
                 </p>
-                <LiquidMetalButton href="https://checkout.bralto.io" size="md">
+                <LiquidMetalButton href="https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t" size="md">
                   Iniciar Prueba Gratuita
                 </LiquidMetalButton>
                 <p className="text-xs text-white/30 mt-3">

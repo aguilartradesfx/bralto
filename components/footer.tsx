@@ -36,7 +36,7 @@ const footerLinks: FooterSection[] = [
     label: 'Empezar',
     links: [
       { title: 'Agendar Llamada', href: '#contacto' },
-      { title: 'Empezar Ahora', href: 'https://checkout.bralto.io' },
+      { title: 'Empezar Ahora', href: 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t' },
     ],
   },
   {
