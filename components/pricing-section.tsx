@@ -34,7 +34,7 @@ const plans = {
     topEdge: 'via-white/[0.09]',
     cta: {
       label: 'Iniciar Prueba Gratuita',
-      href: 'https://checkout.bralto.io',
+      href: 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t',
       external: true,
       style:
         'border border-white/[0.14] text-white/70 hover:border-white/30 hover:text-white',
