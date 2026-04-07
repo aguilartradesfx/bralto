@@ -118,7 +118,7 @@ export default function SitiosWebPage() {
         {/* Single background image */}
         <div className="absolute inset-0">
           <Image
-            src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d5a7dcb4cff003393e.png"
+            src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0e2dbea0-c0a9-413f-a57b-af279633c0df_3840w.jpg"
             alt=""
             fill
             className="object-cover object-center"
