@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
 
@@ -70,10 +70,10 @@ export default function CampanasPage() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="grid grid-cols-3 gap-4 pb-12 w-full" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
             {[['Meta + Google', 'Plataformas'], ['2×/semana', 'Optimización'], ['Semanal', 'Reporte']].map(([v, l]) => (
-              <div key={l}>
-                <p className="text-3xl font-bold text-white">{v}</p>
+              <div key={l} className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-white">{v}</p>
                 <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
               </div>
             ))}
@@ -126,44 +126,6 @@ export default function CampanasPage() {
                 <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          PRECIO
-      ═══════════════════════════════════════════ */}
-      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Inversión</p>
-              <h2 className="font-bold tracking-tight leading-[0.92] mb-8" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
-                Fee de gestión.<br />
-                <span style={{ color: 'rgba(255,255,255,0.2)' }}>Vos controlás la pauta.</span>
-              </h2>
-              <p className="text-base text-white/40 leading-relaxed max-w-sm">
-                Cobramos un fee mensual por estrategia, gestión y optimización. El presupuesto de anuncios lo manejás directamente desde tu cuenta — sin intermediarios.
-              </p>
-            </div>
-            <div>
-              <div className="mb-10">
-                <p className="text-[4rem] font-bold text-white leading-none mb-2">A convenir</p>
-                <p className="text-sm text-white/30">Según plataformas, presupuesto de pauta y alcance del servicio</p>
-              </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 mb-12">
-                {['Estrategia inicial de campañas', 'Configuración técnica completa', 'Creativos y copy para anuncios', 'Segmentación de audiencias', 'Optimización 2× por semana', 'Reporte de resultados semanal', 'Pixel y tags de seguimiento', 'Reunión mensual de revisión'].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-white/55">
-                    <Check size={13} className="text-[#F97316] shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href={AGENDAR} className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]">
-                Hablar sobre mi presupuesto
-                <ArrowRight size={15} />
-              </Link>
-            </div>
           </div>
         </div>
       </section>

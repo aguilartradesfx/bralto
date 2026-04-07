@@ -153,7 +153,14 @@ export function Navbar() {
 
                 {/* Footer bar */}
                 <div className="border-t border-white/[0.06] px-5 py-3 flex items-center justify-between bg-white/[0.015]">
-                  <p className="text-xs text-white/35">¿No sabés qué necesitás?</p>
+                  <Link
+                    href="/precios"
+                    onClick={() => setMegaOpen(false)}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-white/45 hover:text-white transition-colors"
+                  >
+                    Ver todos los servicios
+                    <ChevronRight size={12} />
+                  </Link>
                   <Link
                     href="/agendar"
                     onClick={() => setMegaOpen(false)}

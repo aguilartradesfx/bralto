@@ -1,8 +1,7 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
-const STRIPE   = 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t'
 
 const features = [
   { n: '01', t: 'Workflow end-to-end', d: 'Mapeamos y automatizamos el proceso completo — desde el trigger hasta el resultado final, sin pasos manuales.' },
@@ -71,13 +70,10 @@ export default function AutomatizacionPage() {
               Agendar llamada gratis
               <ArrowRight size={15} />
             </Link>
-            <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm text-white/65 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}>
-              Contratar — $1,450
-            </a>
           </div>
 
           <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            {[['$1,450', 'Precio único'], ['2–3 sem.', 'Tiempo de entrega'], ['30 días', 'Soporte incluido']].map(([v, l]) => (
+            {[['Make / n8n', 'Plataformas'], ['2–3 sem.', 'Tiempo de entrega'], ['30 días', 'Soporte incluido']].map(([v, l]) => (
               <div key={l}>
                 <p className="text-3xl font-bold text-white">{v}</p>
                 <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
@@ -132,48 +128,6 @@ export default function AutomatizacionPage() {
                 <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          PRECIO
-      ═══════════════════════════════════════════ */}
-      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Inversión</p>
-              <h2 className="font-bold tracking-tight leading-[0.92] mb-8" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
-                Un precio.<br />
-                <span style={{ color: 'rgba(255,255,255,0.2)' }}>Todo adentro.</span>
-              </h2>
-              <p className="text-base text-white/40 leading-relaxed max-w-sm">
-                Automatización completa, de diagnóstico a entrega. Sin costos recurrentes por el desarrollo — solo las licencias de las plataformas que ya usás.
-              </p>
-            </div>
-            <div>
-              <div className="mb-10">
-                <p className="text-[5.5rem] font-bold text-white leading-none mb-2">$1,450</p>
-                <p className="text-sm text-white/30">Pago único · Sin costos recurrentes de desarrollo</p>
-              </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 mb-12">
-                {['Diagnóstico del proceso', 'Workflow completo configurado', 'Agente de IA si aplica', 'Integraciones con tus herramientas', 'Pruebas con datos reales', 'Documentación y handoff', 'Soporte post-entrega 30 días', 'Capacitación al equipo'].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-white/55">
-                    <Check size={13} className="text-[#F97316] shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div className="flex flex-wrap gap-3">
-                <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]">
-                  Contratar ahora <ArrowRight size={15} />
-                </a>
-                <Link href={AGENDAR} className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white/55 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>
-                  Primero quiero hablar
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </section>

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
 
@@ -22,7 +22,7 @@ const faqs = [
   { q: '¿La asesoría es puntual o continua?', a: 'Ambas. La modalidad puntual incluye diagnóstico + estrategia en un solo entregable. La modalidad retainer es mensual e incluye sesiones de seguimiento y ajuste continuo del plan.' },
   { q: '¿Implementan o solo asesoran?', a: 'Este servicio es de estrategia y asesoría. La ejecución es responsabilidad del cliente o de su equipo. Si necesitás ejecución, podemos complementarlo con otros servicios de Bralto como campañas, contenido o automatización.' },
   { q: '¿Para qué tipo de negocio es este servicio?', a: 'Ideal para negocios con 1-3 años de operación que quieren crecer con una estrategia clara, no solo tácticas sueltas. También para emprendedores que están lanzando y quieren evitar errores costosos desde el inicio.' },
-  { q: '¿Cuánto cuesta?', a: 'La sesión estratégica puntual (diagnóstico + plan) tiene un precio de $800. El retainer mensual con seguimiento continuo está en $650/mes. Hablamos para definir qué formato se adapta mejor a tu momento.' },
+  { q: '¿Cuánto cuesta?', a: 'Depende del formato — sesión puntual o retainer mensual. Hablamos para definir qué se adapta mejor a tu momento y objetivo, y te damos el detalle completo en la llamada.' },
 ]
 
 export default function AsesoriaPage() {
@@ -72,7 +72,7 @@ export default function AsesoriaPage() {
           </div>
 
           <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            {[['$800', 'Sesión puntual'], ['$650/mes', 'Retainer mensual'], ['90 días', 'Roadmap incluido']].map(([v, l]) => (
+            {[['Diagnóstico', 'Incluido'], ['90 días', 'Roadmap'], ['2×/mes', 'Seguimiento']].map(([v, l]) => (
               <div key={l}>
                 <p className="text-3xl font-bold text-white">{v}</p>
                 <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
@@ -127,73 +127,6 @@ export default function AsesoriaPage() {
                 <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          PRECIO
-      ═══════════════════════════════════════════ */}
-      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Inversión</p>
-              <h2 className="font-bold tracking-tight leading-[0.92] mb-8" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
-                Dos formatos.<br />
-                <span style={{ color: 'rgba(255,255,255,0.2)' }}>Un solo objetivo.</span>
-              </h2>
-              <p className="text-base text-white/40 leading-relaxed max-w-sm">
-                Elegís según tu momento: una sesión puntual para definir la estrategia, o acompañamiento mensual para ejecutarla con soporte continuo.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {[
-                {
-                  label: 'Sesión puntual',
-                  price: '$800',
-                  suffix: 'única vez',
-                  items: ['Diagnóstico completo', 'Plan de marketing 90 días', 'Roadmap de acciones', 'Presentación ejecutiva', 'Sesión de presentación incluida'],
-                },
-                {
-                  label: 'Retainer mensual',
-                  price: '$650',
-                  suffix: '/mes',
-                  highlight: true,
-                  items: ['Todo lo del plan puntual', '2 sesiones mensuales de 1hr', 'Ajuste continuo del plan', 'Canal directo de consultas', 'Revisión mensual de métricas'],
-                },
-              ].map(plan => (
-                <div
-                  key={plan.label}
-                  className="rounded-3xl p-8 flex flex-col"
-                  style={{
-                    background: plan.highlight ? 'rgba(249,115,22,0.05)' : 'rgba(255,255,255,0.03)',
-                    border: plan.highlight ? '1px solid rgba(249,115,22,0.25)' : '1px solid rgba(255,255,255,0.07)',
-                  }}
-                >
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/30 mb-3">{plan.label}</p>
-                  <div className="flex items-end gap-1 mb-6">
-                    <p className="text-5xl font-bold text-white leading-none">{plan.price}</p>
-                    <p className="text-white/30 mb-1 text-sm">{plan.suffix}</p>
-                  </div>
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {plan.items.map(item => (
-                      <li key={item} className="flex items-center gap-2.5 text-sm text-white/60">
-                        <Check size={12} className="text-[#F97316] shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={AGENDAR}
-                    className={`inline-flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-sm transition-all ${plan.highlight ? 'bg-[#F97316] hover:bg-[#ea6c0c] text-white' : 'text-white/55 hover:text-white'}`}
-                    style={plan.highlight ? undefined : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}
-                  >
-                    Empezar <ArrowRight size={14} />
-                  </Link>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
 
@@ -72,7 +72,7 @@ export default function SistemasInternosPage() {
           </div>
 
           <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            {[['Desde $1,997', 'Según alcance'], ['4–12 sem.', 'Tiempo de entrega'], ['100%', 'Código tuyo']].map(([v, l]) => (
+            {[['4–12 sem.', 'Tiempo de entrega'], ['100%', 'Código tuyo'], ['30 días', 'Soporte incluido']].map(([v, l]) => (
               <div key={l}>
                 <p className="text-3xl font-bold text-white">{v}</p>
                 <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
@@ -127,44 +127,6 @@ export default function SistemasInternosPage() {
                 <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          PRECIO
-      ═══════════════════════════════════════════ */}
-      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Inversión</p>
-              <h2 className="font-bold tracking-tight leading-[0.92] mb-8" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
-                Precio según<br />
-                <span style={{ color: 'rgba(255,255,255,0.2)' }}>tu alcance.</span>
-              </h2>
-              <p className="text-base text-white/40 leading-relaxed max-w-sm">
-                El precio final se define después del diagnóstico, cuando tenemos claro el número de módulos, integraciones y la complejidad funcional del sistema.
-              </p>
-            </div>
-            <div>
-              <div className="mb-10">
-                <p className="text-[4.5rem] font-bold text-white leading-none mb-2">Desde<br />$1,997</p>
-                <p className="text-sm text-white/30">Precio único · Sin licencias de desarrollo recurrentes</p>
-              </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 mb-12">
-                {['Análisis de requerimientos', 'Diseño de interfaz a medida', 'Base de datos y lógica', 'Multi-usuario y permisos', 'Integraciones con tus sistemas', 'Demos parciales durante el desarrollo', 'Documentación técnica y de usuario', 'Capacitación + 30 días de soporte'].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-white/55">
-                    <Check size={13} className="text-[#F97316] shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href={AGENDAR} className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]">
-                Agendar diagnóstico gratis
-                <ArrowRight size={15} />
-              </Link>
-            </div>
           </div>
         </div>
       </section>

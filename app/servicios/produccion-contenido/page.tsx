@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
 
@@ -23,25 +23,6 @@ const faqs = [
   { q: '¿El servicio incluye la gestión de redes?', a: 'Sí. Publicamos en tu nombre según el calendario aprobado. Vos solo revisás y aprobás las piezas antes de que salgan — el resto lo manejamos nosotros.' },
   { q: '¿Qué plataformas cubren?', a: 'Instagram, TikTok, Facebook y YouTube Shorts. La estrategia se adapta según dónde está tu audiencia y cuáles plataformas generan más resultado para tu tipo de negocio.' },
   { q: '¿Puedo cambiar de plan?', a: 'Sí, con 15 días de anticipación antes del siguiente ciclo mensual. Sin penalidades.' },
-]
-
-const plans = [
-  {
-    name: 'Plan Esencial',
-    price: '$650',
-    suffix: '/mes',
-    desc: 'Para negocios que quieren presencia consistente sin invertir tiempo en producción.',
-    items: ['6 videos cortos / Reels', '8 stories por semana', 'Estrategia editorial inicial', 'Gestión y publicación incluida', 'Reporte mensual de métricas'],
-    highlight: false,
-  },
-  {
-    name: 'Plan Completo',
-    price: '$997',
-    suffix: '/mes',
-    desc: 'Para negocios que quieren escalar su presencia y convertir redes en canal de ventas.',
-    items: ['12 videos cortos / Reels', 'Stories ilimitados', '1 video largo por mes', 'Calendario editorial mensual', 'Gestión y publicación incluida', 'Reporte detallado + reunión mensual'],
-    highlight: true,
-  },
 ]
 
 export default function ProduccionContenidoPage() {
@@ -91,7 +72,7 @@ export default function ProduccionContenidoPage() {
           </div>
 
           <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            {[['Desde $650', 'Por mes'], ['6–12', 'Videos mensuales'], ['100%', 'Gestionado por nosotros']].map(([v, l]) => (
+            {[['6–12', 'Videos al mes'], ['Stories', 'Incluidas'], ['100%', 'Gestionado']].map(([v, l]) => (
               <div key={l}>
                 <p className="text-3xl font-bold text-white">{v}</p>
                 <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
@@ -144,62 +125,6 @@ export default function ProduccionContenidoPage() {
                 <p className="text-xs font-mono text-white/20 mb-8 tracking-widest">// {s.n}</p>
                 <h3 className="text-2xl font-bold text-white mb-4">{s.t}</h3>
                 <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════
-          PLANES
-      ═══════════════════════════════════════════ */}
-      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="mb-20">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Planes</p>
-            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
-              Elegí el tuyo.<br />
-              <span style={{ color: 'rgba(255,255,255,0.2)' }}>Cambiá cuando quieras.</span>
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {plans.map(plan => (
-              <div
-                key={plan.name}
-                className="rounded-3xl p-10 flex flex-col"
-                style={{
-                  background: plan.highlight ? 'rgba(249,115,22,0.05)' : 'rgba(255,255,255,0.03)',
-                  border: plan.highlight ? '1px solid rgba(249,115,22,0.25)' : '1px solid rgba(255,255,255,0.07)',
-                }}
-              >
-                {plan.highlight && (
-                  <span className="inline-flex self-start mb-6 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F97316] text-white">
-                    Más popular
-                  </span>
-                )}
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/30 mb-3">{plan.name}</p>
-                <div className="flex items-end gap-1 mb-3">
-                  <p className="text-6xl font-bold text-white leading-none">{plan.price}</p>
-                  <p className="text-white/30 mb-1">{plan.suffix}</p>
-                </div>
-                <p className="text-sm text-white/40 leading-relaxed mb-8">{plan.desc}</p>
-                <ul className="space-y-3 mb-10 flex-1">
-                  {plan.items.map(item => (
-                    <li key={item} className="flex items-center gap-3 text-sm text-white/60">
-                      <Check size={13} className="text-[#F97316] shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={AGENDAR}
-                  className={`inline-flex items-center justify-center gap-2 py-4 rounded-full font-semibold text-sm transition-all ${plan.highlight ? 'bg-[#F97316] hover:bg-[#ea6c0c] text-white hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]' : 'text-white/55 hover:text-white'}`}
-                  style={plan.highlight ? undefined : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}
-                >
-                  Empezar con este plan
-                  <ArrowRight size={15} />
-                </Link>
               </div>
             ))}
           </div>
