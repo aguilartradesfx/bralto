@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, useMotionValue, animate, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, X, ArrowUpRight } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
 
 export interface ClientProject {
   id: string
@@ -16,222 +16,251 @@ export interface ClientProject {
   images: string[]
 }
 
+// ─── Modal ────────────────────────────────────────────────────────────────────
 function ClientModal({ client, onClose }: { client: ClientProject; onClose: () => void }) {
-  const [activeImg, setActiveImg] = useState(0)
+  const [idx, setIdx] = useState(0)
+
+  const prev = useCallback(() => setIdx(i => (i - 1 + client.images.length) % client.images.length), [client.images.length])
+  const next = useCallback(() => setIdx(i => (i + 1) % client.images.length), [client.images.length])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', handler) }
-  }, [onClose])
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') prev()
+      if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
+  }, [onClose, prev, next])
 
   return (
-    <AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-2xl" />
+
+      {/* Modal — 80% screen */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6"
-        onClick={onClose}
+        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 10 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+        onClick={e => e.stopPropagation()}
+        className="relative z-10 w-full max-w-[90vw] md:max-w-[80vw] h-[85vh] md:h-[80vh] flex flex-col rounded-3xl overflow-hidden"
+        style={{
+          background: 'rgba(12,12,12,0.85)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 40px 120px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06)',
+        }}
       >
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 60 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          onClick={(e) => e.stopPropagation()}
-          className="relative z-10 w-full md:max-w-5xl max-h-[95vh] md:max-h-[88vh] bg-[#0e0e0e] rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/[0.06] shrink-0">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-0.5">{client.industry}</p>
-              <h2 className="text-xl font-bold text-white">{client.name}</h2>
-            </div>
-            <button
-              onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+        {/* ── Image area — takes ~65% of modal height ── */}
+        <div className="relative flex-1 bg-[#050505] overflow-hidden">
+          {/* Image — object-contain so it's NEVER cropped */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="absolute inset-0 flex items-center justify-center p-4 md:p-8"
             >
-              <X size={16} className="text-white/60" />
-            </button>
-          </div>
-
-          {/* Body */}
-          <div className="overflow-y-auto flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-full">
-
-              {/* Left: gallery */}
-              <div className="relative bg-[#0a0a0a]">
-                <div className="relative aspect-video md:aspect-auto md:h-72 overflow-hidden">
-                  <Image
-                    src={client.images[activeImg]}
-                    alt={`${client.name} mockup ${activeImg + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  {/* Nav arrows */}
-                  {client.images.length > 1 && (
-                    <>
-                      <button
-                        onClick={() => setActiveImg(i => (i - 1 + client.images.length) % client.images.length)}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 backdrop-blur hover:bg-black/80 transition-colors"
-                      >
-                        <ChevronLeft size={15} className="text-white" />
-                      </button>
-                      <button
-                        onClick={() => setActiveImg(i => (i + 1) % client.images.length)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 backdrop-blur hover:bg-black/80 transition-colors"
-                      >
-                        <ChevronRight size={15} className="text-white" />
-                      </button>
-                    </>
-                  )}
-                  {/* Counter */}
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur text-[10px] font-semibold text-white/60">
-                    {activeImg + 1} / {client.images.length}
-                  </div>
-                </div>
-
-                {/* Thumbnails */}
-                <div className="flex gap-2 p-4 overflow-x-auto scrollbar-none">
-                  {client.images.map((src, i) => (
-                    <button
-                      key={src}
-                      onClick={() => setActiveImg(i)}
-                      className={`relative shrink-0 w-16 h-10 rounded-lg overflow-hidden transition-all ${
-                        activeImg === i ? 'ring-2 ring-[#F97316] opacity-100' : 'opacity-40 hover:opacity-70'
-                      }`}
-                    >
-                      <Image src={src} alt="" fill className="object-cover" sizes="64px" />
-                    </button>
-                  ))}
-                </div>
+              <div className="relative w-full h-full">
+                <Image
+                  src={client.images[idx]}
+                  alt={`${client.name} — imagen ${idx + 1}`}
+                  fill
+                  className="object-contain"
+                  sizes="80vw"
+                  priority={idx === 0}
+                />
               </div>
+            </motion.div>
+          </AnimatePresence>
 
-              {/* Right: story */}
-              <div className="px-6 md:px-8 py-6 flex flex-col gap-6">
-                <p className="text-sm text-white/50 leading-relaxed">{client.story}</p>
+          {/* Subtle vignette on sides */}
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#050505]/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#050505]/60 to-transparent pointer-events-none" />
 
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-3">Qué construimos</p>
-                  <ul className="space-y-2">
-                    {client.deliverables.map((d) => (
-                      <li key={d} className="flex items-start gap-2.5 text-sm text-white/60">
-                        <span className="mt-1.5 w-1 h-1 rounded-full bg-[#F97316] shrink-0" />
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          {/* Nav arrows */}
+          {client.images.length > 1 && (
+            <>
+              <button
+                onClick={prev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full transition-all"
+                style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}
+              >
+                <ChevronLeft size={18} className="text-white" />
+              </button>
+              <button
+                onClick={next}
+                className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full transition-all"
+                style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}
+              >
+                <ChevronRight size={18} className="text-white" />
+              </button>
+            </>
+          )}
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full transition-all"
+            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)' }}
+          >
+            <X size={15} className="text-white/70" />
+          </button>
+
+          {/* Counter dots */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+            {client.images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                className="rounded-full transition-all"
+                style={{
+                  width: i === idx ? 20 : 6,
+                  height: 6,
+                  background: i === idx ? '#F97316' : 'rgba(255,255,255,0.25)',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ── Text area — bottom glass panel ── */}
+        <div
+          className="shrink-0 overflow-y-auto"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+          }}
+        >
+          <div className="px-6 md:px-10 py-6 md:py-7">
+            <div className="flex items-start justify-between gap-6 mb-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F97316] mb-1">{client.industry}</p>
+                <h3 className="text-2xl md:text-3xl font-bold text-white">{client.name}</h3>
               </div>
             </div>
+
+            <p className="text-sm text-white/50 leading-relaxed mb-5 max-w-2xl">{client.story}</p>
+
+            <div className="flex flex-wrap gap-2">
+              {client.deliverables.map(d => (
+                <span
+                  key={d}
+                  className="text-xs text-white/50 px-3 py-1.5 rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  {d}
+                </span>
+              ))}
+            </div>
           </div>
-        </motion.div>
+        </div>
       </motion.div>
-    </AnimatePresence>
+    </motion.div>
   )
 }
 
+// ─── Cards Slider ──────────────────────────────────────────────────────────────
 export function ClientCardsSlider({ clients }: { clients: ClientProject[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dragWidth, setDragWidth] = useState(0)
-  const [activeClient, setActiveClient] = useState<ClientProject | null>(null)
+  const [active, setActive] = useState<ClientProject | null>(null)
   const x = useMotionValue(0)
 
   useEffect(() => {
     const calc = () => {
-      if (containerRef.current) {
-        setDragWidth(containerRef.current.scrollWidth - containerRef.current.offsetWidth)
-      }
+      if (containerRef.current)
+        setDragWidth(Math.max(0, containerRef.current.scrollWidth - containerRef.current.offsetWidth))
     }
     calc()
     window.addEventListener('resize', calc)
     return () => window.removeEventListener('resize', calc)
   }, [])
 
-  const scroll = (dir: 'left' | 'right') => {
+  const scroll = (dir: 'l' | 'r') => {
     const w = containerRef.current?.offsetWidth || 0
-    const next = Math.max(Math.min(x.get() + (dir === 'left' ? w * 0.7 : -w * 0.7), 0), -dragWidth)
-    animate(x, next, { type: 'spring', stiffness: 300, damping: 30 })
+    animate(x, Math.max(Math.min(x.get() + (dir === 'l' ? w * 0.6 : -w * 0.6), 0), -dragWidth), {
+      type: 'spring', stiffness: 300, damping: 30,
+    })
   }
 
   return (
     <>
-      {activeClient && <ClientModal client={activeClient} onClose={() => setActiveClient(null)} />}
+      <AnimatePresence>{active && <ClientModal client={active} onClose={() => setActive(null)} />}</AnimatePresence>
 
-      <div className="relative group/slider w-full">
-        {/* Arrow left */}
-        <button
-          onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 h-11 w-11 rounded-full bg-[#0e0e0e] border border-white/10 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 hover:border-[#F97316]/40 transition-all shadow-xl"
-        >
-          <ChevronLeft size={16} className="text-white/60" />
+      <div className="relative group/s">
+        {/* Arrows */}
+        <button onClick={() => scroll('l')} className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full flex items-center justify-center opacity-0 group-hover/s:opacity-100 transition-all shadow-2xl" style={{ background: 'rgba(20,20,20,0.9)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <ChevronLeft size={16} className="text-white/70" />
         </button>
-        {/* Arrow right */}
-        <button
-          onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 h-11 w-11 rounded-full bg-[#0e0e0e] border border-white/10 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 hover:border-[#F97316]/40 transition-all shadow-xl"
-        >
-          <ChevronRight size={16} className="text-white/60" />
+        <button onClick={() => scroll('r')} className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full flex items-center justify-center opacity-0 group-hover/s:opacity-100 transition-all shadow-2xl" style={{ background: 'rgba(20,20,20,0.9)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <ChevronRight size={16} className="text-white/70" />
         </button>
 
-        <motion.div
-          ref={containerRef}
-          className="cursor-grab active:cursor-grabbing overflow-hidden"
-          whileTap={{ cursor: 'grabbing' }}
-        >
+        <motion.div ref={containerRef} className="overflow-hidden cursor-grab active:cursor-grabbing">
           <motion.div
             drag="x"
             dragConstraints={{ right: 0, left: -dragWidth }}
-            dragElastic={0.08}
+            dragElastic={0.06}
             style={{ x }}
-            className="flex gap-5 py-2"
+            className="flex gap-6 py-3"
           >
-            {clients.map((client) => (
+            {clients.map(client => (
               <motion.div
                 key={client.id}
-                whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                onClick={() => setActiveClient(client)}
-                className="min-w-[300px] max-w-[300px] cursor-pointer group/card"
+                whileHover={{ y: -8, transition: { duration: 0.3, ease: 'easeOut' } }}
+                onClick={() => setActive(client)}
+                className="relative min-w-[320px] max-w-[320px] rounded-2xl overflow-hidden cursor-pointer group/card select-none"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                }}
               >
-                {/* Cover image — no box, just the image with overlay */}
-                <div className="relative h-[200px] rounded-2xl overflow-hidden mb-4">
+                {/* Image */}
+                <div className="relative h-[210px] overflow-hidden bg-[#0a0a0a]">
                   <Image
                     src={client.coverImage}
                     alt={client.name}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover/card:scale-105"
-                    sizes="300px"
+                    className="object-cover transition-transform duration-700 group-hover/card:scale-[1.04]"
+                    sizes="320px"
                     draggable={false}
                   />
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  {/* Gradient bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-                  {/* Industry tag */}
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur text-[10px] font-semibold text-white/70 uppercase tracking-wider">
-                      {client.industry}
-                    </span>
-                  </div>
-
-                  {/* View arrow */}
-                  <div className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/40 backdrop-blur flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity">
+                  {/* Open indicator */}
+                  <div
+                    className="absolute top-3 right-3 h-8 w-8 rounded-full flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-300"
+                    style={{ background: 'rgba(249,115,22,0.9)', backdropFilter: 'blur(8px)' }}
+                  >
                     <ArrowUpRight size={13} className="text-white" />
                   </div>
                 </div>
 
-                {/* Text — clean, no box */}
-                <div className="px-1">
-                  <h3 className="text-base font-bold text-white mb-1 group-hover/card:text-[#F97316] transition-colors">
-                    {client.name}
-                  </h3>
-                  <p className="text-sm text-white/40 leading-snug line-clamp-2">{client.tagline}</p>
+                {/* Info */}
+                <div className="px-5 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F97316]/70 mb-1.5">{client.industry}</p>
+                  <h3 className="text-base font-bold text-white mb-1.5 group-hover/card:text-white transition-colors">{client.name}</h3>
+                  <p className="text-xs text-white/35 leading-relaxed line-clamp-2">{client.tagline}</p>
                 </div>
+
+                {/* Bottom shimmer on hover */}
+                <div className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover/card:opacity-100 transition-opacity" style={{ background: 'linear-gradient(to right, transparent, rgba(249,115,22,0.4), transparent)' }} />
               </motion.div>
             ))}
           </motion.div>

@@ -6,33 +6,17 @@ import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
 import { ClientCardsSlider, type ClientProject } from '@/components/ui/client-cards-slider'
 
 const AGENDAR = '/agendar'
-const STRIPE = 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t'
+const STRIPE  = 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t'
 
-// ─── Hero images scattered in arc ─────────────────────────────────────────────
-// Selected best-looking mockups from all 4 clients
-const arcImages = [
-  { src: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d558216e2b1626ef81.png', w: 260, rot: -6, top: '4%',  right: '36%', z: 2 },
-  { src: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6a7dcb4cff00335af.png', w: 230, rot: 4,  top: '20%', right: '8%',  z: 4 },
-  { src: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b73d829c73b2948285.png', w: 210, rot: -3, top: '52%', right: '28%', z: 3 },
-  { src: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1c53d829c73b2948390.png', w: 190, rot: 8,  top: '62%', right: '2%',  z: 2 },
-]
-
-// ─── Client projects ───────────────────────────────────────────────────────────
+// ─── Client data ──────────────────────────────────────────────────────────────
 const clients: ClientProject[] = [
   {
     id: 'nanku',
     name: 'Nanku',
     industry: 'Moda & Lifestyle',
     tagline: 'Sitio completo, sistema de reservas, agente de IA y producción audiovisual mensual.',
-    story: 'Nanku fue un proyecto de principio a fin. Construimos su sitio web desde cero, montamos un sistema de reservas integrado con una plataforma all-in-one para manejar el negocio, y conectamos múltiples canales: WhatsApp, Instagram, Messenger y la página web. Todo acompañado de un agente de IA especializado que atiende clientes y los guía a través de sus reservas. El servicio también incluye producción audiovisual mensual. Una entrega total.',
-    deliverables: [
-      'Sitio web desde cero',
-      'Sistema de reservas integrado',
-      'Plataforma all-in-one de gestión',
-      'Conexión multicanal: WhatsApp, Instagram, Messenger, Web',
-      'Agente de IA especializado en el negocio',
-      'Producción audiovisual mensual',
-    ],
+    story: 'Nanku fue un proyecto de principio a fin. Construimos el sitio web desde cero, montamos un sistema de reservas integrado con una plataforma all-in-one, y conectamos WhatsApp, Instagram, Messenger y la web. Todo acompañado de un agente de IA que atiende a los clientes y los guía en sus reservas. El servicio también incluye producción audiovisual mensual.',
+    deliverables: ['Sitio web desde cero', 'Sistema de reservas', 'Plataforma all-in-one', 'Multicanal: WhatsApp · Instagram · Messenger · Web', 'Agente de IA especializado', 'Producción audiovisual mensual'],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6a7dcb4cff00335af.png',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6a7dcb4cff00335af.png',
@@ -48,16 +32,9 @@ const clients: ClientProject[] = [
     id: 'ecoviva',
     name: 'Ecoviva',
     industry: 'Inmobiliaria',
-    tagline: 'Página de alto impacto con agente de IA que asesora a los visitantes y agenda visitas.',
-    story: 'Ecoviva es una inmobiliaria que necesitaba una página que transmitiera su mensaje con fuerza, sin ser complicada. Construimos una presencia digital que comunica con claridad y credibilidad. Le añadimos un agente de IA conectado al sitio y a toda su base de conocimiento, que asesora a los visitantes sobre las propiedades, resuelve sus dudas y los guía para agendar una visita presencial — notificando al equipo interno para que tome la cita. El sitio también incluye descarga de archivos y selección de propiedades.',
-    deliverables: [
-      'Sitio web de alto impacto y diseño editorial',
-      'Agente de IA conectado a toda la base de conocimiento',
-      'Asesoría sobre propiedades en tiempo real',
-      'Sistema de agendamiento de visitas presenciales',
-      'Notificaciones al equipo interno',
-      'Descarga de archivos y catálogo de propiedades',
-    ],
+    tagline: 'Página de alto impacto con agente de IA que asesora visitantes y agenda visitas al instante.',
+    story: 'Ecoviva necesitaba una página que transmitiera su mensaje con fuerza sin ser complicada. Construimos una presencia digital de alto impacto con un agente de IA que conoce toda la base de propiedades, asesora a los visitantes, resuelve dudas y los guía para agendar visitas presenciales — notificando al equipo en tiempo real.',
+    deliverables: ['Sitio web de alto impacto', 'Agente de IA con base de conocimiento completa', 'Asesoría de propiedades en tiempo real', 'Agendamiento de visitas presenciales', 'Notificaciones al equipo interno', 'Catálogo descargable de propiedades'],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b73d829c73b2948285.png',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b73d829c73b2948285.png',
@@ -73,16 +50,9 @@ const clients: ClientProject[] = [
     id: 'travelcore',
     name: 'TravelCore',
     industry: 'Turismo & Viajes',
-    tagline: 'Portal 4 en 1 con motor de agenda, automatizaciones y rutas diferenciadas por cliente.',
-    story: 'TravelCore necesitaba un motor de agenda para tours pero no tenía nada. Construimos una página 4 en 1: un portal de entrada con tres rutas — corporativo, vacacional y reservas. Desde el lado corporativo, todo está automatizado para que cada persona llegue exactamente donde debe. En el lado vacacional podés reservar directo o agendar una llamada con alguien del equipo. Todo con automatizaciones e integraciones corriendo por debajo.',
-    deliverables: [
-      'Portal web 4 en 1 con rutas diferenciadas',
-      'Motor de agenda para tours y excursiones',
-      'Flujo corporativo completamente automatizado',
-      'Reserva directa + agendamiento de llamada en modo vacacional',
-      'Automatizaciones e integraciones de fondo',
-      'Registro y seguimiento de cada cliente',
-    ],
+    tagline: 'Portal 4 en 1 con motor de agenda, rutas corporativas y vacacionales totalmente automatizadas.',
+    story: 'TravelCore no tenía nada para gestionar sus tours. Construimos un portal 4 en 1: entrada con tres rutas — corporativo, vacacional y reservas. En corporativo, cada persona llega exactamente donde debe, completamente automatizado. En vacacional, podés reservar directo o agendar llamada con el equipo. Todo con automatizaciones e integraciones corriendo por debajo.',
+    deliverables: ['Portal web 4 en 1 con rutas diferenciadas', 'Motor de agenda para tours', 'Flujo corporativo 100% automatizado', 'Reserva directa + agendamiento de llamada', 'Automatizaciones e integraciones de fondo', 'Registro y seguimiento por cliente'],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d558216e2b1626ef81.png',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d558216e2b1626ef81.png',
@@ -98,16 +68,9 @@ const clients: ClientProject[] = [
     id: 'hidasol',
     name: 'Hidasol',
     industry: 'Energía Solar',
-    tagline: 'Agente de IA con +1000 productos, automatización de pedidos y flujo interno sin papel.',
-    story: 'Hidasol tenía un problema muy concreto: activaban anuncios y les llegaba una avalancha de mensajes que no podían atender. Se les iba la mitad sin respuesta, y todo lo manejaban a mano, en papel. La solución fue un agente de IA con acceso a una base de datos de más de mil productos y sus variantes. Después automatizamos todo el flujo interno: los clientes hacen su pedido por cualquier canal digital, la IA toma el pedido, registra los datos, manda una confirmación con número de orden y avisa al equipo también.',
-    deliverables: [
-      'Sitio web con catálogo y sistema de pedidos',
-      'Agente de IA con acceso a +1,000 productos',
-      'Flujo de atención multicanal automatizado',
-      'Registro automático de clientes y pedidos',
-      'Confirmación automática con número de orden',
-      'Notificaciones al equipo interno en tiempo real',
-    ],
+    tagline: 'Agente de IA con más de 1,000 productos, pedidos automatizados y cero papel.',
+    story: 'Hidasol activaba anuncios y les llegaba una avalancha de mensajes que no podían atender — la mitad sin respuesta, todo en papel. Construimos un agente de IA con acceso a más de 1,000 productos. Después automatizamos el flujo completo: el cliente hace su pedido por cualquier canal, la IA toma el pedido, registra los datos, envía confirmación con número de orden y avisa al equipo.',
+    deliverables: ['Sitio web con catálogo y sistema de pedidos', 'Agente de IA con acceso a +1,000 productos', 'Flujo de atención multicanal automatizado', 'Registro automático de clientes y pedidos', 'Confirmación automática con número de orden', 'Notificaciones al equipo en tiempo real'],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1c53d829c73b2948390.png',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1c53d829c73b2948390.png',
@@ -121,260 +84,201 @@ const clients: ClientProject[] = [
   },
 ]
 
-// ─── What's included ───────────────────────────────────────────────────────────
 const features = [
-  { num: '01', title: 'Diseño a medida',           desc: 'Interfaz construida sobre tu identidad de marca — no plantillas genéricas.' },
-  { num: '02', title: 'Hasta 8 páginas',            desc: 'Inicio, servicios, nosotros, contacto y más. Todo pensado para convertir.' },
-  { num: '03', title: 'SEO técnico incluido',       desc: 'Estructura semántica, velocidad, meta tags y sitemap para posicionar desde el día uno.' },
-  { num: '04', title: 'Formularios y captura',      desc: 'Leads directos a tu correo, WhatsApp o CRM sin pasos intermedios.' },
-  { num: '05', title: 'Integración con tus tools',  desc: 'Conectamos con las herramientas que ya usás sin fricción.' },
-  { num: '06', title: 'Entrega en tiempo récord',   desc: 'La mayoría de proyectos están listos en 5 a 10 días hábiles.' },
+  { n: '01', t: 'Diseño a medida', d: 'Interfaz construida sobre tu identidad de marca — nunca plantillas genéricas.' },
+  { n: '02', t: 'Hasta 8 páginas', d: 'Inicio, servicios, nosotros, contacto y más. Cada página pensada para convertir.' },
+  { n: '03', t: 'SEO técnico', d: 'Estructura semántica, velocidad, meta tags y sitemap para posicionar desde el día uno.' },
+  { n: '04', t: 'Captura de leads', d: 'Formularios directos a tu correo, WhatsApp o CRM sin fricciones.' },
+  { n: '05', t: 'Integraciones', d: 'Conectamos con las herramientas que ya usás sin procesos intermedios.' },
+  { n: '06', t: 'Entrega rápida', d: 'La mayoría de proyectos listos en 5–10 días hábiles desde el briefing.' },
 ]
 
-// ─── Process ──────────────────────────────────────────────────────────────────
 const steps = [
-  { num: '// 01', title: 'Llamada de diagnóstico', desc: 'Entendemos tu negocio, objetivos y lo que querés comunicar. Definimos estructura, páginas y tono.' },
-  { num: '// 02', title: 'Diseño y desarrollo',    desc: 'Construimos el sitio completo con diseño, contenido base, SEO e integraciones. Te mostramos avances.' },
-  { num: '// 03', title: 'Entrega y ajustes',      desc: 'Sitio funcionando. Aplicamos correcciones hasta que estés conforme al 100%.' },
+  { n: '01', t: 'Diagnóstico', d: 'Entendemos tu negocio, objetivos y mensaje. Definimos estructura y tono.' },
+  { n: '02', t: 'Construcción', d: 'Diseño + desarrollo + SEO + integraciones. Avances en tiempo real.' },
+  { n: '03', t: 'Entrega', d: 'Sitio funcionando. Correcciones incluidas hasta que estés conforme al 100%.' },
 ]
 
-// ─── FAQ ──────────────────────────────────────────────────────────────────────
 const faqs = [
-  { q: '¿El hosting y dominio están incluidos?', a: 'No. El sitio se entrega listo para deployar en la plataforma que prefieras. Te asesoramos en la elección.' },
-  { q: '¿Cuánto tiempo tarda la entrega?',       a: 'La mayoría de proyectos en 5 a 10 días hábiles según complejidad y velocidad de entrega de material.' },
-  { q: '¿Puedo pedir cambios después?',          a: 'El precio incluye una ronda de correcciones post-entrega. Cambios adicionales se cotizan por separado.' },
-  { q: '¿Ya tengo sitio, solo quiero mejorarlo?', a: 'Podemos hacer una auditoría y proponer mejoras. Lo cotizamos como rediseño parcial o completo.' },
+  { q: '¿Hosting y dominio incluidos?', a: 'No. El sitio se entrega listo para deployar donde prefieras. Te asesoramos sin costo adicional.' },
+  { q: '¿Cuánto tarda la entrega?', a: '5 a 10 días hábiles según complejidad y velocidad de entrega del material de tu parte.' },
+  { q: '¿Puedo pedir cambios después?', a: 'Una ronda de correcciones incluida post-entrega. Cambios adicionales se cotizan por separado.' },
+  { q: '¿Ya tengo sitio, solo quiero mejorarlo?', a: 'Hacemos una auditoría y te proponemos mejoras. Lo cotizamos según el alcance.' },
 ]
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function SitiosWebPage() {
   return (
-    <div className="min-h-screen bg-[#080808] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#080808] text-white antialiased">
 
-      {/* ══════════════════════════════════════════════════════
-          HERO — full viewport, big type, scattered images
-      ══════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex flex-col justify-end pb-20 overflow-hidden">
+      {/* ═══════════════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
 
-        {/* Gradient overlay — makes text readable */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-[#080808]/85 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-[#080808]/40 z-10 pointer-events-none" />
-
-        {/* Scattered arc images — right side */}
-        {arcImages.map((img, i) => (
-          <div
-            key={i}
-            className="absolute hidden md:block rounded-2xl overflow-hidden shadow-2xl shadow-black/60"
-            style={{
-              width: img.w,
-              top: img.top,
-              right: img.right,
-              zIndex: img.z,
-              transform: `rotate(${img.rot}deg)`,
-              aspectRatio: '16/10',
-            }}
-          >
-            <Image src={img.src} alt="" fill className="object-cover" sizes="300px" />
-          </div>
-        ))}
-
-        {/* Mobile single image */}
-        <div className="absolute inset-0 md:hidden z-0">
-          <Image
-            src={arcImages[0].src}
-            alt=""
-            fill
-            className="object-cover opacity-20"
-            sizes="100vw"
-            priority
-          />
+        {/* Background: blurred collage of client images */}
+        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-4 gap-0 opacity-30">
+          {[
+            clients[0].images[0], clients[1].images[0],
+            clients[2].images[0], clients[3].images[0],
+          ].map((src, i) => (
+            <div key={i} className="relative overflow-hidden">
+              <Image src={src} alt="" fill className="object-cover scale-110" sizes="25vw" />
+            </div>
+          ))}
         </div>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-[#080808]/80" />
+        {/* Orange radial glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_50%,rgba(249,115,22,0.12),transparent)]" />
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#080808] to-transparent" />
 
         {/* Content */}
-        <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-10">
-
-          {/* Back nav */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-32">
           <Link href="/precios" className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm mb-12">
-            <ArrowLeft size={14} />
+            <ArrowLeft size={13} />
             Precios
           </Link>
 
-          {/* Tag pill */}
-          <div className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full bg-white/6 border border-white/10">
+          {/* Tag */}
+          <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full" style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Presencia digital</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]">Sitios web profesionales</span>
           </div>
 
-          {/* BIG headline */}
-          <h1
-            className="font-bold leading-[0.95] tracking-tight mb-8"
-            style={{ fontSize: 'clamp(3.5rem, 10vw, 9rem)' }}
-          >
-            Sitios web<br />
-            <span className="text-white/20">profesionales.</span>
+          {/* Headline */}
+          <h1 className="font-bold leading-[0.92] tracking-tight mb-8 max-w-3xl" style={{ fontSize: 'clamp(3.8rem, 9vw, 8.5rem)' }}>
+            Tu mejor<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>vendedor,</span><br />
+            online 24/7.
           </h1>
 
-          {/* Description + stats row */}
-          <div className="flex flex-col md:flex-row md:items-end gap-10 mb-12">
-            <p className="text-lg text-white/45 leading-relaxed max-w-md">
-              Tu presencia online construida para convertir —
-              diseño a medida, SEO incluido y entrega en tiempo récord.
-            </p>
-            <div className="flex items-center gap-10 shrink-0">
-              {[['4+', 'Proyectos'], ['$997', 'Precio único'], ['≤10d', 'Entrega']].map(([v, l]) => (
-                <div key={l}>
-                  <p className="text-2xl font-bold text-white">{v}</p>
-                  <p className="text-xs text-white/30 mt-0.5 uppercase tracking-wider">{l}</p>
-                </div>
-              ))}
-            </div>
+          <p className="text-lg text-white/45 leading-relaxed max-w-md mb-12">
+            Diseño a medida, SEO incluido y entrega rápida —
+            para que tu presencia online trabaje mientras vos descansás.
+          </p>
+
+          {/* Stats row */}
+          <div className="flex items-center gap-8 mb-12 pb-12" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            {[['4+', 'Proyectos entregados'], ['$997', 'Precio único'], ['≤10 días', 'Tiempo de entrega']].map(([v, l]) => (
+              <div key={l}>
+                <p className="text-3xl font-bold text-white">{v}</p>
+                <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
+              </div>
+            ))}
           </div>
 
           {/* CTAs */}
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={AGENDAR}
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_32px_rgba(249,115,22,0.4)] active:scale-[0.98]"
-            >
+            <Link href={AGENDAR} className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.45)] active:scale-[0.98]">
               Agendar llamada gratis
-              <ArrowRight size={16} />
+              <ArrowRight size={15} />
             </Link>
-            <a
-              href={STRIPE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white/8 hover:bg-white/12 text-white/70 hover:text-white font-semibold transition-all"
-            >
+            <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all text-white/55 hover:text-white" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
               Contratar — $997
             </a>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          CLIENTES — card slider con modals
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+      {/* ═══════════════════════════════════════════════
+          PROYECTOS
+      ═══════════════════════════════════════════════ */}
+      <section className="py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-4">Proyectos realizados</p>
-              <h2 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Proyectos realizados</p>
+              <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
                 El trabajo<br />
-                <span className="text-white/25">habla solo.</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>habla solo.</span>
               </h2>
             </div>
-            <p className="text-sm text-white/35 max-w-xs leading-relaxed md:text-right">
-              Hacé clic en cualquier proyecto para ver la historia completa y la galería de imágenes.
+            <p className="text-sm text-white/35 max-w-xs leading-relaxed">
+              Hacé clic en cualquier proyecto para ver la historia completa, lo que construimos y la galería.
             </p>
           </div>
-
           <ClientCardsSlider clients={clients} />
-
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          QUÉ INCLUYE — editorial numbered list
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-28">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-4">Lo que obtenés</p>
-              <h2 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
-                Todo incluido.<br />
-                <span className="text-white/25">Sin sorpresas.</span>
-              </h2>
-            </div>
-            <p className="text-sm text-white/35 max-w-xs leading-relaxed md:text-right">
-              Un solo precio cubre diseño, desarrollo, SEO e integración. Nada queda afuera.
-            </p>
-          </div>
-
-          {/* Features — grid editorial */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.05]">
-            {features.map((f) => (
-              <div key={f.num} className="bg-[#080808] px-8 py-10 group hover:bg-[#0d0d0d] transition-colors">
-                <p className="text-xs font-mono text-[#F97316]/60 mb-6">{f.num}</p>
-                <h3 className="text-xl font-bold text-white mb-3">{f.title}</h3>
-                <p className="text-sm text-white/40 leading-relaxed">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          PROCESO — editorial with large step text
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-28 bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-
+      {/* ═══════════════════════════════════════════════
+          QUÉ INCLUYE
+      ═══════════════════════════════════════════════ */}
+      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="mb-20">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-4">El proceso</p>
-            <h2 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
-              Simple, rápido<br />
-              <span className="text-white/25">y sin vueltas.</span>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Lo que obtenés</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Todo incluido.<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>Sin sorpresas.</span>
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
-            {steps.map((step, i) => (
-              <div key={step.num} className="px-0 md:px-10 py-10 md:py-0 first:md:pl-0 last:md:pr-0">
-                <p className="text-xs font-mono text-white/20 mb-6">{step.num}</p>
-                <h3 className="text-2xl font-bold text-white mb-4">{step.title}</h3>
-                <p className="text-sm text-white/40 leading-relaxed">{step.desc}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.05)' }}>
+            {features.map(f => (
+              <div key={f.n} className="relative bg-[#080808] px-9 py-10 overflow-hidden group hover:bg-[#0d0d0d] transition-colors cursor-default">
+                <p className="text-xs font-mono text-[#F97316]/40 mb-7 tracking-widest">{f.n}</p>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-white transition-colors">{f.t}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{f.d}</p>
+                <div className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(to right, transparent, rgba(249,115,22,0.3), transparent)' }} />
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          PRECIO — clean, prominent
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-28">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
+      {/* ═══════════════════════════════════════════════
+          PROCESO
+      ═══════════════════════════════════════════════ */}
+      <section className="py-32" style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="mb-20">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">El proceso</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Simple y<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>sin vueltas.</span>
+            </h2>
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {steps.map((s, i) => (
+              <div key={s.n} className="pt-10 pb-4 md:pr-16" style={{ borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : undefined }}>
+                <p className="text-xs font-mono text-white/20 mb-8 tracking-widest">// {s.n}</p>
+                <h3 className="text-2xl font-bold text-white mb-4">{s.t}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Left */}
+      {/* ═══════════════════════════════════════════════
+          PRECIO
+      ═══════════════════════════════════════════════ */}
+      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-4">Inversión</p>
-              <h2 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-6">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Inversión</p>
+              <h2 className="font-bold tracking-tight leading-[0.92] mb-8" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
                 Un precio.<br />
-                <span className="text-white/25">Todo adentro.</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>Todo adentro.</span>
               </h2>
-              <p className="text-sm text-white/40 leading-relaxed max-w-sm">
-                Sin sorpresas al final. Sin módulos adicionales. Sin licencias escondidas.
-                Lo que ves es lo que pagás.
+              <p className="text-base text-white/40 leading-relaxed max-w-sm">
+                Sin módulos adicionales. Sin licencias escondidas.
+                Lo que ves es exactamente lo que pagás, una sola vez.
               </p>
             </div>
 
-            {/* Right */}
             <div>
-              <div className="mb-8">
-                <p className="text-7xl font-bold text-white mb-2">$997</p>
+              <div className="mb-10">
+                <p className="text-[5.5rem] font-bold text-white leading-none mb-2">$997</p>
                 <p className="text-sm text-white/30">Pago único · Sin costos recurrentes</p>
               </div>
 
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-10">
-                {[
-                  'Diseño a medida de tu marca',
-                  'Hasta 8 páginas completas',
-                  'SEO técnico y on-page',
-                  'Formularios de captura de leads',
-                  'Integración con tus herramientas',
-                  'Entrega en máximo 10 días hábiles',
-                  'Ronda de correcciones incluida',
-                  'Asesoría en hosting y dominio',
-                ].map((item) => (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 mb-12">
+                {['Diseño a medida de tu marca', 'Hasta 8 páginas completas', 'SEO técnico y on-page', 'Formularios de captura', 'Integración con tus herramientas', 'Entrega en máx. 10 días hábiles', 'Correcciones incluidas', 'Asesoría en hosting y dominio'].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm text-white/55">
                     <Check size={13} className="text-[#F97316] shrink-0" />
                     {item}
@@ -383,80 +287,65 @@ export default function SitiosWebPage() {
               </ul>
 
               <div className="flex flex-wrap gap-3">
-                <a
-                  href={STRIPE}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_32px_rgba(249,115,22,0.4)]"
-                >
+                <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]">
                   Contratar ahora
                   <ArrowRight size={15} />
                 </a>
-                <Link
-                  href={AGENDAR}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/6 hover:bg-white/10 text-white/60 hover:text-white font-semibold transition-all"
-                >
+                <Link href={AGENDAR} className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white/55 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>
                   Primero quiero hablar
                 </Link>
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════
           FAQ
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-28 bg-[#0a0a0a]">
-        <div className="max-w-3xl mx-auto px-6 md:px-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-4">FAQ</p>
-          <h2 className="text-5xl font-bold tracking-tight mb-16">Preguntas<br /><span className="text-white/25">frecuentes.</span></h2>
+      ═══════════════════════════════════════════════ */}
+      <section className="py-32" style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-3xl mx-auto px-6 md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">FAQ</p>
+          <h2 className="font-bold tracking-tight leading-[0.92] mb-16" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)' }}>
+            Preguntas<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>frecuentes.</span>
+          </h2>
 
-          <div className="divide-y divide-white/[0.06]">
-            {faqs.map((faq) => (
-              <details key={faq.q} className="group py-6">
-                <summary className="flex items-center justify-between gap-6 cursor-pointer list-none text-lg font-semibold text-white/70 hover:text-white transition-colors">
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {faqs.map(faq => (
+              <details key={faq.q} className="group" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <summary className="flex items-center justify-between gap-6 py-7 cursor-pointer list-none text-lg font-semibold text-white/65 hover:text-white transition-colors">
                   {faq.q}
-                  <ChevronDown size={18} className="shrink-0 text-white/20 group-open:rotate-180 transition-transform duration-200" />
+                  <ChevronDown size={18} className="shrink-0 text-white/20 group-open:rotate-180 transition-transform duration-300" />
                 </summary>
-                <p className="mt-4 text-sm text-white/40 leading-relaxed max-w-xl">{faq.a}</p>
+                <p className="pb-7 text-sm text-white/40 leading-relaxed max-w-xl">{faq.a}</p>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════
           CTA FINAL
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_50%,rgba(249,115,22,0.07),transparent)] pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-6">¿Listo?</p>
-          <h2
-            className="font-bold tracking-tight leading-[0.95] text-white mb-8"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}
-          >
-            Hablemos de<br />tu proyecto.
+      ═══════════════════════════════════════════════ */}
+      <section className="relative py-40 overflow-hidden" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(249,115,22,0.08),transparent)] pointer-events-none" />
+        <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-12 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-6">¿Listo para empezar?</p>
+          <h2 className="font-bold tracking-tight leading-[0.92] text-white mb-8" style={{ fontSize: 'clamp(2.8rem, 7vw, 6rem)' }}>
+            Hablemos<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>de tu proyecto.</span>
           </h2>
-          <p className="text-base text-white/40 leading-relaxed mb-12 max-w-md mx-auto">
-            30 minutos para entender lo que necesitás y darte una propuesta concreta.
-            Sin compromiso. Sin presión.
+          <p className="text-base text-white/40 leading-relaxed mb-14 max-w-md mx-auto">
+            30 minutos, sin compromiso, sin presión.
+            Entendemos lo que necesitás y te damos una propuesta concreta.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href={AGENDAR}
-              className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_32px_rgba(249,115,22,0.4)]"
-            >
+            <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_48px_rgba(249,115,22,0.45)]">
               Agendar llamada gratis
               <ArrowRight size={16} />
             </Link>
-            <Link
-              href="/precios"
-              className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-white/6 hover:bg-white/10 text-white/55 hover:text-white font-semibold transition-all"
-            >
+            <Link href="/precios" className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full font-semibold text-white/45 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}>
               Ver todos los servicios
             </Link>
           </div>
