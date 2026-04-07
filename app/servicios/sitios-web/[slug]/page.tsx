@@ -155,29 +155,63 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
       )}
 
       {/* ══════════════════════════════════════════
-          IMÁGENES ADICIONALES — image + text alternating
+          IMÁGENES ADICIONALES
+          even index → centrada full-width + texto abajo
+          odd index  → split 50/50 como secciones 1 y 2
       ══════════════════════════════════════════ */}
       {extraImages.length > 0 && (
         <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {extraImages.map((img, i) => {
-            const isEven = i % 2 === 0
             const deliverable = client.deliverables[i % client.deliverables.length]
+            const borderBottom = i < extraImages.length - 1
+              ? '1px solid rgba(255,255,255,0.06)'
+              : undefined
+
+            if (i % 2 === 0) {
+              /* ── Centrada: imagen ancha + texto debajo ── */
+              return (
+                <div key={img} style={{ borderBottom, background: '#080808' }}>
+                  {/* Imagen full-width */}
+                  <div className="relative w-full" style={{ minHeight: '62vh', background: '#050505' }}>
+                    <Image
+                      src={img}
+                      alt={`${client.name} — vista ${i + 3}`}
+                      fill
+                      className="object-contain p-6 lg:p-10"
+                      sizes="100vw"
+                    />
+                  </div>
+                  {/* Texto centrado abajo */}
+                  <div
+                    className="max-w-3xl mx-auto px-6 md:px-12 py-12 text-center"
+                    style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                  >
+                    <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-5">
+                      {String(i + 3).padStart(2, '0')}
+                    </p>
+                    <p className="text-xl md:text-2xl font-semibold text-white/65 leading-snug">
+                      {deliverable}
+                    </p>
+                  </div>
+                </div>
+              )
+            }
+
+            /* ── Split 50/50: mismo estilo que secciones 1 y 2 ── */
+            const imageLeft = Math.floor(i / 2) % 2 === 0
             return (
               <div
                 key={img}
-                className="grid grid-cols-1 lg:grid-cols-[3fr_2fr]"
-                style={{
-                  borderBottom: i < extraImages.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
-                  background: i % 2 === 1 ? '#0a0a0a' : '#080808',
-                }}
+                className="grid grid-cols-1 lg:grid-cols-2"
+                style={{ borderBottom, background: '#0a0a0a' }}
               >
-                {/* Image */}
+                {/* Imagen */}
                 <div
-                  className={`relative overflow-hidden ${isEven ? 'order-1 lg:order-1' : 'order-1 lg:order-2'}`}
+                  className={`relative overflow-hidden ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
                   style={{
-                    minHeight: '580px',
+                    minHeight: '500px',
                     background: '#050505',
-                    ...(isEven
+                    ...(imageLeft
                       ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
                       : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
                   }}
@@ -187,13 +221,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
                     alt={`${client.name} — vista ${i + 3}`}
                     fill
                     className="object-contain p-4 lg:p-6"
-                    sizes="(max-width: 1024px) 100vw, 60vw"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
-
-                {/* Text */}
+                {/* Texto */}
                 <div
-                  className={`flex flex-col justify-center px-8 md:px-12 py-16 lg:py-20 ${isEven ? 'order-2 lg:order-2' : 'order-2 lg:order-1'}`}
+                  className={`flex flex-col justify-center px-8 md:px-12 py-20 ${imageLeft ? 'order-2' : 'order-2 lg:order-1'}`}
                 >
                   <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-6">
                     {String(i + 3).padStart(2, '0')}
@@ -204,10 +237,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
                   >
                     {deliverable}
                   </p>
-                  <div
-                    className="w-10 h-px"
-                    style={{ background: 'rgba(249,115,22,0.4)' }}
-                  />
+                  <div className="w-10 h-px" style={{ background: 'rgba(249,115,22,0.4)' }} />
                 </div>
               </div>
             )
