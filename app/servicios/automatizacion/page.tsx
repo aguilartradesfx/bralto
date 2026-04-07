@@ -1,146 +1,232 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, Cpu, GitBranch, Bot, Plug, FileText, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
+const STRIPE   = 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t'
 
-const includes = [
-  { icon: GitBranch, title: 'Workflow completo configurado', desc: 'Mapeamos y automatizamos el proceso end-to-end — desde el trigger hasta el resultado final.' },
-  { icon: Bot, title: 'Agente de IA a medida', desc: '// TODO: detallar qué tipo de agente se configura — WhatsApp, email, interno, etc.' },
-  { icon: Plug, title: 'Integraciones con tus herramientas', desc: '// TODO: listar las integraciones típicas — CRM, WhatsApp, email, Google Workspace, etc.' },
-  { icon: FileText, title: 'Documentación y handoff', desc: 'Entregamos documentación clara para que tu equipo entienda y pueda mantener lo que construimos.' },
-  { icon: Cpu, title: 'Soporte post-entrega 30 días', desc: 'Un mes de soporte para resolver dudas, ajustes menores y asegurarnos de que todo funcione.' },
+const features = [
+  { n: '01', t: 'Workflow end-to-end', d: 'Mapeamos y automatizamos el proceso completo — desde el trigger hasta el resultado final, sin pasos manuales.' },
+  { n: '02', t: 'Agente de IA a medida', d: 'Configuramos un agente que atiende por WhatsApp, email o internamente según la necesidad del negocio.' },
+  { n: '03', t: 'Integraciones con tus herramientas', d: 'Conectamos con CRM, WhatsApp, email, Google Workspace, calendarios, ERP y cualquier API con la que ya trabajés.' },
+  { n: '04', t: 'Pruebas y validación', d: 'Antes de entregar, corremos el flujo con casos reales para asegurarnos de que funciona exactamente como diseñamos.' },
+  { n: '05', t: 'Documentación y handoff', d: 'Entregamos documentación clara para que tu equipo entienda y pueda mantener lo que construimos sin depender de nosotros.' },
+  { n: '06', t: 'Soporte post-entrega 30 días', d: 'Un mes de soporte incluido para resolver dudas, ajustes menores y garantizar que todo opere en producción.' },
 ]
 
 const steps = [
-  { num: '01', title: 'Diagnóstico del proceso', desc: '// TODO: describir cómo se hace el levantamiento del proceso a automatizar — entrevistas, mapeo, herramientas existentes.' },
-  { num: '02', title: 'Construcción e integración', desc: '// TODO: describir el proceso de desarrollo — plataformas usadas (Make, n8n, custom), timeline típico.' },
-  { num: '03', title: 'Pruebas y entrega', desc: '// TODO: detallar el proceso de QA, validación con el cliente y entrega formal con documentación.' },
+  { n: '01', t: 'Diagnóstico del proceso', d: 'Entrevistamos a tu equipo, mapeamos el flujo actual y detectamos los cuellos de botella. Definimos el trigger, la lógica y el resultado esperado.' },
+  { n: '02', t: 'Construcción e integración', d: 'Desarrollamos el flujo en Make, n8n o código propio según el caso. Integramos con tus herramientas existentes y configuramos los agentes de IA.' },
+  { n: '03', t: 'Pruebas, entrega y documentación', d: 'Validamos con datos reales, ajustamos hasta que todo funcione, y entregamos con documentación completa y sesión de capacitación.' },
 ]
 
 const faqs = [
-  { q: '¿Qué procesos se pueden automatizar?', a: '// TODO: dar ejemplos concretos — seguimiento de leads, onboarding de clientes, notificaciones, reportes, etc.' },
-  { q: '¿Qué herramientas usan para automatizar?', a: '// TODO: mencionar las plataformas y tecnologías que usa Bralto — Make, n8n, código propio, APIs, etc.' },
-  { q: '¿Necesito tener conocimiento técnico para usarlo después?', a: '// TODO: aclarar el nivel de mantenimiento que requiere el cliente y qué cubre el soporte de 30 días.' },
-  { q: '¿El precio incluye las licencias de las plataformas?', a: '// TODO: definir si las licencias de terceros (Make, etc.) están incluidas o son costo aparte del cliente.' },
+  { q: '¿Qué procesos se pueden automatizar?', a: 'Seguimiento de leads, onboarding de clientes, notificaciones internas, recordatorios automáticos, reportes, respuestas a consultas frecuentes, reservas y agendamientos, entre muchos otros.' },
+  { q: '¿Qué herramientas usan para automatizar?', a: 'Trabajamos con Make (ex-Integromat), n8n y código propio según la complejidad del caso. También usamos las APIs de OpenAI, WhatsApp Business y las herramientas específicas de cada cliente.' },
+  { q: '¿Necesito conocimiento técnico para operar la automatización después?', a: 'No. El objetivo es que funcione sola. El soporte de 30 días incluido está para resolver cualquier duda y asegurarnos de que tu equipo se sienta cómodo con lo que construimos.' },
+  { q: '¿Las licencias de plataformas como Make están incluidas?', a: 'No. Las licencias de terceros (Make, n8n cloud, APIs de IA) son un costo aparte que el cliente gestiona directamente. Te asesoramos para elegir el plan más eficiente según el volumen de tu operación.' },
 ]
 
 export default function AutomatizacionPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-10 md:py-16">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_35%_at_50%_0%,rgba(249,115,22,0.05),transparent)] pointer-events-none" />
+    <div className="min-h-screen bg-[#080808] text-white antialiased">
 
-      <div className="relative z-10 max-w-3xl mx-auto">
+      {/* ═══════════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center">
 
-        <Link href="/precios" className="inline-flex items-center gap-2 text-white/30 hover:text-white/55 transition-colors text-sm mb-10">
-          <ArrowLeft size={14} />
-          Volver a precios
+        {/* Atmosphere */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_40%,rgba(249,115,22,0.07),transparent)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080808]" />
+
+        <Link href="/precios" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10">
+          <ArrowLeft size={13} />
+          Precios
         </Link>
 
-        {/* Hero */}
-        <div className="mb-14">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]">Automatización e IA</p>
+        <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 py-32 flex flex-col items-center">
+          <div
+            className="inline-flex items-center gap-2.5 mb-10 px-4 py-2 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+          >
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F97316] text-white">
+              Servicio
+            </span>
+            <span className="text-sm text-white/75">Automatización e IA</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Automatización de procesos</h1>
-          {/* TODO: personalizar subtitle con el problema concreto que resuelve */}
-          <p className="text-base text-white/45 max-w-xl leading-relaxed mb-8">
-            Eliminamos el trabajo manual repetitivo para que tu equipo se enfoque en lo que importa.
+
+          <h1 className="font-bold tracking-tight leading-[0.92] text-white mb-7" style={{ fontSize: 'clamp(3.2rem, 8vw, 7.5rem)' }}>
+            Tu operación,
+            <br />
+            <span style={{ color: 'rgba(255,255,255,0.3)' }}>sin intervención.</span>
+          </h1>
+
+          <p className="text-lg text-white/55 leading-relaxed max-w-xl mb-12">
+            Automatizamos los procesos repetitivos de tu negocio para que tu equipo
+            se enfoque en lo que realmente importa — y el trabajo siga fluyendo solo.
           </p>
-          <Link href={AGENDAR} className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#F97316] hover:bg-[#ea6c0c] text-white text-sm font-semibold transition-all hover:shadow-[0_0_24px_rgba(249,115,22,0.3)] active:scale-[0.99]">
-            Agendar llamada
-            <ArrowRight size={15} />
-          </Link>
-        </div>
 
-        <Section label="Qué incluye">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {includes.map((item) => (
-              <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.025] p-4">
-                <div className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F97316]/10 border border-[#F97316]/20">
-                  <item.icon size={14} className="text-[#F97316]" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white mb-0.5">{item.title}</p>
-                  <p className="text-xs text-white/40 leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        <Section label="Cómo funciona">
-          <div className="space-y-3">
-            {steps.map((step) => (
-              <div key={step.num} className="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.025] p-5">
-                <div className="shrink-0 text-2xl font-bold text-[#F97316]/20 w-8 tabular-nums">{step.num}</div>
-                <div>
-                  <p className="text-sm font-semibold text-white mb-1">{step.title}</p>
-                  <p className="text-xs text-white/40 leading-relaxed">{step.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        <Section label="Precio">
-          <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-6 flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <p className="text-3xl font-bold text-white">$1,450</p>
-              <p className="text-xs text-white/30 mt-1">pago único</p>
-              <p className="text-xs text-white/25 mt-0.5 italic">Todo incluido. Sin costos ocultos.</p>
-            </div>
-            <Link href={AGENDAR} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F97316] hover:bg-[#ea6c0c] text-white text-sm font-semibold transition-all hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]">
-              Agendar llamada
-              <ArrowRight size={14} />
+          <div className="flex flex-col sm:flex-row gap-3 mb-20">
+            <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] active:scale-[0.98]">
+              Agendar llamada gratis
+              <ArrowRight size={15} />
             </Link>
+            <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm text-white/65 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}>
+              Contratar — $1,450
+            </a>
           </div>
-        </Section>
 
-        <Section label="Preguntas frecuentes">
-          <div className="space-y-2">
-            {faqs.map((faq) => (
-              <details key={faq.q} className="group rounded-2xl border border-white/8 bg-white/[0.025] overflow-hidden">
-                <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none text-sm font-medium text-white/70 hover:text-white transition-colors">
+          <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            {[['$1,450', 'Precio único'], ['2–3 sem.', 'Tiempo de entrega'], ['30 días', 'Soporte incluido']].map(([v, l]) => (
+              <div key={l}>
+                <p className="text-3xl font-bold text-white">{v}</p>
+                <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          QUÉ INCLUYE
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="mb-20">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Lo que obtenés</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Todo incluido.<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>Sin sorpresas.</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.05)' }}>
+            {features.map(f => (
+              <div key={f.n} className="relative bg-[#080808] px-9 py-10 group hover:bg-[#0d0d0d] transition-colors cursor-default">
+                <p className="text-xs font-mono text-[#F97316]/40 mb-7 tracking-widest">{f.n}</p>
+                <h3 className="text-xl font-bold text-white mb-3">{f.t}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{f.d}</p>
+                <div className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(to right, transparent, rgba(249,115,22,0.3), transparent)' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          PROCESO
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="mb-20">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">El proceso</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Simple y<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>sin vueltas.</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {steps.map((s, i) => (
+              <div key={s.n} className="pt-10 pb-4 md:pr-16" style={{ borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : undefined }}>
+                <p className="text-xs font-mono text-white/20 mb-8 tracking-widest">// {s.n}</p>
+                <h3 className="text-2xl font-bold text-white mb-4">{s.t}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          PRECIO
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Inversión</p>
+              <h2 className="font-bold tracking-tight leading-[0.92] mb-8" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+                Un precio.<br />
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>Todo adentro.</span>
+              </h2>
+              <p className="text-base text-white/40 leading-relaxed max-w-sm">
+                Automatización completa, de diagnóstico a entrega. Sin costos recurrentes por el desarrollo — solo las licencias de las plataformas que ya usás.
+              </p>
+            </div>
+            <div>
+              <div className="mb-10">
+                <p className="text-[5.5rem] font-bold text-white leading-none mb-2">$1,450</p>
+                <p className="text-sm text-white/30">Pago único · Sin costos recurrentes de desarrollo</p>
+              </div>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 mb-12">
+                {['Diagnóstico del proceso', 'Workflow completo configurado', 'Agente de IA si aplica', 'Integraciones con tus herramientas', 'Pruebas con datos reales', 'Documentación y handoff', 'Soporte post-entrega 30 días', 'Capacitación al equipo'].map(item => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-white/55">
+                    <Check size={13} className="text-[#F97316] shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap gap-3">
+                <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]">
+                  Contratar ahora <ArrowRight size={15} />
+                </a>
+                <Link href={AGENDAR} className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white/55 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>
+                  Primero quiero hablar
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          FAQ
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-3xl mx-auto px-6 md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">FAQ</p>
+          <h2 className="font-bold tracking-tight leading-[0.92] mb-16" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)' }}>
+            Preguntas<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>frecuentes.</span>
+          </h2>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {faqs.map(faq => (
+              <details key={faq.q} className="group" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <summary className="flex items-center justify-between gap-6 py-7 cursor-pointer list-none text-lg font-semibold text-white/65 hover:text-white transition-colors">
                   {faq.q}
-                  <ChevronDown size={14} className="shrink-0 text-white/25 group-open:rotate-180 transition-transform" />
+                  <ChevronDown size={18} className="shrink-0 text-white/20 group-open:rotate-180 transition-transform duration-300" />
                 </summary>
-                <p className="px-5 pb-4 text-xs text-white/40 leading-relaxed">{faq.a}</p>
+                <p className="pb-7 text-sm text-white/40 leading-relaxed max-w-xl">{faq.a}</p>
               </details>
             ))}
           </div>
-        </Section>
+        </div>
+      </section>
 
-        <FinalCta />
-      </div>
-    </div>
-  )
-}
+      {/* ═══════════════════════════════════════════
+          CTA FINAL
+      ═══════════════════════════════════════════ */}
+      <section className="relative py-40 overflow-hidden" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(249,115,22,0.08),transparent)] pointer-events-none" />
+        <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-12 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-6">¿Listo para empezar?</p>
+          <h2 className="font-bold tracking-tight leading-[0.92] text-white mb-8" style={{ fontSize: 'clamp(2.8rem, 7vw, 6rem)' }}>
+            Hablemos de<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>tu proceso.</span>
+          </h2>
+          <p className="text-base text-white/40 leading-relaxed mb-14 max-w-md mx-auto">
+            30 minutos para mapear qué se puede automatizar hoy. Sin compromiso, sin tecnicismos.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_48px_rgba(249,115,22,0.45)]">
+              Agendar llamada gratis <ArrowRight size={16} />
+            </Link>
+            <Link href="/precios" className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full font-semibold text-white/45 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}>
+              Ver todos los servicios
+            </Link>
+          </div>
+        </div>
+      </section>
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="mb-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/25 mb-4">{label}</p>
-      {children}
-    </div>
-  )
-}
-
-function FinalCta() {
-  return (
-    <div className="rounded-2xl border border-[#F97316]/20 bg-[#F97316]/[0.04] p-8 text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-3">¿Listo para empezar?</p>
-      <h2 className="text-2xl font-bold text-white mb-3">Hablemos de tu proceso</h2>
-      <p className="text-sm text-white/40 mb-7 max-w-sm mx-auto">30 minutos para mapear tu proceso y ver qué se puede automatizar hoy. Sin compromiso.</p>
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-[#F97316] hover:bg-[#ea6c0c] text-white text-sm font-semibold transition-all hover:shadow-[0_0_24px_rgba(249,115,22,0.3)]">
-          Agendar llamada gratis
-          <ArrowRight size={15} />
-        </Link>
-        <Link href="/precios" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl border border-white/10 hover:border-white/20 text-white/55 hover:text-white text-sm font-semibold transition-all">
-          Ver todos los servicios
-        </Link>
-      </div>
     </div>
   )
 }

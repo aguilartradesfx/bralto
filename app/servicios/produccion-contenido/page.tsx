@@ -1,26 +1,28 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, Video, Calendar, BarChart3, Layers, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
 
 const AGENDAR = '/agendar'
 
-const includes = [
-  { icon: Video, title: 'Videos cortos para Reels e Instagram', desc: 'Producción, edición y publicación de contenido vertical optimizado para cada plataforma.' },
-  { icon: Layers, title: 'Stories y contenido de apoyo', desc: 'Diseño y producción de stories para mantener presencia diaria en tu cuenta.' },
-  { icon: BarChart3, title: 'Estrategia editorial', desc: '// TODO: describir en detalle la estrategia que se entrega — calendario, objetivos, métricas.' },
-  { icon: Calendar, title: 'Calendario de contenido', desc: '// TODO: detallar formato y periodicidad del calendario editorial (Plan Completo).' },
+const features = [
+  { n: '01', t: 'Videos cortos y Reels', d: 'Producción y edición de contenido vertical optimizado para Instagram, TikTok y Facebook. Entregamos listos para publicar.' },
+  { n: '02', t: 'Stories y contenido diario', d: 'Diseño y producción de stories que mantienen presencia activa y llevan tráfico a tu perfil y sitio web.' },
+  { n: '03', t: 'Estrategia editorial', d: 'Definimos pilares de contenido, tono de voz y objetivos de marca. Todo lo que publicamos tiene un propósito claro.' },
+  { n: '04', t: 'Calendario de contenido', d: 'Planificación mensual anticipada para que siempre sepás qué se publica, cuándo y por qué. Sin improvisación.' },
+  { n: '05', t: 'Gestión y publicación', d: 'Publicamos en tu nombre según el calendario acordado. Vos solo aprobás las piezas antes de que salgan.' },
+  { n: '06', t: 'Reporte mensual de resultados', d: 'Revisión de métricas clave: alcance, engagement, crecimiento de cuenta y ajustes para el siguiente mes.' },
 ]
 
 const steps = [
-  { num: '01', title: 'Sesión de estrategia', desc: '// TODO: describir cómo se hace el onboarding — briefing, tono de voz, objetivos de marca.' },
-  { num: '02', title: 'Producción mensual', desc: '// TODO: detallar el proceso de grabación, edición y entrega de piezas cada mes.' },
-  { num: '03', title: 'Revisión y publicación', desc: '// TODO: describir el flujo de aprobación y si Bralto gestiona la publicación o solo entrega.' },
+  { n: '01', t: 'Sesión de estrategia', d: 'Hacemos un briefing de marca, analizamos tu cuenta y la competencia, y definimos los pilares de contenido, tono de voz y objetivos del primer mes.' },
+  { n: '02', t: 'Producción mensual', d: 'Grabamos y/o editamos las piezas del mes según el plan. Cada pieza pasa por revisión antes de ser publicada.' },
+  { n: '03', t: 'Publicación y optimización', d: 'Publicamos según el calendario, monitoreamos el rendimiento y ajustamos la estrategia del mes siguiente con base en los datos.' },
 ]
 
 const faqs = [
-  { q: '¿Ustedes graban el contenido o solo editan?', a: '// TODO: definir si el servicio incluye producción de campo (grabación) o solo edición con material del cliente.' },
-  { q: '¿El servicio incluye la gestión de redes?', a: '// TODO: aclarar si se publica en nombre del cliente o solo se entregan los archivos.' },
-  { q: '¿Puedo cambiar de plan mensualmente?', a: '// TODO: definir política de cambio de plan y penalidades si las hay.' },
-  { q: '¿Qué plataformas se cubren?', a: '// TODO: especificar Instagram, TikTok, YouTube Shorts u otras según lo que ofrece el servicio.' },
+  { q: '¿Ustedes graban o solo editan?', a: 'Depende del plan y la ubicación. En la mayoría de los casos trabajamos con material que el cliente graba o nos envía. Para clientes en zona de cobertura, la producción en sitio se puede incluir o cotizar aparte.' },
+  { q: '¿El servicio incluye la gestión de redes?', a: 'Sí. Publicamos en tu nombre según el calendario aprobado. Vos solo revisás y aprobás las piezas antes de que salgan — el resto lo manejamos nosotros.' },
+  { q: '¿Qué plataformas cubren?', a: 'Instagram, TikTok, Facebook y YouTube Shorts. La estrategia se adapta según dónde está tu audiencia y cuáles plataformas generan más resultado para tu tipo de negocio.' },
+  { q: '¿Puedo cambiar de plan?', a: 'Sí, con 15 días de anticipación antes del siguiente ciclo mensual. Sin penalidades.' },
 ]
 
 const plans = [
@@ -28,148 +30,231 @@ const plans = [
     name: 'Plan Esencial',
     price: '$650',
     suffix: '/mes',
-    items: ['6 videos cortos', '8 stories', 'Estrategia de contenido'],
+    desc: 'Para negocios que quieren presencia consistente sin invertir tiempo en producción.',
+    items: ['6 videos cortos / Reels', '8 stories por semana', 'Estrategia editorial inicial', 'Gestión y publicación incluida', 'Reporte mensual de métricas'],
+    highlight: false,
   },
   {
     name: 'Plan Completo',
     price: '$997',
     suffix: '/mes',
-    items: ['12 videos cortos', 'Stories ilimitados', '1 video largo', 'Calendario editorial'],
+    desc: 'Para negocios que quieren escalar su presencia y convertir redes en canal de ventas.',
+    items: ['12 videos cortos / Reels', 'Stories ilimitados', '1 video largo por mes', 'Calendario editorial mensual', 'Gestión y publicación incluida', 'Reporte detallado + reunión mensual'],
     highlight: true,
   },
 ]
 
 export default function ProduccionContenidoPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-10 md:py-16">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_35%_at_50%_0%,rgba(249,115,22,0.05),transparent)] pointer-events-none" />
+    <div className="min-h-screen bg-[#080808] text-white antialiased">
 
-      <div className="relative z-10 max-w-3xl mx-auto">
+      {/* ═══════════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center">
 
-        <Link href="/precios" className="inline-flex items-center gap-2 text-white/30 hover:text-white/55 transition-colors text-sm mb-10">
-          <ArrowLeft size={14} />
-          Volver a precios
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_40%,rgba(249,115,22,0.07),transparent)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080808]" />
+
+        <Link href="/precios" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10">
+          <ArrowLeft size={13} />
+          Precios
         </Link>
 
-        {/* Hero */}
-        <div className="mb-14">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]">Presencia digital</p>
+        <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 py-32 flex flex-col items-center">
+          <div
+            className="inline-flex items-center gap-2.5 mb-10 px-4 py-2 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+          >
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F97316] text-white">
+              Servicio
+            </span>
+            <span className="text-sm text-white/75">Producción de contenido</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Producción de contenido</h1>
-          {/* TODO: personalizar subtitle con el problema que resuelve este servicio */}
-          <p className="text-base text-white/45 max-w-xl leading-relaxed mb-8">
-            Contenido profesional para redes sociales, mes a mes, sin que tengas que preocuparte por nada.
+
+          <h1 className="font-bold tracking-tight leading-[0.92] text-white mb-7" style={{ fontSize: 'clamp(3.2rem, 8vw, 7.5rem)' }}>
+            Contenido que vende,
+            <br />
+            <span style={{ color: 'rgba(255,255,255,0.3)' }}>mes a mes.</span>
+          </h1>
+
+          <p className="text-lg text-white/55 leading-relaxed max-w-xl mb-12">
+            Producimos, editamos y publicamos contenido profesional para tus redes sociales
+            — sin que tengas que preocuparte por nada.
           </p>
-          <Link href={AGENDAR} className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#F97316] hover:bg-[#ea6c0c] text-white text-sm font-semibold transition-all hover:shadow-[0_0_24px_rgba(249,115,22,0.3)] active:scale-[0.99]">
-            Agendar llamada
-            <ArrowRight size={15} />
-          </Link>
+
+          <div className="flex flex-col sm:flex-row gap-3 mb-20">
+            <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] active:scale-[0.98]">
+              Agendar llamada gratis
+              <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-8 pb-12 w-full justify-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            {[['Desde $650', 'Por mes'], ['6–12', 'Videos mensuales'], ['100%', 'Gestionado por nosotros']].map(([v, l]) => (
+              <div key={l}>
+                <p className="text-3xl font-bold text-white">{v}</p>
+                <p className="text-xs text-white/30 mt-1 uppercase tracking-wider">{l}</p>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Qué incluye */}
-        <Section label="Qué incluye">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {includes.map((item) => (
-              <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.025] p-4">
-                <div className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F97316]/10 border border-[#F97316]/20">
-                  <item.icon size={14} className="text-[#F97316]" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white mb-0.5">{item.title}</p>
-                  <p className="text-xs text-white/40 leading-relaxed">{item.desc}</p>
-                </div>
+      {/* ═══════════════════════════════════════════
+          QUÉ INCLUYE
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="mb-20">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Lo que obtenés</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Todo incluido.<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>Sin sorpresas.</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.05)' }}>
+            {features.map(f => (
+              <div key={f.n} className="relative bg-[#080808] px-9 py-10 group hover:bg-[#0d0d0d] transition-colors cursor-default">
+                <p className="text-xs font-mono text-[#F97316]/40 mb-7 tracking-widest">{f.n}</p>
+                <h3 className="text-xl font-bold text-white mb-3">{f.t}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{f.d}</p>
+                <div className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(to right, transparent, rgba(249,115,22,0.3), transparent)' }} />
               </div>
             ))}
           </div>
-        </Section>
+        </div>
+      </section>
 
-        {/* Cómo funciona */}
-        <Section label="Cómo funciona">
-          <div className="space-y-3">
-            {steps.map((step) => (
-              <div key={step.num} className="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.025] p-5">
-                <div className="shrink-0 text-2xl font-bold text-[#F97316]/20 w-8 tabular-nums">{step.num}</div>
-                <div>
-                  <p className="text-sm font-semibold text-white mb-1">{step.title}</p>
-                  <p className="text-xs text-white/40 leading-relaxed">{step.desc}</p>
-                </div>
+      {/* ═══════════════════════════════════════════
+          PROCESO
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="mb-20">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Cómo funciona</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Simple y<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>sin vueltas.</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {steps.map((s, i) => (
+              <div key={s.n} className="pt-10 pb-4 md:pr-16" style={{ borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.05)' : undefined }}>
+                <p className="text-xs font-mono text-white/20 mb-8 tracking-widest">// {s.n}</p>
+                <h3 className="text-2xl font-bold text-white mb-4">{s.t}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{s.d}</p>
               </div>
             ))}
           </div>
-        </Section>
+        </div>
+      </section>
 
-        {/* Precio */}
-        <Section label="Planes">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {plans.map((plan) => (
-              <div key={plan.name} className={`rounded-2xl border p-6 flex flex-col ${plan.highlight ? 'border-[#F97316]/30 bg-[#F97316]/[0.04]' : 'border-white/8 bg-white/[0.025]'}`}>
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">{plan.name}</p>
-                <p className="text-3xl font-bold text-white mb-0.5">{plan.price}<span className="text-sm font-normal text-white/30">{plan.suffix}</span></p>
-                <ul className="mt-4 space-y-2 flex-1">
-                  {plan.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-xs text-white/55">
-                      <Check size={11} className="text-[#F97316] shrink-0" />
+      {/* ═══════════════════════════════════════════
+          PLANES
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="mb-20">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">Planes</p>
+            <h2 className="font-bold tracking-tight leading-[0.92]" style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}>
+              Elegí el tuyo.<br />
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>Cambiá cuando quieras.</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {plans.map(plan => (
+              <div
+                key={plan.name}
+                className="rounded-3xl p-10 flex flex-col"
+                style={{
+                  background: plan.highlight ? 'rgba(249,115,22,0.05)' : 'rgba(255,255,255,0.03)',
+                  border: plan.highlight ? '1px solid rgba(249,115,22,0.25)' : '1px solid rgba(255,255,255,0.07)',
+                }}
+              >
+                {plan.highlight && (
+                  <span className="inline-flex self-start mb-6 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F97316] text-white">
+                    Más popular
+                  </span>
+                )}
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/30 mb-3">{plan.name}</p>
+                <div className="flex items-end gap-1 mb-3">
+                  <p className="text-6xl font-bold text-white leading-none">{plan.price}</p>
+                  <p className="text-white/30 mb-1">{plan.suffix}</p>
+                </div>
+                <p className="text-sm text-white/40 leading-relaxed mb-8">{plan.desc}</p>
+                <ul className="space-y-3 mb-10 flex-1">
+                  {plan.items.map(item => (
+                    <li key={item} className="flex items-center gap-3 text-sm text-white/60">
+                      <Check size={13} className="text-[#F97316] shrink-0" />
                       {item}
                     </li>
                   ))}
                 </ul>
-                <Link href={AGENDAR} className={`mt-5 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all ${plan.highlight ? 'bg-[#F97316] hover:bg-[#ea6c0c] text-white' : 'bg-white/6 border border-white/10 hover:bg-white/10 text-white/65 hover:text-white'}`}>
-                  Empezar
-                  <ArrowRight size={13} />
+                <Link
+                  href={AGENDAR}
+                  className={`inline-flex items-center justify-center gap-2 py-4 rounded-full font-semibold text-sm transition-all ${plan.highlight ? 'bg-[#F97316] hover:bg-[#ea6c0c] text-white hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]' : 'text-white/55 hover:text-white'}`}
+                  style={plan.highlight ? undefined : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}
+                >
+                  Empezar con este plan
+                  <ArrowRight size={15} />
                 </Link>
               </div>
             ))}
           </div>
-        </Section>
+        </div>
+      </section>
 
-        {/* FAQ */}
-        <Section label="Preguntas frecuentes">
-          <div className="space-y-2">
-            {faqs.map((faq) => (
-              <details key={faq.q} className="group rounded-2xl border border-white/8 bg-white/[0.025] overflow-hidden">
-                <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none text-sm font-medium text-white/70 hover:text-white transition-colors">
+      {/* ═══════════════════════════════════════════
+          FAQ
+      ═══════════════════════════════════════════ */}
+      <section className="py-32" style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-3xl mx-auto px-6 md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-5">FAQ</p>
+          <h2 className="font-bold tracking-tight leading-[0.92] mb-16" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)' }}>
+            Preguntas<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>frecuentes.</span>
+          </h2>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            {faqs.map(faq => (
+              <details key={faq.q} className="group" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <summary className="flex items-center justify-between gap-6 py-7 cursor-pointer list-none text-lg font-semibold text-white/65 hover:text-white transition-colors">
                   {faq.q}
-                  <ChevronDown size={14} className="shrink-0 text-white/25 group-open:rotate-180 transition-transform" />
+                  <ChevronDown size={18} className="shrink-0 text-white/20 group-open:rotate-180 transition-transform duration-300" />
                 </summary>
-                <p className="px-5 pb-4 text-xs text-white/40 leading-relaxed">{faq.a}</p>
+                <p className="pb-7 text-sm text-white/40 leading-relaxed max-w-xl">{faq.a}</p>
               </details>
             ))}
           </div>
-        </Section>
+        </div>
+      </section>
 
-        {/* CTA final */}
-        <FinalCta />
-      </div>
-    </div>
-  )
-}
+      {/* ═══════════════════════════════════════════
+          CTA FINAL
+      ═══════════════════════════════════════════ */}
+      <section className="relative py-40 overflow-hidden" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(249,115,22,0.08),transparent)] pointer-events-none" />
+        <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-12 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-6">¿Listo para empezar?</p>
+          <h2 className="font-bold tracking-tight leading-[0.92] text-white mb-8" style={{ fontSize: 'clamp(2.8rem, 7vw, 6rem)' }}>
+            Hablemos de<br />
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>tu contenido.</span>
+          </h2>
+          <p className="text-base text-white/40 leading-relaxed mb-14 max-w-md mx-auto">
+            30 minutos para entender tu marca y diseñar una estrategia que tenga sentido para tu negocio.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_48px_rgba(249,115,22,0.45)]">
+              Agendar llamada gratis <ArrowRight size={16} />
+            </Link>
+            <Link href="/precios" className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full font-semibold text-white/45 hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}>
+              Ver todos los servicios
+            </Link>
+          </div>
+        </div>
+      </section>
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="mb-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/25 mb-4">{label}</p>
-      {children}
-    </div>
-  )
-}
-
-function FinalCta() {
-  return (
-    <div className="rounded-2xl border border-[#F97316]/20 bg-[#F97316]/[0.04] p-8 text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-3">¿Listo para empezar?</p>
-      <h2 className="text-2xl font-bold text-white mb-3">Hablemos de tu proyecto</h2>
-      <p className="text-sm text-white/40 mb-7 max-w-sm mx-auto">30 minutos para entender lo que necesitás y darte una propuesta concreta. Sin compromiso.</p>
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Link href={AGENDAR} className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-[#F97316] hover:bg-[#ea6c0c] text-white text-sm font-semibold transition-all hover:shadow-[0_0_24px_rgba(249,115,22,0.3)]">
-          Agendar llamada gratis
-          <ArrowRight size={15} />
-        </Link>
-        <Link href="/precios" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl border border-white/10 hover:border-white/20 text-white/55 hover:text-white text-sm font-semibold transition-all">
-          Ver todos los servicios
-        </Link>
-      </div>
     </div>
   )
 }
