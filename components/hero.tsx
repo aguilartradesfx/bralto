@@ -166,25 +166,6 @@ export function Hero() {
             </h1>
           </div>
 
-          {/* Bottom — canales integrados */}
-          <div>
-            <div
-              className="mb-4 w-16 h-px mx-auto md:ml-0"
-              style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)' }}
-            />
-            <p className="text-xs font-mono font-light uppercase tracking-[0.2em] text-white/35 text-center md:text-left">
-              <Word text="WhatsApp" delay={4200} />
-              <Word text="·" delay={4350} />
-              <Word text="Instagram" delay={4500} />
-              <Word text="·" delay={4650} />
-              <Word text="Email" delay={4800} />
-              <Word text="·" delay={4950} />
-              <Word text="Web" delay={5100} />
-              <Word text="·" delay={5250} />
-              <Word text="y más" delay={5400} />
-            </p>
-          </div>
-
         </div>
 
         {/* Right: robot */}
@@ -193,13 +174,10 @@ export function Hero() {
             className="absolute inset-0"
             style={{ transform: 'scale(1.45) translateY(8%)', transformOrigin: 'center center' }}
           >
-            {/* Skip 3D scene on mobile — heaviest GPU consumer */}
-            {!isMobile && (
-              <SplineScene
-                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                className="w-full h-full"
-              />
-            )}
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              className="w-full h-full"
+            />
           </div>
         </div>
 
