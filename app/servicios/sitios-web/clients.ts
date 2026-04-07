@@ -111,6 +111,8 @@ export const clients: ClientProject[] = [
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723cebf1a608431006fb.jpg',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723cebf1a608431006fb.jpg',
+      'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5782ea7dcb4cff025ae06.png',
+      'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5782f200ae21bdf8235a5.png',
     ],
   },
 ]

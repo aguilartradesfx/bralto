@@ -155,53 +155,51 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
       )}
 
       {/* ══════════════════════════════════════════
-          IMÁGENES ADICIONALES — alternating pairs
+          IMÁGENES ADICIONALES — full-width on desktop
       ══════════════════════════════════════════ */}
       {extraImages.length > 0 && (
         <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div className="max-w-7xl mx-auto">
-            {extraImages.map((img, i) => {
-              const isEven = i % 2 === 0
-              return (
+          {extraImages.map((img, i) => {
+            const isEven = i % 2 === 0
+            return (
+              <div
+                key={img}
+                className="grid grid-cols-1 lg:grid-cols-[4fr_1fr]"
+                style={{ borderBottom: i < extraImages.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined }}
+              >
+                {/* Image — takes ~80% on desktop, alternates side */}
                 <div
-                  key={img}
-                  className="grid grid-cols-1 lg:grid-cols-2"
-                  style={{ borderBottom: i < extraImages.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined }}
+                  className={`relative bg-[#080808] overflow-hidden ${isEven ? 'order-1' : 'order-1 lg:order-2'}`}
+                  style={{
+                    minHeight: '560px',
+                    ...(isEven
+                      ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
+                      : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
+                  }}
                 >
-                  {/* Image — alternates side */}
-                  <div
-                    className={`relative bg-[#080808] overflow-hidden ${isEven ? 'order-1' : 'order-1 lg:order-2'}`}
-                    style={{
-                      minHeight: '420px',
-                      ...(isEven
-                        ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
-                        : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
-                    }}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${client.name} — vista ${i + 3}`}
-                      fill
-                      className="object-contain p-8 md:p-12"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                    />
-                  </div>
-
-                  {/* Spacer / index label */}
-                  <div
-                    className={`flex items-end px-6 md:px-12 py-16 ${isEven ? 'order-2' : 'order-2 lg:order-1'}`}
-                  >
-                    <p
-                      className="font-bold text-white/5 leading-none select-none"
-                      style={{ fontSize: 'clamp(5rem, 12vw, 11rem)' }}
-                    >
-                      {String(i + 3).padStart(2, '0')}
-                    </p>
-                  </div>
+                  <Image
+                    src={img}
+                    alt={`${client.name} — vista ${i + 3}`}
+                    fill
+                    className="object-contain p-8 lg:p-16"
+                    sizes="(max-width: 1024px) 100vw, 80vw"
+                  />
                 </div>
-              )
-            })}
-          </div>
+
+                {/* Ghost number — narrow column */}
+                <div
+                  className={`hidden lg:flex items-end px-8 py-16 ${isEven ? 'order-2' : 'order-2 lg:order-1'}`}
+                >
+                  <p
+                    className="font-bold text-white/5 leading-none select-none"
+                    style={{ fontSize: 'clamp(4rem, 8vw, 8rem)' }}
+                  >
+                    {String(i + 3).padStart(2, '0')}
+                  </p>
+                </div>
+              </div>
+            )
+          })}
         </section>
       )}
 
