@@ -14,6 +14,7 @@ export interface ClientProject {
   deliverables: string[]
   coverImage: string
   images: string[]
+  url?: string
 }
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
@@ -63,7 +64,7 @@ function ClientModal({ client, onClose }: { client: ClientProject; onClose: () =
         }}
       >
         {/* ── Image area — takes ~65% of modal height ── */}
-        <div className="relative flex-1 bg-[#050505] overflow-hidden">
+        <div className="relative flex-1 bg-[#f0f0f0] overflow-hidden">
           {/* Image — object-contain so it's NEVER cropped */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -88,8 +89,8 @@ function ClientModal({ client, onClose }: { client: ClientProject; onClose: () =
           </AnimatePresence>
 
           {/* Subtle vignette on sides */}
-          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#050505]/60 to-transparent pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#050505]/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#f0f0f0]/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#f0f0f0]/60 to-transparent pointer-events-none" />
 
           {/* Nav arrows */}
           {client.images.length > 1 && (
@@ -151,6 +152,17 @@ function ClientModal({ client, onClose }: { client: ClientProject; onClose: () =
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F97316] mb-1">{client.industry}</p>
                 <h3 className="text-2xl md:text-3xl font-bold text-white">{client.name}</h3>
               </div>
+              {client.url && (
+                <a
+                  href={client.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="flex items-center gap-1.5 shrink-0 text-xs font-medium text-[#F97316] hover:text-[#fb923c] transition-colors mt-1"
+                >
+                  Ver sitio <ArrowUpRight size={13} />
+                </a>
+              )}
             </div>
 
             <p className="text-sm text-white/50 leading-relaxed mb-5 max-w-2xl">{client.story}</p>
