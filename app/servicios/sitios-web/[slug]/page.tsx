@@ -155,23 +155,28 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
       )}
 
       {/* ══════════════════════════════════════════
-          IMÁGENES ADICIONALES — full-width on desktop
+          IMÁGENES ADICIONALES — image + text alternating
       ══════════════════════════════════════════ */}
       {extraImages.length > 0 && (
         <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {extraImages.map((img, i) => {
             const isEven = i % 2 === 0
+            const deliverable = client.deliverables[i % client.deliverables.length]
             return (
               <div
                 key={img}
-                className="grid grid-cols-1 lg:grid-cols-[4fr_1fr]"
-                style={{ borderBottom: i < extraImages.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined }}
+                className="grid grid-cols-1 lg:grid-cols-[3fr_2fr]"
+                style={{
+                  borderBottom: i < extraImages.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
+                  background: i % 2 === 1 ? '#0a0a0a' : '#080808',
+                }}
               >
-                {/* Image — takes ~80% on desktop, alternates side */}
+                {/* Image */}
                 <div
-                  className={`relative bg-[#080808] overflow-hidden ${isEven ? 'order-1' : 'order-1 lg:order-2'}`}
+                  className={`relative overflow-hidden ${isEven ? 'order-1 lg:order-1' : 'order-1 lg:order-2'}`}
                   style={{
-                    minHeight: '560px',
+                    minHeight: '580px',
+                    background: '#050505',
                     ...(isEven
                       ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
                       : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
@@ -181,21 +186,28 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
                     src={img}
                     alt={`${client.name} — vista ${i + 3}`}
                     fill
-                    className="object-contain p-8 lg:p-16"
-                    sizes="(max-width: 1024px) 100vw, 80vw"
+                    className="object-contain p-4 lg:p-6"
+                    sizes="(max-width: 1024px) 100vw, 60vw"
                   />
                 </div>
 
-                {/* Ghost number — narrow column */}
+                {/* Text */}
                 <div
-                  className={`hidden lg:flex items-end px-8 py-16 ${isEven ? 'order-2' : 'order-2 lg:order-1'}`}
+                  className={`flex flex-col justify-center px-8 md:px-12 py-16 lg:py-20 ${isEven ? 'order-2 lg:order-2' : 'order-2 lg:order-1'}`}
                 >
-                  <p
-                    className="font-bold text-white/5 leading-none select-none"
-                    style={{ fontSize: 'clamp(4rem, 8vw, 8rem)' }}
-                  >
+                  <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-6">
                     {String(i + 3).padStart(2, '0')}
                   </p>
+                  <p
+                    className="font-bold text-white leading-tight mb-6"
+                    style={{ fontSize: 'clamp(1.4rem, 2.5vw, 2rem)' }}
+                  >
+                    {deliverable}
+                  </p>
+                  <div
+                    className="w-10 h-px"
+                    style={{ background: 'rgba(249,115,22,0.4)' }}
+                  />
                 </div>
               </div>
             )
