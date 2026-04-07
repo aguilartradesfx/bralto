@@ -104,7 +104,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
 
             {/* Image right */}
             {client.images[0] && (
-              <div className="relative bg-[#080808] overflow-hidden" style={{ minHeight: '480px' }}>
+              <div className="relative overflow-hidden" style={{ minHeight: '480px' }}>
                 <Image
                   src={client.images[0]}
                   alt={`${client.name} — vista 1`}
@@ -127,7 +127,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
               {/* Image left */}
-              <div className="relative bg-[#0a0a0a] overflow-hidden order-2 lg:order-1" style={{ minHeight: '480px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="relative overflow-hidden order-2 lg:order-1" style={{ minHeight: '480px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
                 <Image
                   src={client.images[1]}
                   alt={`${client.name} — vista 2`}
@@ -170,13 +170,10 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
             if (i % 2 === 0) {
               /* ── Centrada: imagen full-width dentro de max-w-7xl + texto abajo ── */
               return (
-                <div key={img} style={{ borderBottom, background: '#080808' }}>
+                <div key={img} style={{ borderBottom }}>
                   <div className="max-w-7xl mx-auto">
                     {/* Imagen: ancho del contenedor, altura responsiva */}
-                    <div
-                      className="relative w-full h-[56vw] lg:h-[68vh]"
-                      style={{ background: '#050505' }}
-                    >
+                    <div className="relative w-full h-[56vw] lg:h-[68vh]">
                       <Image
                         src={img}
                         alt={`${client.name} — vista ${i + 3}`}
@@ -207,19 +204,17 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
             return (
               <div
                 key={img}
-                style={{ borderBottom, background: '#0a0a0a' }}
+                style={{ borderBottom }}
               >
                 <div className="max-w-7xl mx-auto">
                   <div className="grid grid-cols-1 lg:grid-cols-2">
                     {/* Imagen */}
                     <div
                       className={`relative overflow-hidden h-[56vw] lg:h-[580px] ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
-                      style={{
-                        background: '#050505',
-                        ...(imageLeft
-                          ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
-                          : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
-                      }}
+                      style={imageLeft
+                        ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
+                        : { borderLeft: '1px solid rgba(255,255,255,0.06)' }
+                      }
                     >
                       <Image
                         src={img}
