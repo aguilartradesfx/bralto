@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react'
+import { ServiciosRelacionados } from '@/components/servicios-relacionados'
 
 const AGENDAR = '/agendar'
 
@@ -37,9 +38,9 @@ export default function CampanasPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_40%,rgba(249,115,22,0.07),transparent)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080808]" />
 
-        <Link href="/precios" className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10">
+        <Link href="/precios" className="absolute top-20 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10">
           <ArrowLeft size={13} />
-          Precios
+          Servicios
         </Link>
 
         <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 py-32 flex flex-col items-center">
@@ -178,6 +179,8 @@ export default function CampanasPage() {
           </div>
         </div>
       </section>
+
+      <ServiciosRelacionados exclude="campanas" />
 
     </div>
   )

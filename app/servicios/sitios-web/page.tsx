@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, ArrowRight, ChevronDown, ArrowUpRight } from 'lucide-react'
 import { clients } from './clients'
+import { ServiciosRelacionados } from '@/components/servicios-relacionados'
 
 const AGENDAR = '/agendar'
 
@@ -56,10 +57,10 @@ export default function SitiosWebPage() {
         {/* Back nav — top left */}
         <Link
           href="/precios"
-          className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10"
+          className="absolute top-20 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10"
         >
           <ArrowLeft size={13} />
-          Precios
+          Servicios
         </Link>
 
         {/* Content — centered */}
@@ -288,6 +289,8 @@ export default function SitiosWebPage() {
           </div>
         </div>
       </section>
+
+      <ServiciosRelacionados exclude="sitios-web" />
 
     </div>
   )
