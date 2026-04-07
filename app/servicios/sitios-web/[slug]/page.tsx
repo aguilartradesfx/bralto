@@ -104,12 +104,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
 
             {/* Image right */}
             {client.images[0] && (
-              <div className="relative bg-[#080808] overflow-hidden" style={{ minHeight: '480px' }}>
+              <div className="relative bg-[#080808] overflow-hidden h-[56vw] lg:h-[540px]">
                 <Image
                   src={client.images[0]}
                   alt={`${client.name} — vista 1`}
                   fill
-                  className="object-contain p-8 md:p-12"
+                  className="object-contain p-4 md:p-6"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
@@ -127,12 +127,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
               {/* Image left */}
-              <div className="relative bg-[#0a0a0a] overflow-hidden order-2 lg:order-1" style={{ minHeight: '480px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="relative bg-[#0a0a0a] overflow-hidden order-2 lg:order-1 h-[56vw] lg:h-[540px]" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
                 <Image
                   src={client.images[1]}
                   alt={`${client.name} — vista 2`}
                   fill
-                  className="object-contain p-8 md:p-12"
+                  className="object-contain p-4 md:p-6"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
@@ -172,12 +172,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
               return (
                 <div key={img} style={{ borderBottom, background: '#080808' }}>
                   {/* Imagen full-width */}
-                  <div className="relative w-full" style={{ minHeight: '62vh', background: '#050505' }}>
+                  <div className="relative w-full h-[56vw] lg:h-[75vh]" style={{ background: '#050505' }}>
                     <Image
                       src={img}
                       alt={`${client.name} — vista ${i + 3}`}
                       fill
-                      className="object-contain p-6 lg:p-10"
+                      className="object-cover object-center"
                       sizes="100vw"
                     />
                   </div>
@@ -207,9 +207,8 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
               >
                 {/* Imagen */}
                 <div
-                  className={`relative overflow-hidden ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
+                  className={`relative overflow-hidden h-[56vw] lg:h-[540px] ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
                   style={{
-                    minHeight: '500px',
                     background: '#050505',
                     ...(imageLeft
                       ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
