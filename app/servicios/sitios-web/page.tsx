@@ -111,55 +111,90 @@ export default function SitiosWebPage() {
     <div className="min-h-screen bg-[#080808] text-white antialiased">
 
       {/* ═══════════════════════════════════════════════
-          HERO
+          HERO — full-screen centered, single bg image
       ═══════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center">
 
-        {/* Background: blurred collage of client images */}
-        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-4 gap-0 opacity-30">
-          {[
-            clients[0].images[0], clients[1].images[0],
-            clients[2].images[0], clients[3].images[0],
-          ].map((src, i) => (
-            <div key={i} className="relative overflow-hidden">
-              <Image src={src} alt="" fill className="object-cover scale-110" sizes="25vw" />
-            </div>
-          ))}
+        {/* Single background image */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d5a7dcb4cff003393e.png"
+            alt=""
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+            priority
+          />
         </div>
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-[#080808]/80" />
-        {/* Orange radial glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_50%,rgba(249,115,22,0.12),transparent)]" />
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#080808] to-transparent" />
 
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-32">
-          <Link href="/precios" className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors text-sm mb-12">
-            <ArrowLeft size={13} />
-            Precios
-          </Link>
+        {/* Layered overlays */}
+        <div className="absolute inset-0 bg-[#080808]/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/50 via-transparent to-[#080808]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(249,115,22,0.08),transparent)]" />
 
-          {/* Tag */}
-          <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full" style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]">Sitios web profesionales</span>
+        {/* Back nav — top left */}
+        <Link
+          href="/precios"
+          className="absolute top-8 left-6 md:left-12 inline-flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors text-sm z-10"
+        >
+          <ArrowLeft size={13} />
+          Precios
+        </Link>
+
+        {/* Content — centered */}
+        <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 py-32 flex flex-col items-center">
+
+          {/* Badge */}
+          <div
+            className="inline-flex items-center gap-2.5 mb-10 px-4 py-2 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+          >
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F97316] text-white">
+              Servicio
+            </span>
+            <span className="text-sm text-white/75">Sitios web profesionales</span>
           </div>
 
           {/* Headline */}
-          <h1 className="font-bold leading-[0.92] tracking-tight mb-8 max-w-3xl" style={{ fontSize: 'clamp(3.8rem, 9vw, 8.5rem)' }}>
-            Tu mejor<br />
-            <span style={{ color: 'rgba(255,255,255,0.2)' }}>vendedor,</span><br />
-            online 24/7.
+          <h1
+            className="font-bold tracking-tight leading-[0.92] text-white mb-7"
+            style={{ fontSize: 'clamp(3.2rem, 8vw, 7.5rem)' }}
+          >
+            Tu mejor vendedor,
+            <br />
+            <span style={{ color: 'rgba(255,255,255,0.3)' }}>online 24/7.</span>
           </h1>
 
-          <p className="text-lg text-white/45 leading-relaxed max-w-md mb-12">
-            Diseño a medida, SEO incluido y entrega rápida —
+          <p className="text-lg text-white/55 leading-relaxed max-w-xl mb-12">
+            Diseño a medida, SEO incluido y entrega en tiempo récord —
             para que tu presencia online trabaje mientras vos descansás.
           </p>
 
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-20">
+            <Link
+              href={AGENDAR}
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] active:scale-[0.98]"
+            >
+              Agendar llamada gratis
+              <ArrowRight size={15} />
+            </Link>
+            <a
+              href={STRIPE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm text-white/65 hover:text-white transition-all"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+            >
+              Contratar — $997
+            </a>
+          </div>
+
           {/* Stats row */}
-          <div className="flex items-center gap-8 mb-12 pb-12" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div
+            className="flex items-center gap-8 mb-12 pb-12 w-full justify-center"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
+          >
             {[['4+', 'Proyectos entregados'], ['$997', 'Precio único'], ['≤10 días', 'Tiempo de entrega']].map(([v, l]) => (
               <div key={l}>
                 <p className="text-3xl font-bold text-white">{v}</p>
@@ -168,16 +203,6 @@ export default function SitiosWebPage() {
             ))}
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-3">
-            <Link href={AGENDAR} className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(249,115,22,0.45)] active:scale-[0.98]">
-              Agendar llamada gratis
-              <ArrowRight size={15} />
-            </Link>
-            <a href={STRIPE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-semibold text-sm transition-all text-white/55 hover:text-white" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
-              Contratar — $997
-            </a>
-          </div>
         </div>
       </section>
 
