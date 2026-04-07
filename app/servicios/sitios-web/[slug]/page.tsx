@@ -104,12 +104,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
 
             {/* Image right */}
             {client.images[0] && (
-              <div className="relative bg-[#080808] overflow-hidden h-[56vw] lg:h-[540px]">
+              <div className="relative bg-[#080808] overflow-hidden" style={{ minHeight: '480px' }}>
                 <Image
                   src={client.images[0]}
                   alt={`${client.name} — vista 1`}
                   fill
-                  className="object-contain p-4 md:p-6"
+                  className="object-contain p-8 md:p-12"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
@@ -127,12 +127,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
               {/* Image left */}
-              <div className="relative bg-[#0a0a0a] overflow-hidden order-2 lg:order-1 h-[56vw] lg:h-[540px]" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="relative bg-[#0a0a0a] overflow-hidden order-2 lg:order-1" style={{ minHeight: '480px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
                 <Image
                   src={client.images[1]}
                   alt={`${client.name} — vista 2`}
                   fill
-                  className="object-contain p-4 md:p-6"
+                  className="object-contain p-8 md:p-12"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
@@ -168,75 +168,83 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
               : undefined
 
             if (i % 2 === 0) {
-              /* ── Centrada: imagen ancha + texto debajo ── */
+              /* ── Centrada: imagen full-width dentro de max-w-7xl + texto abajo ── */
               return (
                 <div key={img} style={{ borderBottom, background: '#080808' }}>
-                  {/* Imagen full-width */}
-                  <div className="relative w-full h-[56vw] lg:h-[75vh]" style={{ background: '#050505' }}>
-                    <Image
-                      src={img}
-                      alt={`${client.name} — vista ${i + 3}`}
-                      fill
-                      className="object-cover object-center"
-                      sizes="100vw"
-                    />
-                  </div>
-                  {/* Texto centrado abajo */}
-                  <div
-                    className="max-w-3xl mx-auto px-6 md:px-12 py-12 text-center"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-                  >
-                    <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-5">
-                      {String(i + 3).padStart(2, '0')}
-                    </p>
-                    <p className="text-xl md:text-2xl font-semibold text-white/65 leading-snug">
-                      {deliverable}
-                    </p>
+                  <div className="max-w-7xl mx-auto">
+                    {/* Imagen: ancho del contenedor, altura responsiva */}
+                    <div
+                      className="relative w-full h-[56vw] lg:h-[68vh]"
+                      style={{ background: '#050505' }}
+                    >
+                      <Image
+                        src={img}
+                        alt={`${client.name} — vista ${i + 3}`}
+                        fill
+                        className="object-contain p-4 lg:p-8"
+                        sizes="(max-width: 1280px) 100vw, 1280px"
+                      />
+                    </div>
+                    {/* Texto centrado abajo */}
+                    <div
+                      className="px-6 md:px-12 py-10 text-center"
+                      style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                    >
+                      <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-5">
+                        {String(i + 3).padStart(2, '0')}
+                      </p>
+                      <p className="text-xl md:text-2xl font-semibold text-white/65 leading-snug max-w-2xl mx-auto">
+                        {deliverable}
+                      </p>
+                    </div>
                   </div>
                 </div>
               )
             }
 
-            /* ── Split 50/50: mismo estilo que secciones 1 y 2 ── */
+            /* ── Split 50/50: mismo max-w-7xl que secciones 1 y 2 ── */
             const imageLeft = Math.floor(i / 2) % 2 === 0
             return (
               <div
                 key={img}
-                className="grid grid-cols-1 lg:grid-cols-2"
                 style={{ borderBottom, background: '#0a0a0a' }}
               >
-                {/* Imagen */}
-                <div
-                  className={`relative overflow-hidden h-[56vw] lg:h-[540px] ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
-                  style={{
-                    background: '#050505',
-                    ...(imageLeft
-                      ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
-                      : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
-                  }}
-                >
-                  <Image
-                    src={img}
-                    alt={`${client.name} — vista ${i + 3}`}
-                    fill
-                    className="object-contain p-4 lg:p-6"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
-                </div>
-                {/* Texto */}
-                <div
-                  className={`flex flex-col justify-center px-8 md:px-12 py-20 ${imageLeft ? 'order-2' : 'order-2 lg:order-1'}`}
-                >
-                  <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-6">
-                    {String(i + 3).padStart(2, '0')}
-                  </p>
-                  <p
-                    className="font-bold text-white leading-tight mb-6"
-                    style={{ fontSize: 'clamp(1.4rem, 2.5vw, 2rem)' }}
-                  >
-                    {deliverable}
-                  </p>
-                  <div className="w-10 h-px" style={{ background: 'rgba(249,115,22,0.4)' }} />
+                <div className="max-w-7xl mx-auto">
+                  <div className="grid grid-cols-1 lg:grid-cols-2">
+                    {/* Imagen */}
+                    <div
+                      className={`relative overflow-hidden h-[56vw] lg:h-[580px] ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
+                      style={{
+                        background: '#050505',
+                        ...(imageLeft
+                          ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
+                          : { borderLeft: '1px solid rgba(255,255,255,0.06)' }),
+                      }}
+                    >
+                      <Image
+                        src={img}
+                        alt={`${client.name} — vista ${i + 3}`}
+                        fill
+                        className="object-contain p-4 lg:p-6"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                      />
+                    </div>
+                    {/* Texto */}
+                    <div
+                      className={`flex flex-col justify-center px-8 md:px-12 py-16 lg:py-20 ${imageLeft ? 'order-2' : 'order-2 lg:order-1'}`}
+                    >
+                      <p className="font-mono text-[10px] text-[#F97316]/50 tracking-[0.3em] uppercase mb-6">
+                        {String(i + 3).padStart(2, '0')}
+                      </p>
+                      <p
+                        className="font-bold text-white leading-tight mb-6"
+                        style={{ fontSize: 'clamp(1.4rem, 2.5vw, 2rem)' }}
+                      >
+                        {deliverable}
+                      </p>
+                      <div className="w-10 h-px" style={{ background: 'rgba(249,115,22,0.4)' }} />
+                    </div>
+                  </div>
                 </div>
               </div>
             )
