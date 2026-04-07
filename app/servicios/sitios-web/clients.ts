@@ -17,7 +17,7 @@ export const clients: ClientProject[] = [
     industry: 'Restaurante & Reservas',
     tagline: 'Plataforma completa de reservas, agente de IA 24/7 y producción audiovisual mensual.',
     url: 'https://www.restaurantenanku.net/',
-    story: 'Nanku no tenía presencia digital ni forma de gestionar sus reservas. Les entregamos una operación digital completa — desde el sitio hasta la atención al cliente — sin que ellos tuvieran que preocuparse por nada técnico. Hoy reciben reservas en automático, atienden por múltiples canales y tienen contenido nuevo cada mes.',
+    story: 'Nanku tenía presencia digital, pero no la operación que un restaurante de su nivel necesita. Llegamos a reestructurarlo todo — nuevo sitio construido desde cero, flujos automatizados y atención al cliente centralizada — para que el negocio funcionara solo sin depender del equipo para cada detalle. Hoy reciben reservas en automático, atienden por múltiples canales y tienen contenido nuevo cada mes.',
     deliverables: [
       'Sitio web diseñado desde cero, mobile-first y optimizado para SEO',
       'Sistema de reservas integrado directamente en el sitio',
