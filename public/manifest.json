@@ -1,0 +1,13 @@
+{
+  "name": "Bralto — Automatización Digital",
+  "short_name": "Bralto",
+  "description": "Infraestructura digital y automatización para negocios",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#F97316",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

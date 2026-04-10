@@ -2,11 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ── Dark mode (default Bralto brand) ───────────────────────────── */
+:root,
+.dark {
   --color-orange: #F97316;
-  --color-bg: #080808;
-  --color-surface: #111111;
-  --color-border: rgba(255, 255, 255, 0.07);
+  --bg:           #080808;
+  --bg-surface:   #111111;
+  --bg-elevated:  #161616;
+  --text:         #f0f0f0;
+  --text-muted:   rgba(255,255,255,0.50);
+  --text-faint:   rgba(255,255,255,0.25);
+  --border:       rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+}
+
+/* ── Light mode ─────────────────────────────────────────────────── */
+html:not(.dark) {
+  --bg:           #f5f5f5;
+  --bg-surface:   #ffffff;
+  --bg-elevated:  #eeeeee;
+  --text:         #0a0a0a;
+  --text-muted:   rgba(0,0,0,0.50);
+  --text-faint:   rgba(0,0,0,0.30);
+  --border:       rgba(0,0,0,0.07);
+  --border-hover: rgba(0,0,0,0.14);
 }
 
 * {
@@ -20,8 +39,8 @@ html {
 }
 
 body {
-  background-color: #080808;
-  color: #f0f0f0;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -228,4 +247,31 @@ body {
   background: rgba(200, 180, 160, 0.4);
   animation: float 4s ease-in-out infinite;
   animation-play-state: paused;
+}
+
+/* ── Mega menu: mouse-tracking glow border ── */
+.menu-panel {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.menu-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    320px circle at var(--mouse-x) var(--mouse-y),
+    rgba(249, 115, 22, 0.95)  0%,
+    rgba(249, 115, 22, 0.45) 35%,
+    rgba(236,  72, 153, 0.1) 60%,
+    transparent 75%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

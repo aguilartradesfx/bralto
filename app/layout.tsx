@@ -1,48 +1,62 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { CookieConsent } from '@/components/cookie-consent'
+import { OrganizationJsonLd, WebSiteJsonLd, LocalBusinessJsonLd } from '@/components/seo/JsonLd'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bralto.io'),
-  title: 'Bralto — Infraestructura Digital para tu Negocio',
+  title: {
+    default: 'Bralto — Automatización e Infraestructura Digital para Negocios',
+    template: '%s | Bralto',
+  },
   description:
-    'Analizamos su negocio, automatizamos su operación, y le entregamos todo funcionando sobre su propia plataforma. Agentes de IA, sitios web, integraciones — todo a la medida.',
+    'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en Latinoamérica y España.',
   keywords: [
+    'automatización de negocios',
+    'CRM para empresas',
+    'agencia de marketing digital Costa Rica',
+    'mejor empresa de marketing Costa Rica',
+    'automatización WhatsApp negocios',
+    'infraestructura digital LATAM',
+    'agencia de automatización',
+    'marketing digital Latinoamérica',
+    'plataforma todo en uno negocios',
+    'agentes de IA para ventas',
+    'CRM para restaurantes',
+    'CRM para clínicas',
+    'CRM para inmobiliarias',
+    'marketing digital España',
     'automatización de ventas',
-    'agentes de IA',
-    'infraestructura digital',
-    'WhatsApp automatizado',
-    'CRM latinoamérica',
-    'automatización negocios',
-    'seguimiento automático',
+    'chatbot WhatsApp empresas',
+    'agencia digital Costa Rica',
+    'Bralto',
   ],
   authors: [{ name: 'Bralto', url: 'https://bralto.io' }],
   creator: 'Bralto',
+  publisher: 'Bralto',
   openGraph: {
     type: 'website',
-    locale: 'es_ES',
+    locale: 'es_LA',
     url: 'https://bralto.io',
     siteName: 'Bralto',
-    title: 'Bralto — Infraestructura Digital para tu Negocio',
+    title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
     description:
-      'Agentes de IA que atienden, califican, agendan y venden 24/7 en WhatsApp, Instagram, tu web y más.',
+      'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en LATAM y España.',
     images: [
       {
-        url: 'https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/6823c9f977a9d4672be32ac7.png',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Bralto — Infraestructura Digital',
+        alt: 'Bralto — Automatización Digital para Negocios',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bralto — Infraestructura Digital para tu Negocio',
+    title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
     description:
-      'Agentes de IA que atienden, califican, agendan y venden 24/7.',
-    images: [
-      'https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/6823c9f977a9d4672be32ac7.png',
-    ],
+      'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más.',
+    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -55,27 +69,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-}
-
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Bralto',
-  url: 'https://bralto.io',
-  logo: 'https://storage.googleapis.com/msgsndr/hdVpvshZP3RGJQbxx8GA/media/6823c9f977a9d4672be32ac7.png',
-  description:
-    'Infraestructura de operaciones digitales. Agentes de IA para automatizar ventas, atención al cliente y operaciones.',
-  founder: {
-    '@type': 'Person',
-    name: 'Alejandro Aguilar',
+  alternates: {
+    canonical: 'https://bralto.io',
   },
-  sameAs: ['https://bralto.io'],
-  offers: {
-    '@type': 'Offer',
-    price: '87',
-    priceCurrency: 'USD',
-    description: 'Plataforma todo en uno de automatización empresarial',
-  },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({
@@ -88,16 +85,14 @@ export default function RootLayout({
       <head>
         {/* Google Tag Manager */}
         <script dangerouslySetInnerHTML={{ __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KTGZ86BC');` }} />
-        {/* Disable browser scroll restoration so the page always loads at the top */}
+        {/* Disable browser scroll restoration */}
         <script dangerouslySetInnerHTML={{ __html: `if(history.scrollRestoration)history.scrollRestoration='manual';history.replaceState(null,'',window.location.pathname);window.scrollTo(0,0);` }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-        <link rel="canonical" href="https://bralto.io" />
         {/* Hubot Sans — used only in the Hero headline */}
         <link rel="preconnect" href="https://fonts.cdnfonts.com" />
         <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/hubot-sans" />
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
+        <LocalBusinessJsonLd />
       </head>
       <body>
         {/* Google Tag Manager (noscript) */}
