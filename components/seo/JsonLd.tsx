@@ -19,6 +19,7 @@ export function OrganizationJsonLd() {
       { '@type': 'Place', name: 'Latinoamérica' },
       { '@type': 'Place', name: 'España' },
       { '@type': 'Place', name: 'Costa Rica' },
+      { '@type': 'Country', name: 'Estados Unidos' },
     ],
     serviceType: [
       'Automatización de negocios',
@@ -95,6 +96,7 @@ export function LocalBusinessJsonLd() {
       { '@type': 'Country', name: 'República Dominicana' },
       { '@type': 'Country', name: 'Guatemala' },
       { '@type': 'Country', name: 'Panamá' },
+      { '@type': 'Country', name: 'Estados Unidos' },
     ],
     priceRange: '$$',
     openingHoursSpecification: {

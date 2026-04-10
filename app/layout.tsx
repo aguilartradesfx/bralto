@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | Bralto',
   },
   description:
-    'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en Latinoamérica y España.',
+    'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en Latinoamérica, España y Estados Unidos.',
   keywords: [
     'automatización de negocios',
     'CRM para empresas',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     siteName: 'Bralto',
     title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
     description:
-      'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en LATAM y España.',
+      'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en LATAM, España y Estados Unidos.',
     images: [
       {
         url: '/og-image.jpg',
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
     description:
-      'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más.',
+      'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. LATAM, España y Estados Unidos.',
     images: ['/og-image.jpg'],
   },
   robots: {
