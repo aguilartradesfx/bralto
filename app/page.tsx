@@ -9,6 +9,7 @@ import { PricingSection } from '@/components/pricing-section'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { FounderSection } from '@/components/founder-section'
 import { FaqSection } from '@/components/faq-section'
+import { FunnelLabSection } from '@/components/funnel-lab-section'
 import { FinalCta } from '@/components/final-cta'
 import { Footer } from '@/components/footer'
 
@@ -26,6 +27,7 @@ export default function Home() {
         <GuaranteeSection />
         <PricingSection />
         <TestimonialsSection />
+        <FunnelLabSection />
         <FounderSection />
         <FaqSection />
         <FinalCta />

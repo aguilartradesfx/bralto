@@ -13,7 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/servicios/campanas',                 priority: 0.85, changeFrequency: 'monthly' },
     { path: '/servicios/sistemas-internos',        priority: 0.85, changeFrequency: 'monthly' },
     { path: '/servicios/asesoria',                 priority: 0.85, changeFrequency: 'monthly' },
-    { path: '/servicios/funnel-labs',              priority: 0.85, changeFrequency: 'monthly' },
   ]
 
   return routes.map(({ path, priority, changeFrequency }) => ({

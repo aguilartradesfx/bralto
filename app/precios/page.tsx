@@ -62,7 +62,7 @@ const services = [
     icon: TrendingUp,
     slug: 'funnel-labs',
     name: 'FunnelLab',
-    href: '/servicios/funnel-labs',
+    href: 'https://funnellabs.bralto.io',
     from: 'Gratis',
     period: 'para empezar',
     desc: 'Simulá tu embudo de ventas completo, identificá cuellos de botella y elegí la estrategia más rentable antes de invertir.',
