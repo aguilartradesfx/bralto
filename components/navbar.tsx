@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import {
   Menu as MenuIcon, X, ChevronDown,
-  Globe, Zap, BarChart3, MessageSquare, Cpu, LayoutDashboard,
+  Globe, Zap, BarChart3, MessageSquare, Cpu, LayoutDashboard, TrendingUp,
   ArrowRight, ArrowUpRight,
 } from 'lucide-react'
 
@@ -31,6 +31,7 @@ const serviceCols = [
     items: [
       { label: 'Automatización de procesos', href: '/servicios/automatizacion',    icon: Cpu,             desc: 'Flujos, agentes y workflows' },
       { label: 'Sistemas internos a medida', href: '/servicios/sistemas-internos', icon: LayoutDashboard, desc: 'CRMs, dashboards y herramientas' },
+      { label: 'FunnelLab',                  href: '/servicios/funnel-labs',       icon: TrendingUp,      desc: 'Simulá tu funnel antes de invertir' },
     ],
   },
 ]

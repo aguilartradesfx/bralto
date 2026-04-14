@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Globe, BarChart3, MessageSquare, Zap, Cpu, LayoutDashboard } from 'lucide-react'
+import { ArrowRight, Globe, BarChart3, MessageSquare, Zap, Cpu, LayoutDashboard, TrendingUp } from 'lucide-react'
 
 const allServices = [
   { slug: 'sitios-web',           name: 'Sitios web profesionales',     desc: 'Diseño, SEO y entrega en tiempo récord.',                     href: '/servicios/sitios-web',           icon: Globe },
@@ -8,6 +8,7 @@ const allServices = [
   { slug: 'campanas',             name: 'Campañas publicitarias',       desc: 'Meta Ads y Google Ads gestionados de punta a punta.',         href: '/servicios/campanas',             icon: MessageSquare },
   { slug: 'sistemas-internos',    name: 'Sistemas internos a medida',   desc: 'CRMs, dashboards y herramientas construidas para tu equipo.', href: '/servicios/sistemas-internos',    icon: LayoutDashboard },
   { slug: 'asesoria',             name: 'Asesoría de marketing',        desc: 'Estrategia, posicionamiento y roadmap de 90 días.',           href: '/servicios/asesoria',             icon: Zap },
+  { slug: 'funnel-labs',          name: 'FunnelLab',                    desc: 'Simulá tu funnel completo antes de gastar en publicidad.',    href: '/servicios/funnel-labs',          icon: TrendingUp },
 ]
 
 export function ServiciosRelacionados({ exclude }: { exclude: string }) {

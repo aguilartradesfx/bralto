@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Globe, BarChart3, MessageSquare, Zap, Cpu, LayoutDashboard } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Globe, BarChart3, MessageSquare, Zap, Cpu, LayoutDashboard, TrendingUp } from 'lucide-react'
 
 const AGENDAR = '/agendar'
 
@@ -57,6 +57,15 @@ const services = [
     from: 'A convenir',
     period: 'según formato',
     desc: 'Estrategia, posicionamiento y roadmap de 90 días para crecer con intención.',
+  },
+  {
+    icon: TrendingUp,
+    slug: 'funnel-labs',
+    name: 'FunnelLab',
+    href: '/servicios/funnel-labs',
+    from: 'Gratis',
+    period: 'para empezar',
+    desc: 'Simulá tu embudo de ventas completo, identificá cuellos de botella y elegí la estrategia más rentable antes de invertir.',
   },
 ]
 
