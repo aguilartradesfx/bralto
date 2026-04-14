@@ -18,7 +18,7 @@ const CTA_PHRASES = [
 ]
 
 const SLIDE_DURATION = 6000
-const TICK = 50
+const TICK = 100
 
 interface SlideData {
   industry: string
@@ -267,8 +267,8 @@ export function RobotSection() {
         </div>
       </div>
 
-      {/* Carousel — wider container */}
-      <div className="mx-auto max-w-[1556px] px-6">
+      {/* Carousel */}
+      <div className="mx-auto max-w-7xl px-6">
 
         {/* Carousel wrapper — external arrows on desktop */}
         <div className="relative lg:px-14">

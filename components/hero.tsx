@@ -87,11 +87,11 @@ export function Hero() {
         spotty={0.45}
         midSize={10}
         midIntensity={0}
-        density={0.38}
+        density={0.28}
         bloom={0.3}
-        speed={isMobile ? 0 : 0.4}
+        speed={isMobile ? 0 : 0.25}
         scale={1.6}
-        minPixelRatio={isMobile ? 1 : undefined}
+        minPixelRatio={1}
         style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
       />
 
