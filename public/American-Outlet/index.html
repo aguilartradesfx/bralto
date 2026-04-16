@@ -518,21 +518,85 @@
   .anim.vis { opacity: 1; transform: translateY(0); }
 
   /* ══════ RESPONSIVE ══════ */
+
+  /* Global overflow lock — fixes iOS Safari ignoring overflow-x on body */
+  html { overflow-x: hidden; max-width: 100%; }
+
   @media (max-width: 768px) {
+    /* Grids */
     .comp-grid, .weeks-grid { grid-template-columns: 1fr; }
     .benefits { grid-template-columns: 1fr; }
     .cal-timeline { grid-template-columns: 1fr 1fr; }
-    .proj-comparison { grid-template-columns: 1fr; }
-    .proj-arrow { transform: rotate(90deg); }
+    .proj-comparison { grid-template-columns: 1fr; gap: 12px; }
+    .proj-arrow { transform: rotate(90deg); text-align: center; }
     .proj-timeline { grid-template-columns: 1fr; }
+
+    /* Spacing */
     .hero { padding: 60px 20px; }
     section, .calendar-section { padding: 64px 0; }
-    .week-visual { height: 150px; }
-    .roadmap::before { left: 28px; }
-    .rm-row { grid-template-columns: 56px 1fr; gap: 14px; }
+    .container { padding: 0 18px; }
+
+    /* Week cards */
+    .week-visual { height: 140px; overflow: hidden; }
+    .week-visual svg { display: block; }
+
+    /* Service items — stack name and price vertically */
+    .svc-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .svc-price { margin-left: 0; text-align: left; }
+    .svc-source a {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Roadmap */
+    .roadmap::before { left: 22px; }
+    .rm-row { grid-template-columns: 48px 1fr; gap: 12px; padding: 20px 0; }
+    .rm-week-num { width: 36px; height: 36px; font-size: 0.65rem; }
+
+    /* Calendar totals */
+    .cal-totals { flex-wrap: wrap; gap: 16px 24px; }
+    .cal-total-divider { display: none; }
+
+    /* Monthly card */
+    .monthly-card-inner { flex-direction: column; text-align: center; padding: 24px 20px; }
+    .monthly-right { text-align: center; }
+    .monthly-includes { justify-content: center; }
+
+    /* Savings */
+    .savings { padding: 36px 20px; }
+    .savings-num { font-size: clamp(2.2rem, 10vw, 3.2rem); }
   }
+
   @media (max-width: 480px) {
     .cal-timeline { grid-template-columns: 1fr; }
+    .container { padding: 0 16px; }
+    .hero h1 { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+    .s-title { font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+
+    /* Comparison columns */
+    .comp-col { padding: 24px 18px; }
+    .svc-item { padding: 10px 12px; font-size: 0.82rem; }
+
+    /* Roadmap items */
+    .rm-item { padding: 10px 12px; }
+    .rm-item strong { font-size: 0.78rem; }
+    .rm-item span { font-size: 0.68rem; }
+
+    /* Projection phases */
+    .proj-col { padding: 24px 18px; }
+    .proj-metric-num { font-size: 1.1rem; }
+
+    /* Weekly strategy cards */
+    .week-body { padding: 16px 18px 20px; }
+    .week-body h4 { font-size: 0.95rem; }
+    .week-body p { font-size: 0.78rem; }
   }
 </style>
 </head>
