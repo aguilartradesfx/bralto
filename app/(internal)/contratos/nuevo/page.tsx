@@ -1,16 +1,29 @@
 import { createClient } from '@/lib/supabase/server'
 import { ContractForm } from '@/components/contracts/contract-form'
-import type { ClientRow } from '@/types/contracts'
+import type { ClientRow, ContractRow } from '@/types/contracts'
 
 export const metadata = { title: 'Nuevo contrato' }
 
-export default async function NuevoContratoPage() {
+interface Props {
+  searchParams: Promise<{ from?: string }>
+}
+
+export default async function NuevoContratoPage({ searchParams }: Props) {
+  const { from } = await searchParams
   const supabase = await createClient()
 
-  const { data: clientsData } = await supabase
-    .from('clients')
-    .select('*')
-    .order('empresa_nombre')
+  const [{ data: clientsData }, { data: sourceContract }] = await Promise.all([
+    supabase.from('clients').select('*').order('empresa_nombre'),
+    from
+      ? supabase.from('contracts').select('data, client_id').eq('id', from).single()
+      : Promise.resolve({ data: null }),
+  ])
+
+  const prefill = sourceContract
+    ? ({ data: sourceContract.data, client_id: sourceContract.client_id } as Partial<ContractRow>)
+    : undefined
+
+  const title = prefill ? 'Duplicar contrato' : 'Nuevo contrato'
 
   return (
     <div className="h-screen flex flex-col">
@@ -19,10 +32,10 @@ export default async function NuevoContratoPage() {
           ← Contratos
         </a>
         <span className="text-white/20">/</span>
-        <span className="text-sm text-white/70">Nuevo contrato</span>
+        <span className="text-sm text-white/70">{title}</span>
       </div>
       <div className="flex-1 overflow-hidden">
-        <ContractForm clients={(clientsData ?? []) as ClientRow[]} />
+        <ContractForm clients={(clientsData ?? []) as ClientRow[]} initialData={prefill} />
       </div>
     </div>
   )

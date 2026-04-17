@@ -75,7 +75,7 @@ const DEFAULT_VALUES: Partial<ContractDataInput> = {
 
 interface Props {
   clients: ClientRow[]
-  initialData?: ContractRow
+  initialData?: Partial<ContractRow>
 }
 
 export function ContractForm({ clients, initialData }: Props) {
@@ -133,8 +133,8 @@ export function ContractForm({ clients, initialData }: Props) {
 
   const saveDraft: SubmitHandler<ContractDataInput> = async (data) => {
     setSaving(true)
-    const url = initialData ? `/api/contracts/${initialData.id}` : '/api/contracts'
-    const method = initialData ? 'PATCH' : 'POST'
+    const url = initialData?.id ? `/api/contracts/${initialData.id}` : '/api/contracts'
+    const method = initialData?.id ? 'PATCH' : 'POST'
 
     const res = await fetch(url, {
       method,
@@ -145,13 +145,13 @@ export function ContractForm({ clients, initialData }: Props) {
     setSaving(false)
     if (res.ok) {
       const { contract } = await res.json()
-      if (!initialData) router.push(`/contratos/${contract.id}`)
+      if (!initialData?.id) router.push(`/contratos/${contract.id}`)
     }
   }
 
   const sendContract: SubmitHandler<ContractDataInput> = async (data) => {
     if (!initialData?.id) {
-      // Save first, then send
+      // Save first (new or duplicate), then send
       setSaving(true)
       const res = await fetch('/api/contracts', {
         method: 'POST',

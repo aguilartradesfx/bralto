@@ -8,7 +8,7 @@ import { SendButton } from '@/components/contracts/send-button'
 import { BraltoSignButton } from '@/components/contracts/bralto-sign-button'
 import { PrintButton } from '@/components/contracts/print-button'
 import { DeleteButton } from '@/components/contracts/delete-button'
-import { ExternalLink, Pencil } from 'lucide-react'
+import { Copy, ExternalLink, Pencil } from 'lucide-react'
 import type { ContractRow, ContractStatus } from '@/types/contracts'
 import { marked } from 'marked'
 
@@ -78,6 +78,14 @@ export default async function ContratoDetailPage({ params }: Props) {
           )}
 
           <PrintButton contractId={id} />
+
+          <Link
+            href={`/contratos/nuevo?from=${id}`}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm border border-white/15 text-white/70 hover:border-white/30 hover:text-white rounded-lg transition-colors"
+          >
+            <Copy size={13} />
+            Duplicar
+          </Link>
 
           {['draft', 'sent'].includes(c.status) && (
             <Link
