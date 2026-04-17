@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { resend, FROM } from '@/lib/email/resend'
+import { getResend, FROM } from '@/lib/email/resend'
 import { emailContractSent } from '@/lib/email/templates'
 
 export async function POST(
@@ -42,15 +42,17 @@ export async function POST(
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bralto.io'
   const publicUrl = `${siteUrl}/c/${contract.slug}`
 
-  // Send email to client
+  // Send email to client (non-blocking, never fails the response)
   const correo = existing.data?.cliente?.correo_notificaciones ?? existing.data?.cliente?.correo_facturacion
   if (correo) {
-    const { subject, html } = emailContractSent({
-      clienteName: existing.data?.cliente?.representante_nombre ?? 'Cliente',
-      empresa: existing.data?.cliente?.empresa_nombre ?? '',
-      contractUrl: publicUrl,
-    })
-    await resend.emails.send({ from: FROM, to: correo, subject, html }).catch(() => null)
+    try {
+      const { subject, html } = emailContractSent({
+        clienteName: existing.data?.cliente?.representante_nombre ?? 'Cliente',
+        empresa: existing.data?.cliente?.empresa_nombre ?? '',
+        contractUrl: publicUrl,
+      })
+      await getResend().emails.send({ from: FROM, to: correo, subject, html })
+    } catch { /* email failure never blocks the contract being sent */ }
   }
 
   return NextResponse.json({ contract, publicUrl })

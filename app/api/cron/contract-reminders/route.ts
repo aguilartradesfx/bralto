@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
-import { resend, FROM } from '@/lib/email/resend'
+import { getResend, FROM } from '@/lib/email/resend'
 import { emailContractReminder } from '@/lib/email/templates'
 
 // Vercel Cron — runs daily at 10am CR time (UTC-6 → 16:00 UTC)
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
       contractUrl: `${siteUrl}/c/${c.slug}`,
     })
 
-    const result = await resend.emails.send({ from: FROM, to: correo, subject, html }).catch(() => null)
+    const result = await getResend().emails.send({ from: FROM, to: correo, subject, html }).catch(() => null)
     if (result) {
       await supabase.from('contract_events').insert({
         contract_id: c.id,

@@ -33,7 +33,7 @@ export function SendButton({ contractId }: { contractId: string }) {
         className="flex items-center gap-2 px-3 py-1.5 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
       >
         <Send size={13} />
-        {loading ? 'Generando...' : 'Firmar y generar enlace'}
+        {loading ? 'Enviando...' : 'Firmar y enviar'}
       </button>
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
-import { resend, FROM } from '@/lib/email/resend'
+import { getResend, FROM } from '@/lib/email/resend'
 import { emailContractSigned } from '@/lib/email/templates'
 
 const signBody = z.object({
@@ -112,7 +112,7 @@ export async function POST(
       contractUrl,
       signedAt,
     })
-    await resend.emails.send({ from: FROM, to: correo, subject, html }).catch(() => null)
+    try { await getResend().emails.send({ from: FROM, to: correo, subject, html }) } catch { /* non-blocking */ }
   }
 
   const paymentLink = contract.data?.payment_link
