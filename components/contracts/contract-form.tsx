@@ -212,7 +212,7 @@ export function ContractForm({ clients, initialData }: Props) {
   return (
     <div className="flex gap-0 h-full">
       {/* ── Form panel ───────────────────────────────────────────── */}
-      <div className={`flex-1 overflow-y-auto pb-24 ${showPreview ? 'hidden md:block md:max-w-[55%]' : 'max-w-full'}`}>
+      <div id="form-scroll-panel" className={`flex-1 overflow-y-auto pb-24 ${showPreview ? 'hidden md:block md:max-w-[55%]' : 'max-w-full'}`}>
         <form
           onSubmit={handleSubmit(saveDraft)}
           className="p-6 space-y-5"
@@ -515,7 +515,16 @@ export function ContractForm({ clients, initialData }: Props) {
               <button
                 type="button"
                 disabled={saving || sending}
-                onClick={handleSubmit(sendContract, () => setSendError('Revisá los campos en rojo antes de continuar.'))}
+                onClick={handleSubmit(sendContract, (errs) => {
+                document.getElementById('form-scroll-panel')?.scrollTo({ top: 0, behavior: 'smooth' })
+                const sections: string[] = []
+                if (errs.cliente) sections.push('Cliente')
+                if (errs.proyecto) sections.push('Proyecto')
+                if (errs.pago) sections.push('Precio')
+                if (errs.servicios) sections.push('Servicios')
+                if (errs.payment_link) sections.push('Enlace de pago')
+                setSendError(sections.length ? `Campos incompletos: ${sections.join(', ')}` : 'Revisá el formulario antes de continuar.')
+              })}
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
               >
                 <Link2 size={14} />
