@@ -51,12 +51,20 @@ export async function POST(
         empresa: existing.data?.cliente?.empresa_nombre ?? '',
         contractUrl: publicUrl,
       })
-      const result = await getResend().emails.send({ from: FROM, to: correo, subject, html })
-      await supabase.from('contract_events').insert({
-        contract_id: id,
-        event_type: 'email_sent',
-        metadata: { to: correo, resend_id: (result as { id?: string })?.id ?? null },
-      })
+      const { data: emailData, error: emailError } = await getResend().emails.send({ from: FROM, to: correo, subject, html })
+      if (emailError) {
+        await supabase.from('contract_events').insert({
+          contract_id: id,
+          event_type: 'email_error',
+          metadata: { to: correo, error: JSON.stringify(emailError) },
+        })
+      } else {
+        await supabase.from('contract_events').insert({
+          contract_id: id,
+          event_type: 'email_sent',
+          metadata: { to: correo, resend_id: emailData?.id ?? null },
+        })
+      }
     } catch (err) {
       await supabase.from('contract_events').insert({
         contract_id: id,
