@@ -4,6 +4,31 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { ContractData } from '@/types/contracts'
 
+// Renders a signature data URL as an <img>, or a blank signature line if absent
+Handlebars.registerHelper('sigImg', (dataUrl: string | null | undefined) => {
+  if (dataUrl) {
+    return new Handlebars.SafeString(
+      `<img src="${dataUrl}" alt="Firma" style="max-height:64px;max-width:220px;display:block;margin:8px 0;object-fit:contain;" />`
+    )
+  }
+  return new Handlebars.SafeString(
+    `<div style="border-bottom:2px solid #374151;width:200px;height:64px;margin:8px 0;"></div>`
+  )
+})
+
+// Formats an ISO timestamp to a readable Spanish date/time
+Handlebars.registerHelper('formatTS', (iso: string | null | undefined) => {
+  if (!iso) return '—'
+  try {
+    return new Date(iso).toLocaleString('es-CR', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', timeZone: 'America/Costa_Rica',
+    })
+  } catch {
+    return iso
+  }
+})
+
 function applyDerivedFlags(data: ContractData): ContractData {
   const s = data.servicios
   return {

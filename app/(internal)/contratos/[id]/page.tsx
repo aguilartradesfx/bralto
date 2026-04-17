@@ -5,6 +5,8 @@ import { loadTemplate, renderContractMarkdown } from '@/lib/contracts/render'
 import { StatusBadge } from '@/components/contracts/status-badge'
 import { CopyButton } from '@/components/contracts/copy-button'
 import { SendButton } from '@/components/contracts/send-button'
+import { BraltoSignButton } from '@/components/contracts/bralto-sign-button'
+import { PrintButton } from '@/components/contracts/print-button'
 import { ExternalLink, Pencil } from 'lucide-react'
 import type { ContractRow, ContractStatus } from '@/types/contracts'
 import { marked } from 'marked'
@@ -26,8 +28,22 @@ export default async function ContratoDetailPage({ params }: Props) {
   if (!contract) notFound()
 
   const c = contract as ContractRow
+
+  // Inject signature data into the contract data before rendering
+  const dataWithFirma = {
+    ...c.data,
+    firma: {
+      ...(c.data?.firma ?? {}),
+      cliente_canvas: c.signature_client_data ?? null,
+      cliente_timestamp: c.signature_client_timestamp ?? null,
+      cliente_ip: c.signature_client_ip ?? null,
+      bralto_canvas: c.signature_bralto_data ?? null,
+      bralto_timestamp: c.signature_bralto_timestamp ?? null,
+    },
+  }
+
   const templateString = loadTemplate(c.template_version ?? 'v1')
-  const markdown = renderContractMarkdown(c.data, templateString)
+  const markdown = renderContractMarkdown(dataWithFirma, templateString)
   const html = String(marked.parse(markdown))
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bralto.io'
@@ -35,9 +51,9 @@ export default async function ContratoDetailPage({ params }: Props) {
   const isShareable = ['sent', 'viewed', 'signed_by_client', 'signed_fully'].includes(c.status)
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" id="print-contract">
       {/* Top bar */}
-      <div className="border-b border-white/[0.06] px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0d0d0d]/95 backdrop-blur z-10">
+      <div className="border-b border-white/[0.06] px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0d0d0d]/95 backdrop-blur z-10 no-print">
         <div className="flex items-center gap-3">
           <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors">
             ← Contratos
@@ -61,6 +77,8 @@ export default async function ContratoDetailPage({ params }: Props) {
             </div>
           )}
 
+          <PrintButton />
+
           {['draft', 'sent'].includes(c.status) && (
             <Link
               href={`/contratos/${id}/editar`}
@@ -72,12 +90,13 @@ export default async function ContratoDetailPage({ params }: Props) {
           )}
 
           {c.status === 'draft' && <SendButton contractId={id} />}
+          {c.status === 'signed_by_client' && <BraltoSignButton contractId={id} />}
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-10">
         {/* Metadata cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8 no-print">
           <InfoCard label="Cliente" value={c.data?.cliente?.empresa_nombre ?? '—'} />
           <InfoCard label="Paquete" value={c.data?.proyecto?.nombre_paquete ?? '—'} />
           <InfoCard
@@ -87,12 +106,12 @@ export default async function ContratoDetailPage({ params }: Props) {
         </div>
 
         {/* Signature evidence */}
-        {c.status === 'signed_by_client' || c.status === 'signed_fully' ? (
-          <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+        {(c.status === 'signed_by_client' || c.status === 'signed_fully') && (
+          <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl no-print">
             <p className="text-sm font-medium text-green-400 mb-2">Firmado por el cliente</p>
             <div className="grid grid-cols-2 gap-3 text-xs text-white/50">
               <div>
-                <span className="text-white/30">Timestamp:</span>{' '}
+                <span className="text-white/30">Fecha:</span>{' '}
                 {c.signature_client_timestamp
                   ? new Date(c.signature_client_timestamp).toLocaleString('es-CR')
                   : '—'}
@@ -105,12 +124,21 @@ export default async function ContratoDetailPage({ params }: Props) {
               </div>
             </div>
           </div>
-        ) : null}
+        )}
+
+        {c.status === 'signed_by_client' && (
+          <div className="mb-8 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl no-print">
+            <p className="text-sm font-medium text-orange-400">
+              Esperando tu firma — usá el botón &quot;Firmar como Bralto&quot; para completar el contrato.
+            </p>
+          </div>
+        )}
 
         {/* Contract rendered */}
         <div className="bg-white rounded-2xl shadow-xl p-10">
           <div
-            className="prose prose-sm max-w-none contract-document"
+            className="contract-document"
+            style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         </div>
@@ -127,4 +155,3 @@ function InfoCard({ label, value }: { label: string; value: string }) {
     </div>
   )
 }
-

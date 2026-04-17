@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { StatusBadge } from '@/components/contracts/status-badge'
 import { CopyButton } from '@/components/contracts/copy-button'
+import { ClickableRow } from '@/components/contracts/clickable-row'
 import { Plus, FileText, ExternalLink } from 'lucide-react'
 import type { ContractRow, ContractStatus } from '@/types/contracts'
 
@@ -111,7 +112,7 @@ export default async function ContratosPage({ searchParams }: Props) {
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
               {filtered.map((contract) => (
-                <tr key={contract.id} className="hover:bg-white/[0.02] transition-colors">
+                <ClickableRow key={contract.id} href={`/contratos/${contract.id}`}>
                   <td className="px-4 py-3">
                     <p className="text-sm text-white font-medium">
                       {contract.data?.cliente?.empresa_nombre ?? '—'}
@@ -155,7 +156,7 @@ export default async function ContratosPage({ searchParams }: Props) {
                       )}
                     </div>
                   </td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

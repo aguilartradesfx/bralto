@@ -76,28 +76,40 @@ body {
 }
 
 
-/* ── Contract preview (forces dark text on white background) ────── */
+/* ── Contract preview + document (forces dark text on white background) ── */
 .contract-preview,
-.contract-preview * {
+.contract-preview *,
+.contract-document,
+.contract-document * {
   color: #111111 !important;
 }
-.contract-preview h1,
-.contract-preview h2,
-.contract-preview h3 {
+.contract-preview h1, .contract-document h1,
+.contract-preview h2, .contract-document h2,
+.contract-preview h3, .contract-document h3 {
   color: #000000 !important;
   font-weight: 700;
   margin-top: 1.5em;
   margin-bottom: 0.5em;
 }
-.contract-preview h1 { font-size: 1.4rem; }
-.contract-preview h2 { font-size: 1.15rem; }
-.contract-preview h3 { font-size: 1rem; }
-.contract-preview p  { margin-bottom: 0.75em; line-height: 1.7; font-size: 0.875rem; }
-.contract-preview ul,
-.contract-preview ol { padding-left: 1.5em; margin-bottom: 0.75em; }
-.contract-preview li { margin-bottom: 0.25em; font-size: 0.875rem; line-height: 1.6; }
-.contract-preview strong { font-weight: 700; }
-.contract-preview hr   { border-color: #e5e7eb; margin: 1.5em 0; }
+.contract-preview h1, .contract-document h1 { font-size: 1.25rem; text-align: center; }
+.contract-preview h2, .contract-document h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.contract-preview h3, .contract-document h3 { font-size: 0.9rem; }
+.contract-preview p, .contract-document p   { margin-bottom: 0.75em; line-height: 1.75; font-size: 0.875rem; text-align: justify; }
+.contract-preview ul, .contract-document ul,
+.contract-preview ol, .contract-document ol { padding-left: 1.5em; margin-bottom: 0.75em; }
+.contract-preview li, .contract-document li { margin-bottom: 0.25em; font-size: 0.875rem; line-height: 1.7; }
+.contract-preview strong, .contract-document strong { font-weight: 700; color: #000 !important; }
+.contract-preview hr, .contract-document hr { border-color: #e5e7eb; margin: 1.5em 0; }
+.contract-document td { color: #111111 !important; }
+
+/* ── Print / PDF ─────────────────────────────────────────────────── */
+@media print {
+  body > *:not(#print-contract) { display: none !important; }
+  #print-contract { display: block !important; }
+  .no-print { display: none !important; }
+  .contract-document { font-family: Georgia, serif; color: #000 !important; }
+  .contract-document * { color: #000 !important; }
+}
 
 /* Robot section styles (per spec) */
 .robot-container {

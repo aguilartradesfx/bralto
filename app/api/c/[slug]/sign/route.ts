@@ -32,7 +32,7 @@ export async function POST(
   // Fetch contract
   const { data: contract } = await supabase
     .from('contracts')
-    .select('id, status')
+    .select('id, status, data')
     .eq('slug', slug)
     .single()
 
@@ -52,6 +52,19 @@ export async function POST(
   const userAgent = req.headers.get('user-agent') ?? ''
   const now = new Date()
 
+  // Also embed firma in data so it renders in the document
+  const updatedData = {
+    ...contract.data,
+    firma: {
+      ...(contract.data?.firma ?? {}),
+      cliente_canvas: signature,
+      cliente_timestamp: now.toISOString(),
+      cliente_ip: ip,
+      cliente_user_agent: userAgent,
+      cliente_aceptacion_terminos: accepted_terms,
+    },
+  }
+
   const { error } = await supabase
     .from('contracts')
     .update({
@@ -62,6 +75,7 @@ export async function POST(
       signature_client_user_agent: userAgent,
       signature_client_accepted_terms: accepted_terms,
       signed_at: now.toISOString(),
+      data: updatedData,
     })
     .eq('id', contract.id)
 

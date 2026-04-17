@@ -12,14 +12,19 @@ interface Props {
 export function SignaturePad({ slug }: Props) {
   const router = useRouter()
   const sigRef = useRef<SignatureCanvas>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [accepted, setAccepted] = useState(false)
   const [isEmpty, setIsEmpty] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [canvasWidth, setCanvasWidth] = useState(500)
 
-  // Mark view event when component mounts
+  // Mark view event when component mounts + set canvas width to container
   useEffect(() => {
     fetch(`/api/c/${slug}/view`, { method: 'POST' }).catch(() => null)
+    if (containerRef.current) {
+      setCanvasWidth(containerRef.current.offsetWidth - 4)
+    }
   }, [slug])
 
   function handleClear() {
@@ -92,15 +97,18 @@ export function SignaturePad({ slug }: Props) {
                 Limpiar
               </button>
             </div>
-            <div className={`border-2 rounded-lg overflow-hidden transition-colors ${
-              isEmpty ? 'border-gray-200' : 'border-gray-400'
-            }`}>
+            <div
+              ref={containerRef}
+              className={`border-2 rounded-lg overflow-hidden transition-colors ${
+                isEmpty ? 'border-gray-200' : 'border-gray-400'
+              }`}
+            >
               <SignatureCanvas
                 ref={sigRef}
                 onEnd={handleDrawEnd}
                 penColor="#1a1a1a"
                 canvasProps={{
-                  width: 500,
+                  width: canvasWidth,
                   height: 120,
                   className: 'w-full touch-none bg-gray-50',
                   style: { display: 'block' },
