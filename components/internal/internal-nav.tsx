@@ -3,8 +3,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FileText, Users, LogOut } from 'lucide-react'
+import { FileText, Users, LogOut, Menu, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { useState } from 'react'
 
 const navItems = [
   { href: '/contratos', label: 'Contratos', icon: FileText },
@@ -14,6 +15,7 @@ const navItems = [
 export function InternalNav() {
   const pathname = usePathname()
   const router = useRouter()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   async function handleLogout() {
     const supabase = createClient()
@@ -22,8 +24,8 @@ export function InternalNav() {
     router.refresh()
   }
 
-  return (
-    <aside className="fixed left-0 top-0 h-full w-56 bg-[#111111] border-r border-white/[0.06] flex flex-col z-40">
+  const navContent = (
+    <>
       {/* Logo */}
       <div className="px-5 py-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
@@ -42,6 +44,7 @@ export function InternalNav() {
             <Link
               key={href}
               href={href}
+              onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 active
                   ? 'bg-orange-500/10 text-orange-400'
@@ -65,6 +68,42 @@ export function InternalNav() {
           Cerrar sesión
         </button>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex fixed left-0 top-0 h-full w-56 bg-[#111111] border-r border-white/[0.06] flex-col z-40">
+        {navContent}
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-[#111111] border-b border-white/[0.06] flex items-center justify-between px-4 z-40">
+        <div className="flex items-center gap-2">
+          <Image src="/logo-white.svg" alt="Bralto" width={80} height={20} className="h-5 w-auto object-contain" />
+          <span className="text-orange-500 text-[10px] font-medium uppercase tracking-widest">interno</span>
+        </div>
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="text-white/60 hover:text-white p-1"
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-50" onClick={() => setMobileOpen(false)}>
+          <div className="absolute inset-0 bg-black/60" />
+          <aside
+            className="absolute left-0 top-0 h-full w-64 bg-[#111111] border-r border-white/[0.06] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {navContent}
+          </aside>
+        </div>
+      )}
+    </>
   )
 }

@@ -10,7 +10,7 @@ export default async function InternalLayout({ children }: { children: React.Rea
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <InternalNav />
-      <main className="ml-56 min-h-screen">{children}</main>
+      <main className="pt-14 md:pt-0 md:ml-56 min-h-screen">{children}</main>
     </div>
   )
 }

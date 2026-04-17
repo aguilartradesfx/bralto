@@ -44,9 +44,9 @@ export default async function ContratosPage({ searchParams }: Props) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bralto.io'
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-4 md:p-8 max-w-6xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6 md:mb-8">
         <div>
           <h1 className="text-xl font-semibold text-white">Contratos</h1>
           <p className="text-sm text-white/40 mt-0.5">{filtered.length} contrato(s)</p>
@@ -76,15 +76,15 @@ export default async function ContratosPage({ searchParams }: Props) {
           </Link>
         ))}
 
-        <form method="GET" action="/contratos" className="ml-auto">
+        <form method="GET" action="/contratos" className="w-full md:w-auto md:ml-auto mt-2 md:mt-0">
           {status && status !== 'all' && (
             <input type="hidden" name="status" value={status} />
           )}
           <input
             name="q"
             defaultValue={q}
-            placeholder="Buscar cliente o paquete..."
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/60 w-64"
+            placeholder="Buscar..."
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/60 w-full md:w-56"
           />
         </form>
       </div>
@@ -99,8 +99,8 @@ export default async function ContratosPage({ searchParams }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.08] overflow-hidden">
-          <table className="w-full">
+        <div className="rounded-xl border border-white/[0.08] overflow-hidden overflow-x-auto">
+          <table className="w-full min-w-[560px]">
             <thead className="bg-white/[0.03] border-b border-white/[0.06]">
               <tr>
                 <th className="text-left px-4 py-3 text-xs text-white/40 font-medium">Cliente</th>

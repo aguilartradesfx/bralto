@@ -53,23 +53,22 @@ export default async function ContratoDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen" id="print-contract">
       {/* Top bar */}
-      <div className="border-b border-white/[0.06] px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0d0d0d]/95 backdrop-blur z-10 no-print">
+      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 md:top-0 bg-[#0d0d0d]/95 backdrop-blur z-10 no-print">
         <div className="flex items-center gap-3">
-          <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors">
+          <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors shrink-0">
             ← Contratos
           </Link>
           <span className="text-white/20">/</span>
-          <span className="text-sm text-white/70 truncate max-w-xs">
+          <span className="text-sm text-white/70 truncate">
             {c.data?.cliente?.empresa_nombre ?? id}
           </span>
+          <StatusBadge status={c.status as ContractStatus} />
         </div>
 
-        <div className="flex items-center gap-3">
-          <StatusBadge status={c.status as ContractStatus} />
-
+        <div className="flex items-center gap-2 flex-wrap">
           {isShareable && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] rounded-lg text-xs text-white/50">
-              <span className="truncate max-w-[200px]">{publicUrl}</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] rounded-lg text-xs text-white/50 min-w-0">
+              <span className="truncate max-w-[140px] md:max-w-[200px]">{publicUrl}</span>
               <CopyButton text={publicUrl} />
               <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-orange-400 transition-colors">
                 <ExternalLink size={12} />
@@ -77,7 +76,7 @@ export default async function ContratoDetailPage({ params }: Props) {
             </div>
           )}
 
-          <PrintButton />
+          <PrintButton contractId={id} />
 
           {['draft', 'sent'].includes(c.status) && (
             <Link
@@ -94,9 +93,9 @@ export default async function ContratoDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10">
         {/* Metadata cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8 no-print">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 no-print">
           <InfoCard label="Cliente" value={c.data?.cliente?.empresa_nombre ?? '—'} />
           <InfoCard label="Paquete" value={c.data?.proyecto?.nombre_paquete ?? '—'} />
           <InfoCard

@@ -196,7 +196,7 @@ export function ContractForm({ clients, initialData }: Props) {
   return (
     <div className="flex gap-0 h-full">
       {/* ── Form panel ───────────────────────────────────────────── */}
-      <div className={`flex-1 overflow-y-auto pb-24 ${showPreview ? 'max-w-[55%]' : 'max-w-full'}`}>
+      <div className={`flex-1 overflow-y-auto pb-24 ${showPreview ? 'hidden md:block md:max-w-[55%]' : 'max-w-full'}`}>
         <form
           onSubmit={handleSubmit(saveDraft)}
           className="p-6 space-y-5"
@@ -432,7 +432,7 @@ export function ContractForm({ clients, initialData }: Props) {
         </form>
 
         {/* ── Sticky bottom bar ────────────────────────────────── */}
-        <div className="fixed bottom-0 left-56 right-0 bg-[#0d0d0d]/95 backdrop-blur border-t border-white/[0.06] px-6 py-4 flex items-center justify-between gap-4 z-30">
+        <div className="fixed bottom-0 left-0 md:left-56 right-0 bg-[#0d0d0d]/95 backdrop-blur border-t border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 z-30">
           {publicUrl ? (
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <Link2 size={14} className="text-green-400 shrink-0" />
@@ -491,7 +491,7 @@ export function ContractForm({ clients, initialData }: Props) {
 
       {/* ── Live preview panel ───────────────────────────────────── */}
       {showPreview && (
-        <div className="w-[45%] border-l border-white/[0.06] overflow-y-auto bg-[#0a0a0a]">
+        <div className="flex-1 md:w-[45%] md:flex-none border-l border-white/[0.06] overflow-y-auto bg-[#0a0a0a]">
           <div className="sticky top-0 bg-[#0a0a0a] px-4 py-3 border-b border-white/[0.04] flex items-center justify-between z-10">
             <span className="text-xs text-white/30 font-medium uppercase tracking-wider">Vista previa</span>
             <span className="text-xs text-white/20">Se actualiza automáticamente</span>

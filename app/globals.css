@@ -102,14 +102,6 @@ body {
 .contract-preview hr, .contract-document hr { border-color: #e5e7eb; margin: 1.5em 0; }
 .contract-document td { color: #111111 !important; }
 
-/* ── Print / PDF ─────────────────────────────────────────────────── */
-@media print {
-  body > *:not(#print-contract) { display: none !important; }
-  #print-contract { display: block !important; }
-  .no-print { display: none !important; }
-  .contract-document { font-family: Georgia, serif; color: #000 !important; }
-  .contract-document * { color: #000 !important; }
-}
 
 /* Robot section styles (per spec) */
 .robot-container {
