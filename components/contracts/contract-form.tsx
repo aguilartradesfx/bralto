@@ -502,7 +502,7 @@ export function ContractForm({ clients, initialData }: Props) {
               className="flex items-center gap-2 px-4 py-2 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               <Link2 size={14} />
-              {sending ? 'Generando...' : 'Generar enlace compartible'}
+              {sending ? 'Enviando...' : 'Firmar y enviar'}
             </button>
           </div>
         </div>
