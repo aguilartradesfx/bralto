@@ -1,4 +1,4 @@
-const LOGO_URL = 'https://bralto.io/logo.png'
+const LOGO_URL = 'https://bralto.io/logo-white.svg'
 const ORANGE = '#ff6700'
 const DARK = '#0a0a0a'
 
