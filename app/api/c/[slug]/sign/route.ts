@@ -112,7 +112,20 @@ export async function POST(
       contractUrl,
       signedAt,
     })
-    try { await getResend().emails.send({ from: FROM, to: correo, subject, html }) } catch { /* non-blocking */ }
+    try {
+      const result = await getResend().emails.send({ from: FROM, to: correo, subject, html })
+      await supabase.from('contract_events').insert({
+        contract_id: contract.id,
+        event_type: 'email_sent',
+        metadata: { to: correo, resend_id: (result as { id?: string })?.id ?? null },
+      })
+    } catch (err) {
+      await supabase.from('contract_events').insert({
+        contract_id: contract.id,
+        event_type: 'email_error',
+        metadata: { to: correo, error: String(err) },
+      })
+    }
   }
 
   const paymentLink = contract.data?.payment_link

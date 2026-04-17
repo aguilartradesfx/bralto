@@ -51,8 +51,19 @@ export async function POST(
         empresa: existing.data?.cliente?.empresa_nombre ?? '',
         contractUrl: publicUrl,
       })
-      await getResend().emails.send({ from: FROM, to: correo, subject, html })
-    } catch { /* email failure never blocks the contract being sent */ }
+      const result = await getResend().emails.send({ from: FROM, to: correo, subject, html })
+      await supabase.from('contract_events').insert({
+        contract_id: id,
+        event_type: 'email_sent',
+        metadata: { to: correo, resend_id: (result as { id?: string })?.id ?? null },
+      })
+    } catch (err) {
+      await supabase.from('contract_events').insert({
+        contract_id: id,
+        event_type: 'email_error',
+        metadata: { to: correo, error: String(err) },
+      })
+    }
   }
 
   return NextResponse.json({ contract, publicUrl })
