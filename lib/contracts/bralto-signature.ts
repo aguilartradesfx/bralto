@@ -6,8 +6,8 @@ let _cached: string | null = null
 
 export function getBraltoSignatureDataUrl(): string {
   if (_cached) return _cached
-  const svg = readFileSync(join(process.cwd(), 'lib', 'contracts', 'firma-bralto.svg'), 'utf-8')
-  _cached = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
+  const png = readFileSync(join(process.cwd(), 'lib', 'contracts', 'firma-bralto.png'))
+  _cached = `data:image/png;base64,${png.toString('base64')}`
   return _cached
 }
 
