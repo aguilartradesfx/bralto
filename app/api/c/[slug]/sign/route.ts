@@ -32,7 +32,7 @@ export async function POST(
   // Fetch contract
   const { data: contract } = await supabase
     .from('contracts')
-    .select('id, status, data')
+    .select('id, status, data, signature_bralto_data')
     .eq('slug', slug)
     .single()
 
