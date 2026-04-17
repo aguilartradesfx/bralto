@@ -17,22 +17,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { data: formData, client_id } = body as { data: unknown; client_id?: string }
+  const { data: formData, client_id, draft } = body as { data: unknown; client_id?: string; draft?: boolean }
 
-  const parsed = contractDataSchema.safeParse(formData)
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  let dataToSave: unknown
+  if (draft) {
+    dataToSave = formData
+  } else {
+    const parsed = contractDataSchema.safeParse(formData)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    }
+    dataToSave = parsed.data
   }
 
-  const slug = generateContractSlug(parsed.data.cliente.empresa_nombre)
+  const empresaNombre = (dataToSave as { cliente?: { empresa_nombre?: string } })?.cliente?.empresa_nombre ?? 'borrador'
+  const slug = generateContractSlug(empresaNombre || 'borrador')
   const braltoSig = getBraltoSignatureDataUrl()
   const braltoTs = new Date().toISOString()
 
-  // Embed Bralto's pre-made signature into the contract data
   const dataWithBraltoSig = {
-    ...parsed.data,
+    ...(dataToSave as Record<string, unknown>),
     firma: {
-      ...(parsed.data.firma ?? {}),
+      ...((dataToSave as { firma?: Record<string, unknown> })?.firma ?? {}),
       bralto_canvas: braltoSig,
       bralto_timestamp: braltoTs,
     },

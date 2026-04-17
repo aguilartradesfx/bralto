@@ -27,7 +27,7 @@ export const proyectoSchema = z.object({
 
 export const pagoSchema = z
   .object({
-    monto_inicial: z.number().positive('El monto debe ser mayor a 0'),
+    monto_inicial: z.number().positive('El monto inicial debe ser mayor a 0'),
     monto_inicial_letras: z.string().min(1, 'Monto en letras requerido'),
     tiene_mensualidad: z.boolean(),
     monto_mensual: z.number().positive().nullable().optional(),

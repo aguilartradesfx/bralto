@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import { useForm, type SubmitHandler } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
+import type { SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Link2, Save } from 'lucide-react'
@@ -57,9 +58,9 @@ const DEFAULT_VALUES: Partial<ContractDataInput> = {
     tiene_referencias_visuales: false,
   },
   pago: {
-    monto_inicial: 0,
+    monto_inicial: undefined as unknown as number,
     monto_inicial_letras: '',
-    tiene_mensualidad: true,
+    tiene_mensualidad: false,
     monto_mensual: null,
     monto_mensual_letras: null,
   },
@@ -116,37 +117,23 @@ export function ContractForm({ clients, initialData }: Props) {
 
   useMemo(() => { refreshPreview() }, [refreshPreview])
 
-  function handleMontoInicialChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = parseFloat(e.target.value)
-    if (!isNaN(val) && val > 0) {
-      setValue('pago.monto_inicial', val)
-      setValue('pago.monto_inicial_letras', numberToWords(val))
-    }
-  }
-
-  function handleMontoMensualChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = parseFloat(e.target.value)
-    if (!isNaN(val) && val > 0) {
-      setValue('pago.monto_mensual', val)
-      setValue('pago.monto_mensual_letras', numberToWords(val))
-    }
-  }
-
-  const saveDraft: SubmitHandler<ContractDataInput> = async (data) => {
+  const saveDraft = async () => {
     setSaving(true)
-    const url = initialData?.id ? `/api/contracts/${initialData.id}` : '/api/contracts'
-    const method = initialData?.id ? 'PATCH' : 'POST'
-
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data, client_id: selectedClientId }),
-    })
-
-    setSaving(false)
-    if (res.ok) {
-      const { contract } = await res.json()
-      if (!initialData?.id) router.push(`/contratos/${contract.id}`)
+    try {
+      const data = form.getValues()
+      const url = initialData?.id ? `/api/contracts/${initialData.id}` : '/api/contracts'
+      const method = initialData?.id ? 'PATCH' : 'POST'
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data, client_id: selectedClientId, draft: true }),
+      })
+      if (res.ok) {
+        const { contract } = await res.json()
+        if (!initialData?.id) router.push(`/contratos/${contract.id}`)
+      }
+    } catch { /* silent */ } finally {
+      setSaving(false)
     }
   }
 
@@ -390,8 +377,13 @@ export function ContractForm({ clients, initialData }: Props) {
                     type="number"
                     min="0"
                     step="0.01"
-                    defaultValue={initialData?.data?.pago?.monto_inicial || ''}
-                    onChange={handleMontoInicialChange}
+                    {...register('pago.monto_inicial', {
+                      valueAsNumber: true,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                        const val = parseFloat(e.target.value)
+                        setValue('pago.monto_inicial_letras', !isNaN(val) && val > 0 ? numberToWords(val) : '')
+                      },
+                    })}
                     className={fieldClass}
                     placeholder="3500"
                   />
@@ -425,8 +417,13 @@ export function ContractForm({ clients, initialData }: Props) {
                       type="number"
                       min="0"
                       step="0.01"
-                      defaultValue={initialData?.data?.pago?.monto_mensual ?? ''}
-                      onChange={handleMontoMensualChange}
+                      {...register('pago.monto_mensual', {
+                        valueAsNumber: true,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                          const val = parseFloat(e.target.value)
+                          setValue('pago.monto_mensual_letras', !isNaN(val) && val > 0 ? numberToWords(val) : null)
+                        },
+                      })}
                       className={fieldClass}
                       placeholder="750"
                     />
@@ -504,7 +501,7 @@ export function ContractForm({ clients, initialData }: Props) {
             <button
               type="button"
               disabled={saving}
-              onClick={handleSubmit(saveDraft)}
+              onClick={saveDraft}
               className="flex items-center gap-2 px-4 py-2 text-sm border border-white/15 text-white/70 hover:border-white/30 hover:text-white rounded-lg transition-colors disabled:opacity-50"
             >
               <Save size={14} />
