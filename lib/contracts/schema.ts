@@ -100,7 +100,7 @@ export const contractDataSchema = z.object({
   servicios: serviciosSchema,
   entregables: z.array(entregableSchema).optional(),
   firma: firmaSchema.optional(),
-  payment_link: z.string().url('URL inválida').optional().or(z.literal('')),
+  payment_link: z.string().optional(),
 })
 
 export type ContractDataInput = z.infer<typeof contractDataSchema>

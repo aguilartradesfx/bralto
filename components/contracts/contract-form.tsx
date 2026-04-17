@@ -87,6 +87,7 @@ export function ContractForm({ clients, initialData }: Props) {
   const [showPreview, setShowPreview] = useState(true)
   const [saving, setSaving] = useState(false)
   const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
   const [publicUrl, setPublicUrl] = useState<string | null>(null)
   const [customVigencia, setCustomVigencia] = useState(false)
 
@@ -150,39 +151,54 @@ export function ContractForm({ clients, initialData }: Props) {
   }
 
   const sendContract: SubmitHandler<ContractDataInput> = async (data) => {
-    if (!initialData?.id) {
-      // Save first (new or duplicate), then send
+    setSendError(null)
+    try {
+      let contractId: string
       setSaving(true)
-      const res = await fetch('/api/contracts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data, client_id: selectedClientId }),
-      })
-      setSaving(false)
-      if (!res.ok) return
-      const { contract } = await res.json()
-      await doSend(contract.id)
-      router.push(`/contratos/${contract.id}`)
-    } else {
-      // Update then send
-      setSaving(true)
-      await fetch(`/api/contracts/${initialData.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data, client_id: selectedClientId }),
-      })
-      setSaving(false)
-      await doSend(initialData.id)
-    }
-  }
+      if (!initialData?.id) {
+        const res = await fetch('/api/contracts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data, client_id: selectedClientId }),
+        })
+        setSaving(false)
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          setSendError(body.error ?? `Error al guardar (${res.status})`)
+          return
+        }
+        const { contract } = await res.json()
+        contractId = contract.id
+      } else {
+        const res = await fetch(`/api/contracts/${initialData.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data, client_id: selectedClientId }),
+        })
+        setSaving(false)
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          setSendError(body.error ?? `Error al guardar (${res.status})`)
+          return
+        }
+        contractId = initialData.id
+      }
 
-  async function doSend(id: string) {
-    setSending(true)
-    const res = await fetch(`/api/contracts/${id}/send`, { method: 'POST' })
-    setSending(false)
-    if (res.ok) {
-      const { publicUrl: url } = await res.json()
-      setPublicUrl(url)
+      setSending(true)
+      const sendRes = await fetch(`/api/contracts/${contractId}/send`, { method: 'POST' })
+      setSending(false)
+      if (sendRes.ok) {
+        const { publicUrl: url } = await sendRes.json()
+        setPublicUrl(url)
+        if (!initialData?.id) router.push(`/contratos/${contractId}`)
+      } else {
+        const body = await sendRes.json().catch(() => ({}))
+        setSendError(body.error ?? `Error al enviar (${sendRes.status})`)
+      }
+    } catch {
+      setSaving(false)
+      setSending(false)
+      setSendError('Error de red. Verificá tu conexión.')
     }
   }
 
@@ -495,15 +511,18 @@ export function ContractForm({ clients, initialData }: Props) {
               {saving ? 'Guardando...' : 'Guardar borrador'}
             </button>
 
-            <button
-              type="button"
-              disabled={saving || sending}
-              onClick={handleSubmit(sendContract)}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-            >
-              <Link2 size={14} />
-              {sending ? 'Enviando...' : 'Firmar y enviar'}
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                type="button"
+                disabled={saving || sending}
+                onClick={handleSubmit(sendContract, () => setSendError('Revisá los campos en rojo antes de continuar.'))}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              >
+                <Link2 size={14} />
+                {saving ? 'Guardando...' : sending ? 'Enviando...' : 'Firmar y enviar'}
+              </button>
+              {sendError && <p className="text-xs text-red-400 max-w-[200px] text-right">{sendError}</p>}
+            </div>
           </div>
         </div>
       </div>
