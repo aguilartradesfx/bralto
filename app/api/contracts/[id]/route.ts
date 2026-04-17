@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { contractDataSchema } from '@/lib/contracts/schema'
+import { getBraltoSignatureDataUrl } from '@/lib/contracts/bralto-signature'
 
 export async function PATCH(
   req: Request,
@@ -15,7 +16,7 @@ export async function PATCH(
   // Only draft contracts can be edited
   const { data: existing } = await supabase
     .from('contracts')
-    .select('id, status')
+    .select('id, status, data, signature_bralto_data, signature_bralto_timestamp')
     .eq('id', id)
     .single()
 
@@ -38,11 +39,26 @@ export async function PATCH(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
+  // Preserve (or re-apply) Bralto signature on edit
+  const braltoSig = existing.signature_bralto_data ?? getBraltoSignatureDataUrl()
+  const braltoTs = existing.signature_bralto_timestamp ?? new Date().toISOString()
+
+  const dataWithBraltoSig = {
+    ...parsed.data,
+    firma: {
+      ...(parsed.data.firma ?? {}),
+      bralto_canvas: braltoSig,
+      bralto_timestamp: braltoTs,
+    },
+  }
+
   const { data: contract, error } = await supabase
     .from('contracts')
     .update({
-      data: parsed.data,
+      data: dataWithBraltoSig,
       client_id: client_id ?? null,
+      signature_bralto_data: braltoSig,
+      signature_bralto_timestamp: braltoTs,
     })
     .eq('id', id)
     .select()

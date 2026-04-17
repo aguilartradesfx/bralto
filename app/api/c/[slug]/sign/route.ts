@@ -65,10 +65,13 @@ export async function POST(
     },
   }
 
+  // If Bralto already pre-signed, go straight to signed_fully
+  const newStatus = contract.signature_bralto_data ? 'signed_fully' : 'signed_by_client'
+
   const { error } = await supabase
     .from('contracts')
     .update({
-      status: 'signed_by_client',
+      status: newStatus,
       signature_client_data: signature,
       signature_client_timestamp: now.toISOString(),
       signature_client_ip: ip,

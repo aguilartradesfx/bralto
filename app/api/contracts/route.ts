@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { contractDataSchema } from '@/lib/contracts/schema'
 import { generateContractSlug } from '@/lib/contracts/slug'
+import { getBraltoSignatureDataUrl } from '@/lib/contracts/bralto-signature'
 
 export async function POST(req: Request) {
   const supabase = await createClient()
@@ -24,23 +25,36 @@ export async function POST(req: Request) {
   }
 
   const slug = generateContractSlug(parsed.data.cliente.empresa_nombre)
+  const braltoSig = getBraltoSignatureDataUrl()
+  const braltoTs = new Date().toISOString()
+
+  // Embed Bralto's pre-made signature into the contract data
+  const dataWithBraltoSig = {
+    ...parsed.data,
+    firma: {
+      ...(parsed.data.firma ?? {}),
+      bralto_canvas: braltoSig,
+      bralto_timestamp: braltoTs,
+    },
+  }
 
   const { data: contract, error } = await supabase
     .from('contracts')
     .insert({
       slug,
       status: 'draft',
-      data: parsed.data,
+      data: dataWithBraltoSig,
       template_version: 'v1',
       client_id: client_id ?? null,
       created_by: user.id,
+      signature_bralto_data: braltoSig,
+      signature_bralto_timestamp: braltoTs,
     })
     .select()
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // Log creation event
   await supabase.from('contract_events').insert({
     contract_id: contract.id,
     event_type: 'created',
