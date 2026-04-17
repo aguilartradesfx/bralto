@@ -7,6 +7,7 @@ import { CopyButton } from '@/components/contracts/copy-button'
 import { SendButton } from '@/components/contracts/send-button'
 import { BraltoSignButton } from '@/components/contracts/bralto-sign-button'
 import { PrintButton } from '@/components/contracts/print-button'
+import { DeleteButton } from '@/components/contracts/delete-button'
 import { ExternalLink, Pencil } from 'lucide-react'
 import type { ContractRow, ContractStatus } from '@/types/contracts'
 import { marked } from 'marked'
@@ -52,8 +53,8 @@ export default async function ContratoDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen" id="print-contract">
-      {/* Top bar */}
-      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 md:top-0 bg-[#0d0d0d]/95 backdrop-blur z-10 no-print">
+      {/* Top bar — offset below mobile nav (h-14) */}
+      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 bg-[#0d0d0d]/95 backdrop-blur z-10 no-print">
         <div className="flex items-center gap-3">
           <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors shrink-0">
             ← Contratos
@@ -89,6 +90,7 @@ export default async function ContratoDetailPage({ params }: Props) {
           )}
 
           {c.status === 'draft' && <SendButton contractId={id} />}
+          {c.status === 'draft' && <DeleteButton contractId={id} />}
           {c.status === 'signed_by_client' && <BraltoSignButton contractId={id} />}
         </div>
       </div>
