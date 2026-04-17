@@ -374,7 +374,7 @@ export function ContractForm({ clients, initialData }: Props) {
                     type="number"
                     min="0"
                     step="0.01"
-                    defaultValue={initialData?.data.pago.monto_inicial || ''}
+                    defaultValue={initialData?.data?.pago?.monto_inicial || ''}
                     onChange={handleMontoInicialChange}
                     className={fieldClass}
                     placeholder="3500"
@@ -409,7 +409,7 @@ export function ContractForm({ clients, initialData }: Props) {
                       type="number"
                       min="0"
                       step="0.01"
-                      defaultValue={initialData?.data.pago.monto_mensual ?? ''}
+                      defaultValue={initialData?.data?.pago?.monto_mensual ?? ''}
                       onChange={handleMontoMensualChange}
                       className={fieldClass}
                       placeholder="750"
