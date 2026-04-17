@@ -8,7 +8,7 @@ import type { ContractData } from '@/types/contracts'
 Handlebars.registerHelper('sigImg', (dataUrl: string | null | undefined) => {
   if (dataUrl) {
     return new Handlebars.SafeString(
-      `<img src="${dataUrl}" alt="Firma" style="max-height:64px;max-width:220px;display:block;margin:8px 0;object-fit:contain;" />`
+      `<img src="${dataUrl}" alt="Firma" style="max-height:100px;max-width:320px;display:block;margin:8px 0;object-fit:contain;" />`
     )
   }
   return new Handlebars.SafeString(
