@@ -5,28 +5,37 @@ import { Send } from 'lucide-react'
 
 export function SendButton({ contractId }: { contractId: string }) {
   const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleSend() {
     setLoading(true)
-    const res = await fetch(`/api/contracts/${contractId}/send`, { method: 'POST' })
-    setLoading(false)
-    if (res.ok) {
-      setDone(true)
-      window.location.reload()
+    setError(null)
+    try {
+      const res = await fetch(`/api/contracts/${contractId}/send`, { method: 'POST' })
+      if (res.ok) {
+        window.location.reload()
+      } else {
+        const body = await res.json().catch(() => ({}))
+        setError(body.error ?? `Error ${res.status}`)
+      }
+    } catch {
+      setError('Error de red')
+    } finally {
+      setLoading(false)
     }
   }
 
-  if (done) return null
-
   return (
-    <button
-      onClick={handleSend}
-      disabled={loading}
-      className="flex items-center gap-2 px-3 py-1.5 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-    >
-      <Send size={13} />
-      {loading ? 'Enviando...' : 'Generar enlace'}
-    </button>
+    <div className="flex flex-col items-end gap-1">
+      <button
+        onClick={handleSend}
+        disabled={loading}
+        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+      >
+        <Send size={13} />
+        {loading ? 'Generando...' : 'Firmar y generar enlace'}
+      </button>
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
   )
 }
