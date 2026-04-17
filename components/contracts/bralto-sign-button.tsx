@@ -97,16 +97,16 @@ export function BraltoSignButton({ contractId }: Props) {
           </div>
           <div
             ref={containerRef}
-            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-white/10' : 'border-orange-500/60'}`}
+            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-orange-500'}`}
           >
             <SignatureCanvas
               ref={sigRef}
               onEnd={() => setIsEmpty(sigRef.current?.isEmpty() ?? true)}
-              penColor="#ffffff"
+              penColor="#111111"
               canvasProps={{
                 width: canvasWidth,
                 height: 140,
-                className: 'w-full touch-none bg-[#1a1a1a]',
+                className: 'w-full touch-none bg-white',
                 style: { display: 'block' },
               }}
             />
