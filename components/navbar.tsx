@@ -85,7 +85,7 @@ export function Navbar() {
 
         {/* Logo */}
         <a href="#inicio" className="flex items-center shrink-0">
-          <Image src="/logo.png" alt="Bralto" width={120} height={36} className="h-8 w-auto object-contain" priority />
+          <Image src="/logo-white.svg" alt="Bralto" width={120} height={36} className="h-8 w-auto object-contain" priority />
         </a>
 
         {/* Desktop CTAs */}

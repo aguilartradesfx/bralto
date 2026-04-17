@@ -76,6 +76,29 @@ body {
 }
 
 
+/* ── Contract preview (forces dark text on white background) ────── */
+.contract-preview,
+.contract-preview * {
+  color: #111111 !important;
+}
+.contract-preview h1,
+.contract-preview h2,
+.contract-preview h3 {
+  color: #000000 !important;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+.contract-preview h1 { font-size: 1.4rem; }
+.contract-preview h2 { font-size: 1.15rem; }
+.contract-preview h3 { font-size: 1rem; }
+.contract-preview p  { margin-bottom: 0.75em; line-height: 1.7; font-size: 0.875rem; }
+.contract-preview ul,
+.contract-preview ol { padding-left: 1.5em; margin-bottom: 0.75em; }
+.contract-preview li { margin-bottom: 0.25em; font-size: 0.875rem; line-height: 1.6; }
+.contract-preview strong { font-weight: 700; }
+.contract-preview hr   { border-color: #e5e7eb; margin: 1.5em 0; }
+
 /* Robot section styles (per spec) */
 .robot-container {
   filter: grayscale(100%) contrast(1.1);

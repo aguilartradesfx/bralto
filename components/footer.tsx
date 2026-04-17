@@ -57,7 +57,7 @@ export function Footer() {
         {/* Brand */}
         <AnimatedContainer className="space-y-4">
           <Image
-            src="/logo.png"
+            src="/logo-white.svg"
             alt="Bralto"
             width={100}
             height={30}
