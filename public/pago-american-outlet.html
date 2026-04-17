@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activación de Servicio — American Outlet × Bralto</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --black: #0a0a0a;
+    --gray-700: #555555;
+    --gray-500: #888888;
+    --gray-400: #aaaaaa;
+    --gray-200: #e5e5e5;
+    --gray-100: #f0f0f0;
+    --orange: #ff6b2b;
+    --orange-soft: rgba(255, 107, 43, 0.08);
+    --green: #22c55e;
+    --green-soft: rgba(34, 197, 94, 0.08);
+    --border: rgba(0,0,0,0.06);
+    --border-strong: rgba(0,0,0,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--black);
+    font-family: 'Sora', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #f8f8f8 0%, #ffffff 40%, #f8f8f8 100%);
+  }
+
+  .page {
+    max-width: 620px;
+    width: 100%;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    width: 80px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+
+  .header h1 .accent { color: var(--orange); }
+
+  .header p {
+    font-size: 0.88rem;
+    color: var(--gray-700);
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .client-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    font-size: 0.75rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .client-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+
+  /* ── Steps ── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .step {
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.03);
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .step:nth-child(1) { animation-delay: 0.35s; }
+  .step:nth-child(2) { animation-delay: 0.45s; }
+  .step:nth-child(3) { animation-delay: 0.55s; }
+
+  .step:hover { border-color: rgba(0,0,0,0.15); transform: translateY(-1px); }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+
+  .step-num {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step:nth-child(1) .step-num { background: var(--black); color: #fff; }
+  .step:nth-child(2) .step-num { background: var(--orange); color: #fff; }
+  .step:nth-child(3) .step-num { background: var(--green); color: #fff; }
+
+  .step-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .step-desc {
+    font-size: 0.8rem;
+    color: var(--gray-700);
+    font-weight: 300;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    text-align: left;
+  }
+
+  .step-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    margin: 0 auto;
+  }
+
+  .step { text-align: center; }
+  .step-action:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+  .btn-dark { background: var(--black); color: #fff; }
+  .btn-orange { background: var(--orange); color: #fff; }
+  .btn-green { background: var(--green); color: #fff; }
+
+  .step-action svg { width: 16px; height: 16px; }
+
+  /* ── Price cards inside steps ── */
+  .price-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .price-card {
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .price-card.setup {
+    background: var(--orange-soft);
+    border: 1px solid rgba(255,107,43,0.15);
+  }
+
+  .price-card.monthly {
+    background: var(--gray-100);
+    border: 1px solid var(--border);
+  }
+
+  .price-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .price-card.setup .price-card-label { color: var(--orange); }
+
+  .price-card-amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .price-card.setup .price-card-amount { color: var(--orange); }
+  .price-card.monthly .price-card-amount { color: var(--black); }
+
+  .price-card-sub {
+    font-size: 0.6rem;
+    color: var(--gray-500);
+    margin-top: 4px;
+  }
+
+  /* ── Clauses ── */
+  .clauses {
+    margin-top: 40px;
+    padding: 24px;
+    border-radius: 14px;
+    background: var(--gray-100);
+    border: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.65s forwards;
+  }
+
+  .clauses-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 14px;
+  }
+
+  .clause {
+    font-size: 0.72rem;
+    color: var(--gray-700);
+    font-weight: 300;
+    line-height: 1.6;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .clause:last-child { border-bottom: none; }
+
+  .clause-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--orange);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.75s forwards;
+  }
+
+  .footer p {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+  }
+
+  .footer a { color: var(--orange); text-decoration: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .price-cards { grid-template-columns: 1fr; }
+    body { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- HEADER -->
+  <div class="header">
+    <img src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDUuNzQgMTcwLjI3Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiAjZmY2NzAwOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8ZyBpZD0iTGF5ZXJfMS0yIiBkYXRhLW5hbWU9IkxheWVyIDEiPgogICAgPGc+CiAgICAgIDxnPgogICAgICAgIDxwYXRoIGQ9Ik0zMTMuMTYsMjEuMzZjMTEuNzIsMCwyMS44MywyLjE2LDI3LjQyLDYuMzEsNy4wMyw1LjA2LDExLjU1LDE0LjYyLDExLjU1LDI0LjE4LDAsOS4wMi0zLjA3LDE1Ljg3LTkuMDIsMjAuNTYtMS40NCwxLjQ0LTMuMDcsMi4zNC02LjEzLDQuMzMsNC41LDIuMzUsNy45Myw0LjUxLDEwLjQ2LDYuNjgsNS4yMyw0LjUxLDguNDgsMTIuMjcsOC40OCwyMS40NywwLDEzLjE3LTUuNiwyNC43MS0xNS41MiwzMC42Ny02LjUsNC4xNS0xNS42OSw2LjEzLTI3Ljc4LDYuMTNoLTU2LjY1VjIxLjM2aDU3LjJaTTMyNy40MSw1NS4xYzAtMTAuMjktNS4wNi0xMy43Mi0yMC4yMS0xMy43MmgtMjYuNzF2MjcuNjFoMjcuMDZjMTQuNDQsMCwxOS44NS0zLjc5LDE5Ljg1LTEzLjg5Wk0zMzAuNDcsMTA0LjUyYzAtMTAuMS02LjQ5LTE1Ljg3LTE4LjU4LTE1Ljg3aC0zMS40djMyLjQ3aDI5LjQxYzEzLjcxLDAsMjAuNTYtNS42LDIwLjU2LTE2LjZaIi8+CiAgICAgICAgPHBhdGggZD0iTTM4My41Myw1Mi4ybC41MywxMy45YzUuMjMtMTEsMTIuOTktMTUuODgsMjkuMjItMTYuNzh2MjMuODFjLTEyLjQ0LjktMTYuMDUsMS4yNi0xOS44NCw0LjE1LTUuOTYsMy43OS04LjY2LDkuMzgtOC42NiwxOC4wNHY0Ni4zNmgtMjMuMjdWNTIuMmgyMi4wMVoiLz4KICAgICAgICA8cGF0aCBkPSJNNDM4LjkxLDE0NC41N2MtMTcuNDksMC0yOC4zMi05LjkyLTI4LjMyLTI2LjUyLDAtOS41NiwzLjc4LTE4LjAzLDEwLjI4LTIyLjM3LDQuNS0zLjQzLDEyLjYyLTUuNDEsMjYuMzQtNy40LDEwLjA5LTEuNDQsMTIuMjctMS44LDE1LjE1LTMuMjQsMi41My0xLjQ1LDMuNzgtMy40MywzLjk3LTUuNzguNTQtNS45Ni01LjIzLTEwLjY1LTEzLjcxLTEwLjY1LTEwLjI5LDAtMTUuODgsNC4xNi0xNi42LDEyLjQ1aC0yMi4zN2MuNTQtOS41NiwyLjUzLTE0Ljk3LDguMTItMjAuNTcsNy4wMy03LjAzLDE3LjMyLTEwLjI4LDMzLjAyLTEwLjI4LDE0LjYxLDAsMjYuMTUsNC44OCwzMS43NCwxMi44MSwyLjE3LDMuNDMsMy4yNSw4LjMsMy4yNSwxNC44djQ2LjE4YzAsMy4wNi41NCw2LjMxLDEuNDQsOS4zOC41NCwyLjE2LDEuMjYsMy40MywzLjk3LDUuNDF2Mi44OGgtMjYuN2wtMS42Mi0xMC44MmMtNS42LDguNDgtMTUuODgsMTMuNzEtMjcuOTcsMTMuNzFaTTQ1MC42NCwxMDMuNjJjLTEyLjI3LDIuNzEtMTUuODgsNS40MS0xNS44OCwxMi40NHM0LjE1LDEwLjgyLDEyLjYzLDEwLjgyYzYuNjgsMCwxMy41My0zLjYsMTYuMjQtOC40NywxLjYyLTIuNzEsMi4zNC02Ljg1LDIuMzQtMTEuOTF2LTYuNDljLTguMTIsMS45OS0xMS43MiwyLjg4LTE1LjMzLDMuNloiLz4KICAgICAgICA8cGF0aCBkPSJNNTIzLjE3LDIxLjM2djEyMC4zM2gtMjMuMjdWMjEuMzZoMjMuMjdaIi8+CiAgICAgICAgPHBhdGggZD0iTTU0MC41LDUyLjM5di0yNS4wOGgyMy44MXYyNS4wOGgxNC45N3YxNi43N2gtMTQuNjF2NDUuNDZjMCw1Ljk2LjU0LDguMywyLjUyLDkuMiwxLjk5LjksNC42OSwxLjI2LDguMzEsMS4yNmwzLjc4LS4xOXYxOC4wNGgtMTguMjJjLTEyLjk5LDAtMjAuNTYtNy41OC0yMC41Ni0yMC41NnYtNTMuMjJoLTEyLjA5di0xNi43N2gxMi4wOVoiLz4KICAgICAgICA8cGF0aCBkPSJNNjczLjEsOTcuMzFjMCwyOS43Ni0xNy4zMiw0OC4xNy00Ni4xOCw0OC4xN3MtNDYuMTgtMTguNDEtNDYuMTgtNDguMTcsMTcuMzEtNDguMzYsNDYuMTgtNDguMzYsNDYuMTgsMTguMDQsNDYuMTgsNDguMzZaTTYwNS44MSw5Ni41OWMwLDE5LjY2LDcuMDMsMjkuNCwyMS4yOCwyOS40czIxLjExLTkuOTMsMjEuMTEtMjguNS03LjQtMjguNS0yMS4xMS0yOC41LTIxLjI4LDEwLjEtMjEuMjgsMjcuNjFaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNzA1Ljc0LDQ4Ljg0YzAsMTAuOTItOC41NywxOS41LTE5Ljc0LDE5LjVzLTE5Ljg2LTguNTgtMTkuODYtMTkuNSw4LjgxLTE5LjI3LDE5Ljg2LTE5LjI3LDE5Ljc0LDguNTcsMTkuNzQsMTkuMjdaTTY3MS4wOCw0OC44NGMwLDguNTcsNi4zNCwxNS4zOSwxNS4wNCwxNS4zOXMxNC42OS02LjgxLDE0LjY5LTE1LjI3LTYuMjMtMTUuNTEtMTQuOC0xNS41MS0xNC45Miw2LjkzLTE0LjkyLDE1LjM5Wk02ODIuOTUsNTguOTRoLTQuNDZ2LTE5LjI3YzEuNzYtLjM1LDQuMjMtLjU5LDcuNC0uNTksMy42NCwwLDUuMjguNTksNi43LDEuNDEsMS4wNS44MiwxLjg4LDIuMzUsMS44OCw0LjIzLDAsMi4xMi0xLjY1LDMuNzYtMy45OSw0LjQ2di4yNGMxLjg4LjcxLDIuOTQsMi4xMiwzLjUzLDQuNy41OSwyLjkzLjk0LDQuMTEsMS40MSw0LjgxaC00LjgyYy0uNTktLjctLjk0LTIuNDYtMS41Mi00LjctLjM1LTIuMTItMS41My0zLjA2LTMuOTktMy4wNmgtMi4xMnY3Ljc1Wk02ODMuMDcsNDguMDJoMi4xMmMyLjQ2LDAsNC40Ni0uODIsNC40Ni0yLjgyLDAtMS43Ni0xLjI5LTIuOTMtNC4xMS0yLjkzLTEuMTgsMC0yLC4xMi0yLjQ3LjIzdjUuNTNaIi8+CiAgICAgIDwvZz4KICAgICAgPGc+CiAgICAgICAgPHBhdGggZD0iTTQ4LjI5LDEyNi42NGMyLjQ4LTQuNTgsMi45OC05Ljc1LDEuMzYtMTQuMTktMS45Ni01LjM4LTcuMS05LjE1LTEyLjUtOS4xN2gtLjA1Yy0zLjExLDAtNi4xOSwxLjMxLTguNDYsMy42LTIuMTYsMi4xOC0zLjM0LDQuOTgtMy4zLDcuODcuMDMsMi42OSwyLjIzLDQuODUsNC45MSw0Ljg1LjAyLDAsLjA0LDAsLjA2LDAsMi43MS0uMDMsNC44OS0yLjI2LDQuODUtNC45OCwwLS4yMi4xNy0uNTUuNDUtLjgzLjQyLS40MiwxLS42OSwxLjQ4LS42OWgwYzEuMywwLDIuNzYsMS4yLDMuMzEsMi43MS42NCwxLjc2LjM1LDQuMDYtLjc3LDYuMTQtMi4zNyw0LjM3LTguMzMsNi44Ni0xMy4yOCw1LjU0LTQuOTktMS4zMi05LjA2LTYuMzMtOS40OC0xMS42NS0uNDItNS4zNCwyLjY2LTEwLjk5LDcuNDgtMTMuNzQsNC41OC0yLjYxLDEwLjQ1LTIuNDUsMTYuNjctMi4yOSwzLjM4LjA5LDYuODguMTgsMTAuMzgtLjE2LDEuNTktLjE1LDMuMTQtLjMzLDQuNjYtLjUzLS4xNi0uOTYtLjI1LTEuOTQtLjI1LTIuOTQsMC0uNjQuMDQtMS4yOC4xMS0xLjkxLjA1LTEuNzguMzItMy41MS44My01LjE3LTIuMDIuMy00LjExLjU1LTYuMjkuNzYtMi45MS4yOC01Ljk1LjItOS4xOC4xMi03LjI5LS4xOS0xNC44NC0uMzgtMjEuNzksMy41OC04LjE1LDQuNjQtMTMuMTQsMTMuOTEtMTIuNDIsMjMuMDUuNzUsOS41OCw3LjY1LDE3Ljk2LDE2Ljc2LDIwLjM4LDEuNzYuNDcsMy41NS42OSw1LjM0LjY5LDcuNzcsMCwxNS40MS00LjIyLDE5LjExLTExLjA1WiIvPgogICAgICAgIDxwYXRoIGQ9Ik0yOC43Niw4NS40MmM0LjktMS43Nyw4LjcyLTUuMjksMTAuNDYtOS42OCwyLjEyLTUuMzIuNzktMTEuNTYtMy4yMi0xNS4xNy0yLjMyLTIuMDktNS41MS0zLjE4LTguNzUtMi45OC0zLjA3LjE5LTUuOCwxLjQ5LTcuNywzLjY4LTEuNzgsMi4wNS0xLjU3LDUuMTUuNDgsNi45NCwyLjA1LDEuNzgsNS4xNSwxLjU3LDYuOTQtLjQ4LjE1LS4xNy40OS0uMjkuODktLjMyLjU5LS4wNCwxLjIxLjE1LDEuNTcuNDcuOTcuODcsMS4yNiwyLjczLjY2LDQuMjMtLjY5LDEuNzQtMi40NCwzLjI2LTQuNjYsNC4wNy00LjY4LDEuNjktMTAuNzgtLjQzLTEzLjYtNC43MS0yLjg0LTQuMzEtMi41NS0xMC43Ni42OC0xNSwzLjI0LTQuMjYsOS4zLTYuNDMsMTQuNzMtNS4yNyw1LjE1LDEuMSw5LjQzLDUuMTMsMTMuOTcsOS4zOSwyLjQ2LDIuMzIsNS4wMSw0LjcxLDcuODUsNi43OSwxLjc4LDEuMywzLjUzLDIuNTIsNS4yNiwzLjY2LjEyLTMuNjUuNzUtNy4yMywxLjg2LTEwLjY1LS40My0uMzEtLjg3LS42Mi0xLjMxLS45NC0yLjM2LTEuNzMtNC41OC0zLjgxLTYuOTMtNi4wMi01LjMyLTUtMTAuODItMTAuMTYtMTguNjQtMTEuODQtOS4xNy0xLjk2LTE5LjA2LDEuNjMtMjQuNjEsOC45My01LjgyLDcuNjUtNi4yNSwxOC40OS0xLjA2LDI2LjM2LDQuMDQsNi4xMiwxMS4xOSw5LjcyLDE4LjMyLDkuNzIsMi4zMSwwLDQuNjItLjM4LDYuODMtMS4xN1oiLz4KICAgICAgICA8cGF0aCBkPSJNNDAuODYsNDIuNjljNC44NywxLjg0LDEwLjA2LDEuNjQsMTQuMjQtLjU2LDUuMDctMi42Nyw4LjExLTguMjcsNy40MS0xMy42Mi0uNDEtMy4xLTIuMTItNi00LjcxLTcuOTUtMi40NS0xLjg1LTUuMzgtMi42NC04LjI0LTIuMjEtMi42OS40LTQuNTQsMi45LTQuMTQsNS41OC40LDIuNjksMi45LDQuNTQsNS41OCw0LjE0LjIyLS4wMy41Ny4xLjg4LjMzLjQ4LjM2LjgyLjkuODksMS4zOC4xNywxLjI5LS44MSwyLjg5LTIuMjQsMy42NC0xLjY2Ljg4LTMuOTcuOS02LjE5LjA2LTQuNjUtMS43Ni03LjkxLTcuMzMtNy4yOC0xMi40Mi42NC01LjEyLDUuMDYtOS44MywxMC4yNy0xMC45Niw1LjIzLTEuMTQsMTEuMjUsMS4xNiwxNC42Miw1LjU3LDMuMiw0LjE4LDMuODQsMTAuMDMsNC41MiwxNi4yMS4zNywzLjM2Ljc1LDYuODQsMS41NiwxMC4yNi4wNS4yLjEuMzkuMTQuNTksMS45Mi0xLjYsMy45OS0zLjAyLDYuMTktNC4yMS44OC0uNDgsMS43OS0uOTIsMi43MS0xLjMzLS4zNC0yLjA0LS41OC00LjE3LS44My02LjM5LS43OS03LjI1LTEuNjItMTQuNzUtNi40OC0yMS4xMUM2NC4wNiwyLjI3LDU0LjIxLTEuNDMsNDUuMjQuNTFjLTkuMzksMi4wNC0xNi43Nyw5Ljk5LTE3Ljk0LDE5LjM1LTEuMjEsOS42NCw0LjYyLDE5LjQ2LDEzLjU1LDIyLjgzWiIvPgogICAgICAgIDxwYXRoIGQ9Ik0xMTUuNTcsNDEuNTNjLjUyLjM5LDEuMDMuNzksMS41MywxLjIxLjA1LS4xOS4wOS0uMzguMTQtLjU3LjgxLTMuNDMsMS4xOS02LjksMS41Ni0xMC4yNi42OC02LjE5LDEuMzItMTIuMDMsNC41MS0xNi4yMSwzLjM3LTQuNDEsOS4zOS02LjcsMTQuNjItNS41Nyw1LjIxLDEuMTMsOS42Myw1Ljg0LDEwLjI3LDEwLjk2LjY0LDUuMDktMi42MywxMC42Ni03LjI4LDEyLjQyLTIuMjEuODQtNC41Mi44MS02LjE4LS4wNi0xLjQzLS43NS0yLjQxLTIuMzUtMi4yNC0zLjY0LjA2LS40OC40MS0xLjAyLjg5LTEuMzguMzEtLjI0LjY2LS4zNy44OC0uMzMsMi42OS40LDUuMTktMS40NSw1LjU4LTQuMTQuNC0yLjY5LTEuNDYtNS4xOS00LjE0LTUuNTgtMi44Ny0uNDMtNS43OS4zNi04LjI0LDIuMjEtMi41OSwxLjk1LTQuMzEsNC44NS00LjcxLDcuOTUtLjcsNS4zNiwyLjM1LDEwLjk2LDcuNDEsMTMuNjIsNC4xNywyLjIsOS4zNywyLjQsMTQuMjQuNTYsOC45My0zLjM4LDE0Ljc2LTEzLjE5LDEzLjU1LTIyLjgzLTEuMTctOS4zNi04LjU1LTE3LjMxLTE3Ljk0LTE5LjM1LTguOTctMS45NC0xOC44MiwxLjc2LTI0LjUxLDkuMjEtNC44Niw2LjM2LTUuNjgsMTMuODYtNi40OCwyMS4xMi0uMjQsMi4yMS0uNDgsNC4zNC0uODMsNi4zOCwyLjA0LjkxLDQsMS45OSw1Ljg3LDMuMjUuNTEuMzQsMS4wMS43LDEuNSwxLjA3WiIvPgogICAgICAgIDxwYXRoIGQ9Ik0xMjUuNDIsMTIxLjA1Yy0yLjUxLTIuMDMtNC44Ny0zLjk1LTYuOS02LjA2LS4yNC0uMjUtLjQ3LS41LS43MS0uNzUtMS4zNSwxLjA4LTIuNzYsMi4wNS00LjIyLDIuOTQtMS4xNS45NS0yLjM5LDEuOTUtMy43MiwyLjk3LjUyLjU1LDEuMDQsMS4xMSwxLjU4LDEuNjcsMi40NCwyLjUzLDUuMTYsNC43NCw3Ljc5LDYuODcsNC44MywzLjkyLDkuNCw3LjYyLDExLjE4LDEyLjU4LDEuODgsNS4yMy41NSwxMS41Mi0zLjI0LDE1LjMxLTMuNzgsMy43Ny0xMC4xMyw0LjkzLTE0Ljc4LDIuNjktNC42Mi0yLjIyLTcuNTQtNy45OC02LjUtMTIuODQuNS0yLjMxLDEuNzctNC4yNCwzLjQtNS4xNywxLjQtLjc5LDMuMjgtLjc1LDQuMjguMDkuMzcuMzEuNjQuOS42OCwxLjQ5LjAzLjM5LS4wNS43NS0uMTkuOTItMS43OSwyLjA0LTEuNTksNS4xNS40NSw2Ljk0LDIuMDQsMS43OSw1LjE1LDEuNTksNi45NC0uNDUsMS45MS0yLjE4LDIuODMtNS4wNiwyLjYxLTguMTMtLjI0LTMuMjMtMS43NC02LjI1LTQuMTMtOC4yNy00LjEyLTMuNDktMTAuNDgtMy45Ny0xNS40Ni0xLjE1LTQuMTEsMi4zMi03LjA5LDYuNTctOC4xOCwxMS42Ny0yLDkuMzQsMy4wOSwxOS41NiwxMS44NSwyMy43NiwzLDEuNDQsNi4yNywyLjE0LDkuNTUsMi4xNCw2LjAxLDAsMTIuMDMtMi4zNCwxNi40My02Ljc0LDYuNDktNi40OCw4LjcyLTE2Ljc3LDUuNTQtMjUuNTktMi43MS03LjUzLTguNTctMTIuMjktMTQuMjQtMTYuODhaIi8+CiAgICAgICAgPHBhdGggZD0iTTE4MC41OCw1MC41Yy01LjU1LTcuMzEtMTUuNDQtMTAuODktMjQuNjEtOC45My03LjgzLDEuNjctMTMuMzMsNi44NC0xOC42NCwxMS44NC0yLjM1LDIuMjEtNC41Nyw0LjMtNi45Myw2LjAyLS40NC4zMi0uODcuNjMtMS4zMS45NCwxLjEyLDMuNDMsMS43Myw3LjAzLDEuODUsMTAuNjUsMS43NC0xLjE1LDMuNDktMi4zNiw1LjI3LTMuNjcsMi44NC0yLjA4LDUuMzktNC40Nyw3Ljg1LTYuNzksNC41NC00LjI2LDguODItOC4yOSwxMy45Ny05LjM5LDUuNDQtMS4xNiwxMS40OSwxLjAxLDE0LjczLDUuMjcsMy4yMyw0LjI1LDMuNTIsMTAuNy42OCwxNS0yLjgyLDQuMjgtOC45Miw2LjM5LTEzLjYsNC43MS0yLjIyLS44LTMuOTctMi4zMi00LjY2LTQuMDYtLjYtMS41LS4zLTMuMzUuNjctNC4yMy4zNi0uMzIuOTctLjUxLDEuNTctLjQ3LjM5LjAyLjc0LjE1Ljg4LjMyLDEuNzgsMi4wNSw0Ljg5LDIuMjYsNi45My40OCwyLjA1LTEuNzgsMi4yNi00Ljg5LjQ4LTYuOTQtMS45LTIuMTgtNC42NC0zLjQ5LTcuNy0zLjY4LTMuMjMtLjItNi40Mi44OS04Ljc1LDIuOTgtNC4wMSwzLjYxLTUuMzQsOS44NS0zLjIyLDE1LjE3LDEuNzUsNC4zOCw1LjU2LDcuOTEsMTAuNDYsOS42OCwyLjIuNzksNC41MSwxLjE3LDYuODMsMS4xNyw3LjEzLDAsMTQuMjgtMy42LDE4LjMyLTkuNzIsNS4xOS03Ljg3LDQuNzUtMTguNzEtMS4wNi0yNi4zNloiLz4KICAgICAgICA8cGF0aCBkPSJNMTY1Ljc2LDkzLjU3Yy02Ljk2LTMuOTYtMTQuNS0zLjc3LTIxLjc5LTMuNTgtMy4yMy4wOC02LjI3LjE2LTkuMTgtLjEyLTIuMTgtLjIxLTQuMjctLjQ2LTYuMjktLjc2LjUxLDEuNjYuNzgsMy40LjgzLDUuMTcuMDcuNjMuMTEsMS4yNy4xMSwxLjkxLDAsLjk5LS4wOCwxLjk3LS4yNCwyLjk0LDEuNTIuMiwzLjA2LjM4LDQuNjUuNTMsMy41LjM0LDcsLjI1LDEwLjM4LjE2LDYuMjItLjE2LDEyLjEtLjMxLDE2LjY3LDIuMjksNC44MywyLjc1LDcuOSw4LjQsNy40OCwxMy43NC0uNDIsNS4zMi00LjQ5LDEwLjMzLTkuNDgsMTEuNjUtNC45NiwxLjMyLTEwLjkyLTEuMTctMTMuMjgtNS41NC0xLjEzLTIuMDgtMS40MS00LjM3LS43Ny02LjE0LjU1LTEuNTEsMi4wMS0yLjcsMy4zMS0yLjcxaDBjLjQ4LDAsMS4wNi4yNywxLjQ4LjY5LjI4LjI4LjQ1LjYuNDUuODMtLjAzLDIuNzEsMi4xNCw0Ljk0LDQuODUsNC45OC4wMiwwLC4wNCwwLC4wNiwwLDIuNjksMCw0Ljg4LTIuMTYsNC45MS00Ljg1LjA0LTIuODktMS4xNC01LjY5LTMuMy03Ljg3LTIuMjgtMi4zLTUuMzYtMy42Mi04LjUxLTMuNi01LjQuMDItMTAuNTQsMy44LTEyLjUsOS4xNy0xLjYyLDQuNDMtMS4xMiw5LjYsMS4zNiwxNC4xOSwzLjcsNi44MywxMS4zNCwxMS4wNSwxOS4xMSwxMS4wNSwxLjc5LDAsMy41OC0uMjIsNS4zNC0uNjksOS4xMS0yLjQyLDE2LTEwLjgsMTYuNzYtMjAuMzguNzItOS4xNS00LjI3LTE4LjQxLTEyLjQyLTIzLjA1WiIvPgogICAgICAgIDxwYXRoIGQ9Ik04MC43OSwxMzIuN2MtNC45OS0yLjgxLTExLjM1LTIuMzQtMTUuNDYsMS4xNS0yLjM4LDIuMDItMy44OSw1LjAzLTQuMTMsOC4yNy0uMjMsMy4wNy43LDUuOTUsMi42MSw4LjEzLDEuNzksMi4wNCw0LjksMi4yNSw2Ljk0LjQ2LDIuMDQtMS43OSwyLjI1LTQuOS40Ni02Ljk0LS4xNS0uMTctLjIyLS41My0uMTktLjkyLjA0LS41OS4zMS0xLjE4LjY4LTEuNDkuOTktLjg0LDIuODctLjg4LDQuMjgtLjA5LDEuNjMuOTIsMi45MSwyLjg1LDMuNCw1LjE3LDEuMDQsNC44Ni0xLjg3LDEwLjYyLTYuNSwxMi44NC00LjY1LDIuMjMtMTEsMS4wOC0xNC43OC0yLjY5LTMuNzktMy43OS01LjEyLTEwLjA4LTMuMjQtMTUuMzEsMS43OC00Ljk1LDYuMzUtOC42NiwxMS4xOC0xMi41OCwyLjYzLTIuMTMsNS4zNC00LjMzLDcuNzktNi44Ny43Ny0uOCwxLjUyLTEuNiwyLjI1LTIuNGwtMS4wNC0uNzhjLTIuMDYtMS4wNS00LjA1LTIuMjctNS45My0zLjY4bC0xLjM2LTEuMDJjLS4zMy4zNS0uNjYuNy0xLDEuMDUtMi4wMywyLjEtNC4zOSw0LjAyLTYuOSw2LjA2LTUuNjcsNC42LTExLjUzLDkuMzUtMTQuMjQsMTYuODgtMy4xOCw4LjgyLS45NSwxOS4xMSw1LjU0LDI1LjU5LDQuNCw0LjQsMTAuNDMsNi43NCwxNi40NCw2Ljc0LDMuMjgsMCw2LjU1LS43LDkuNTUtMi4xNCw4Ljc2LTQuMjEsMTMuODUtMTQuNDIsMTEuODUtMjMuNzYtMS4wOS01LjEtNC4wNy05LjM1LTguMTgtMTEuNjdaIi8+CiAgICAgICAgPHBhdGggZD0iTTExNy4xNSwxMDguMjZjLjU2LS41NCwxLjE1LTEuMDUsMS43OS0xLjQ5LDEuNTUtMS4wOCwyLjg2LTIuNDksMy44MS00LjEzLjE0LS4yNC4yNy0uNDguMzktLjczLjI1LS40OS40Ni0xLC42NC0xLjUzLjQ1LTEuMzIuNy0yLjczLjctNC4yLDAtMS4xNy0uMTYtMi4zMS0uNDUtMy4zOC0uODUtMy4xMi0uOTctNi40Mi4xLTkuNDcsMS4yMi0zLjQ2LDEuODgtNy4xOSwxLjg4LTExLjA3LDAtNS43Ni0xLjQ2LTExLjE4LTQuMDMtMTUuOTEtLjUxLS45NS0xLjA3LTEuODYtMS42Ny0yLjc1LTEuNS0yLjIyLTMuMjYtNC4yNS01LjI0LTYuMDUtLjc5LS43Mi0xLjYyLTEuNC0yLjQ3LTIuMDQtLjQzLS4zMi0uODYtLjYzLTEuMzEtLjkzLTUuMzMtMy42LTExLjc1LTUuNy0xOC42Ni01LjdoMGMtNC4wMywwLTcuOS43Mi0xMS40OCwyLjAzLS41MS4xOS0xLjAyLjM5LTEuNTIuNi0xLC40Mi0xLjk3Ljg5LTIuOTIsMS40MS0yLjM3LDEuMjgtNC41NiwyLjg1LTYuNTMsNC42NC0uNzkuNzItMS41NSwxLjQ3LTIuMjYsMi4yNi01LjM5LDUuOTMtOC42NywxMy44LTguNjcsMjIuNDUsMCwzLjg4LjY2LDcuNjEsMS44OCwxMS4wNywxLjA3LDMuMDUuOTUsNi4zNS4xLDkuNDgtLjI5LDEuMDgtLjQ1LDIuMjEtLjQ1LDMuMzgsMCwyLjY1LjgsNS4xLDIuMTcsNy4xNSwxLjA2LDEuNTksMi40NywyLjkzLDQuMTIsMy45Mmw0Ljk5LDMuNzRjNi4yMyw0LjY3LDEzLjU5LDYuOTcsMjAuOTMsNi45Nyw4LjY5LDAsMTcuMzUtMy4yMywyNC4wNC05LjU5LjA0LS4wNC4wOC0uMDguMTItLjExWk04Ni4yNSw5My41OWMtLjI2LjY1LS44OCwxLjA0LTEuNTMsMS4wNC0uMiwwLS40MS0uMDQtLjYxLS4xMmwtMTIuMDMtNC44M2MtLjg1LS4zNC0xLjI2LTEuMy0uOTItMi4xNS4zNC0uODUsMS4zLTEuMjYsMi4xNS0uOTJsMTIuMDMsNC44M2MuODUuMzQsMS4yNiwxLjMuOTIsMi4xNVpNMTE0LjcxLDg5LjY3bC0xMi4wMyw0LjgzYy0uMi4wOC0uNDEuMTItLjYxLjEyLS42NSwwLTEuMjctLjM5LTEuNTMtMS4wNC0uMzQtLjg1LjA3LTEuODEuOTItMi4xNWwxMi4wMy00LjgzYy44NS0uMzQsMS44MS4wNywyLjE1LjkyLjM0Ljg1LS4wNywxLjgxLS45MiwyLjE1WiIvPgogICAgICAgIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iOTIuNjMiIGN5PSIyMS45NyIgcj0iNy40NyIvPgogICAgICA8L2c+CiAgICAgIDxyZWN0IHg9IjIxMC4zNiIgd2lkdGg9IjguMTkiIGhlaWdodD0iMTcwLjI3Ii8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4=" alt="Bralto" class="logo">
+    <h1>Activación de <span class="accent">Servicio</span></h1>
+    <p>Todo listo para comenzar. Seguí estos pasos para activar tu estrategia integral.</p>
+    <div class="client-badge"><span class="dot"></span>American Outlet · Christian Vindas</div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <!-- Step 1: Contract -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">01</div>
+        <div class="step-title">Firmar el contrato de servicio</div>
+      </div>
+      <p class="step-desc">Revisá y firmá el contrato de prestación de servicios. Incluye el alcance del trabajo, tiempos de entrega, responsabilidades de ambas partes y condiciones generales.</p>
+      <a href="https://bralto.io/c/american-outlet-FJmh" target="_blank" class="step-action btn-dark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Revisar y firmar contrato
+      </a>
+    </div>
+
+    <!-- Step 2: Payment -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">02</div>
+        <div class="step-title">Realizar el pago de inicio</div>
+      </div>
+      <p class="step-desc">El pago del primer mes incluye el setup completo (sitio web, configuraciones técnicas, bot, plataforma) más la operación del primer mes.</p>
+
+      <div class="price-cards" style="grid-template-columns:1fr;">
+        <div class="price-card setup">
+          <div class="price-card-label">Pago inicial · Mes 1</div>
+          <div class="price-card-amount">$2,900</div>
+          <div class="price-card-sub">Setup completo + operación del primer mes</div>
+        </div>
+      </div>
+
+      <p style="font-size:0.7rem; color:var(--gray-500); font-weight:300; margin-bottom:18px; text-align:center;">A partir del mes 2, la operación mensual continua es de <strong style="color:var(--gray-700);">$2,200/mes</strong></p>
+
+      <a href="https://buy.stripe.com/7sY8wP2tkbiCgUt21lbsc04" target="_blank" class="step-action btn-orange">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Realizar pago de inicio — $2,900
+      </a>
+    </div>
+
+    <!-- Step 3: Start -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">03</div>
+        <div class="step-title">¡Arrancamos!</div>
+      </div>
+      <p class="step-desc">Una vez confirmados el contrato y el pago, nuestro equipo inicia la implementación. Te contactamos en las siguientes 24 horas para coordinar la primera sesión de trabajo.</p>
+      <div style="display:flex; align-items:center; gap:10px; padding:12px 18px; border-radius:10px; background:var(--green-soft); border:1px solid rgba(34,197,94,0.15);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" width="20" height="20"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span style="font-size:0.8rem; color:var(--green); font-weight:600;">Inicio de proyecto dentro de 24h tras confirmación</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLAUSES -->
+  <div class="clauses">
+    <div class="clauses-title">Condiciones de activación</div>
+    <div class="clause"><span class="clause-num">01</span><span>El proyecto inicia formalmente una vez recibido el pago de inicio y la firma del contrato de servicio.</span></div>
+    <div class="clause"><span class="clause-num">02</span><span>El pago de inicio ($2,900) cubre el setup técnico completo (sitio web, GTM, GA4, Meta, bot, plataforma, n8n) más la operación del primer mes (campañas, producción audiovisual, gestión de redes, activaciones).</span></div>
+    <div class="clause"><span class="clause-num">03</span><span>A partir del segundo mes, la mensualidad de $2,200 se cobra antes del inicio de cada período y cubre la operación continua: mantenimiento, campañas, producción y gestión de redes.</span></div>
+    <div class="clause"><span class="clause-num">04</span><span>El presupuesto de pauta publicitaria (inversión en Meta Ads y Google Ads) no está incluido en estos montos y se maneja por separado según la estrategia acordada.</span></div>
+    <div class="clause"><span class="clause-num">05</span><span>Los términos completos, incluyendo alcance, entregables, tiempos y políticas de cancelación, están detallados en el contrato de servicio.</span></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>Bralto · Infraestructura digital inteligente · <a href="https://bralto.io">bralto.io</a></p>
+  </div>
+</div>
+
+</body>
+</html>
