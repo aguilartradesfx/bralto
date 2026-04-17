@@ -57,7 +57,12 @@ export function SignaturePad({ slug }: Props) {
     setLoading(false)
 
     if (res.ok) {
-      router.push(`/c/${slug}/firmado`)
+      const body = await res.json()
+      if (body.payment_link) {
+        window.location.href = body.payment_link
+      } else {
+        router.push(`/listo?c=${slug}`)
+      }
     } else {
       const data = await res.json()
       setError(data.error ?? 'Error al procesar la firma. Por favor intentá nuevamente.')

@@ -429,6 +429,25 @@ export function ContractForm({ clients, initialData }: Props) {
               )}
             </div>
           </section>
+
+          {/* 6. ENLACE DE PAGO */}
+          <section className={sectionClass}>
+            <h2 className={sectionTitle}>
+              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">6</span>
+              Enlace de pago <span className="text-white/30 font-normal text-xs">(opcional)</span>
+            </h2>
+            <div>
+              <label className={labelClass}>URL de pago (Stripe, etc.)</label>
+              <input
+                {...register('payment_link')}
+                type="url"
+                className={fieldClass}
+                placeholder="https://buy.stripe.com/..."
+              />
+              <p className="text-xs text-white/30 mt-1.5">Si se completa, el cliente será redirigido aquí después de firmar.</p>
+              {errors.payment_link && <p className={errorClass}>{errors.payment_link.message}</p>}
+            </div>
+          </section>
         </form>
 
         {/* ── Sticky bottom bar ────────────────────────────────── */}

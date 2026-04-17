@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
+import { resend, FROM } from '@/lib/email/resend'
+import { emailContractSigned } from '@/lib/email/templates'
 
 const signBody = z.object({
   signature: z.string().min(10, 'Firma requerida'),
@@ -32,7 +34,7 @@ export async function POST(
   // Fetch contract
   const { data: contract } = await supabase
     .from('contracts')
-    .select('id, status, data, signature_bralto_data')
+    .select('id, status, data, signature_bralto_data, slug')
     .eq('slug', slug)
     .single()
 
@@ -95,5 +97,24 @@ export async function POST(
     },
   })
 
-  return NextResponse.json({ ok: true })
+  // Send confirmation email to client
+  const correo = contract.data?.cliente?.correo_notificaciones ?? contract.data?.cliente?.correo_facturacion
+  if (correo) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bralto.io'
+    const contractUrl = `${siteUrl}/c/${contract.slug}`
+    const signedAt = now.toLocaleString('es-CR', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', timeZone: 'America/Costa_Rica',
+    })
+    const { subject, html } = emailContractSigned({
+      clienteName: contract.data?.cliente?.representante_nombre ?? 'Cliente',
+      empresa: contract.data?.cliente?.empresa_nombre ?? '',
+      contractUrl,
+      signedAt,
+    })
+    await resend.emails.send({ from: FROM, to: correo, subject, html }).catch(() => null)
+  }
+
+  const paymentLink = contract.data?.payment_link
+  return NextResponse.json({ ok: true, payment_link: paymentLink ?? null })
 }

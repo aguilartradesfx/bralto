@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { resend, FROM } from '@/lib/email/resend'
+import { emailContractSent } from '@/lib/email/templates'
 
 export async function POST(
   _req: Request,
@@ -13,7 +15,7 @@ export async function POST(
 
   const { data: existing } = await supabase
     .from('contracts')
-    .select('id, slug, status')
+    .select('id, slug, status, data')
     .eq('id', id)
     .single()
 
@@ -37,7 +39,19 @@ export async function POST(
     metadata: { sent_by: user.id },
   })
 
-  const publicUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/c/${contract.slug}`
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bralto.io'
+  const publicUrl = `${siteUrl}/c/${contract.slug}`
+
+  // Send email to client
+  const correo = existing.data?.cliente?.correo_notificaciones ?? existing.data?.cliente?.correo_facturacion
+  if (correo) {
+    const { subject, html } = emailContractSent({
+      clienteName: existing.data?.cliente?.representante_nombre ?? 'Cliente',
+      empresa: existing.data?.cliente?.empresa_nombre ?? '',
+      contractUrl: publicUrl,
+    })
+    await resend.emails.send({ from: FROM, to: correo, subject, html }).catch(() => null)
+  }
 
   return NextResponse.json({ contract, publicUrl })
 }
