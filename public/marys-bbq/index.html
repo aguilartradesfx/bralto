@@ -14,6 +14,7 @@
     --border:rgba(0,0,0,.06);--border-strong:rgba(0,0,0,.1);
   }
   *{margin:0;padding:0;box-sizing:border-box}
+  html{overflow-x:hidden}
   body{background:var(--bg);color:var(--black);font-family:'Sora',sans-serif;line-height:1.6;overflow-x:hidden}
   .container{max-width:1040px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
   .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -315,12 +316,16 @@
     .total-divider{width:60px;height:1px;margin:0 auto}
     .hero{padding:60px 20px}
     section{padding:64px 0}
+    .container{padding:0 16px}
     .dash-stats{flex-wrap:wrap}
     .dash-stat{min-width:calc(33% - 6px)}
+    .dash-body{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .dash-table{min-width:480px}
     .chat-mockup{max-width:100%}
     div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
-    .flow-row{flex-wrap:wrap;gap:8px}
-    .flow-branches{flex-wrap:wrap;gap:8px}
+    .flow-row{flex-wrap:wrap;gap:8px;justify-content:center}
+    .flow-branches{flex-wrap:wrap;gap:8px;justify-content:center}
+    .flow-node{min-width:0!important;flex:1 1 80px}
     .deliverables-grid{grid-template-columns:1fr}
     .roi-comparison{grid-template-columns:1fr;gap:12px}
     .roi-arrow{transform:rotate(90deg)}
@@ -331,15 +336,30 @@
     .bp-sidebar{display:none}
     .bp-cards{grid-template-columns:1fr 1fr}
     .bp-chart-wrap{grid-template-columns:1fr;gap:12px}
+    .bp-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+    .bp-tabs::-webkit-scrollbar{display:none}
+    .bp-tabs span{flex-shrink:0;white-space:nowrap}
     .bp2-body{grid-template-columns:1fr;gap:16px}
     .bp2-right{min-height:220px}
     .bp2-hint{display:none}
     .roi-boom-grid{grid-template-columns:1fr 1fr;gap:10px}
     .roi-boom-big{font-size:1.2rem}
+    .layer-card{overflow-x:hidden}
+    .layer-price{flex-wrap:wrap;gap:10px}
+    .lp-divider{width:60px;height:1px}
+    .bralto-preview,.bralto-preview-2{overflow:hidden}
   }
   @media(max-width:480px){
     .roi-boom-grid{grid-template-columns:1fr}
     .dash-table th:nth-child(n+4),.dash-table td:nth-child(n+4){display:none}
+    .flow-node{flex:1 1 60px;font-size:.6rem!important;padding:6px 8px!important}
+    .del-group{padding:24px 16px}
+    .total-amount-main{font-size:2.4rem}
+    .hero h1{font-size:clamp(1.8rem,6vw,2.2rem)}
+    .s-title{font-size:clamp(1.3rem,5vw,1.8rem)}
+    .roi-comparison{gap:8px}
+    .roi-card{padding:18px 14px}
+    .roi-card-amount{font-size:1.6rem}
   }
 </style>
 </head>
