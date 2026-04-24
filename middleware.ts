@@ -30,7 +30,11 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     const path = request.nextUrl.pathname
-    const isInternalRoute = path.startsWith('/contratos') || path.startsWith('/clientes')
+    const isInternalRoute =
+      path.startsWith('/admin') ||
+      path.startsWith('/contratos') ||
+      path.startsWith('/clientes') ||
+      path.startsWith('/linkedin-pipeline')
 
     if (isInternalRoute && !user) {
       return NextResponse.redirect(new URL('/login', request.url))
@@ -38,7 +42,12 @@ export async function middleware(request: NextRequest) {
   } catch {
     // If Supabase is unreachable, redirect to login for internal routes
     const path = request.nextUrl.pathname
-    if (path.startsWith('/contratos') || path.startsWith('/clientes')) {
+    if (
+      path.startsWith('/admin') ||
+      path.startsWith('/contratos') ||
+      path.startsWith('/clientes') ||
+      path.startsWith('/linkedin-pipeline')
+    ) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
@@ -47,5 +56,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/contratos/:path*', '/clientes/:path*'],
+  matcher: ['/admin/:path*', '/contratos/:path*', '/clientes/:path*', '/linkedin-pipeline/:path*'],
 }

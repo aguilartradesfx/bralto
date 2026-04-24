@@ -15,5 +15,5 @@ export async function login(_: unknown, formData: FormData) {
     return { error: 'Credenciales incorrectas. Verificá tu correo y contraseña.' }
   }
 
-  redirect('/contratos')
+  redirect('/admin')
 }
