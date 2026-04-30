@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discovery Operativo · Administradores PDV · American Outlet</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root {
+  --bg: #ffffff; --surface: #f5f5f5; --black: #0a0a0a; --dark: #1a1a1a;
+  --gray-700: #555; --gray-500: #888; --gray-400: #aaa; --gray-300: #ccc;
+  --gray-200: #e5e5e5; --gray-100: #f0f0f0; --gray-50: #fafafa;
+  --orange: #ff6b2b; --orange-soft: rgba(255,107,43,0.08); --orange-glow: rgba(255,107,43,0.18);
+  --red: #e63946; --green: #16a34a; --green-soft: rgba(22,163,74,0.08);
+  --border: rgba(0,0,0,0.06); --border-strong: rgba(0,0,0,0.1);
+  --nav-h: 72px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--black); font-family: 'Sora', sans-serif; line-height: 1.6; overflow: hidden; }
+
+/* PROGRESS BAR */
+#progress-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 3px; background: var(--gray-200); }
+#progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--red)); width: 0%; transition: width 0.4s ease; }
+
+/* SLIDE AREA */
+#slide-area {
+  position: fixed; top: 3px; left: 0; right: 0; bottom: var(--nav-h);
+  overflow-y: auto; overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.slide-content {
+  min-height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 40px 24px 32px;
+}
+
+/* TRANSITIONS */
+@keyframes slideInRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeIn       { from { opacity: 0; } to { opacity: 1; } }
+.anim-right { animation: slideInRight 0.32s ease forwards; }
+.anim-left  { animation: slideInLeft  0.32s ease forwards; }
+.anim-fade  { animation: fadeIn       0.4s ease forwards; }
+
+/* BOTTOM NAV */
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border); z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; gap: 12px;
+}
+.nav-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 18px; border-radius: 100px; border: 1px solid var(--border-strong);
+  background: var(--bg); color: var(--black); font-family: 'Sora', sans-serif;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+  white-space: nowrap;
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--black); transform: translateY(-1px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn.primary { background: var(--black); color: #fff; border-color: var(--black); }
+.nav-btn.primary:hover:not(:disabled) { background: var(--orange); border-color: var(--orange); }
+#slide-counter {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--gray-500);
+  text-align: center; flex: 1;
+}
+
+/* INTRO SLIDE */
+.intro-wrap {
+  max-width: 680px; width: 100%; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 20px 0;
+}
+.intro-logo { width: 100px; margin-bottom: 28px; }
+.intro-badge {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; border-radius: 100px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gray-700); margin-bottom: 20px;
+}
+.intro-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+.intro-h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; color: var(--black); }
+.intro-h1 .accent { color: var(--orange); }
+.intro-sub { font-size: 0.95rem; color: var(--gray-700); max-width: 560px; font-weight: 300; line-height: 1.7; margin-bottom: 28px; }
+.intro-context {
+  background: var(--black); color: #fff; border-radius: 18px; padding: 28px 28px; width: 100%; text-align: left; margin-bottom: 24px;
+}
+.ctx-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
+.ctx-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.ctx-sub { font-size: 0.85rem; color: #aaa; line-height: 1.6; font-weight: 300; }
+.ctx-sub strong { color: #fff; font-weight: 500; }
+.services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 16px; }
+.svc-chip { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 12px; font-size: 0.75rem; }
+.svc-chip .icon { font-size: 1rem; margin-bottom: 3px; display: block; }
+.intro-stats { display: flex; gap: 0; margin-bottom: 24px; width: 100%; border: 1px solid var(--border-strong); border-radius: 14px; overflow: hidden; }
+.stat-item { flex: 1; padding: 16px 8px; text-align: center; border-left: 1px solid var(--border-strong); }
+.stat-item:first-child { border-left: none; }
+.stat-num { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--orange); line-height: 1; }
+.stat-label { font-size: 0.62rem; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+
+/* HOW TO */
+.howto-wrap { max-width: 600px; width: 100%; }
+.slide-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.slide-label::before { content: ''; width: 18px; height: 1px; background: var(--orange); }
+.slide-title { font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 800; color: var(--black); margin-bottom: 24px; line-height: 1.2; }
+.howto-card {
+  background: #fff8f3; border: 1px solid rgba(255,107,43,0.25); border-radius: 16px; padding: 24px;
+  display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px;
+}
+.howto-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--orange); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+.howto-body { flex: 1; }
+.howto-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.howto-body p { font-size: 0.88rem; color: var(--gray-700); line-height: 1.7; font-weight: 300; }
+.howto-body p strong { color: var(--black); font-weight: 600; }
+.howto-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 10px; border: 1px solid var(--border); }
+.step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--orange); flex-shrink: 0; padding-top: 1px; min-width: 20px; }
+.step-text { font-size: 0.86rem; color: var(--gray-700); line-height: 1.6; }
+
+/* IDENTITY */
+.identity-wrap { max-width: 600px; width: 100%; }
+.pdv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.pdv-opt {
+  padding: 16px 10px; border: 2px solid var(--border-strong); border-radius: 12px; text-align: center;
+  cursor: pointer; transition: all 0.18s ease; background: var(--gray-50);
+}
+.pdv-opt:hover { border-color: var(--orange); }
+.pdv-opt.selected { border-color: var(--orange); background: var(--orange-soft); }
+.pdv-opt-icon { font-size: 1.4rem; margin-bottom: 5px; }
+.pdv-opt-name { font-size: 0.82rem; font-weight: 700; color: var(--black); }
+.pdv-opt-sub { font-size: 0.68rem; color: var(--gray-500); margin-top: 2px; }
+.field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field {
+  padding: 12px 14px; background: var(--gray-50); border: 1px solid var(--border-strong);
+  border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 0.88rem; color: var(--black); width: 100%;
+}
+.field:focus { outline: none; border-color: var(--orange); background: #fff; }
+.field::placeholder { color: var(--gray-400); font-weight: 300; }
+.field-label { font-size: 0.72rem; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 0.06em; display: block; }
+
+/* QUESTION */
+.q-wrap { max-width: 660px; width: 100%; }
+.q-head { margin-bottom: 22px; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--orange); margin-bottom: 4px; }
+.q-text { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 700; color: var(--black); line-height: 1.4; margin-bottom: 6px; }
+.q-sub { font-size: 0.83rem; color: var(--gray-500); font-weight: 300; line-height: 1.6; }
+.q-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.q-tag {
+  display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase;
+}
+.q-tag.single   { background: var(--orange-soft); color: var(--orange); }
+.q-tag.multi    { background: rgba(106,76,147,0.1); color: #6a4c93; }
+.q-tag.text-in  { background: rgba(42,157,143,0.1); color: #2a9d8f; }
+.q-tag.pct      { background: var(--green-soft); color: var(--green); }
+.q-tag.admin    { background: rgba(230,57,70,0.1); color: var(--red); }
+.admin-badge {
+  display: flex; align-items: center; gap: 10px; background: #fff5f5; border: 1px solid rgba(230,57,70,0.25);
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 18px;
+}
+.admin-badge-icon { font-size: 1rem; }
+.admin-badge-text { font-size: 0.8rem; color: var(--red); font-weight: 600; }
+
+/* OPTIONS */
+.opts-list { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+  background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.opt:hover { background: #fff; border-color: var(--gray-300); }
+.opt.selected { background: var(--orange-soft); border-color: var(--orange); }
+.opt-marker {
+  width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+  border: 2px solid var(--gray-300); transition: all 0.15s ease;
+  display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700;
+}
+.opt-marker.radio { border-radius: 50%; }
+.opt-marker.check { border-radius: 4px; }
+.opt.selected .opt-marker { background: var(--orange); border-color: var(--orange); color: #fff; }
+.opt-label { flex: 1; font-size: 0.88rem; color: var(--black); font-weight: 500; line-height: 1.5; }
+.opt-sub { display: block; font-size: 0.74rem; color: var(--gray-500); font-weight: 400; margin-top: 2px; font-style: italic; }
+
+/* TEXTAREA */
+.q-textarea {
+  width: 100%; padding: 14px 16px; background: var(--gray-50);
+  border: 1px solid var(--border-strong); border-radius: 10px;
+  font-family: 'Sora', sans-serif; font-size: 0.88rem; color: var(--black);
+  resize: vertical; min-height: 100px; transition: border-color 0.15s ease;
+}
+.q-textarea:focus { outline: none; border-color: var(--orange); background: #fff; }
+.q-textarea::placeholder { color: var(--gray-400); font-weight: 300; }
+
+/* PCT SLIDER */
+.pct-wrap { padding: 8px 0; }
+.pct-display { display: flex; align-items: baseline; gap: 8px; margin-bottom: 18px; }
+.pct-num { font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 700; color: var(--orange); line-height: 1; transition: color 0.3s; }
+.pct-lbl { font-size: 0.78rem; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase; }
+.pct-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--surface); border-radius: 100px; outline: none; }
+.pct-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--orange); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(255,107,43,0.4); }
+.pct-slider::-moz-range-thumb { width: 22px; height: 22px; background: var(--orange); border-radius: 50%; cursor: pointer; border: none; }
+.pct-marks { display: flex; justify-content: space-between; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--gray-400); }
+
+/* SUBMIT */
+.submit-wrap { max-width: 540px; width: 100%; text-align: center; }
+.submit-icon { font-size: 3rem; margin-bottom: 20px; }
+.submit-title { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; color: var(--black); margin-bottom: 12px; line-height: 1.2; }
+.submit-title .accent { color: var(--orange); }
+.submit-sub { font-size: 0.92rem; color: var(--gray-700); max-width: 420px; margin: 0 auto 32px; line-height: 1.7; font-weight: 300; }
+.summary-card { background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; text-align: left; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.summary-row:last-child { border-bottom: none; }
+.summary-key { font-size: 0.8rem; color: var(--gray-500); font-weight: 500; }
+.summary-val { font-size: 0.85rem; color: var(--black); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.submit-btn {
+  width: 100%; padding: 16px; border-radius: 14px; background: var(--black); color: #fff;
+  font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none;
+  display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+}
+.submit-btn:hover:not(:disabled) { background: var(--orange); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,43,0.3); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.reset-link { font-size: 0.8rem; color: var(--gray-400); cursor: pointer; margin-top: 16px; display: inline-block; text-decoration: underline; }
+.reset-link:hover { color: var(--gray-700); }
+
+/* SUCCESS */
+.success-wrap { max-width: 480px; width: 100%; text-align: center; }
+.success-icon { font-size: 4rem; margin-bottom: 16px; }
+.success-title { font-size: 1.8rem; font-weight: 800; color: var(--black); margin-bottom: 10px; }
+.success-sub { font-size: 0.92rem; color: var(--gray-700); line-height: 1.7; font-weight: 300; }
+.success-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 100px; background: var(--green-soft); color: var(--green); font-weight: 600; font-size: 0.82rem; margin-top: 24px; }
+
+@media (max-width: 600px) {
+  .pdv-grid { grid-template-columns: 1fr; }
+  .field-group { grid-template-columns: 1fr; }
+  .slide-content { padding: 28px 18px 24px; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-wrap"><div id="progress-fill"></div></div>
+
+<div id="slide-area">
+  <div class="slide-content" id="slide-content"></div>
+</div>
+
+<div id="bottom-nav">
+  <button class="nav-btn" id="btn-prev" onclick="prev()">← Anterior</button>
+  <span id="slide-counter">1 / 26</span>
+  <button class="nav-btn primary" id="btn-next" onclick="next()">Siguiente →</button>
+</div>
+
+<script>
+/* ======== DATA ======== */
+const questions = [
+  { id:'q01', block:'cliente', type:'multi', text:'¿Quién es el cliente que MÁS entra a tu tienda?', options:[
+    {label:'Mujeres 25–45 años de la zona', sub:'Cliente frecuente, conoce la tienda'},
+    {label:'Hombres 25–45 años de la zona'},
+    {label:'Adolescentes y jóvenes 15–24 años', sub:'Buscan marca y tendencia'},
+    {label:'Familias con hijos pequeños', sub:'Compra de ropa infantil y hogar'},
+    {label:'Adultos mayores 50+ años'},
+    {label:'Clientes de zonas rurales cercanas'},
+    {label:'Turistas nacionales', sub:'Sobre todo fines de semana'},
+    {label:'Turistas extranjeros', sub:'Camino al Arenal o de regreso'},
+    {label:'Revendedores que compran al por mayor'}
+  ]},
+  { id:'q02', block:'cliente', type:'multi', text:'¿Qué objeciones escuchás más en piso?', options:[
+    {label:'"¿Es nuevo o usado?"', sub:'Confusión sobre el origen del producto'},
+    {label:'"¿De qué país viene?"', sub:'Procedencia / autenticidad'},
+    {label:'"¿Tiene garantía o cambio?"'},
+    {label:'"Está caro"', sub:'Objeción de precio frontal'},
+    {label:'"Lo encuentro más barato en otro lado"'},
+    {label:'"No tienen mi talla"', sub:'Disponibilidad de inventario'},
+    {label:'"¿Es de marca real o falsificación?"'},
+    {label:'"Vuelvo otro día"', sub:'No cierra la compra'},
+    {label:'No registramos objeciones de forma sistemática'}
+  ]},
+  { id:'q03', block:'cliente', type:'multi', text:'¿Qué frase escuchás repetida del cliente que entra?', options:[
+    {label:'"Vine porque lo vi en Instagram"', sub:'El contenido funciona'},
+    {label:'"Esto no lo encontraba en ningún lado"', sub:'Exclusividad regional'},
+    {label:'"Mi vecina/amiga me recomendó"', sub:'Boca a boca'},
+    {label:'"Vengo cada vez que llega producto nuevo"', sub:'Cliente fiel'},
+    {label:'"No sabía que estaban acá"', sub:'Falta visibilidad'},
+    {label:'"Pasé por aquí y me llamó la atención"', sub:'Tráfico físico'},
+    {label:'"Estaba buscando algo específico"', sub:'Intención de compra clara'},
+    {label:'No tenemos visibilidad sobre eso aún'}
+  ]},
+  { id:'q04', block:'cliente', type:'multi', text:'¿En qué momento del día/semana entra MÁS gente?', options:[
+    {label:'Lunes mañana'},{label:'Lunes tarde'},{label:'Martes mañana'},{label:'Martes tarde'},
+    {label:'Miércoles mañana'},{label:'Miércoles tarde'},{label:'Jueves mañana'},{label:'Jueves tarde'},
+    {label:'Viernes mañana'},{label:'Viernes tarde'},{label:'Sábado todo el día', sub:'Pico semanal'},
+    {label:'Domingo'},{label:'Quincena (días 14-16 y fin de mes)', sub:'Pico de pago'}
+  ]},
+  { id:'q05', block:'producto', type:'multi', text:'¿Qué categorías se mueven MÁS en tu tienda?', options:[
+    {label:'Ropa hombre'},{label:'Ropa mujer'},{label:'Ropa niño/niña'},
+    {label:'Calzado deportivo'},{label:'Calzado casual/formal'},
+    {label:'Accesorios (gorras, mochilas)'},
+    {label:'Electrodomésticos / línea blanca'},{label:'Herramientas'},
+    {label:'Hogar y deco'},{label:'Juguetes'}
+  ]},
+  { id:'q06', block:'producto', type:'multi', text:'¿Qué productos se han vuelto sorpresa de venta?', options:[
+    {label:'Algo en ropa que no creías que conectaría'},
+    {label:'Calzado específico que se agotó rápido'},
+    {label:'Producto de hogar inesperado'},
+    {label:'Herramienta o electrodoméstico que voló'},
+    {label:'Accesorio que se viralizó por boca a boca'},
+    {label:'No identifico ninguna sorpresa últimamente'},
+    {label:'Voy a especificar al final', sub:'En texto libre'}
+  ]},
+  { id:'q07', block:'producto', type:'text', text:'Si tuvieras que recomendarle a Bralto 3 productos para mostrar en redes, ¿cuáles serían?',
+    placeholder:'Ej: 1. Tenis Nike modelo X (siempre se preguntan), 2. Las chaquetas de septiembre, 3. La línea de ollas marca Y...'},
+  { id:'q08', block:'operacion', type:'single', text:'¿Cuántas personas trabajan en tu tienda actualmente?', options:[
+    {label:'1–2 personas', sub:'Equipo mínimo'},{label:'3–5 personas', sub:'Equipo intermedio'},
+    {label:'6–10 personas', sub:'Equipo grande'},{label:'Más de 10 personas', sub:'Equipo amplio'}
+  ]},
+  { id:'q09', block:'operacion', type:'multi', text:'¿Qué procesos hacés HOY de forma manual que te quitan tiempo?', options:[
+    {label:'Responder mensajes de WhatsApp uno por uno'},
+    {label:'Tomar fotos de producto para enviar a clientes'},
+    {label:'Llevar control de pedidos en cuaderno o Excel'},
+    {label:'Coordinar con clientes que vienen a recoger'},
+    {label:'Dar precios y disponibilidad por teléfono'},
+    {label:'Gestionar apartados / reservas'},
+    {label:'Coordinar entregas a domicilio'},
+    {label:'Reportar ventas al encargado / dueño'}
+  ]},
+  { id:'q10', block:'operacion', type:'multi', text:'¿Qué herramientas digitales usás actualmente en tu tienda?', options:[
+    {label:'WhatsApp Business'},{label:'WhatsApp normal (no Business)'},
+    {label:'Sistema POS / punto de venta'},{label:'Excel / hojas de cálculo'},
+    {label:'Cuaderno físico'},{label:'Instagram para responder mensajes'},
+    {label:'Facebook Messenger'},{label:'Ningún sistema digital — todo manual'}
+  ]},
+  { id:'q11', block:'operacion', type:'multi', text:'¿Qué pasa cuando un cliente escribe por WhatsApp fuera de horario?', options:[
+    {label:'Le respondemos al día siguiente cuando abrimos'},
+    {label:'A veces respondemos desde el celular personal'},
+    {label:'Tenemos respuesta automática básica'},
+    {label:'Se pierde el mensaje / no se contesta'},
+    {label:'Otro encargado responde según pueda'},
+    {label:'No tenemos protocolo claro'}
+  ]},
+  { id:'q12', block:'digital', type:'multi', text:'¿Cómo se entera la gente de las promociones que hacen ahora?', options:[
+    {label:'Carteles físicos en la tienda'},{label:'Boca a boca entre clientes'},
+    {label:'Publicaciones de Instagram'},{label:'Publicaciones de Facebook'},
+    {label:'Mensajes de WhatsApp masivos'},{label:'Volantes repartidos'},
+    {label:'Radio o medios locales'},{label:'No comunicamos las promos sistemáticamente'}
+  ]},
+  { id:'q13', block:'digital', type:'multi', text:'¿Qué tipo de contenido genera más visitas a la tienda?', options:[
+    {label:'Reels mostrando productos con precio'},
+    {label:'Historias con encuestas y dinámicas'},
+    {label:'Fotos de clientes en la tienda'},
+    {label:'Videos de "qué llegó hoy"'},
+    {label:'Lives o transmisiones en vivo'},
+    {label:'Posts de promoción con descuentos'},
+    {label:'No tenemos forma de medir eso hoy'}
+  ]},
+  { id:'q14', block:'digital', type:'multi', text:'¿Qué te incomoda de cómo se manejan las redes hoy?', options:[
+    {label:'Se publica poco o de forma inconsistente'},
+    {label:'El contenido no representa bien la tienda'},
+    {label:'No respondemos a tiempo los mensajes'},
+    {label:'No sabemos qué publicar'},
+    {label:'No coordinamos con las otras tiendas'},
+    {label:'Las promos no llegan a la gente'},
+    {label:'No tenemos quien grabe / haga contenido'},
+    {label:'Todo está bien — solo falta más alcance'}
+  ]},
+  { id:'q15', block:'admin', adminOnly:true, type:'pct', text:'¿Qué tan claro tenés cuáles son los 5 productos top de tu tienda en venta este mes?',
+    sub:'Esto define qué empujamos en redes esta semana.'},
+  { id:'q16', block:'admin', adminOnly:true, type:'multi', text:'En tu rol como administrador, ¿cuáles son tus 3 dolores principales?', options:[
+    {label:'No sé qué se está vendiendo en las otras tiendas'},
+    {label:'Inventario muerto que ocupa espacio'},
+    {label:'Personal con poca capacitación'},
+    {label:'Tráfico bajo en días específicos'},
+    {label:'Competencia agresiva en precio'},
+    {label:'Falta de promoción digital'},
+    {label:'Cliente que no vuelve después de la primera compra'},
+    {label:'No tener métricas claras de qué funciona'},
+    {label:'Coordinación con la administración central'}
+  ]},
+  { id:'q17', block:'admin', adminOnly:true, type:'pct', text:'¿Qué tan dispuesto estás a colaborar con el equipo de Bralto enviando información semanal?',
+    sub:'Ej: foto del producto del día, lista de lo que entró, top de la semana. 5–10 min al día.'},
+  { id:'q18', block:'admin', adminOnly:true, type:'multi', text:'¿Qué información tenés vos que NADIE más en el grupo tiene?', options:[
+    {label:'Qué pregunta el cliente que entra y se va sin comprar'},
+    {label:'Qué productos se devuelven más'},
+    {label:'Qué horas tienen tráfico real vs. fantasma'},
+    {label:'Qué empleado vende mejor cada categoría'},
+    {label:'Qué clientes son revendedores frecuentes'},
+    {label:'Qué promociones funcionaron de verdad históricamente'},
+    {label:'Qué productos están a punto de agotarse'},
+    {label:'Qué clientes habituales ya no vuelven'}
+  ]},
+  { id:'q19', block:'admin', adminOnly:true, type:'single', text:'¿Tenés acceso administrativo a las redes de tu tienda?', options:[
+    {label:'Sí, manejo Instagram y Facebook directamente'},
+    {label:'Sí, pero solo Instagram'},
+    {label:'Sí, pero solo respondo mensajes — no publico'},
+    {label:'No tengo acceso, lo hace otra persona'},
+    {label:'No sé quién tiene el acceso actualmente'},
+    {label:'Compartimos un perfil entre las 3 tiendas'}
+  ]},
+  { id:'q20', block:'admin', adminOnly:true, type:'pct', text:'¿Qué tan dispuesto estás a que tu tienda sea grabada para producir contenido?',
+    sub:'Incluye permisos para entrar el equipo de filmación y grabar al personal y producto.'},
+  { id:'q21', block:'admin', adminOnly:true, type:'multi', text:'Si pudieras pedirle UNA sola cosa al equipo de marketing este mes, ¿qué sería?', options:[
+    {label:'Que me traigan más tráfico nuevo'},
+    {label:'Que me ayuden a vender el inventario que tengo trabado'},
+    {label:'Que me posicionen mejor que la competencia local'},
+    {label:'Que me hagan reels con calidad real'},
+    {label:'Que automaticen el WhatsApp para no responder lo mismo todos los días'},
+    {label:'Que integren las 3 tiendas para no andar repitiendo info'},
+    {label:'Que me muestren métricas claras de qué está funcionando'},
+    {label:'Que comuniquen mejor las promociones que hago'}
+  ]},
+  { id:'q22', block:'admin', adminOnly:true, type:'text', text:'Compromiso real: en una frase, ¿cómo te ves apoyando esta estrategia desde tu tienda?',
+    placeholder:'Ej: "Voy a coordinar 1 sesión semanal de fotos con el equipo y mandar el top 5 de productos cada lunes vía WhatsApp." Sé concreto — esto queda documentado.'}
+];
+
+const PDV_OPTIONS = [
+  {key:'florencia', icon:'🏪', name:'AO Florencia', sub:'San Carlos'},
+  {key:'fortuna', icon:'🏪', name:'AO Fortuna', sub:'La Fortuna · Arenal'},
+  {key:'quesada', icon:'🏪', name:'AO Ciudad Quesada', sub:'Centro · 3 pisos'}
+];
+
+const TOTAL_SLIDES = 2 + 1 + questions.length + 1; // intro, howto, identity, questions, submit
+
+/* ======== STATE ======== */
+let cur = 0;
+let animDir = 'right';
+const answers = {};
+const meta = { pdv: null, name: '', contact: '' };
+
+/* ======== SLIDES BUILD ======== */
+function buildSlide(index) {
+  if (index === 0) return buildIntro();
+  if (index === 1) return buildHowTo();
+  if (index === 2) return buildIdentity();
+  if (index === TOTAL_SLIDES - 1) return buildSubmit();
+  const qIndex = index - 3;
+  return buildQuestion(qIndex);
+}
+
+function buildIntro() {
+  return `<div class="intro-wrap">
+    <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" class="intro-logo">
+    <div class="intro-badge"><span class="dot"></span>Discovery operativo · Administradores PDV</div>
+    <h1 class="intro-h1">Lo que pasa en el piso<br>es lo que <span class="accent">define la estrategia.</span></h1>
+    <p class="intro-sub">Tu día a día con el cliente, los productos y el equipo es información que ningún tablero puede capturar. Lo que respondas acá da forma directa a las campañas de este mes.</p>
+    <div class="intro-stats">
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">PDV</div></div>
+      <div class="stat-item"><div class="stat-num">7</div><div class="stat-label">Servicios</div></div>
+      <div class="stat-item"><div class="stat-num">22</div><div class="stat-label">Preguntas</div></div>
+      <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">Solo admin</div></div>
+    </div>
+    <div class="intro-context">
+      <div class="ctx-label">Qué se va a implementar este mes</div>
+      <div class="ctx-title">Una estrategia integral de marketing digital para <span style="color:var(--orange)">las 3 sucursales del grupo.</span></div>
+      <div class="ctx-sub">Un sistema completo que conecta <strong>publicidad digital, redes sociales, sitio web, producción audiovisual, automatización con WhatsApp y un CRM unificado.</strong> Para que funcione, necesitamos información real de quien está todos los días en la tienda.</div>
+      <div class="services-grid">
+        <div class="svc-chip"><span class="icon">🎯</span>Google Ads</div>
+        <div class="svc-chip"><span class="icon">📱</span>Redes sociales</div>
+        <div class="svc-chip"><span class="icon">📘</span>Meta Ads</div>
+        <div class="svc-chip"><span class="icon">🌐</span>Sitio web</div>
+        <div class="svc-chip"><span class="icon">🎬</span>Producción</div>
+        <div class="svc-chip"><span class="icon">⚙️</span>CRM</div>
+        <div class="svc-chip"><span class="icon">🤖</span>Bot WhatsApp</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildHowTo() {
+  return `<div class="howto-wrap">
+    <div class="slide-label">Antes de empezar</div>
+    <h2 class="slide-title">Cómo usar este cuestionario</h2>
+    <div class="howto-card">
+      <div class="howto-icon">!</div>
+      <div class="howto-body">
+        <h3>Rápido y directo</h3>
+        <p>Cada pantalla tiene <strong>una sola pregunta</strong>. Marcás lo que aplica (una opción o varias, según el caso) y avanzás. Al final enviás y nosotros recibimos todo con el PDF adjunto.</p>
+      </div>
+    </div>
+    <div class="howto-steps">
+      <div class="step"><div class="step-num">01</div><div class="step-text">Identificá tu punto de venta en la siguiente pantalla.</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text">Respondé cada pregunta marcando lo que aplica. En las preguntas de porcentaje, movés el slider.</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text">Las últimas 8 preguntas son <strong>solo para administradores</strong> — son más operativas, respondelas con honestidad.</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text">Al final, presionás <strong>Enviar</strong> y Bralto recibe el discovery completo con PDF adjunto.</div></div>
+    </div>
+  </div>`;
+}
+
+function buildIdentity() {
+  return `<div class="identity-wrap">
+    <div class="slide-label">Identificación</div>
+    <h2 class="slide-title">¿Desde qué tienda estás respondiendo?</h2>
+    <div class="pdv-grid">
+      ${PDV_OPTIONS.map(p => `
+        <div class="pdv-opt ${meta.pdv === p.key ? 'selected' : ''}" onclick="selectPDV('${p.key}')">
+          <div class="pdv-opt-icon">${p.icon}</div>
+          <div class="pdv-opt-name">${p.name}</div>
+          <div class="pdv-opt-sub">${p.sub}</div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="field-label">Tu nombre completo</label>
+      <input type="text" class="field" id="f-name" placeholder="Ej: Juan Pérez" value="${meta.name}" oninput="meta.name=this.value;updateProgress()">
+    </div>
+    <div class="field-group">
+      <div>
+        <label class="field-label">WhatsApp / teléfono</label>
+        <input type="text" class="field" id="f-contact" placeholder="Ej: 8888-0000" value="${meta.contact}" oninput="meta.contact=this.value;updateProgress()">
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildQuestion(qIdx) {
+  const q = questions[qIdx];
+  const num = qIdx + 1;
+  const isAdmin = q.adminOnly;
+
+  let typeTag = '';
+  if (q.type === 'single') typeTag = '<span class="q-tag single">○ Selección única</span>';
+  else if (q.type === 'multi') typeTag = '<span class="q-tag multi">☑ Selección múltiple</span>';
+  else if (q.type === 'text') typeTag = '<span class="q-tag text-in">✎ Respuesta abierta</span>';
+  else if (q.type === 'pct') typeTag = '<span class="q-tag pct">% Porcentaje</span>';
+  const adminTag = isAdmin ? '<span class="q-tag admin">★ Solo admin</span>' : '';
+
+  let inputHtml = '';
+  if (q.type === 'single' || q.type === 'multi') {
+    const selected = answers[q.id] || [];
+    const marker = q.type === 'single' ? 'radio' : 'check';
+    const checkMark = q.type === 'single' ? '●' : '✓';
+    inputHtml = `<div class="opts-list">
+      ${q.options.map((opt, i) => `
+        <div class="opt ${selected.includes(i) ? 'selected' : ''}" onclick="handleOpt('${q.id}',${i},'${q.type}')">
+          <div class="opt-marker ${marker}">${selected.includes(i) ? checkMark : ''}</div>
+          <div class="opt-label">${opt.label}${opt.sub ? `<span class="opt-sub">${opt.sub}</span>` : ''}</div>
+        </div>`).join('')}
+    </div>`;
+  } else if (q.type === 'text') {
+    inputHtml = `<textarea class="q-textarea" placeholder="${q.placeholder}" oninput="handleText('${q.id}',this.value)">${answers[q.id] || ''}</textarea>`;
+  } else if (q.type === 'pct') {
+    const val = answers[q.id] !== undefined ? answers[q.id] : 50;
+    inputHtml = `<div class="pct-wrap">
+      <div class="pct-display">
+        <div class="pct-num" id="pn-${q.id}">${val}</div>
+        <div class="pct-lbl">% / nivel</div>
+      </div>
+      <input type="range" min="0" max="100" value="${val}" class="pct-slider" oninput="handlePct('${q.id}',this.value)">
+      <div class="pct-marks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    </div>`;
+  }
+
+  return `<div class="q-wrap">
+    ${isAdmin && num === 15 ? `<div class="admin-badge"><div class="admin-badge-icon">★</div><div class="admin-badge-text">Las siguientes preguntas son solo para administradores</div></div>` : ''}
+    <div class="q-head">
+      <div class="q-num">Pregunta ${String(num).padStart(2,'0')} de ${questions.length}</div>
+      <div class="q-text">${q.text}</div>
+      ${q.sub ? `<div class="q-sub">${q.sub}</div>` : ''}
+      <div class="q-tags">${typeTag}${adminTag}</div>
+    </div>
+    ${inputHtml}
+  </div>`;
+}
+
+function buildSubmit() {
+  const answered = Object.keys(answers).length + (meta.pdv && meta.name ? 1 : 0);
+  const total = questions.length + 1;
+  const pdvLabel = meta.pdv ? PDV_OPTIONS.find(p => p.key === meta.pdv)?.name || meta.pdv : '—';
+  return `<div class="submit-wrap">
+    <div class="submit-icon">📋</div>
+    <h2 class="submit-title">Tu input arma<br>la estrategia <span class="accent">local.</span></h2>
+    <p class="submit-sub">Presioná Enviar y Bralto recibe el discovery completo con todas tus respuestas adjunto en PDF.</p>
+    <div class="summary-card">
+      <div class="summary-row"><span class="summary-key">Punto de venta</span><span class="summary-val">${pdvLabel}</span></div>
+      <div class="summary-row"><span class="summary-key">Respondido por</span><span class="summary-val">${meta.name || '—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Contacto</span><span class="summary-val">${meta.contact || '—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Preguntas completadas</span><span class="summary-val">${answered} / ${total}</span></div>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+      <span id="submit-spinner" style="display:none" class="spinner"></span>
+      <span id="submit-label">Enviar discovery →</span>
+    </button>
+    <span class="reset-link" onclick="resetAll()">↻ Reiniciar respuestas</span>
+  </div>`;
+}
+
+/* ======== HANDLERS ======== */
+function selectPDV(key) {
+  meta.pdv = key;
+  document.querySelectorAll('.pdv-opt').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`.pdv-opt[onclick="selectPDV('${key}')"]`)?.classList.add('selected');
+  updateProgress();
+}
+
+function handleOpt(id, idx, type) {
+  if (type === 'single') {
+    answers[id] = [idx];
+    document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`).forEach(el => {
+      el.classList.remove('selected');
+      el.querySelector('.opt-marker').textContent = '';
+    });
+    const el = document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`)[idx];
+    if (el) { el.classList.add('selected'); el.querySelector('.opt-marker').textContent = '●'; }
+  } else {
+    if (!answers[id]) answers[id] = [];
+    const i = answers[id].indexOf(idx);
+    const el = document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`)[idx];
+    if (i > -1) {
+      answers[id].splice(i, 1);
+      if (el) { el.classList.remove('selected'); el.querySelector('.opt-marker').textContent = ''; }
+    } else {
+      answers[id].push(idx);
+      if (el) { el.classList.add('selected'); el.querySelector('.opt-marker').textContent = '✓'; }
+    }
+    if (answers[id].length === 0) delete answers[id];
+  }
+  updateProgress();
+}
+
+function handleText(id, val) {
+  if (val.trim()) answers[id] = val; else delete answers[id];
+  updateProgress();
+}
+
+function handlePct(id, val) {
+  answers[id] = parseInt(val);
+  const el = document.getElementById('pn-' + id);
+  if (el) {
+    el.textContent = val;
+    const v = parseInt(val);
+    el.style.color = v >= 75 ? '#16a34a' : v >= 50 ? '#ff6b2b' : v >= 25 ? '#fbbf24' : '#aaa';
+  }
+  updateProgress();
+}
+
+/* ======== NAVIGATION ======== */
+function goTo(index, dir) {
+  if (index < 0 || index >= TOTAL_SLIDES) return;
+  animDir = dir;
+  cur = index;
+  render();
+  updateNav();
+  updateProgress();
+  document.getElementById('slide-area').scrollTop = 0;
+}
+
+function next() { goTo(cur + 1, 'right'); }
+function prev() { goTo(cur - 1, 'left'); }
+
+function render() {
+  const area = document.getElementById('slide-content');
+  area.innerHTML = buildSlide(cur);
+  area.className = 'slide-content ' + (animDir === 'right' ? 'anim-right' : 'anim-left');
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = cur === 0;
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.disabled = cur === TOTAL_SLIDES - 1;
+  nextBtn.textContent = cur === TOTAL_SLIDES - 2 ? 'Ver resumen →' : 'Siguiente →';
+  document.getElementById('slide-counter').textContent = `${cur + 1} / ${TOTAL_SLIDES}`;
+}
+
+function updateProgress() {
+  const pct = ((cur + 1) / TOTAL_SLIDES) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+/* ======== PDF + SUBMIT ======== */
+function buildAnswerHtml(q) {
+  const ans = answers[q.id];
+  if (ans === undefined) return '<div style="color:#aaa;font-style:italic;font-size:0.85rem;">Sin responder</div>';
+  if (q.type === 'single' || q.type === 'multi') {
+    return ans.map(idx => {
+      const opt = q.options[idx];
+      return `<div style="padding:8px 12px;background:#fff8f3;border-left:3px solid #ff6b2b;border-radius:4px;font-size:0.88rem;margin-bottom:5px;">
+        <strong>${opt.label}</strong>${opt.sub ? `<div style="color:#888;font-size:0.78rem;font-style:italic;margin-top:2px;">${opt.sub}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+  if (q.type === 'text') return `<div style="padding:12px;background:#fff8f3;border-left:3px solid #ff6b2b;border-radius:4px;font-size:0.88rem;white-space:pre-wrap;">${ans}</div>`;
+  if (q.type === 'pct') {
+    const col = ans >= 75 ? '#16a34a' : ans >= 50 ? '#ff6b2b' : ans >= 25 ? '#fbbf24' : '#aaa';
+    const lbl = ans >= 75 ? 'Muy alto' : ans >= 50 ? 'Alto' : ans >= 25 ? 'Medio' : 'Bajo';
+    return `<div style="padding:12px;background:#fff8f3;border-left:3px solid ${col};border-radius:4px;"><strong style="font-size:1.6rem;color:${col};font-family:monospace;">${ans}%</strong> · Nivel ${lbl}</div>`;
+  }
+  return '';
+}
+
+function buildPdfHtml() {
+  const date = new Date().toLocaleDateString('es-CR', {day:'2-digit',month:'long',year:'numeric'});
+  const pdvInfo = meta.pdv ? PDV_OPTIONS.find(p => p.key === meta.pdv) : null;
+  const pdvLabel = pdvInfo ? pdvInfo.name : 'No identificado';
+  const answered = Object.keys(answers).length + (meta.pdv && meta.name ? 1 : 0);
+  const total = questions.length + 1;
+
+  const blocksOrder = ['cliente','producto','operacion','digital','admin'];
+  const blockLabels = {cliente:'Cliente',producto:'Producto',operacion:'Operación',digital:'Digital',admin:'Solo administrador'};
+  const blockColors = {cliente:'#0a0a0a',producto:'#6a4c93',operacion:'#2a9d8f',digital:'#ff6b2b',admin:'#e63946'};
+
+  let blocksHtml = '';
+  blocksOrder.forEach(bk => {
+    const bqs = questions.filter(q => q.block === bk);
+    if (!bqs.length) return;
+    const isAdmin = bk === 'admin';
+    blocksHtml += `<div style="${isAdmin?'page-break-before:always;':''}margin-bottom:28px;">
+      <div style="border-left:4px solid ${blockColors[bk]};padding:8px 14px;margin-bottom:14px;background:${isAdmin?'#fff5f5':'#fafafa'};">
+        <div style="font-family:monospace;font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:${blockColors[bk]};margin-bottom:3px;">Bloque</div>
+        <div style="font-size:1.1rem;font-weight:700;">${blockLabels[bk]}</div>
+      </div>
+      ${bqs.map(q => {
+        const qNum = questions.indexOf(q)+1;
+        return `<div style="margin-bottom:16px;padding:14px 16px;border:1px solid #eee;border-radius:10px;">
+          <div style="font-family:monospace;font-size:0.75rem;font-weight:700;color:#ff6b2b;margin-bottom:6px;">${String(qNum).padStart(2,'0')}</div>
+          <div style="font-size:0.92rem;font-weight:600;color:#0a0a0a;margin-bottom:8px;">${q.text}</div>
+          ${buildAnswerHtml(q)}
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+
+  return `<div style="font-family:'Sora','Helvetica Neue',Arial,sans-serif;color:#0a0a0a;background:#fff;padding:40px;max-width:800px;margin:0 auto;">
+    <div style="text-align:center;padding:50px 0 60px;border-bottom:3px solid #ff6b2b;margin-bottom:36px;">
+      <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" style="width:100px;margin-bottom:24px;">
+      <div style="font-family:monospace;font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:#ff6b2b;margin-bottom:16px;">Discovery operativo · Administrador PDV</div>
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:10px;">American Outlet<br><span style="color:#ff6b2b;">${pdvLabel}</span></h1>
+      <div style="background:#fafafa;border-radius:10px;padding:16px 20px;max-width:360px;margin:20px auto;text-align:left;">
+        <div style="font-size:0.88rem;margin-bottom:6px;"><strong>Administrador:</strong> ${meta.name||'—'}</div>
+        <div style="font-size:0.88rem;margin-bottom:6px;"><strong>Contacto:</strong> ${meta.contact||'—'}</div>
+        <div style="font-size:0.88rem;"><strong>PDV:</strong> ${pdvLabel}</div>
+      </div>
+      <div style="font-family:monospace;font-size:0.68rem;color:#888;margin-top:20px;">${date} · Bralto · bralto.io · ${answered}/${total} respondidas</div>
+    </div>
+    ${blocksHtml}
+    <div style="text-align:center;padding-top:32px;border-top:1px solid #eee;">
+      <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" style="width:70px;opacity:0.5;margin-bottom:10px;">
+      <p style="font-size:0.75rem;color:#aaa;">Bralto · bralto.io · Discovery operativo · ${pdvLabel}</p>
+    </div>
+  </div>`;
+}
+
+async function submitForm() {
+  const btn = document.getElementById('submit-btn');
+  const spinner = document.getElementById('submit-spinner');
+  const label = document.getElementById('submit-label');
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  label.textContent = 'Generando PDF...';
+
+  try {
+    const pdfNode = document.createElement('div');
+    pdfNode.innerHTML = buildPdfHtml();
+    pdfNode.style.cssText = 'position:absolute;left:-9999px;top:0;width:800px;';
+    document.body.appendChild(pdfNode);
+
+    const pdvInfo = meta.pdv ? PDV_OPTIONS.find(p => p.key === meta.pdv) : null;
+    const filename = `Discovery_Admin_${pdvInfo ? pdvInfo.name.replace(/\s+/g,'_') : 'PDV'}_${meta.name.replace(/\s+/g,'_')||'Sin_nombre'}.pdf`;
+
+    const pdfBlob = await html2pdf().set({
+      margin:[10,10,10,10], filename,
+      image:{type:'jpeg',quality:0.96},
+      html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['avoid-all','css','legacy']}
+    }).from(pdfNode.firstElementChild).outputPdf('blob');
+
+    document.body.removeChild(pdfNode);
+    label.textContent = 'Enviando...';
+
+    const reader = new FileReader();
+    const pdfBase64 = await new Promise((resolve, reject) => {
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(pdfBlob);
+    });
+
+    const answered = Object.keys(answers).length + (meta.pdv && meta.name ? 1 : 0);
+    const res = await fetch('/api/discovery/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'admin',
+        pdfBase64,
+        pdfFilename: filename,
+        metadata: { pdv: pdvInfo?.name || meta.pdv, name: meta.name, contact: meta.contact },
+        answeredCount: answered,
+        totalCount: questions.length + 1,
+      })
+    });
+
+    if (!res.ok) throw new Error('Error del servidor');
+
+    document.getElementById('slide-content').innerHTML = `
+      <div class="success-wrap">
+        <div class="success-icon">✅</div>
+        <h2 class="success-title">¡Discovery enviado!</h2>
+        <p class="success-sub">Bralto recibió tu cuestionario completo con el PDF adjunto. Gracias por tomarte el tiempo — esta información da forma directa a la estrategia de tu tienda.</p>
+        <div class="success-badge">✓ Correo enviado correctamente</div>
+      </div>`;
+    document.getElementById('bottom-nav').style.display = 'none';
+    document.getElementById('progress-fill').style.width = '100%';
+
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    label.textContent = 'Enviar discovery →';
+    alert('Hubo un problema al enviar. Verificá tu conexión y volvé a intentar.');
+  }
+}
+
+function resetAll() {
+  if (!confirm('¿Seguro que querés borrar todas las respuestas?')) return;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  meta.pdv = null; meta.name = ''; meta.contact = '';
+  goTo(0, 'left');
+}
+
+/* ======== KEYBOARD ======== */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+});
+
+/* ======== INIT ======== */
+goTo(0, 'right');
+</script>
+</body>
+</html>

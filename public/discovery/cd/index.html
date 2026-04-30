@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discovery Estratégico · Centro de Distribución · American Outlet</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root {
+  --bg: #ffffff; --surface: #f5f5f5; --black: #0a0a0a;
+  --gray-700: #555; --gray-500: #888; --gray-400: #aaa; --gray-300: #ccc;
+  --gray-200: #e5e5e5; --gray-50: #fafafa;
+  --orange: #ff6b2b; --orange-soft: rgba(255,107,43,0.08);
+  --teal: #2a9d8f; --teal-soft: rgba(42,157,143,0.08);
+  --amber: #f59e0b; --amber-soft: rgba(245,158,11,0.1);
+  --purple: #6a4c93; --purple-soft: rgba(106,76,147,0.1);
+  --red: #e63946; --red-soft: rgba(230,57,70,0.08);
+  --green: #16a34a; --green-soft: rgba(22,163,74,0.08);
+  --border: rgba(0,0,0,0.06); --border-strong: rgba(0,0,0,0.1);
+  --nav-h: 72px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--black); font-family: 'Sora', sans-serif; line-height: 1.6; overflow: hidden; }
+#progress-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 3px; background: var(--gray-200); }
+#progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--orange)); width: 0%; transition: width 0.4s ease; }
+#slide-area { position: fixed; top: 3px; left: 0; right: 0; bottom: var(--nav-h); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+.slide-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 24px 32px; }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+.anim-right { animation: slideInRight 0.32s ease forwards; }
+.anim-left  { animation: slideInLeft  0.32s ease forwards; }
+#bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); border-top: 1px solid var(--border); z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; gap: 12px; }
+.nav-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: 100px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--black); font-family: 'Sora', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.18s ease; white-space: nowrap; }
+.nav-btn:hover:not(:disabled) { border-color: var(--black); transform: translateY(-1px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn.primary { background: var(--black); color: #fff; border-color: var(--black); }
+.nav-btn.primary:hover:not(:disabled) { background: var(--teal); border-color: var(--teal); }
+#slide-counter { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--gray-500); text-align: center; flex: 1; }
+
+/* INTRO */
+.intro-wrap { max-width: 680px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
+.intro-logo { width: 100px; margin-bottom: 28px; }
+.intro-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; border-radius: 100px; background: var(--teal-soft); border: 1px solid rgba(42,157,143,0.3); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); margin-bottom: 20px; }
+.intro-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+.intro-h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.intro-h1 .accent { color: var(--teal); }
+.intro-sub { font-size: 0.95rem; color: var(--gray-700); max-width: 560px; font-weight: 300; line-height: 1.7; margin-bottom: 28px; }
+.intro-context { background: var(--black); color: #fff; border-radius: 18px; padding: 28px; width: 100%; text-align: left; margin-bottom: 24px; }
+.ctx-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+.ctx-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.ctx-sub { font-size: 0.85rem; color: #aaa; line-height: 1.6; font-weight: 300; }
+.ctx-sub strong { color: #fff; font-weight: 500; }
+.flow-grid { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-top: 16px; }
+.flow-cd-box { background: rgba(42,157,143,0.2); border: 1px solid rgba(42,157,143,0.4); border-radius: 10px; padding: 12px 16px; text-align: center; }
+.flow-cd-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.flow-cd-name { font-size: 0.78rem; font-weight: 700; }
+.flow-pdvs { display: flex; flex-direction: column; gap: 6px; }
+.flow-pdv { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-size: 0.78rem; }
+.intro-stats { display: flex; gap: 0; margin-bottom: 24px; width: 100%; border: 1px solid var(--border-strong); border-radius: 14px; overflow: hidden; }
+.stat-item { flex: 1; padding: 16px 8px; text-align: center; border-left: 1px solid var(--border-strong); }
+.stat-item:first-child { border-left: none; }
+.stat-num { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--teal); line-height: 1; }
+.stat-label { font-size: 0.62rem; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+
+/* HOWTO */
+.howto-wrap { max-width: 600px; width: 100%; }
+.slide-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.slide-label::before { content: ''; width: 18px; height: 1px; background: var(--teal); }
+.slide-title { font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 800; color: var(--black); margin-bottom: 24px; line-height: 1.2; }
+.howto-card { background: var(--teal-soft); border: 1px solid rgba(42,157,143,0.25); border-radius: 16px; padding: 24px; display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px; }
+.howto-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+.howto-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.howto-body p { font-size: 0.88rem; color: var(--gray-700); line-height: 1.7; font-weight: 300; }
+.howto-body p strong { color: var(--black); font-weight: 600; }
+.howto-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 10px; border: 1px solid var(--border); }
+.step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--teal); flex-shrink: 0; padding-top: 1px; min-width: 20px; }
+.step-text { font-size: 0.86rem; color: var(--gray-700); line-height: 1.6; }
+
+/* IDENTITY */
+.identity-wrap { max-width: 560px; width: 100%; }
+.field-label { font-size: 0.72rem; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 0.06em; display: block; }
+.field { padding: 12px 14px; background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 0.88rem; color: var(--black); width: 100%; }
+.field:focus { outline: none; border-color: var(--teal); background: #fff; }
+.field::placeholder { color: var(--gray-400); font-weight: 300; }
+.field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+/* QUESTION */
+.q-wrap { max-width: 660px; width: 100%; }
+.q-head { margin-bottom: 22px; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--teal); margin-bottom: 4px; }
+.q-text { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 700; color: var(--black); line-height: 1.4; margin-bottom: 6px; }
+.q-sub { font-size: 0.83rem; color: var(--gray-500); font-weight: 300; line-height: 1.6; }
+.q-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.q-tag { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase; }
+.q-tag.single   { background: var(--orange-soft); color: var(--orange); }
+.q-tag.multi    { background: var(--purple-soft); color: var(--purple); }
+.q-tag.text-in  { background: var(--teal-soft); color: var(--teal); }
+.q-tag.pct      { background: var(--green-soft); color: var(--green); }
+.q-tag.matrix   { background: var(--amber-soft); color: var(--amber); }
+.q-tag.priority { background: var(--black); color: #fff; }
+.q-tag.training { background: var(--red-soft); color: var(--red); }
+.training-badge { display: flex; align-items: center; gap: 10px; background: #fff5f5; border: 1px solid rgba(230,57,70,0.25); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; }
+.training-badge-icon { font-size: 1.2rem; }
+.training-badge-text { font-size: 0.82rem; color: var(--red); font-weight: 600; line-height: 1.5; }
+
+/* OPTIONS */
+.opts-list { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s ease; }
+.opt:hover { background: #fff; border-color: var(--gray-300); }
+.opt.selected { background: var(--teal-soft); border-color: var(--teal); }
+.opt-marker { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; border: 2px solid var(--gray-300); transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; }
+.opt-marker.radio { border-radius: 50%; }
+.opt-marker.check { border-radius: 4px; }
+.opt.selected .opt-marker { background: var(--teal); border-color: var(--teal); color: #fff; }
+.opt-label { flex: 1; font-size: 0.88rem; color: var(--black); font-weight: 500; line-height: 1.5; }
+.opt-sub { display: block; font-size: 0.74rem; color: var(--gray-500); font-weight: 400; margin-top: 2px; font-style: italic; }
+
+/* TEXTAREA */
+.q-textarea { width: 100%; padding: 14px 16px; background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 0.88rem; color: var(--black); resize: vertical; min-height: 100px; transition: border-color 0.15s ease; }
+.q-textarea:focus { outline: none; border-color: var(--teal); background: #fff; }
+.q-textarea::placeholder { color: var(--gray-400); font-weight: 300; }
+
+/* PCT */
+.pct-wrap { padding: 8px 0; }
+.pct-display { display: flex; align-items: baseline; gap: 8px; margin-bottom: 18px; }
+.pct-num { font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 700; color: var(--teal); line-height: 1; transition: color 0.3s; }
+.pct-lbl { font-size: 0.78rem; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase; }
+.pct-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--surface); border-radius: 100px; outline: none; }
+.pct-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--teal); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(42,157,143,0.4); }
+.pct-slider::-moz-range-thumb { width: 22px; height: 22px; background: var(--teal); border-radius: 50%; cursor: pointer; border: none; }
+.pct-marks { display: flex; justify-content: space-between; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--gray-400); }
+
+/* MATRIX */
+.matrix-wrap { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-strong); border-radius: 12px; overflow: hidden; }
+.matrix-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; background: var(--gray-50); padding: 10px 14px; border-bottom: 1px solid var(--border-strong); }
+.matrix-header div { font-size: 0.68rem; font-weight: 700; color: var(--gray-500); letter-spacing: 0.08em; text-transform: uppercase; }
+.matrix-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border); }
+.matrix-row:last-child { border-bottom: none; }
+.matrix-cat { padding: 10px 14px; font-size: 0.82rem; font-weight: 600; color: var(--black); background: var(--gray-50); border-right: 1px solid var(--border); display: flex; align-items: center; }
+.matrix-input { padding: 10px 12px; background: #fff; border: none; border-right: 1px solid var(--border); font-family: 'Sora', sans-serif; font-size: 0.82rem; color: var(--black); }
+.matrix-input:last-child { border-right: none; }
+.matrix-input:focus { outline: none; background: #fffef0; }
+.matrix-input::placeholder { color: var(--gray-400); font-size: 0.76rem; }
+
+/* DISTRIBUTION */
+.dist-wrap { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-strong); border-radius: 12px; overflow: hidden; }
+.dist-header { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0; background: var(--gray-50); padding: 10px 14px; border-bottom: 1px solid var(--border-strong); }
+.dist-header div { font-size: 0.68rem; font-weight: 700; color: var(--gray-500); letter-spacing: 0.08em; text-transform: uppercase; }
+.dist-row { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border); }
+.dist-row:last-child { border-bottom: none; }
+.dist-tag { padding: 10px 12px; font-size: 0.72rem; font-weight: 700; background: var(--gray-50); border-right: 1px solid var(--border); display: flex; align-items: center; white-space: nowrap; }
+.dist-tag.t1 { color: var(--orange); }
+.dist-tag.t2 { color: var(--red); }
+.dist-tag.t3 { color: var(--teal); }
+.dist-input { padding: 10px 10px; background: #fff; border: none; border-right: 1px solid var(--border); font-family: 'Sora', sans-serif; font-size: 0.8rem; color: var(--black); }
+.dist-input:last-child { border-right: none; }
+.dist-input:focus { outline: none; background: #fffef0; }
+.dist-input::placeholder { color: var(--gray-400); font-size: 0.74rem; }
+
+/* SUBMIT */
+.submit-wrap { max-width: 540px; width: 100%; text-align: center; }
+.submit-icon { font-size: 3rem; margin-bottom: 20px; }
+.submit-title { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; color: var(--black); margin-bottom: 12px; line-height: 1.2; }
+.submit-title .accent { color: var(--teal); }
+.submit-sub { font-size: 0.92rem; color: var(--gray-700); max-width: 420px; margin: 0 auto 32px; line-height: 1.7; font-weight: 300; }
+.summary-card { background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; text-align: left; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.summary-row:last-child { border-bottom: none; }
+.summary-key { font-size: 0.8rem; color: var(--gray-500); font-weight: 500; }
+.summary-val { font-size: 0.85rem; color: var(--black); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.submit-btn { width: 100%; padding: 16px; border-radius: 14px; background: var(--black); color: #fff; font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; letter-spacing: 0.04em; }
+.submit-btn:hover:not(:disabled) { background: var(--teal); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(42,157,143,0.3); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.reset-link { font-size: 0.8rem; color: var(--gray-400); cursor: pointer; margin-top: 16px; display: inline-block; text-decoration: underline; }
+.success-wrap { max-width: 480px; width: 100%; text-align: center; }
+.success-icon { font-size: 4rem; margin-bottom: 16px; }
+.success-title { font-size: 1.8rem; font-weight: 800; color: var(--black); margin-bottom: 10px; }
+.success-sub { font-size: 0.92rem; color: var(--gray-700); line-height: 1.7; font-weight: 300; }
+.success-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 100px; background: var(--green-soft); color: var(--green); font-weight: 600; font-size: 0.82rem; margin-top: 24px; }
+
+@media (max-width: 600px) {
+  .field-group { grid-template-columns: 1fr; }
+  .matrix-header, .dist-header { display: none; }
+  .matrix-row, .dist-row { grid-template-columns: 1fr; }
+  .matrix-cat, .dist-tag { border-right: none; border-bottom: 1px solid var(--border); }
+  .matrix-input, .dist-input { border-right: none; border-bottom: 1px solid var(--border); }
+  .flow-grid { grid-template-columns: 1fr; }
+  .slide-content { padding: 28px 18px 24px; }
+}
+</style>
+</head>
+<body>
+<div id="progress-wrap"><div id="progress-fill"></div></div>
+<div id="slide-area"><div class="slide-content" id="slide-content"></div></div>
+<div id="bottom-nav">
+  <button class="nav-btn" id="btn-prev" onclick="prev()">← Anterior</button>
+  <span id="slide-counter">1 / 29</span>
+  <button class="nav-btn primary" id="btn-next" onclick="next()">Siguiente →</button>
+</div>
+
+<script>
+/* ======== DATA ======== */
+const questions = [
+  // INVENTARIO (7)
+  {id:'q01',block:'inventario',priority:true,type:'single',text:'¿Cuál es el valor TOTAL aproximado de la mercadería que actualmente tienen en el CD?',options:[
+    {label:'Menos de ₡20 millones',sub:'Inventario reducido'},{label:'₡20 – ₡50 millones',sub:'Inventario mediano'},
+    {label:'₡50 – ₡100 millones',sub:'Inventario medio-alto'},{label:'₡100 – ₡200 millones',sub:'Inventario grande'},
+    {label:'Más de ₡200 millones',sub:'Inventario premium'},{label:'No tengo el dato exacto — pendiente'}
+  ]},
+  {id:'q02',block:'inventario',priority:true,type:'single',text:'¿Cuánto del valor total se va a las 3 tiendas mensualmente en promedio?',options:[
+    {label:'Menos del 25% del total mensual',sub:'Rotación lenta'},{label:'Entre 25% y 40% mensual',sub:'Rotación media-baja'},
+    {label:'Entre 40% y 60% mensual',sub:'Rotación saludable'},{label:'Entre 60% y 80% mensual',sub:'Rotación rápida'},
+    {label:'Más del 80% — casi todo se distribuye',sub:'Rotación muy rápida'},{label:'Varía mucho mes a mes — sin patrón claro'}
+  ]},
+  {id:'q03',block:'inventario',priority:true,type:'multi',text:'¿Qué CATEGORÍAS componen el grueso del inventario del CD?',options:[
+    {label:'Ropa hombre'},{label:'Ropa mujer'},{label:'Ropa niño/niña'},
+    {label:'Calzado deportivo de marca'},{label:'Calzado casual/formal'},
+    {label:'Accesorios (gorras, mochilas, carteras)'},{label:'Electrodomésticos / línea blanca'},
+    {label:'Herramientas y ferretería'},{label:'Hogar y deco'},{label:'Juguetes'},
+    {label:'Tecnología y electrónica'},{label:'Otros — especificar'}
+  ]},
+  {id:'q04',block:'inventario',priority:true,type:'matrix',text:'Por categoría: ¿cuánto valor (₡) representa y qué tan rápido rota?',
+    sub:'Valor estimado en colones y rotación promedio en meses (1 mes = vuela rápido, 6+ meses = atorado).'},
+  {id:'q05',block:'inventario',priority:true,type:'text',text:'¿Qué productos específicos se han agotado más rápido en los últimos 3 meses?',
+    placeholder:'Ej: Tenis Nike Air Max negros, ollas marca X, jeans Levi\'s talla M-L. Mientras más específico, mejor para crear contenido.'},
+  {id:'q06',block:'inventario',type:'single',text:'¿Cada cuánto llega mercadería nueva al CD?',options:[
+    {label:'Cada semana',sub:'Flujo constante'},{label:'Cada 2 semanas'},{label:'Una vez al mes'},
+    {label:'Cada 2 meses'},{label:'Por contenedor — sin patrón regular',sub:'Cuando llega, llega'},
+    {label:'Varía según importación / proveedor'}
+  ]},
+  {id:'q07',block:'inventario',type:'multi',text:'¿De dónde vienen las importaciones? (esto define la narrativa del producto en redes)',options:[
+    {label:'Estados Unidos',sub:'Hook: marca americana original'},{label:'México'},{label:'Panamá'},
+    {label:'China',sub:'Hook: precio competitivo'},{label:'Europa',sub:'Hook: calidad europea'},
+    {label:'Sudamérica (Colombia, Brasil)'},{label:'Producto nacional / Costa Rica'},
+    {label:'Mezcla — varía por categoría'}
+  ]},
+  // CLASIFICACIÓN (6)
+  {id:'q08',block:'clasificacion',priority:true,type:'multi',text:'🟢 ROTACIÓN RÁPIDA · ¿Qué productos vuelan en menos de 30 días?',options:[
+    {label:'Ropa básica de hombre/mujer'},{label:'Calzado deportivo de marca conocida'},
+    {label:'Productos de hogar de uso frecuente'},{label:'Accesorios económicos (gorras, mochilas)'},
+    {label:'Tecnología económica'},{label:'Herramientas básicas'},
+    {label:'Productos infantiles'},{label:'Productos en oferta agresiva'}
+  ]},
+  {id:'q09',block:'clasificacion',priority:true,type:'multi',text:'⚡ MASIVOS DE BAJA SALIDA · ¿Qué tienen en grandes cantidades pero no rotan?',
+    sub:'Estos son los que urge mover con campañas digitales agresivas.',options:[
+    {label:'Ropa de tallas extremas (XS / XXL+)'},{label:'Calzado en tallas poco comunes'},
+    {label:'Electrodomésticos de modelos antiguos'},{label:'Productos de temporada pasada'},
+    {label:'Herramientas especializadas'},{label:'Tecnología desactualizada'},
+    {label:'Hogar y deco con diseño específico'},{label:'Productos con empaque dañado pero funcionales'}
+  ]},
+  {id:'q10',block:'clasificacion',priority:true,type:'multi',text:'👑 PREMIUM · Artículos de alto valor con poca salida pero gran impacto en facturación',
+    sub:'Productos donde 1 venta = lo que 20 ventas comunes. Estos van con storytelling, no con descuento.',options:[
+    {label:'Electrodomésticos de gama alta'},{label:'Herramientas profesionales'},
+    {label:'Tecnología de marca (TVs, laptops)'},{label:'Calzado deportivo edición limitada'},
+    {label:'Ropa de marcas premium'},{label:'Mueblería o equipo grande'},
+    {label:'Equipos especializados'},{label:'No tenemos categoría premium definida'}
+  ]},
+  {id:'q11',block:'clasificacion',priority:true,type:'text',text:'Lista los 5 productos PREMIUM específicos que tienen ahora mismo (con su valor estimado)',
+    placeholder:'Ej: 1) Refrigeradora Samsung 600L - ₡850.000, 2) Laptop HP gamer - ₡520.000, 3) Set herramientas Stanley - ₡380.000... Estos serán protagonistas de los reels ancla mensuales.'},
+  {id:'q12',block:'clasificacion',priority:true,type:'text',text:'🔴 PROBLEMÁTICOS · Productos masivos que NO se mueven y representan dinero atorado',
+    placeholder:'Listar producto + cantidad de unidades + valor total + meses sin rotar. Estos son los candidatos a la rotación entre tiendas y campañas de liquidación.'},
+  {id:'q13',block:'clasificacion',type:'pct',text:'¿Qué porcentaje del inventario del CD corresponde a productos problemáticos (sin rotación de 4+ meses)?',
+    sub:'Esto define la urgencia de la estrategia de liquidación digital.'},
+  // DISTRIBUCIÓN (5)
+  {id:'q14',block:'distribucion',priority:true,type:'distribution',text:'Distribución promedio mensual del valor (₡) hacia cada PDV',
+    sub:'Cuánto valor en mercadería se envía mensualmente a cada tienda y qué porcentaje del total CD representa.'},
+  {id:'q15',block:'distribucion',priority:true,type:'multi',text:'¿Qué categorías van MÁS a AO Florencia? (zona local San Carlos)',options:[
+    {label:'Ropa de uso diario'},{label:'Calzado deportivo'},{label:'Hogar y línea blanca'},
+    {label:'Herramientas'},{label:'Productos infantiles'},{label:'Accesorios'},
+    {label:'Distribución equilibrada — todas las categorías'}
+  ]},
+  {id:'q16',block:'distribucion',priority:true,type:'multi',text:'¿Qué categorías van MÁS a AO Fortuna? (zona turística Arenal)',options:[
+    {label:'Ropa casual / playera'},{label:'Calzado de marca'},{label:'Accesorios (gorras, mochilas)'},
+    {label:'Productos premium / souvenir'},{label:'Tecnología portátil'},
+    {label:'Productos para clima cálido'},{label:'Distribución equilibrada — todas las categorías'}
+  ]},
+  {id:'q17',block:'distribucion',priority:true,type:'multi',text:'¿Qué categorías van MÁS a AO Ciudad Quesada? (centro · 3 pisos · Liquidation)',options:[
+    {label:'Ropa en todas sus categorías'},{label:'Calzado todas las líneas'},
+    {label:'Electrodomésticos y línea blanca'},{label:'Herramientas y ferretería'},
+    {label:'Hogar y deco'},{label:'Tecnología'},
+    {label:'Liquidation — productos de marca a precio outlet'},
+    {label:'Distribución equilibrada — todas las categorías'}
+  ]},
+  {id:'q18',block:'distribucion',type:'single',text:'¿Cómo se decide actualmente qué mercadería va a cada PDV?',options:[
+    {label:'Por experiencia / criterio del encargado',sub:'Sin sistema documentado'},
+    {label:'Por solicitud directa de cada tienda'},
+    {label:'Por rotación histórica de cada PDV'},
+    {label:'Por capacidad de espacio físico de cada tienda'},
+    {label:'Distribución equitativa entre las 3'},
+    {label:'No hay un criterio claro definido',sub:'Se decide en el momento'}
+  ]},
+  // OPERACIÓN CD (4)
+  {id:'q19',block:'operacion',type:'single',text:'¿Cuántas personas trabajan en el CD actualmente?',options:[
+    {label:'1–2 personas'},{label:'3–5 personas'},{label:'6–10 personas'},{label:'Más de 10 personas'}
+  ]},
+  {id:'q20',block:'operacion',type:'multi',text:'¿Qué herramientas usan HOY para llevar control del inventario?',options:[
+    {label:'Excel / hojas de cálculo'},{label:'Sistema POS conectado'},
+    {label:'Software de inventario específico'},{label:'Cuaderno físico'},
+    {label:'WhatsApp para coordinar con PDVs'},{label:'Memoria / experiencia del encargado'},
+    {label:'Conteo manual periódico'},{label:'No tenemos sistema unificado'}
+  ]},
+  {id:'q21',block:'operacion',type:'multi',text:'¿Qué problemas operativos enfrentan en el CD?',options:[
+    {label:'No saber qué hay en cada PDV en tiempo real'},{label:'Mercadería duplicada en distintas tiendas'},
+    {label:'Producto que se queda mucho tiempo en CD sin salir'},{label:'Comunicación lenta con los PDV'},
+    {label:'Espacio físico insuficiente'},{label:'Falta de etiquetado / clasificación'},
+    {label:'Pérdida o robo de mercadería'},{label:'No detectar a tiempo productos sin rotación'}
+  ]},
+  {id:'q22',block:'operacion',type:'pct',text:'¿Qué tan dispuesto está el encargado del CD a actualizar el inventario MES A MES en la plataforma Bralto?',
+    sub:'Esto es crítico — sin actualización mensual, las campañas pierden precisión.'},
+  // CAPACITACIÓN (3)
+  {id:'q23',block:'capacitacion',priority:true,type:'pct',text:'¿Qué tan dispuesto está el encargado a recibir capacitación en la plataforma all-in-one de Bralto?',
+    sub:'La plataforma centraliza inventario, CRM, automatizaciones y reportes. La capacitación es de aprox. 4-6 horas distribuidas en 2-3 sesiones.'},
+  {id:'q24',block:'capacitacion',priority:true,type:'multi',text:'¿Qué funciones de la plataforma serían MÁS útiles para el CD?',options:[
+    {label:'Subir y actualizar inventario mensualmente'},{label:'Ver en tiempo real qué hay en cada PDV'},
+    {label:'Generar alertas de productos sin rotación'},{label:'Reportar movimientos entre CD y tiendas'},
+    {label:'Clasificar productos por tipo (rápida, masivo, premium)'},{label:'Conectar con el sistema POS de las tiendas'},
+    {label:'Recibir reportes automáticos al WhatsApp'},{label:'Coordinar campañas con el equipo de marketing'}
+  ]},
+  {id:'q25',block:'capacitacion',priority:true,type:'single',text:'¿Cuándo podría iniciar la capacitación del encargado del CD?',options:[
+    {label:'Esta semana — listo para arrancar'},{label:'Próxima semana'},
+    {label:'En las próximas 2-3 semanas'},{label:'Después de definir presupuesto'},
+    {label:'Necesitamos coordinar con la administración primero'},{label:'Por definir — pendiente de decisión'}
+  ]}
+];
+
+const MATRIX_CATS = ['Ropa hombre','Ropa mujer','Ropa infantil','Calzado','Accesorios','Electrodomésticos','Herramientas','Hogar/Deco','Tecnología'];
+const TOTAL_SLIDES = 3 + questions.length + 1; // intro, howto, identity, questions, submit
+
+/* ======== STATE ======== */
+let cur = 0;
+let animDir = 'right';
+const answers = {};
+const meta = { encargado:'', contact:'', email:'', ubicacion:'', mes:'' };
+
+/* ======== SLIDES ======== */
+function buildSlide(index) {
+  if (index === 0) return buildIntro();
+  if (index === 1) return buildHowTo();
+  if (index === 2) return buildIdentity();
+  if (index === TOTAL_SLIDES - 1) return buildSubmit();
+  return buildQuestion(index - 3);
+}
+
+function buildIntro() {
+  return `<div class="intro-wrap">
+    <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" class="intro-logo">
+    <div class="intro-badge"><span class="dot"></span>Discovery estratégico · Centro de Distribución</div>
+    <h1 class="intro-h1">El CD es donde nace<br>la estrategia <span class="accent">de las 3 tiendas.</span></h1>
+    <p class="intro-sub">Antes de pensar en redes o campañas, hay que entender qué hay en bodega, cuánto vale, qué se mueve rápido y qué está atorado. Este cuestionario captura el inventario real y prepara al CD para la plataforma all-in-one.</p>
+    <div class="intro-stats">
+      <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">CD central</div></div>
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Tiendas</div></div>
+      <div class="stat-item"><div class="stat-num">25</div><div class="stat-label">Preguntas</div></div>
+      <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">Tipos artículo</div></div>
+    </div>
+    <div class="intro-context">
+      <div class="ctx-label">Por qué este cuestionario es el más importante</div>
+      <div class="ctx-title">El CD es el corazón.<br><span style="color:var(--teal)">Las campañas se diseñan desde acá.</span></div>
+      <div class="ctx-sub">Las 3 tiendas tienen su propia realidad. Para que las campañas digitales <strong>realmente vendan</strong>, necesitamos saber: qué se va a cada tienda, cuánto en valor, y de qué tipo. Los reels, pauta de Meta, Google Ads y calendario de contenido se construyen sobre esta base de datos. Sin esto, todo es adivinanza.</div>
+      <div class="flow-grid">
+        <div class="flow-cd-box">
+          <div class="flow-cd-icon">📦</div>
+          <div class="flow-cd-name">Centro de Distribución</div>
+        </div>
+        <div class="flow-pdvs">
+          <div class="flow-pdv">🏪 AO Florencia · San Carlos · tráfico local</div>
+          <div class="flow-pdv">🏪 AO Fortuna · La Fortuna · turismo</div>
+          <div class="flow-pdv">🏪 AO Ciudad Quesada · Centro · volumen</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildHowTo() {
+  return `<div class="howto-wrap">
+    <div class="slide-label">Antes de empezar</div>
+    <h2 class="slide-title">Cómo usar este documento</h2>
+    <div class="howto-card">
+      <div class="howto-icon">!</div>
+      <div class="howto-body">
+        <h3>Una pregunta a la vez</h3>
+        <p>El encargado del CD responde <strong>una sola vez por mes</strong>. Si no sabés un dato exacto, poné un estimado y marcalo como tal. Lo importante es la dirección, no la perfección.</p>
+      </div>
+    </div>
+    <div class="howto-steps">
+      <div class="step"><div class="step-num">01</div><div class="step-text">Identificate en la siguiente pantalla con tu nombre y datos del CD.</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text">Respondé las 25 preguntas. Las marcadas con ★ <strong>Crítica</strong> son las de mayor impacto — priorizalas.</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text">Para la matriz de inventario y la distribución, poné valores estimados si no tenés exactos — siempre es mejor que dejarlo en blanco.</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text">Al final presionás <strong>Enviar</strong> y Bralto recibe el discovery con PDF adjunto. Queda como fuente del mes para armar el calendario y las campañas.</div></div>
+    </div>
+  </div>`;
+}
+
+function buildIdentity() {
+  return `<div class="identity-wrap">
+    <div class="slide-label">Identificación del CD</div>
+    <h2 class="slide-title">¿Quién está respondiendo y a qué CD pertenece?</h2>
+    <div style="margin-bottom:12px;">
+      <label class="field-label">Nombre completo del encargado</label>
+      <input type="text" class="field" placeholder="Ej: María González" value="${meta.encargado}" oninput="meta.encargado=this.value;updateProgress()">
+    </div>
+    <div class="field-group">
+      <div>
+        <label class="field-label">Teléfono / WhatsApp</label>
+        <input type="text" class="field" placeholder="Ej: 8888-0000" value="${meta.contact}" oninput="meta.contact=this.value;updateProgress()">
+      </div>
+      <div>
+        <label class="field-label">Email del encargado</label>
+        <input type="email" class="field" placeholder="Ej: maria@americanoutlet.cr" value="${meta.email}" oninput="meta.email=this.value;updateProgress()">
+      </div>
+    </div>
+    <div class="field-group">
+      <div>
+        <label class="field-label">Ubicación física del CD</label>
+        <input type="text" class="field" placeholder="Ej: Bodega central, San Carlos" value="${meta.ubicacion}" oninput="meta.ubicacion=this.value;updateProgress()">
+      </div>
+      <div>
+        <label class="field-label">Mes que se está reportando</label>
+        <input type="text" class="field" placeholder="Ej: Mayo 2026" value="${meta.mes}" oninput="meta.mes=this.value;updateProgress()">
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildQuestion(qIdx) {
+  const q = questions[qIdx];
+  const num = qIdx + 1;
+  const isCapacitacion = q.block === 'capacitacion';
+
+  let typeTag = '';
+  if (q.type === 'single') typeTag = '<span class="q-tag single">○ Selección única</span>';
+  else if (q.type === 'multi') typeTag = '<span class="q-tag multi">☑ Selección múltiple</span>';
+  else if (q.type === 'text') typeTag = '<span class="q-tag text-in">✎ Respuesta abierta</span>';
+  else if (q.type === 'pct') typeTag = '<span class="q-tag pct">% Porcentaje</span>';
+  else if (q.type === 'matrix') typeTag = '<span class="q-tag matrix">⊞ Matriz por categoría</span>';
+  else if (q.type === 'distribution') typeTag = '<span class="q-tag matrix">⊞ Distribución 3 PDV</span>';
+  const priorityTag = q.priority ? '<span class="q-tag priority">★ Crítica</span>' : '';
+  const trainingTag = isCapacitacion ? '<span class="q-tag training">🎓 Capacitación</span>' : '';
+
+  let inputHtml = '';
+  if (q.type === 'single' || q.type === 'multi') {
+    const selected = answers[q.id] || [];
+    const marker = q.type === 'single' ? 'radio' : 'check';
+    const chk = q.type === 'single' ? '●' : '✓';
+    inputHtml = `<div class="opts-list">${q.options.map((opt,i)=>`
+      <div class="opt ${selected.includes(i)?'selected':''}" onclick="handleOpt('${q.id}',${i},'${q.type}')">
+        <div class="opt-marker ${marker}">${selected.includes(i)?chk:''}</div>
+        <div class="opt-label">${opt.label}${opt.sub?`<span class="opt-sub">${opt.sub}</span>`:''}</div>
+      </div>`).join('')}</div>`;
+  } else if (q.type === 'text') {
+    inputHtml = `<textarea class="q-textarea" placeholder="${q.placeholder}" oninput="handleText('${q.id}',this.value)">${answers[q.id]||''}</textarea>`;
+  } else if (q.type === 'pct') {
+    const val = answers[q.id] !== undefined ? answers[q.id] : 50;
+    inputHtml = `<div class="pct-wrap">
+      <div class="pct-display"><div class="pct-num" id="pn-${q.id}">${val}</div><div class="pct-lbl">% / nivel</div></div>
+      <input type="range" min="0" max="100" value="${val}" class="pct-slider" oninput="handlePct('${q.id}',this.value)">
+      <div class="pct-marks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    </div>`;
+  } else if (q.type === 'matrix') {
+    const mx = answers[q.id] || {};
+    inputHtml = `<div class="matrix-wrap">
+      <div class="matrix-header"><div>Categoría</div><div>Valor estimado (₡)</div><div>Rotación (meses)</div></div>
+      ${MATRIX_CATS.map((cat,ci)=>`
+      <div class="matrix-row">
+        <div class="matrix-cat">${cat}</div>
+        <input type="text" class="matrix-input" placeholder="Ej: ₡15M" value="${mx[ci+'_valor']||''}" oninput="handleMatrix('${q.id}','${ci}_valor',this.value)">
+        <input type="text" class="matrix-input" placeholder="Ej: 2 meses" value="${mx[ci+'_rot']||''}" oninput="handleMatrix('${q.id}','${ci}_rot',this.value)">
+      </div>`).join('')}
+    </div>`;
+  } else if (q.type === 'distribution') {
+    const dist = answers[q.id] || {};
+    inputHtml = `<div class="dist-wrap">
+      <div class="dist-header"><div>PDV</div><div>Valor mensual (₡)</div><div>% del total</div><div># envíos</div></div>
+      ${[{key:'florencia',cls:'t1',name:'AO Florencia'},{key:'fortuna',cls:'t2',name:'AO Fortuna'},{key:'quesada',cls:'t3',name:'AO C. Quesada'}].map(p=>`
+      <div class="dist-row">
+        <div class="dist-tag ${p.cls}">${p.name}</div>
+        <input type="text" class="dist-input" placeholder="Ej: ₡8M" value="${dist[p.key+'_valor']||''}" oninput="handleDist('${q.id}','${p.key}_valor',this.value)">
+        <input type="text" class="dist-input" placeholder="Ej: 35%" value="${dist[p.key+'_pct']||''}" oninput="handleDist('${q.id}','${p.key}_pct',this.value)">
+        <input type="text" class="dist-input" placeholder="Ej: 2-3x" value="${dist[p.key+'_envios']||''}" oninput="handleDist('${q.id}','${p.key}_envios',this.value)">
+      </div>`).join('')}
+    </div>`;
+  }
+
+  return `<div class="q-wrap">
+    ${isCapacitacion && num === 23 ? `<div class="training-badge"><div class="training-badge-icon">🎓</div><div class="training-badge-text">Las siguientes 3 preguntas son sobre la capacitación en la plataforma all-in-one de Bralto</div></div>` : ''}
+    <div class="q-head">
+      <div class="q-num">Pregunta ${String(num).padStart(2,'0')} de ${questions.length}</div>
+      <div class="q-text">${q.text}</div>
+      ${q.sub ? `<div class="q-sub">${q.sub}</div>` : ''}
+      <div class="q-tags">${typeTag}${priorityTag}${trainingTag}</div>
+    </div>
+    ${inputHtml}
+  </div>`;
+}
+
+function buildSubmit() {
+  const answered = Object.keys(answers).length + (meta.encargado ? 1 : 0);
+  const total = questions.length + 1;
+  return `<div class="submit-wrap">
+    <div class="submit-icon">📦</div>
+    <h2 class="submit-title">Esta data alimenta todo<br>el calendario <span class="accent">digital.</span></h2>
+    <p class="submit-sub">Presioná Enviar y Bralto recibe el discovery completo. Esta información se cruza con las respuestas de los PDV para construir el calendario mensual con productos hero específicos por tienda.</p>
+    <div class="summary-card">
+      <div class="summary-row"><span class="summary-key">Encargado CD</span><span class="summary-val">${meta.encargado||'—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Mes reportado</span><span class="summary-val">${meta.mes||'—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Contacto</span><span class="summary-val">${meta.contact||'—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Preguntas completadas</span><span class="summary-val">${answered} / ${total}</span></div>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+      <span id="submit-spinner" style="display:none" class="spinner"></span>
+      <span id="submit-label">Enviar discovery →</span>
+    </button>
+    <span class="reset-link" onclick="resetAll()">↻ Reiniciar respuestas</span>
+  </div>`;
+}
+
+/* ======== HANDLERS ======== */
+function handleOpt(id, idx, type) {
+  if (type === 'single') {
+    answers[id] = [idx];
+    document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`).forEach((el,i) => {
+      el.classList.toggle('selected', i === idx);
+      el.querySelector('.opt-marker').textContent = i === idx ? '●' : '';
+    });
+  } else {
+    if (!answers[id]) answers[id] = [];
+    const i = answers[id].indexOf(idx);
+    const el = document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`)[idx];
+    if (i > -1) { answers[id].splice(i,1); if(el){el.classList.remove('selected');el.querySelector('.opt-marker').textContent='';} }
+    else { answers[id].push(idx); if(el){el.classList.add('selected');el.querySelector('.opt-marker').textContent='✓';} }
+    if (!answers[id].length) delete answers[id];
+  }
+  updateProgress();
+}
+function handleText(id, val) { if(val.trim()) answers[id]=val; else delete answers[id]; updateProgress(); }
+function handlePct(id, val) {
+  answers[id] = parseInt(val);
+  const el = document.getElementById('pn-'+id);
+  if(el){el.textContent=val;const v=parseInt(val);el.style.color=v>=75?'#16a34a':v>=50?'#2a9d8f':v>=25?'#fbbf24':'#aaa';}
+  updateProgress();
+}
+function handleMatrix(id, key, val) {
+  if(!answers[id]) answers[id]={};
+  if(val.trim()) answers[id][key]=val; else delete answers[id][key];
+  if(!Object.keys(answers[id]).length) delete answers[id];
+  updateProgress();
+}
+function handleDist(id, key, val) {
+  if(!answers[id]) answers[id]={};
+  if(val.trim()) answers[id][key]=val; else delete answers[id][key];
+  if(!Object.keys(answers[id]).length) delete answers[id];
+  updateProgress();
+}
+
+/* ======== NAV ======== */
+function goTo(index, dir) {
+  if(index<0||index>=TOTAL_SLIDES) return;
+  animDir=dir; cur=index; render(); updateNav(); updateProgress();
+  document.getElementById('slide-area').scrollTop=0;
+}
+function next(){goTo(cur+1,'right');}
+function prev(){goTo(cur-1,'left');}
+function render(){
+  const area=document.getElementById('slide-content');
+  area.innerHTML=buildSlide(cur);
+  area.className='slide-content '+(animDir==='right'?'anim-right':'anim-left');
+}
+function updateNav(){
+  document.getElementById('btn-prev').disabled=cur===0;
+  const nb=document.getElementById('btn-next');
+  nb.disabled=cur===TOTAL_SLIDES-1;
+  nb.textContent=cur===TOTAL_SLIDES-2?'Ver resumen →':'Siguiente →';
+  document.getElementById('slide-counter').textContent=`${cur+1} / ${TOTAL_SLIDES}`;
+}
+function updateProgress(){
+  document.getElementById('progress-fill').style.width=((cur+1)/TOTAL_SLIDES*100)+'%';
+}
+
+/* ======== PDF + SUBMIT ======== */
+function buildPdfHtml() {
+  const date=new Date().toLocaleDateString('es-CR',{day:'2-digit',month:'long',year:'numeric'});
+  const blocksOrder=['inventario','clasificacion','distribucion','operacion','capacitacion'];
+  const blockColors={inventario:'#ff6b2b',clasificacion:'#f59e0b',distribucion:'#2a9d8f',operacion:'#6a4c93',capacitacion:'#e63946'};
+  const blockNames={inventario:'Inventario',clasificacion:'Clasificación por tipo',distribucion:'Distribución por PDV',operacion:'Operación del CD',capacitacion:'Capacitación plataforma'};
+
+  function ansHtml(q){
+    const ans=answers[q.id];
+    if(ans===undefined) return '<div style="color:#aaa;font-style:italic;font-size:0.85rem;">Sin responder</div>';
+    if(q.type==='single'||q.type==='multi') return ans.map(i=>`<div style="padding:7px 12px;background:#f0fdf9;border-left:3px solid #2a9d8f;border-radius:4px;font-size:0.88rem;margin-bottom:4px;"><strong>${q.options[i].label}</strong>${q.options[i].sub?`<div style="color:#888;font-size:0.78rem;font-style:italic;">${q.options[i].sub}</div>`:''}</div>`).join('');
+    if(q.type==='text') return `<div style="padding:10px 12px;background:#f0fdf9;border-left:3px solid #2a9d8f;border-radius:4px;font-size:0.88rem;white-space:pre-wrap;">${ans}</div>`;
+    if(q.type==='pct'){const col=ans>=75?'#16a34a':ans>=50?'#2a9d8f':ans>=25?'#fbbf24':'#aaa';const lbl=ans>=75?'Muy alto':ans>=50?'Alto':ans>=25?'Medio':'Bajo';return `<div style="padding:10px 12px;background:#f0fdf9;border-left:3px solid ${col};border-radius:4px;"><strong style="font-size:1.4rem;color:${col};font-family:monospace;">${ans}%</strong> · ${lbl}</div>`;}
+    if(q.type==='matrix'){const mx=ans||{};return `<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><tr style="background:#f5f5f5;"><th style="padding:6px 8px;text-align:left;">Categoría</th><th style="padding:6px 8px;text-align:left;">Valor (₡)</th><th style="padding:6px 8px;text-align:left;">Rotación</th></tr>${MATRIX_CATS.map((cat,ci)=>`<tr style="border-bottom:1px solid #eee;"><td style="padding:6px 8px;">${cat}</td><td style="padding:6px 8px;">${mx[ci+'_valor']||'—'}</td><td style="padding:6px 8px;">${mx[ci+'_rot']||'—'}</td></tr>`).join('')}</table>`;}
+    if(q.type==='distribution'){const dist=ans||{};return `<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><tr style="background:#f5f5f5;"><th style="padding:6px 8px;text-align:left;">PDV</th><th style="padding:6px 8px;">Valor</th><th style="padding:6px 8px;">%</th><th style="padding:6px 8px;"># Envíos</th></tr>${[{key:'florencia',name:'AO Florencia'},{key:'fortuna',name:'AO Fortuna'},{key:'quesada',name:'AO C. Quesada'}].map(p=>`<tr style="border-bottom:1px solid #eee;"><td style="padding:6px 8px;font-weight:600;">${p.name}</td><td style="padding:6px 8px;">${dist[p.key+'_valor']||'—'}</td><td style="padding:6px 8px;">${dist[p.key+'_pct']||'—'}</td><td style="padding:6px 8px;">${dist[p.key+'_envios']||'—'}</td></tr>`).join('')}</table>`;}
+    return '';
+  }
+
+  const blocksHtml=blocksOrder.map(bk=>{
+    const bqs=questions.filter(q=>q.block===bk);
+    if(!bqs.length) return '';
+    return `<div style="margin-bottom:28px;">
+      <div style="border-left:4px solid ${blockColors[bk]};padding:8px 14px;margin-bottom:14px;background:#fafafa;">
+        <div style="font-size:1.1rem;font-weight:700;">${blockNames[bk]}</div>
+      </div>
+      ${bqs.map(q=>{
+        const qNum=questions.indexOf(q)+1;
+        return `<div style="margin-bottom:14px;padding:14px 16px;border:1px solid #eee;border-radius:10px;">
+          <div style="font-family:monospace;font-size:0.72rem;font-weight:700;color:#2a9d8f;margin-bottom:5px;">${String(qNum).padStart(2,'0')}</div>
+          <div style="font-size:0.92rem;font-weight:600;margin-bottom:8px;">${q.text}</div>
+          ${ansHtml(q)}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+
+  return `<div style="font-family:'Sora','Helvetica Neue',Arial,sans-serif;color:#0a0a0a;background:#fff;padding:40px;max-width:800px;margin:0 auto;">
+    <div style="text-align:center;padding:50px 0 60px;border-bottom:3px solid #2a9d8f;margin-bottom:36px;">
+      <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" style="width:100px;margin-bottom:24px;">
+      <div style="font-family:monospace;font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:#2a9d8f;margin-bottom:14px;">Discovery estratégico · Centro de Distribución</div>
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:10px;">American Outlet<br><span style="color:#2a9d8f;">Centro de Distribución</span></h1>
+      <div style="background:#fafafa;border-radius:10px;padding:14px 20px;max-width:400px;margin:18px auto;text-align:left;">
+        <div style="font-size:0.88rem;margin-bottom:5px;"><strong>Encargado:</strong> ${meta.encargado||'—'}</div>
+        <div style="font-size:0.88rem;margin-bottom:5px;"><strong>Contacto:</strong> ${meta.contact||'—'}</div>
+        <div style="font-size:0.88rem;margin-bottom:5px;"><strong>Email:</strong> ${meta.email||'—'}</div>
+        <div style="font-size:0.88rem;margin-bottom:5px;"><strong>Ubicación CD:</strong> ${meta.ubicacion||'—'}</div>
+        <div style="font-size:0.88rem;"><strong>Mes reportado:</strong> ${meta.mes||'—'}</div>
+      </div>
+      <div style="font-family:monospace;font-size:0.68rem;color:#888;margin-top:16px;">${date} · Bralto · bralto.io</div>
+    </div>
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:20px;">Discovery: 25 preguntas del CD</h2>
+    ${blocksHtml}
+    <div style="text-align:center;padding-top:28px;border-top:1px solid #eee;">
+      <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" style="width:70px;opacity:0.5;">
+      <p style="font-size:0.75rem;color:#aaa;margin-top:8px;">Bralto · bralto.io · Centro de Distribución</p>
+    </div>
+  </div>`;
+}
+
+async function submitForm() {
+  const btn=document.getElementById('submit-btn');
+  const spinner=document.getElementById('submit-spinner');
+  const label=document.getElementById('submit-label');
+  btn.disabled=true; spinner.style.display='block'; label.textContent='Generando PDF...';
+  try {
+    const pdfNode=document.createElement('div');
+    pdfNode.innerHTML=buildPdfHtml();
+    pdfNode.style.cssText='position:absolute;left:-9999px;top:0;width:800px;';
+    document.body.appendChild(pdfNode);
+    const filename=`Discovery_CD_${meta.encargado.replace(/\s+/g,'_')||'Encargado'}_${meta.mes.replace(/\s+/g,'_')||'Mes'}.pdf`;
+    const pdfBlob=await html2pdf().set({
+      margin:[10,10,10,10],filename,
+      image:{type:'jpeg',quality:0.96},
+      html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['avoid-all','css','legacy']}
+    }).from(pdfNode.firstElementChild).outputPdf('blob');
+    document.body.removeChild(pdfNode);
+    label.textContent='Enviando...';
+    const reader=new FileReader();
+    const pdfBase64=await new Promise((resolve,reject)=>{reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(pdfBlob);});
+    const answered=Object.keys(answers).length+(meta.encargado?1:0);
+    const res=await fetch('/api/discovery/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'cd',pdfBase64,pdfFilename:filename,metadata:{encargado:meta.encargado,contact:meta.contact,email:meta.email,ubicacion:meta.ubicacion,mes:meta.mes},answeredCount:answered,totalCount:questions.length+1})});
+    if(!res.ok) throw new Error('Error del servidor');
+    document.getElementById('slide-content').innerHTML=`<div class="success-wrap"><div class="success-icon">✅</div><h2 class="success-title">¡Discovery enviado!</h2><p class="success-sub">Bralto recibió el discovery del CD con el PDF adjunto. Esta información se cruza con las respuestas de cada administrador de PDV para construir el calendario mensual.</p><div class="success-badge">✓ Correo enviado correctamente</div></div>`;
+    document.getElementById('bottom-nav').style.display='none';
+    document.getElementById('progress-fill').style.width='100%';
+  } catch(err) {
+    console.error(err);
+    btn.disabled=false; spinner.style.display='none'; label.textContent='Enviar discovery →';
+    alert('Hubo un problema al enviar. Verificá tu conexión y volvé a intentar.');
+  }
+}
+
+function resetAll(){if(!confirm('¿Seguro que querés borrar todas las respuestas?')) return;Object.keys(answers).forEach(k=>delete answers[k]);meta.encargado='';meta.contact='';meta.email='';meta.ubicacion='';meta.mes='';goTo(0,'left');}
+
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')next();if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();});
+goTo(0,'right');
+</script>
+</body>
+</html>

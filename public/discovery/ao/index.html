@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discovery Estratégico · Liquidation Relaunch · American Outlet</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root {
+  --bg: #ffffff; --surface: #f5f5f5; --black: #0a0a0a; --dark: #1a1a1a;
+  --gray-700: #555; --gray-500: #888; --gray-400: #aaa; --gray-300: #ccc;
+  --gray-200: #e5e5e5; --gray-50: #fafafa;
+  --orange: #ff6b2b; --orange-soft: rgba(255,107,43,0.08);
+  --red: #e63946; --red-soft: rgba(230,57,70,0.08);
+  --green: #16a34a; --green-soft: rgba(22,163,74,0.08);
+  --border: rgba(0,0,0,0.06); --border-strong: rgba(0,0,0,0.1);
+  --nav-h: 72px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--black); font-family: 'Sora', sans-serif; line-height: 1.6; overflow: hidden; }
+#progress-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 3px; background: var(--gray-200); }
+#progress-fill { height: 100%; background: linear-gradient(90deg, #e63946, #ff6b2b); width: 0%; transition: width 0.4s ease; }
+#slide-area { position: fixed; top: 3px; left: 0; right: 0; bottom: var(--nav-h); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+.slide-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 24px 32px; }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+.anim-right { animation: slideInRight 0.32s ease forwards; }
+.anim-left  { animation: slideInLeft  0.32s ease forwards; }
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border); z-index: 200;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 20px; gap: 12px;
+}
+.nav-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: 100px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--black); font-family: 'Sora', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.18s ease; white-space: nowrap; }
+.nav-btn:hover:not(:disabled) { border-color: var(--black); transform: translateY(-1px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn.primary { background: var(--black); color: #fff; border-color: var(--black); }
+.nav-btn.primary:hover:not(:disabled) { background: var(--red); border-color: var(--red); }
+#slide-counter { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--gray-500); text-align: center; flex: 1; }
+
+/* INTRO */
+.intro-wrap { max-width: 680px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
+.intro-logo { width: 100px; margin-bottom: 28px; }
+.intro-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; border-radius: 100px; background: var(--red-soft); border: 1px solid rgba(230,57,70,0.3); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; }
+.intro-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+.intro-h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.intro-h1 .accent { color: var(--red); }
+.intro-sub { font-size: 0.95rem; color: var(--gray-700); max-width: 560px; font-weight: 300; line-height: 1.7; margin-bottom: 28px; }
+.intro-context { background: var(--black); color: #fff; border-radius: 18px; padding: 28px; width: 100%; text-align: left; margin-bottom: 24px; }
+.ctx-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin-bottom: 10px; }
+.ctx-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.ctx-sub { font-size: 0.85rem; color: #aaa; line-height: 1.6; font-weight: 300; }
+.intro-pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 14px; }
+.pillar { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; }
+.pillar-num { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--red); margin-bottom: 3px; }
+.pillar-name { font-size: 0.82rem; font-weight: 700; }
+.pillar-sub { font-size: 0.72rem; color: #888; }
+.intro-stats { display: flex; gap: 0; margin-bottom: 24px; width: 100%; border: 1px solid var(--border-strong); border-radius: 14px; overflow: hidden; }
+.stat-item { flex: 1; padding: 16px 8px; text-align: center; border-left: 1px solid var(--border-strong); }
+.stat-item:first-child { border-left: none; }
+.stat-num { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--red); line-height: 1; }
+.stat-label { font-size: 0.62rem; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+
+/* HOWTO */
+.howto-wrap { max-width: 600px; width: 100%; }
+.slide-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.slide-label::before { content: ''; width: 18px; height: 1px; background: var(--red); }
+.slide-title { font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 800; color: var(--black); margin-bottom: 24px; line-height: 1.2; }
+.howto-card { background: #fff5f5; border: 1px solid rgba(230,57,70,0.25); border-radius: 16px; padding: 24px; display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px; }
+.howto-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+.howto-body { flex: 1; }
+.howto-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.howto-body p { font-size: 0.88rem; color: var(--gray-700); line-height: 1.7; font-weight: 300; }
+.howto-body p strong { color: var(--black); font-weight: 600; }
+.howto-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: var(--gray-50); border-radius: 10px; border: 1px solid var(--border); }
+.step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--red); flex-shrink: 0; padding-top: 1px; min-width: 20px; }
+.step-text { font-size: 0.86rem; color: var(--gray-700); line-height: 1.6; }
+
+/* IDENTITY */
+.identity-wrap { max-width: 560px; width: 100%; }
+.field-label { font-size: 0.72rem; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 0.06em; display: block; }
+.field { padding: 12px 14px; background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 0.88rem; color: var(--black); width: 100%; }
+.field:focus { outline: none; border-color: var(--red); background: #fff; }
+.field::placeholder { color: var(--gray-400); font-weight: 300; }
+.field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+/* QUESTION */
+.q-wrap { max-width: 660px; width: 100%; }
+.q-head { margin-bottom: 22px; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--red); margin-bottom: 4px; }
+.q-text { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 700; color: var(--black); line-height: 1.4; margin-bottom: 6px; }
+.q-sub { font-size: 0.83rem; color: var(--gray-500); font-weight: 300; line-height: 1.6; }
+.q-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.q-tag { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase; }
+.q-tag.single   { background: var(--orange-soft); color: var(--orange); }
+.q-tag.multi    { background: rgba(106,76,147,0.1); color: #6a4c93; }
+.q-tag.text-in  { background: rgba(42,157,143,0.1); color: #2a9d8f; }
+.q-tag.pct      { background: var(--green-soft); color: var(--green); }
+.q-tag.priority { background: var(--black); color: #fff; }
+.q-tag.liq      { background: var(--red-soft); color: var(--red); }
+.liq-badge { display: flex; align-items: center; gap: 10px; background: #fff5f5; border: 1px solid rgba(230,57,70,0.25); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; }
+.liq-badge-text { font-size: 0.8rem; color: var(--red); font-weight: 600; }
+.strat-banner { background: var(--black); color: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; }
+.strat-banner-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+.strat-banner-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+.strat-banner-sub { font-size: 0.82rem; color: #aaa; font-weight: 300; line-height: 1.6; }
+
+/* OPTIONS */
+.opts-list { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s ease; }
+.opt:hover { background: #fff; border-color: var(--gray-300); }
+.opt.selected { background: var(--red-soft); border-color: var(--red); }
+.opt-marker { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; border: 2px solid var(--gray-300); transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; }
+.opt-marker.radio { border-radius: 50%; }
+.opt-marker.check { border-radius: 4px; }
+.opt.selected .opt-marker { background: var(--red); border-color: var(--red); color: #fff; }
+.opt-label { flex: 1; font-size: 0.88rem; color: var(--black); font-weight: 500; line-height: 1.5; }
+.opt-sub { display: block; font-size: 0.74rem; color: var(--gray-500); font-weight: 400; margin-top: 2px; font-style: italic; }
+
+/* TEXTAREA */
+.q-textarea { width: 100%; padding: 14px 16px; background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 0.88rem; color: var(--black); resize: vertical; min-height: 100px; transition: border-color 0.15s ease; }
+.q-textarea:focus { outline: none; border-color: var(--red); background: #fff; }
+.q-textarea::placeholder { color: var(--gray-400); font-weight: 300; }
+
+/* PCT */
+.pct-wrap { padding: 8px 0; }
+.pct-display { display: flex; align-items: baseline; gap: 8px; margin-bottom: 18px; }
+.pct-num { font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 700; color: var(--red); line-height: 1; transition: color 0.3s; }
+.pct-lbl { font-size: 0.78rem; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase; }
+.pct-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--surface); border-radius: 100px; outline: none; }
+.pct-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--red); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(230,57,70,0.4); }
+.pct-slider::-moz-range-thumb { width: 22px; height: 22px; background: var(--red); border-radius: 50%; cursor: pointer; border: none; }
+.pct-marks { display: flex; justify-content: space-between; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--gray-400); }
+
+/* DATE GRID */
+.date-grid { display: flex; flex-direction: column; gap: 10px; }
+.date-row { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; }
+.date-tag { font-size: 0.72rem; font-weight: 700; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+.date-tag.t1 { background: var(--orange-soft); color: var(--orange); }
+.date-tag.t2 { background: var(--red-soft); color: var(--red); }
+.date-tag.t3 { background: var(--green-soft); color: var(--green); }
+.date-input { padding: 10px 12px; background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 8px; font-family: 'Sora', sans-serif; font-size: 0.82rem; color: var(--black); }
+.date-input:focus { outline: none; border-color: var(--red); background: #fff; }
+
+/* MANAGERS */
+.multi-input { display: flex; flex-direction: column; gap: 10px; }
+.mi-row { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; }
+.mi-label-fixed { font-size: 0.72rem; font-weight: 700; padding: 6px 10px; background: var(--gray-100); border-radius: 8px; white-space: nowrap; color: var(--gray-700); }
+.mi-input { padding: 10px 12px; background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 8px; font-family: 'Sora', sans-serif; font-size: 0.82rem; color: var(--black); }
+.mi-input:focus { outline: none; border-color: var(--red); background: #fff; }
+.mi-input::placeholder { color: var(--gray-400); }
+
+/* SUBMIT */
+.submit-wrap { max-width: 540px; width: 100%; text-align: center; }
+.submit-icon { font-size: 3rem; margin-bottom: 20px; }
+.submit-title { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; color: var(--black); margin-bottom: 12px; line-height: 1.2; }
+.submit-title .accent { color: var(--red); }
+.submit-sub { font-size: 0.92rem; color: var(--gray-700); max-width: 420px; margin: 0 auto 32px; line-height: 1.7; font-weight: 300; }
+.summary-card { background: var(--gray-50); border: 1px solid var(--border-strong); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; text-align: left; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.summary-row:last-child { border-bottom: none; }
+.summary-key { font-size: 0.8rem; color: var(--gray-500); font-weight: 500; }
+.summary-val { font-size: 0.85rem; color: var(--black); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.submit-btn { width: 100%; padding: 16px; border-radius: 14px; background: var(--black); color: #fff; font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; letter-spacing: 0.04em; }
+.submit-btn:hover:not(:disabled) { background: var(--red); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(230,57,70,0.3); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.reset-link { font-size: 0.8rem; color: var(--gray-400); cursor: pointer; margin-top: 16px; display: inline-block; text-decoration: underline; }
+.success-wrap { max-width: 480px; width: 100%; text-align: center; }
+.success-icon { font-size: 4rem; margin-bottom: 16px; }
+.success-title { font-size: 1.8rem; font-weight: 800; color: var(--black); margin-bottom: 10px; }
+.success-sub { font-size: 0.92rem; color: var(--gray-700); line-height: 1.7; font-weight: 300; }
+.success-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 100px; background: var(--green-soft); color: var(--green); font-weight: 600; font-size: 0.82rem; margin-top: 24px; }
+
+@media (max-width: 600px) {
+  .field-group { grid-template-columns: 1fr; }
+  .date-row, .mi-row { grid-template-columns: 1fr; }
+  .slide-content { padding: 28px 18px 24px; }
+  .intro-pillars { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="progress-wrap"><div id="progress-fill"></div></div>
+<div id="slide-area"><div class="slide-content" id="slide-content"></div></div>
+<div id="bottom-nav">
+  <button class="nav-btn" id="btn-prev" onclick="prev()">← Anterior</button>
+  <span id="slide-counter">1 / 34</span>
+  <button class="nav-btn primary" id="btn-next" onclick="next()">Siguiente →</button>
+</div>
+
+<script>
+/* ======== DATA ======== */
+const questions = [
+  // LIQUIDATION (5)
+  {id:'q01',block:'liquidation',priority:true,type:'multi',text:'¿Qué tipo de mercadería viene en los 2 contenedores para el relanzamiento?',options:[
+    {label:'Ropa de marca para hombre',sub:'Camisas, pantalones, chaquetas'},{label:'Ropa de marca para mujer'},
+    {label:'Ropa de marca para niño/niña'},{label:'Calzado deportivo de marca',sub:'Nike, Adidas, Puma, etc.'},
+    {label:'Calzado casual/formal de marca'},{label:'Accesorios (gorras, mochilas, carteras)'},
+    {label:'Mezcla de las anteriores'}
+  ]},
+  {id:'q02',block:'liquidation',priority:true,type:'multi',text:'¿Qué se quiere comunicar con la reapertura del tercer piso de AO 1?',options:[
+    {label:'"Ropa de marca a precio outlet"',sub:'Posicionamiento de valor'},
+    {label:'"Llegada nueva — primera vez en San Carlos"',sub:'Hook de novedad'},
+    {label:'"Cantidad limitada — corre antes que se acabe"',sub:'Hook de escasez'},
+    {label:'"Tercer piso completamente renovado"',sub:'Experiencia física'},
+    {label:'"Marcas que normalmente no encontrás aquí"',sub:'Exclusividad regional'},
+    {label:'Beneficio para clientes frecuentes',sub:'Premio de fidelidad'}
+  ]},
+  {id:'q03',block:'liquidation',priority:true,type:'single',text:'¿Habrá evento físico de inauguración del tercer piso?',options:[
+    {label:'Sí, con fecha y hora cerrada',sub:'Genera contenido de expectativa fuerte'},
+    {label:'Sí, pero todavía sin fecha exacta'},
+    {label:'No, apertura silenciosa',sub:'Solo comunicación digital'},
+    {label:'Pendiente de definir según logística'}
+  ]},
+  {id:'q04',block:'liquidation',priority:true,type:'text',text:'¿Cuáles son los 3–5 productos estrella que vienen en los contenedores?',
+    placeholder:'Ej: Tenis Nike Air Max, Chaquetas Tommy Hilfiger originales, Polos Lacoste, Jeans Levi\'s...'},
+  {id:'q05',block:'liquidation',priority:true,type:'text',text:'¿Cuáles son los artículos de mayor valor con más tiempo sin venderse en el inventario actual?',
+    placeholder:'Listar producto, precio aproximado y meses sin movimiento. Estos serán protagonistas de la rotación entre tiendas.'},
+  // ROTACIÓN (3)
+  {id:'q06',block:'rotacion',priority:true,type:'date-stores',text:'¿Fecha concreta de llegada de la mercadería nueva a cada punto de venta?',
+    sub:'Se necesita fecha exacta para construir la cuenta regresiva por tienda.'},
+  {id:'q07',block:'rotacion',priority:true,type:'multi',text:'¿Qué categorías tienen más de 4 meses sin rotar y son candidatas a moverse entre tiendas?',options:[
+    {label:'Ropa hombre'},{label:'Ropa mujer'},{label:'Ropa niño/niña'},
+    {label:'Calzado'},{label:'Accesorios'},
+    {label:'Electrodomésticos / línea blanca'},{label:'Herramientas'},
+    {label:'Otros — especificar al final'}
+  ]},
+  {id:'q08',block:'rotacion',priority:true,type:'single',text:'¿Estás de acuerdo con mover mercadería estancada entre los 3 puntos de venta como estrategia de oxigenación?',options:[
+    {label:'Sí, total acuerdo — listo para ejecutar',sub:'Avanzamos con plan de rotación cruzada'},
+    {label:'Sí, pero con criterios definidos antes',sub:'Necesitamos revisar logística y costo'},
+    {label:'Solo en categorías específicas',sub:'Especificar al final'},
+    {label:'No por ahora — prefiero otra estrategia'}
+  ]},
+  // CLIENTE REAL (4)
+  {id:'q09',block:'cliente',type:'multi',text:'¿Quién compra hoy? Edad, género, de dónde viene.',options:[
+    {label:'Mujeres 25–45 años de San Carlos local',sub:'Cliente frecuente, conoce la tienda'},
+    {label:'Hombres 25–45 años de San Carlos local'},
+    {label:'Adolescentes y jóvenes 15–24 años',sub:'Buscan marca y tendencia'},
+    {label:'Familias con hijos pequeños',sub:'Compra de ropa infantil y hogar'},
+    {label:'Adultos mayores 50+ años'},
+    {label:'Clientes de zonas rurales cercanas',sub:'Pital, Aguas Zarcas, Venecia, La Tigra'},
+    {label:'Turistas nacionales de paso',sub:'Camino al Arenal o de regreso'},
+    {label:'Turistas extranjeros',sub:'Compras esporádicas'},
+    {label:'Revendedores que compran al por mayor'}
+  ]},
+  {id:'q10',block:'cliente',type:'multi',text:'¿Qué objeciones escucha el equipo en piso?',options:[
+    {label:'"¿Es nuevo o usado?"',sub:'Confusión sobre el origen del producto'},
+    {label:'"¿De qué país viene?"',sub:'Procedencia / autenticidad'},
+    {label:'"¿Tiene garantía o cambio?"'},{label:'"Está caro"',sub:'Objeción de precio frontal'},
+    {label:'"Lo encuentro más barato en otro lado"',sub:'Comparación con competencia'},
+    {label:'"No tienen mi talla"',sub:'Disponibilidad de inventario'},
+    {label:'"¿Es de marca real o falsificación?"',sub:'Duda de autenticidad'},
+    {label:'"Vuelvo otro día"',sub:'Procrastinación de compra'},
+    {label:'No registramos objeciones de forma sistemática'}
+  ]},
+  {id:'q11',block:'cliente',type:'multi',text:'¿Qué historia oye repetida del cliente que entra?',options:[
+    {label:'"Vine porque lo vi en Instagram"',sub:'Hook: prueba social del contenido'},
+    {label:'"Esto no lo encontraba en ningún lado"',sub:'Hook: exclusividad regional'},
+    {label:'"Mi vecina/amiga me recomendó"',sub:'Hook: boca a boca'},
+    {label:'"Vengo cada vez que llega producto nuevo"',sub:'Hook: anticipación de novedades'},
+    {label:'"No sabía que estaban acá"',sub:'Hook: descubrimiento'},
+    {label:'"Pasé por aquí y me llamó la atención"',sub:'Hook: tráfico físico'},
+    {label:'"Estaba buscando algo específico"',sub:'Hook: intención de compra clara'},
+    {label:'No tenemos visibilidad sobre eso aún'}
+  ]},
+  {id:'q12',block:'cliente',type:'single',text:'¿Cuál es el ticket promedio actual y la meta para este mes?',options:[
+    {label:'Menos de ¢8.000 actual — meta subir a ¢12.000'},
+    {label:'¢8.000 – ¢15.000 actual — meta subir a ¢20.000'},
+    {label:'¢15.000 – ¢25.000 actual — meta subir a ¢35.000'},
+    {label:'Más de ¢25.000 actual — meta subir 30%+'},
+    {label:'No medimos ticket promedio actualmente',sub:'Hay que activar la métrica'}
+  ]},
+  // CONTENIDO PASADO (3)
+  {id:'q13',block:'contenido',type:'multi',text:'¿Qué post o historia generó más visitas físicas medibles? (no likes — visitas reales)',options:[
+    {label:'Reels mostrando productos específicos con precio'},
+    {label:'Historias con encuestas y dinámicas',sub:'Tipo "cuál te gusta más, A o B"'},
+    {label:'Fotos de clientes felices en la tienda',sub:'Prueba social pura'},
+    {label:'Videos de "qué llegó hoy" / unboxing'},
+    {label:'Lives o transmisiones en vivo'},
+    {label:'Posts de promoción con precio rebajado'},
+    {label:'Contenido de detrás de cámaras / equipo'},
+    {label:'No tenemos data clara de qué generó visitas'}
+  ]},
+  {id:'q14',block:'contenido',type:'text',text:'¿Qué producto se volvió viral por accidente y se puede explotar?',
+    placeholder:'Ej: "Las botas militares que subimos en septiembre y se agotaron en 2 días" — describir producto, fecha aproximada y por qué conectó.'},
+  {id:'q15',block:'contenido',type:'multi',text:'¿Qué tipo de contenido fracasó o no funcionó? (para no repetirlo)',options:[
+    {label:'Posts muy largos / con mucho texto'},
+    {label:'Videos sin precio visible',sub:'No comunican valor'},
+    {label:'Fotos genéricas de catálogo'},
+    {label:'Frases motivacionales sin contexto'},
+    {label:'Promociones sin sentido de urgencia'},
+    {label:'Contenido "perfecto" / muy producido sin alma'},
+    {label:'Lives sin estructura ni objetivo claro'},
+    {label:'No identificamos patrones de fracaso'}
+  ]},
+  // ESTE MES (2)
+  {id:'q16',block:'mes',type:'multi',text:'¿Hay fecha cívica, feriado, quincena o evento local que se pueda capitalizar?',options:[
+    {label:'Quincena 15 del mes',sub:'Pico clásico de tráfico'},
+    {label:'Fin de mes / pago',sub:'Segundo pico del mes'},
+    {label:'Día de la Madre / Padre',sub:'Si aplica este mes'},
+    {label:'Feriado nacional próximo',sub:'Especificar cuál'},
+    {label:'Festival cantonal de San Carlos'},
+    {label:'Evento turístico en La Fortuna / Arenal'},
+    {label:'Black Friday / Cyber Monday',sub:'Si aplica al mes'},
+    {label:'Inicio de temporada (lluvias, verano, etc.)'},
+    {label:'No hay fechas relevantes identificadas'}
+  ]},
+  {id:'q17',block:'mes',type:'multi',text:'¿Hay alianza o colaboración posible con otra marca/negocio local?',options:[
+    {label:'Hoteles o tour operadores en La Fortuna',sub:'Tráfico turista'},
+    {label:'Cafés, restaurantes o bares de San Carlos',sub:'Audiencia cruzada local'},
+    {label:'Influencers o creadores locales'},
+    {label:'Otras tiendas no competidoras',sub:'Mochilas + ropa, calzado + accesorios, etc.'},
+    {label:'Equipos deportivos / clubes locales'},
+    {label:'Eventos / ferias locales'},
+    {label:'Sí pero no tenemos definido con quién aún',sub:'Lo trabajamos juntos'},
+    {label:'No hay alianzas en mente este mes'}
+  ]},
+  // EQUIPO Y TRACKEO (3)
+  {id:'q18',block:'equipo',priority:true,type:'managers',text:'Encargados actuales por punto de venta',
+    sub:'Necesitamos nombre y contacto directo de cada encargado para sincronizar el plan de campañas.'},
+  {id:'q19',block:'equipo',priority:true,type:'previous-social',text:'Encargado(s) anterior(es) de redes sociales',
+    sub:'Para acceso a perfiles, métricas históricas y trackeo dentro del sistema.'},
+  {id:'q20',block:'equipo',priority:true,type:'multi',text:'¿A qué perfiles y plataformas necesitamos acceso para integrarlos al sistema de trackeo de Bralto?',options:[
+    {label:'Instagram (cada tienda)'},{label:'Facebook (cada tienda)'},
+    {label:'TikTok (si existe)'},{label:'WhatsApp Business (cada tienda)'},
+    {label:'Google My Business (cada tienda)'},
+    {label:'Email marketing / base de datos clientes'},
+    {label:'Sistema POS / inventario'}
+  ]},
+  // FIDELIZACIÓN (2)
+  {id:'q21',block:'fidelizacion',priority:true,type:'pct',text:'¿Qué tan interesado estás en implementar el sistema de fidelización de revendedores de Bralto?',
+    sub:'Sistema que rastrea ventas, comisiones y rendimiento de revendedores que mueven producto fuera de tienda.'},
+  {id:'q22',block:'fidelizacion',priority:true,type:'multi',text:'¿Qué funcionalidades del sistema de fidelización son prioritarias?',options:[
+    {label:'Registro y trackeo de revendedores activos'},
+    {label:'Cálculo automático de comisiones por venta'},
+    {label:'Dashboard con ranking de revendedores'},
+    {label:'Códigos únicos por revendedor para atribución'},
+    {label:'Premios o niveles según volumen vendido'},
+    {label:'Integración con WhatsApp para comunicación masiva'},
+    {label:'Reportes mensuales automáticos para cada revendedor'}
+  ]}
+];
+
+const strategies = [
+  {id:'s01',icon:'⭐',name:'Hero product semanal',desc:'Cada semana un producto/categoría protagonista. Aparece en mínimo 3 piezas distintas (reel + historia + foto) con ángulos diferentes. Repetición = memoria = venta.'},
+  {id:'s02',icon:'🪝',name:'Sistema de hooks rotativos',desc:'Banco de 30–40 hooks clasificados por intención (curiosidad, escasez, precio, descubrimiento, comparación, autoridad). El creador elige según el producto del día.'},
+  {id:'s03',icon:'⏰',name:'Bloques de horas locas con regla',desc:'"Cada jueves de 4 a 6pm hay algo nuevo." Que el cliente sepa que existe ese momento aunque no sepa qué será. Eso construye hábito.'},
+  {id:'s04',icon:'🎬',name:'Reel ancla mensual (firma)',desc:'1 pieza al mes con calidad de filmmaker. Una historia. Esa es la que se pauta y la que genera marca a largo plazo. No es cortar y unir clips, es intención.'},
+  {id:'s05',icon:'🤝',name:'UGC sistematizado',desc:'Mecánica donde el cliente tiene incentivo a etiquetar (ej: 5% extra si publica con la tienda etiquetada). Cada cliente = distribución gratis.'},
+  {id:'s06',icon:'📲',name:'WhatsApp + Instagram conectados',desc:'Cada historia con call-to-action a un WhatsApp con mensaje precargado. No solo se publica, se captura.'},
+  {id:'s07',icon:'🎯',name:'Pauta quirúrgica',desc:'Amplificar el reel ganador de cada semana 48 horas después de publicarlo. No pautar todo, pautar lo que ya funciona orgánicamente.'},
+  {id:'s08',icon:'📊',name:'Dashboard de métricas reales',desc:'No alcance ni likes. Métricas duras: visitas físicas atribuibles al post, ticket promedio del día post-historia, mensajes entrantes.'}
+];
+
+// 0:intro, 1:howto, 2:identity, 3..24:questions, 25:strat-intro, 26..33:strategies, 34:submit
+const STRAT_START = 3 + questions.length;
+const SUBMIT_IDX = STRAT_START + 1 + strategies.length;
+const TOTAL_SLIDES = SUBMIT_IDX + 1;
+
+/* ======== STATE ======== */
+let cur = 0;
+let animDir = 'right';
+const answers = {};
+const stratAnswers = {};
+const meta = { respondente: '', cargo: '', contact: '' };
+
+/* ======== SLIDES ======== */
+function buildSlide(index) {
+  if (index === 0) return buildIntro();
+  if (index === 1) return buildHowTo();
+  if (index === 2) return buildIdentity();
+  if (index >= 3 && index < STRAT_START) return buildQuestion(index - 3);
+  if (index === STRAT_START) return buildStratIntro();
+  if (index > STRAT_START && index < SUBMIT_IDX) return buildStrategy(index - STRAT_START - 1);
+  return buildSubmit();
+}
+
+function buildIntro() {
+  return `<div class="intro-wrap">
+    <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" class="intro-logo">
+    <div class="intro-badge"><span class="dot"></span>Discovery estratégico · Liquidation Relaunch</div>
+    <h1 class="intro-h1">El próximo mes empieza<br>con <span class="accent">decisiones, no con suposiciones.</span></h1>
+    <p class="intro-sub">Antes de armar un calendario agresivo, hay que responder lo que importa. Este documento captura los inputs críticos para la campaña del relanzamiento de Liquidation.</p>
+    <div class="intro-stats">
+      <div class="stat-item"><div class="stat-num">22</div><div class="stat-label">Preguntas</div></div>
+      <div class="stat-item"><div class="stat-num">08</div><div class="stat-label">Estrategias</div></div>
+      <div class="stat-item"><div class="stat-num">04</div><div class="stat-label">Campañas</div></div>
+      <div class="stat-item"><div class="stat-num">03</div><div class="stat-label">Tiendas</div></div>
+    </div>
+    <div class="intro-context">
+      <div class="ctx-label">Objetivo especial del mes</div>
+      <div class="ctx-title">Capitalizar el relanzamiento de Liquidation<br>como <span style="color:var(--red)">eje narrativo del mes.</span></div>
+      <div class="ctx-sub">Llegan 2 contenedores para reabrir el tercer piso de AO 1. Esa apertura es el ancla de 4 campañas paralelas — una general que cuenta la historia grande, y 3 específicas por punto de venta. Toda la mercadería con más de 4 meses de rotación se mueve estratégicamente entre tiendas.</div>
+      <div class="intro-pillars">
+        <div class="pillar"><div class="pillar-num">01 · Macro</div><div class="pillar-name">Campaña General</div><div class="pillar-sub">Relanzamiento Liquidation</div></div>
+        <div class="pillar"><div class="pillar-num">02 · Local</div><div class="pillar-name">AO Florencia</div><div class="pillar-sub">Activación específica</div></div>
+        <div class="pillar"><div class="pillar-num">03 · Local</div><div class="pillar-name">AO Fortuna</div><div class="pillar-sub">Activación específica</div></div>
+        <div class="pillar"><div class="pillar-num">04 · Local</div><div class="pillar-name">AO Ciudad Quesada</div><div class="pillar-sub">Activación específica</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildHowTo() {
+  return `<div class="howto-wrap">
+    <div class="slide-label">Antes de empezar</div>
+    <h2 class="slide-title">Cómo usar este documento</h2>
+    <div class="howto-card">
+      <div class="howto-icon">!</div>
+      <div class="howto-body">
+        <h3>Rápido y directo</h3>
+        <p>Cada pantalla tiene <strong>una sola pregunta</strong>. Marcás lo que aplica (o varias si es selección múltiple). Al final hay una sección de estrategias donde movés sliders para indicar tu interés. Presionás Enviar y listo.</p>
+      </div>
+    </div>
+    <div class="howto-steps">
+      <div class="step"><div class="step-num">01</div><div class="step-text">Identificate en la siguiente pantalla (nombre y cargo).</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text">Respondé las 22 preguntas de discovery. Las marcadas con 🔥 son prioritarias — son las que más impactan la propuesta.</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text">Evaluá las 8 estrategias moviendo el slider del 0 al 100% según tu interés en cada una.</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text">Al final presionás <strong>Enviar</strong> y Bralto recibe el discovery completo con PDF adjunto.</div></div>
+    </div>
+  </div>`;
+}
+
+function buildIdentity() {
+  return `<div class="identity-wrap">
+    <div class="slide-label">Identificación</div>
+    <h2 class="slide-title">¿Quién está respondiendo?</h2>
+    <div style="margin-bottom:12px;">
+      <label class="field-label">Nombre completo</label>
+      <input type="text" class="field" placeholder="Ej: Carlos Rodríguez" value="${meta.respondente}" oninput="meta.respondente=this.value;updateProgress()">
+    </div>
+    <div class="field-group">
+      <div>
+        <label class="field-label">Cargo / rol</label>
+        <input type="text" class="field" placeholder="Ej: Dueño / Director" value="${meta.cargo}" oninput="meta.cargo=this.value;updateProgress()">
+      </div>
+      <div>
+        <label class="field-label">WhatsApp / teléfono</label>
+        <input type="text" class="field" placeholder="Ej: 8888-0000" value="${meta.contact}" oninput="meta.contact=this.value;updateProgress()">
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildQuestion(qIdx) {
+  const q = questions[qIdx];
+  const num = qIdx + 1;
+  const isLiq = q.block === 'liquidation';
+
+  let typeTag = '';
+  if (q.type === 'single') typeTag = '<span class="q-tag single">○ Selección única</span>';
+  else if (q.type === 'multi') typeTag = '<span class="q-tag multi">☑ Selección múltiple</span>';
+  else if (q.type === 'text') typeTag = '<span class="q-tag text-in">✎ Respuesta abierta</span>';
+  else if (q.type === 'pct') typeTag = '<span class="q-tag pct">% Porcentaje</span>';
+  else typeTag = '<span class="q-tag text-in">📋 Datos</span>';
+  const priorityTag = q.priority ? '<span class="q-tag priority">★ Prioritaria</span>' : '';
+  const liqTag = isLiq ? '<span class="q-tag liq">🔥 Liquidation</span>' : '';
+
+  let inputHtml = '';
+  if (q.type === 'single' || q.type === 'multi') {
+    const selected = answers[q.id] || [];
+    const marker = q.type === 'single' ? 'radio' : 'check';
+    const chk = q.type === 'single' ? '●' : '✓';
+    inputHtml = `<div class="opts-list">${q.options.map((opt,i)=>`
+      <div class="opt ${selected.includes(i)?'selected':''}" onclick="handleOpt('${q.id}',${i},'${q.type}')">
+        <div class="opt-marker ${marker}">${selected.includes(i)?chk:''}</div>
+        <div class="opt-label">${opt.label}${opt.sub?`<span class="opt-sub">${opt.sub}</span>`:''}</div>
+      </div>`).join('')}</div>`;
+  } else if (q.type === 'text') {
+    inputHtml = `<textarea class="q-textarea" placeholder="${q.placeholder}" oninput="handleText('${q.id}',this.value)">${answers[q.id]||''}</textarea>`;
+  } else if (q.type === 'pct') {
+    const val = answers[q.id] !== undefined ? answers[q.id] : 50;
+    inputHtml = `<div class="pct-wrap">
+      <div class="pct-display"><div class="pct-num" id="pn-${q.id}">${val}</div><div class="pct-lbl">% de interés</div></div>
+      <input type="range" min="0" max="100" value="${val}" class="pct-slider" oninput="handlePct('${q.id}',this.value)">
+      <div class="pct-marks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    </div>`;
+  } else if (q.type === 'date-stores') {
+    const ds = answers[q.id] || {};
+    inputHtml = `<div class="date-grid">
+      <div class="date-row"><div class="date-tag t1">AO Florencia</div>
+        <input type="date" class="date-input" value="${ds.florencia||''}" oninput="handleDS('${q.id}','florencia',this.value)">
+        <input type="text" class="date-input" placeholder="Nota (AM/PM)" value="${ds['florencia-note']||''}" oninput="handleDS('${q.id}','florencia-note',this.value)">
+      </div>
+      <div class="date-row"><div class="date-tag t2">AO Fortuna</div>
+        <input type="date" class="date-input" value="${ds.fortuna||''}" oninput="handleDS('${q.id}','fortuna',this.value)">
+        <input type="text" class="date-input" placeholder="Nota (AM/PM)" value="${ds['fortuna-note']||''}" oninput="handleDS('${q.id}','fortuna-note',this.value)">
+      </div>
+      <div class="date-row"><div class="date-tag t3">AO C. Quesada</div>
+        <input type="date" class="date-input" value="${ds.quesada||''}" oninput="handleDS('${q.id}','quesada',this.value)">
+        <input type="text" class="date-input" placeholder="Nota (AM/PM)" value="${ds['quesada-note']||''}" oninput="handleDS('${q.id}','quesada-note',this.value)">
+      </div>
+    </div>`;
+  } else if (q.type === 'managers') {
+    const mg = answers[q.id] || {};
+    inputHtml = `<div class="multi-input">
+      ${[{key:'florencia',label:'AO Florencia'},{key:'fortuna',label:'AO Fortuna'},{key:'quesada',label:'AO C. Quesada'}].map(s=>`
+      <div class="mi-row"><div class="mi-label-fixed">${s.label}</div>
+        <input type="text" class="mi-input" placeholder="Nombre del encargado" value="${mg[s.key+'_name']||''}" oninput="handleMg('${q.id}','${s.key}_name',this.value)">
+        <input type="text" class="mi-input" placeholder="Teléfono / WhatsApp" value="${mg[s.key+'_contact']||''}" oninput="handleMg('${q.id}','${s.key}_contact',this.value)">
+      </div>`).join('')}
+    </div>`;
+  } else if (q.type === 'previous-social') {
+    const ps = answers[q.id] || {};
+    inputHtml = `<div class="multi-input">
+      <div class="mi-row"><div class="mi-label-fixed">Persona</div>
+        <input type="text" class="mi-input" placeholder="Nombre del encargado anterior" value="${ps.name||''}" oninput="handleMg('${q.id}','name',this.value)">
+        <input type="text" class="mi-input" placeholder="Teléfono / contacto" value="${ps.contact||''}" oninput="handleMg('${q.id}','contact',this.value)">
+      </div>
+      <div class="mi-row"><div class="mi-label-fixed">Acceso</div>
+        <input type="text" class="mi-input" placeholder="¿Sigue dando acceso? Sí/No" value="${ps.access||''}" oninput="handleMg('${q.id}','access',this.value)">
+        <input type="text" class="mi-input" placeholder="Plataformas que manejaba" value="${ps.platforms||''}" oninput="handleMg('${q.id}','platforms',this.value)">
+      </div>
+    </div>`;
+  }
+
+  return `<div class="q-wrap">
+    <div class="q-head">
+      <div class="q-num">Pregunta ${String(num).padStart(2,'0')} de ${questions.length}</div>
+      <div class="q-text">${q.text}</div>
+      ${q.sub ? `<div class="q-sub">${q.sub}</div>` : ''}
+      <div class="q-tags">${typeTag}${priorityTag}${liqTag}</div>
+    </div>
+    ${inputHtml}
+  </div>`;
+}
+
+function buildStratIntro() {
+  return `<div class="q-wrap">
+    <div class="strat-banner">
+      <div class="strat-banner-label">Parte 02 · Estrategias</div>
+      <div class="strat-banner-title">8 pilares · ¿Qué tan adentro entramos?</div>
+      <div class="strat-banner-sub">Estas son las estrategias que evolucionan un calendario de "publicar por publicar" a un sistema que vende. Cada una se puede ejecutar con distinta profundidad. Mové el slider del 0 al 100% en cada una — eso define la propuesta final.</div>
+    </div>
+    <div style="color:var(--gray-700);font-size:0.9rem;line-height:1.7;">Hay <strong>8 estrategias</strong> en las siguientes pantallas. Para cada una, mové el slider para indicar qué tan interesado estás en aplicarla. 0% = nada, 100% = total.</div>
+  </div>`;
+}
+
+function buildStrategy(sIdx) {
+  const s = strategies[sIdx];
+  const val = stratAnswers[s.id] !== undefined ? stratAnswers[s.id] : 50;
+  return `<div class="q-wrap">
+    <div class="q-head">
+      <div class="q-num">Estrategia ${String(sIdx+1).padStart(2,'0')} de ${strategies.length}</div>
+      <div style="font-size:2rem;margin-bottom:10px;">${s.icon}</div>
+      <div class="q-text">${s.name}</div>
+      <div class="q-sub">${s.desc}</div>
+      <div class="q-tags"><span class="q-tag pct">% Nivel de interés</span></div>
+    </div>
+    <div class="pct-wrap">
+      <div class="pct-display"><div class="pct-num" id="sn-${s.id}">${val}</div><div class="pct-lbl">% de interés en aplicar</div></div>
+      <input type="range" min="0" max="100" value="${val}" class="pct-slider" oninput="handleStratPct('${s.id}',this.value)">
+      <div class="pct-marks"><span>Nada</span><span>Bajo</span><span>Medio</span><span>Alto</span><span>Total</span></div>
+    </div>
+  </div>`;
+}
+
+function buildSubmit() {
+  const answered = Object.keys(answers).length + Object.keys(stratAnswers).length + (meta.respondente ? 1 : 0);
+  const total = questions.length + strategies.length + 1;
+  return `<div class="submit-wrap">
+    <div class="submit-icon">🚀</div>
+    <h2 class="submit-title">Discovery listo para<br>convertir en <span class="accent">estrategia.</span></h2>
+    <p class="submit-sub">Presioná Enviar y Bralto recibe el discovery completo con todas las respuestas y los niveles de interés en cada estrategia.</p>
+    <div class="summary-card">
+      <div class="summary-row"><span class="summary-key">Respondido por</span><span class="summary-val">${meta.respondente||'—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Cargo</span><span class="summary-val">${meta.cargo||'—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Contacto</span><span class="summary-val">${meta.contact||'—'}</span></div>
+      <div class="summary-row"><span class="summary-key">Preguntas completadas</span><span class="summary-val">${Object.keys(answers).length} / ${questions.length}</span></div>
+      <div class="summary-row"><span class="summary-key">Estrategias evaluadas</span><span class="summary-val">${Object.keys(stratAnswers).length} / ${strategies.length}</span></div>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+      <span id="submit-spinner" style="display:none" class="spinner"></span>
+      <span id="submit-label">Enviar discovery →</span>
+    </button>
+    <span class="reset-link" onclick="resetAll()">↻ Reiniciar respuestas</span>
+  </div>`;
+}
+
+/* ======== HANDLERS ======== */
+function handleOpt(id, idx, type) {
+  if (type === 'single') {
+    answers[id] = [idx];
+    document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`).forEach((el,i) => {
+      el.classList.toggle('selected', i === idx);
+      el.querySelector('.opt-marker').textContent = i === idx ? '●' : '';
+    });
+  } else {
+    if (!answers[id]) answers[id] = [];
+    const i = answers[id].indexOf(idx);
+    const el = document.querySelectorAll(`.opt[onclick^="handleOpt('${id}'"]`)[idx];
+    if (i > -1) { answers[id].splice(i,1); if(el){el.classList.remove('selected');el.querySelector('.opt-marker').textContent='';} }
+    else { answers[id].push(idx); if(el){el.classList.add('selected');el.querySelector('.opt-marker').textContent='✓';} }
+    if (answers[id].length === 0) delete answers[id];
+  }
+  updateProgress();
+}
+function handleText(id, val) { if(val.trim()) answers[id]=val; else delete answers[id]; updateProgress(); }
+function handlePct(id, val) {
+  answers[id] = parseInt(val);
+  const el = document.getElementById('pn-'+id);
+  if(el){el.textContent=val;const v=parseInt(val);el.style.color=v>=75?'#16a34a':v>=50?'#e63946':v>=25?'#fbbf24':'#aaa';}
+  updateProgress();
+}
+function handleStratPct(id, val) {
+  stratAnswers[id] = parseInt(val);
+  const el = document.getElementById('sn-'+id);
+  if(el){el.textContent=val;const v=parseInt(val);el.style.color=v>=75?'#16a34a':v>=50?'#e63946':v>=25?'#fbbf24':'#aaa';}
+  updateProgress();
+}
+function handleDS(id, key, val) {
+  if(!answers[id]) answers[id]={};
+  if(val.trim()) answers[id][key]=val; else delete answers[id][key];
+  if(!Object.keys(answers[id]).length) delete answers[id];
+  updateProgress();
+}
+function handleMg(id, key, val) {
+  if(!answers[id]) answers[id]={};
+  if(val.trim()) answers[id][key]=val; else delete answers[id][key];
+  if(!Object.keys(answers[id]).length) delete answers[id];
+  updateProgress();
+}
+
+/* ======== NAV ======== */
+function goTo(index, dir) {
+  if(index<0||index>=TOTAL_SLIDES) return;
+  animDir=dir; cur=index; render(); updateNav(); updateProgress();
+  document.getElementById('slide-area').scrollTop=0;
+}
+function next(){goTo(cur+1,'right');}
+function prev(){goTo(cur-1,'left');}
+function render(){
+  const area=document.getElementById('slide-content');
+  area.innerHTML=buildSlide(cur);
+  area.className='slide-content '+(animDir==='right'?'anim-right':'anim-left');
+}
+function updateNav(){
+  document.getElementById('btn-prev').disabled=cur===0;
+  const nb=document.getElementById('btn-next');
+  nb.disabled=cur===TOTAL_SLIDES-1;
+  nb.textContent=cur===TOTAL_SLIDES-2?'Ver resumen →':'Siguiente →';
+  document.getElementById('slide-counter').textContent=`${cur+1} / ${TOTAL_SLIDES}`;
+}
+function updateProgress(){
+  document.getElementById('progress-fill').style.width=((cur+1)/TOTAL_SLIDES*100)+'%';
+}
+
+/* ======== PDF + SUBMIT ======== */
+function buildPdfHtml() {
+  const date=new Date().toLocaleDateString('es-CR',{day:'2-digit',month:'long',year:'numeric'});
+  const blocksOrder=['liquidation','rotacion','cliente','contenido','mes','equipo','fidelizacion'];
+  const blockColors={liquidation:'#e63946',rotacion:'#ff6b2b',cliente:'#0a0a0a',contenido:'#6a4c93',mes:'#2a9d8f',equipo:'#2a9d8f',fidelizacion:'#ff6b2b'};
+  const blockNames={liquidation:'Liquidation Relaunch',rotacion:'Rotación entre 3 tiendas',cliente:'Cliente real',contenido:'Contenido pasado',mes:'Este mes',equipo:'Equipo y trackeo',fidelizacion:'Fidelización revendedores'};
+
+  function ansHtml(q){
+    const ans=answers[q.id];
+    if(ans===undefined) return '<div style="color:#aaa;font-style:italic;font-size:0.85rem;">Sin responder</div>';
+    if(q.type==='single'||q.type==='multi') return ans.map(i=>`<div style="padding:8px 12px;background:#fff5f5;border-left:3px solid #e63946;border-radius:4px;font-size:0.88rem;margin-bottom:4px;"><strong>${q.options[i].label}</strong>${q.options[i].sub?`<div style="color:#888;font-size:0.78rem;font-style:italic;">${q.options[i].sub}</div>`:''}</div>`).join('');
+    if(q.type==='text') return `<div style="padding:10px 12px;background:#fff5f5;border-left:3px solid #e63946;border-radius:4px;font-size:0.88rem;white-space:pre-wrap;">${ans}</div>`;
+    if(q.type==='pct'){const col=ans>=75?'#16a34a':ans>=50?'#e63946':ans>=25?'#fbbf24':'#aaa';const lbl=ans>=75?'Muy alto':ans>=50?'Alto':ans>=25?'Medio':'Bajo';return `<div style="padding:10px 12px;background:#fff5f5;border-left:3px solid ${col};border-radius:4px;"><strong style="font-size:1.4rem;color:${col};font-family:monospace;">${ans}%</strong> · ${lbl}</div>`;}
+    if(q.type==='date-stores'){const ds=ans||{};return `<div style="font-size:0.85rem;"><div style="margin-bottom:4px;"><strong>AO Florencia:</strong> ${ds.florencia||'—'} ${ds['florencia-note']||''}</div><div style="margin-bottom:4px;"><strong>AO Fortuna:</strong> ${ds.fortuna||'—'} ${ds['fortuna-note']||''}</div><div><strong>AO C. Quesada:</strong> ${ds.quesada||'—'} ${ds['quesada-note']||''}</div></div>`;}
+    if(q.type==='managers'){const mg=ans||{};return `<div style="font-size:0.85rem;"><div style="margin-bottom:4px;"><strong>AO Florencia:</strong> ${mg.florencia_name||'—'} · ${mg.florencia_contact||'—'}</div><div style="margin-bottom:4px;"><strong>AO Fortuna:</strong> ${mg.fortuna_name||'—'} · ${mg.fortuna_contact||'—'}</div><div><strong>AO C. Quesada:</strong> ${mg.quesada_name||'—'} · ${mg.quesada_contact||'—'}</div></div>`;}
+    if(q.type==='previous-social'){const ps=ans||{};return `<div style="font-size:0.85rem;"><strong>${ps.name||'—'}</strong> · ${ps.contact||'—'} · Acceso: ${ps.access||'—'} · Plataformas: ${ps.platforms||'—'}</div>`;}
+    return '';
+  }
+
+  let blocksHtml=blocksOrder.map(bk=>{
+    const bqs=questions.filter(q=>q.block===bk);
+    if(!bqs.length) return '';
+    return `<div style="margin-bottom:28px;">
+      <div style="border-left:4px solid ${blockColors[bk]};padding:8px 14px;margin-bottom:14px;background:#fafafa;">
+        <div style="font-size:1.1rem;font-weight:700;">${blockNames[bk]}</div>
+      </div>
+      ${bqs.map(q=>{
+        const qNum=questions.indexOf(q)+1;
+        return `<div style="margin-bottom:14px;padding:14px 16px;border:1px solid #eee;border-radius:10px;">
+          <div style="font-family:monospace;font-size:0.72rem;font-weight:700;color:#e63946;margin-bottom:5px;">${String(qNum).padStart(2,'0')}</div>
+          <div style="font-size:0.92rem;font-weight:600;margin-bottom:8px;">${q.text}</div>
+          ${ansHtml(q)}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+
+  const stratHtml=strategies.map((s,i)=>{
+    const val=stratAnswers[s.id]!==undefined?stratAnswers[s.id]:'-';
+    const col=typeof val==='number'?(val>=75?'#16a34a':val>=50?'#ff6b2b':val>=25?'#fbbf24':'#aaa'):'#aaa';
+    return `<div style="margin-bottom:12px;padding:14px 16px;border:1px solid #eee;border-radius:10px;display:flex;align-items:center;gap:16px;">
+      <div style="font-size:1.4rem;">${s.icon}</div>
+      <div style="flex:1;"><div style="font-size:0.88rem;font-weight:700;">${s.name}</div><div style="font-size:0.8rem;color:#888;">${s.desc}</div></div>
+      <div style="font-family:monospace;font-size:1.4rem;font-weight:700;color:${col};min-width:50px;text-align:right;">${val}%</div>
+    </div>`;
+  }).join('');
+
+  return `<div style="font-family:'Sora','Helvetica Neue',Arial,sans-serif;color:#0a0a0a;background:#fff;padding:40px;max-width:800px;margin:0 auto;">
+    <div style="text-align:center;padding:50px 0 60px;border-bottom:3px solid #e63946;margin-bottom:36px;">
+      <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" style="width:100px;margin-bottom:24px;">
+      <div style="font-family:monospace;font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:#e63946;margin-bottom:14px;">Discovery estratégico · Liquidation Relaunch</div>
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:10px;">American Outlet<br><span style="color:#e63946;">Liquidation Relaunch</span></h1>
+      <div style="background:#fafafa;border-radius:10px;padding:14px 20px;max-width:360px;margin:18px auto;text-align:left;">
+        <div style="font-size:0.88rem;margin-bottom:5px;"><strong>Respondido por:</strong> ${meta.respondente||'—'}</div>
+        <div style="font-size:0.88rem;margin-bottom:5px;"><strong>Cargo:</strong> ${meta.cargo||'—'}</div>
+        <div style="font-size:0.88rem;"><strong>Contacto:</strong> ${meta.contact||'—'}</div>
+      </div>
+      <div style="font-family:monospace;font-size:0.68rem;color:#888;margin-top:16px;">${date} · Bralto · bralto.io</div>
+    </div>
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:20px;">Discovery: 22 inputs críticos</h2>
+    ${blocksHtml}
+    <div style="page-break-before:always;margin-bottom:28px;">
+      <div style="border-left:4px solid #ff6b2b;padding:8px 14px;margin-bottom:14px;background:#fafafa;">
+        <div style="font-size:1.1rem;font-weight:700;">Estrategias · Nivel de interés</div>
+      </div>
+      ${stratHtml}
+    </div>
+    <div style="text-align:center;padding-top:28px;border-top:1px solid #eee;">
+      <img src="https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69c038d25596d1b810fd385d.png" alt="Bralto" style="width:70px;opacity:0.5;">
+      <p style="font-size:0.75rem;color:#aaa;margin-top:8px;">Bralto · bralto.io</p>
+    </div>
+  </div>`;
+}
+
+async function submitForm() {
+  const btn=document.getElementById('submit-btn');
+  const spinner=document.getElementById('submit-spinner');
+  const label=document.getElementById('submit-label');
+  btn.disabled=true; spinner.style.display='block'; label.textContent='Generando PDF...';
+  try {
+    const pdfNode=document.createElement('div');
+    pdfNode.innerHTML=buildPdfHtml();
+    pdfNode.style.cssText='position:absolute;left:-9999px;top:0;width:800px;';
+    document.body.appendChild(pdfNode);
+    const filename=`Discovery_AO_Liquidation_${meta.respondente.replace(/\s+/g,'_')||'Sin_nombre'}.pdf`;
+    const pdfBlob=await html2pdf().set({
+      margin:[10,10,10,10],filename,
+      image:{type:'jpeg',quality:0.96},
+      html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['avoid-all','css','legacy']}
+    }).from(pdfNode.firstElementChild).outputPdf('blob');
+    document.body.removeChild(pdfNode);
+    label.textContent='Enviando...';
+    const reader=new FileReader();
+    const pdfBase64=await new Promise((resolve,reject)=>{reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(pdfBlob);});
+    const answered=Object.keys(answers).length+Object.keys(stratAnswers).length+(meta.respondente?1:0);
+    const res=await fetch('/api/discovery/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'ao',pdfBase64,pdfFilename:filename,metadata:{respondente:meta.respondente,cargo:meta.cargo,contact:meta.contact},answeredCount:answered,totalCount:questions.length+strategies.length+1})});
+    if(!res.ok) throw new Error('Error del servidor');
+    document.getElementById('slide-content').innerHTML=`<div class="success-wrap"><div class="success-icon">✅</div><h2 class="success-title">¡Discovery enviado!</h2><p class="success-sub">Bralto recibió el discovery completo con el PDF adjunto. De ahí salen las 4 campañas, el plan de rotación cruzada, y la priorización de las 8 estrategias.</p><div class="success-badge">✓ Correo enviado correctamente</div></div>`;
+    document.getElementById('bottom-nav').style.display='none';
+    document.getElementById('progress-fill').style.width='100%';
+  } catch(err) {
+    console.error(err);
+    btn.disabled=false; spinner.style.display='none'; label.textContent='Enviar discovery →';
+    alert('Hubo un problema al enviar. Verificá tu conexión y volvé a intentar.');
+  }
+}
+
+function resetAll(){if(!confirm('¿Seguro que querés borrar todas las respuestas?')) return;Object.keys(answers).forEach(k=>delete answers[k]);Object.keys(stratAnswers).forEach(k=>delete stratAnswers[k]);meta.respondente='';meta.cargo='';meta.contact='';goTo(0,'left');}
+
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')next();if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();});
+goTo(0,'right');
+</script>
+</body>
+</html>
