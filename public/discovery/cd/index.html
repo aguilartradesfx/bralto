@@ -537,9 +537,10 @@ function handleOpt(id, idx, type) {
     else { answers[id].push(idx); if(el){el.classList.add('selected');el.querySelector('.opt-marker').textContent='✓';} }
     if (!answers[id].length) delete answers[id];
   }
+  clearError();
   updateProgress();
 }
-function handleText(id, val) { if(val.trim()) answers[id]=val; else delete answers[id]; updateProgress(); }
+function handleText(id, val) { if(val.trim()) answers[id]=val; else delete answers[id]; clearError(); updateProgress(); }
 function handlePct(id, val) {
   answers[id] = parseInt(val);
   const el = document.getElementById('pn-'+id);
@@ -550,12 +551,14 @@ function handleMatrix(id, key, val) {
   if(!answers[id]) answers[id]={};
   if(val.trim()) answers[id][key]=val; else delete answers[id][key];
   if(!Object.keys(answers[id]).length) delete answers[id];
+  clearError();
   updateProgress();
 }
 function handleDist(id, key, val) {
   if(!answers[id]) answers[id]={};
   if(val.trim()) answers[id][key]=val; else delete answers[id][key];
   if(!Object.keys(answers[id]).length) delete answers[id];
+  clearError();
   updateProgress();
 }
 
@@ -565,8 +568,47 @@ function goTo(index, dir) {
   animDir=dir; cur=index; render(); updateNav(); updateProgress();
   document.getElementById('slide-area').scrollTop=0;
 }
-function next(){goTo(cur+1,'right');}
-function prev(){goTo(cur-1,'left');}
+
+function validateCurrent() {
+  if (cur === 2) {
+    if (!meta.encargado.trim()) return 'Ingresá el nombre del encargado.';
+    if (!meta.contact.trim()) return 'Ingresá el WhatsApp o teléfono de contacto.';
+    if (!meta.email.trim()) return 'Ingresá el correo electrónico.';
+    if (!meta.ubicacion.trim()) return 'Ingresá la ubicación del CD.';
+    if (!meta.mes.trim()) return 'Ingresá el mes reportado.';
+  }
+  const qIdx = cur - 3;
+  if (qIdx >= 0 && qIdx < questions.length) {
+    const q = questions[qIdx];
+    if (q.type !== 'pct' && !answers[q.id]) return 'Esta pregunta es obligatoria. Seleccioná o completá una respuesta.';
+  }
+  return null;
+}
+
+function showError(msg) {
+  let el = document.getElementById('val-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'val-error';
+    el.style.cssText = 'position:fixed;bottom:var(--nav-h);left:0;right:0;background:#e63946;color:#fff;text-align:center;padding:10px 16px;font-size:0.82rem;font-weight:600;z-index:300;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function clearError() {
+  const el = document.getElementById('val-error');
+  if (el) el.style.display = 'none';
+}
+
+function next(){
+  const err = validateCurrent();
+  if (err) { showError(err); return; }
+  clearError();
+  goTo(cur+1,'right');
+}
+function prev(){clearError();goTo(cur-1,'left');}
 function render(){
   const area=document.getElementById('slide-content');
   area.innerHTML=buildSlide(cur);
