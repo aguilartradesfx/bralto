@@ -109,7 +109,7 @@ export async function POST(req: Request) {
 
   const resend = getResend()
   const { error } = await resend.emails.send({
-    from: 'Discovery Bralto <noreply@bralto.io>',
+    from: 'Discovery Bralto <noreply@send.bralto.io>',
     to: ['aguilartradesfx@gmail.com'],
     subject,
     html,
