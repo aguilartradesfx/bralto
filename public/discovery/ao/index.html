@@ -778,9 +778,9 @@ async function submitForm() {
     const filename=`Discovery_AO_Liquidation_${meta.respondente.replace(/\s+/g,'_')||'Sin_nombre'}.pdf`;
     const pdfBlob=await html2pdf().set({
       margin:[10,10,10,10],filename,
-      image:{type:'jpeg',quality:0.96},
-      html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff'},
-      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      image:{type:'jpeg',quality:0.75},
+      html2canvas:{scale:1.5,useCORS:true,logging:false,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},
       pagebreak:{mode:['avoid-all','css','legacy']}
     }).from(pdfNode.firstElementChild).outputPdf('blob');
     document.body.removeChild(pdfNode);
