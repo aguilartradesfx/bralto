@@ -44,6 +44,7 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* Scrollbar */
@@ -74,6 +75,7 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
 
 
 /* ── Contract preview + document (forces dark text on white background) ── */
@@ -124,13 +126,13 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Hero headline — desktop uses clamp, mobile uses fixed size so "Automatizamos sus" fits one line */
+/* Hero headline — matches reference HTML clamp(36px, 6vw, 60px) */
 .hero-headline {
-  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
 }
 @media (max-width: 767px) {
   .hero-headline {
-    font-size: 1.85rem;
+    font-size: 2rem;
   }
 }
 
