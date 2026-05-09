@@ -30,7 +30,6 @@ export function Navbar() {
     { label: t('navLinks.inicio'),        href: `/${locale}/#inicio` },
     { label: t('navLinks.comoFunciona'),  href: `/${locale}/#como-funciona` },
     { label: t('navLinks.sobreNosotros'), href: `/${locale}/sobre-nosotros` },
-    { label: t('navLinks.casosReales'),   href: `/${locale}/#casos-reales` },
     { label: t('navLinks.plataforma'),    href: `/${locale}/#plataforma` },
   ]
 
