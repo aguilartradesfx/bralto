@@ -13,10 +13,11 @@ export function Footer() {
     {
       label: t('sections.navigation.label'),
       links: [
-        { title: t('sections.navigation.links.inicio'),       href: `/${locale}/#inicio` },
-        { title: t('sections.navigation.links.comoFunciona'), href: `/${locale}/#como-funciona` },
-        { title: t('sections.navigation.links.plataforma'),   href: `/${locale}/#plataforma` },
-        { title: t('sections.navigation.links.casosReales'),  href: `/${locale}/#casos-reales` },
+        { title: t('sections.navigation.links.inicio'),        href: `/${locale}/#inicio` },
+        { title: t('sections.navigation.links.comoFunciona'),  href: `/${locale}/#como-funciona` },
+        { title: t('sections.navigation.links.sobreNosotros'), href: `/${locale}/sobre-nosotros` },
+        { title: t('sections.navigation.links.plataforma'),    href: `/${locale}/#plataforma` },
+        { title: t('sections.navigation.links.casosReales'),   href: `/${locale}/#casos-reales` },
       ],
     },
     {

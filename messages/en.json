@@ -4,6 +4,7 @@
     "navLinks": {
       "inicio": "Home",
       "comoFunciona": "How it works",
+      "sobreNosotros": "About",
       "casosReales": "Case studies",
       "plataforma": "Platform"
     },
@@ -473,6 +474,7 @@
         "links": {
           "inicio": "Home",
           "comoFunciona": "How it works",
+          "sobreNosotros": "About",
           "plataforma": "Platform",
           "casosReales": "Case studies"
         }
@@ -505,6 +507,73 @@
       "Dealerships", "Financial Advisors", "Dentists", "Print Shops",
       "Veterinary Clinics", "Medical Centers"
     ]
+  },
+  "AboutPage": {
+    "meta": {
+      "title": "About Us — Bralto | Automated Operations Infrastructure",
+      "description": "Bralto builds the digital infrastructure that lets established businesses run like an enterprise. The story, mission, and principles behind the system."
+    },
+    "hero": {
+      "eyebrow": "About Bralto",
+      "headline": "Headcount doesn't scale.",
+      "headlineItalic": "Systems do.",
+      "sub": "We build the operational infrastructure that lets established businesses run like an enterprise — without the enterprise cost."
+    },
+    "origin": {
+      "eyebrow": "How it started",
+      "headline": "One simple idea.",
+      "headlineItalic": "One massive problem.",
+      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins — but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A customer who left for the competitor because the competitor actually answered at 2am.",
+      "p2": "The problem wasn't a lack of tools. It was the exact opposite: duct-taped tech stacks with 8, 10, 15 different tools that don't talk to each other. CRMs over here, forms over there, half-built automations, broken integrations. Expensive software that ends up costing more in complexity than in licenses.",
+      "p3": "Bralto was built to fix that at the root. One platform that replaces the entire stack, paired with custom implementations that connect AI, data, and processes into a single system. We don't sell software. We rebuild how the business runs.",
+      "statValue": "8+",
+      "statLabel": "Years designing automated acquisition and operations systems"
+    },
+    "mission": {
+      "eyebrow": "Purpose",
+      "card1Label": "Mission",
+      "card1Body": "Make every business operate like the best in its category — without growing the team to get there.",
+      "card2Label": "Vision",
+      "card2Body": "A world where a mid-sized business competes head-to-head with an enterprise player. Not because of size. Because of how well it runs."
+    },
+    "principles": {
+      "eyebrow": "How we operate",
+      "headline": "How we",
+      "headlineItalic": "work.",
+      "items": [
+        { "number": "01", "title": "Systems, not patches", "body": "We don't add another tool to the stack. We replace the stack." },
+        { "number": "02", "title": "Results before aesthetics", "body": "If it doesn't drive revenue or cut cost, it doesn't ship. Period." },
+        { "number": "03", "title": "Fast implementation or we don't take the project", "body": "Seventy-two hours from diagnosis to delivery. If we miss it, you don't pay." },
+        { "number": "04", "title": "Your business, your platform", "body": "Everything we build runs on your own domain, your own brand, your own infrastructure. Never dependent on us." }
+      ]
+    },
+    "numbers": {
+      "eyebrow": "Metrics",
+      "headline": "Bralto",
+      "headlineItalic": "by the numbers.",
+      "stats": [
+        { "value": "8+", "label": "Years designing systems" },
+        { "value": "9+", "label": "Industries served" },
+        { "value": "<72h", "label": "Delivery time" },
+        { "value": "24/7", "label": "Always running" },
+        { "value": "10+", "label": "Tools replaced" },
+        { "value": "100%", "label": "Custom-fit to your operation" }
+      ]
+    },
+    "brands": {
+      "eyebrow": "Who trusts us",
+      "headline": "Businesses already",
+      "headlineItalic": "running on Bralto.",
+      "sub": "From local restaurants to multi-location operations across hospitality, healthcare, retail, and professional services.",
+      "testimonialsLabel": "What they say"
+    },
+    "close": {
+      "headline": "Let's build the system",
+      "headlineItalic": "your business needs.",
+      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. Thirty minutes. No commitment. No cost.",
+      "signature": "— Alejandro Aguilar, Founder",
+      "cta": "Book a call with me"
+    }
   },
   "PreciosPage": {
     "badge": "Bralto",

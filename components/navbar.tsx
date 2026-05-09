@@ -29,6 +29,7 @@ export function Navbar() {
   const navLinks = [
     { label: t('navLinks.inicio'),        href: `/${locale}/#inicio` },
     { label: t('navLinks.comoFunciona'),  href: `/${locale}/#como-funciona` },
+    { label: t('navLinks.sobreNosotros'), href: `/${locale}/sobre-nosotros` },
     { label: t('navLinks.casosReales'),   href: `/${locale}/#casos-reales` },
     { label: t('navLinks.plataforma'),    href: `/${locale}/#plataforma` },
   ]
@@ -120,7 +121,7 @@ export function Navbar() {
           </button>
 
           {/* Nav links */}
-          {navLinks.slice(0, 3).map(link => (
+          {navLinks.slice(0, 4).map(link => (
             <a
               key={link.href}
               href={link.href}

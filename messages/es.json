@@ -4,6 +4,7 @@
     "navLinks": {
       "inicio": "Inicio",
       "comoFunciona": "Cómo funciona",
+      "sobreNosotros": "Sobre nosotros",
       "casosReales": "Casos reales",
       "plataforma": "Plataforma"
     },
@@ -473,6 +474,7 @@
         "links": {
           "inicio": "Inicio",
           "comoFunciona": "Cómo funciona",
+          "sobreNosotros": "Sobre nosotros",
           "plataforma": "Plataforma",
           "casosReales": "Casos reales"
         }
@@ -505,6 +507,73 @@
       "Concesionarios", "Asesores Financieros", "Dentistas", "Imprentas",
       "Veterinarias", "Centros Médicos"
     ]
+  },
+  "AboutPage": {
+    "meta": {
+      "title": "Sobre nosotros — Bralto | Infraestructura de operaciones automatizadas",
+      "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una empresa enterprise. Conozca la historia, misión y principios detrás del sistema."
+    },
+    "hero": {
+      "eyebrow": "Sobre Bralto",
+      "headline": "El personal no escala.",
+      "headlineItalic": "Los sistemas sí.",
+      "sub": "Construimos la infraestructura que permite a negocios establecidos operar como una empresa enterprise — sin el costo de serlo."
+    },
+    "origin": {
+      "eyebrow": "Cómo empezó",
+      "headline": "Una idea simple,",
+      "headlineItalic": "un problema enorme.",
+      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables — pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
+      "p2": "El problema no era falta de herramientas. Era exactamente lo opuesto: stacks tecnológicos parchados con 8, 10, 15 herramientas distintas que no se hablan entre sí. CRMs por aquí, formularios por allá, automatizaciones a medias, integraciones rotas. Software caro que termina costando más en complejidad que en licencias.",
+      "p3": "Bralto se construyó para resolverlo de raíz. Una sola plataforma que reemplaza todo el stack, combinada con implementaciones a la medida que conectan IA, datos y procesos en un sistema único. No vendemos software. Reconstruimos cómo opera el negocio.",
+      "statValue": "8+",
+      "statLabel": "Años diseñando sistemas de adquisición y operación automatizados"
+    },
+    "mission": {
+      "eyebrow": "Propósito",
+      "card1Label": "Misión",
+      "card1Body": "Que cada negocio opere como el mejor de su categoría — sin tener que crecer su equipo para lograrlo.",
+      "card2Label": "Visión",
+      "card2Body": "Un mundo donde un negocio mediano compite de igual a igual con uno enterprise. No por tamaño. Por la calidad de sus operaciones."
+    },
+    "principles": {
+      "eyebrow": "Cómo operamos",
+      "headline": "Cómo",
+      "headlineItalic": "trabajamos.",
+      "items": [
+        { "number": "01", "title": "Sistemas, no parches", "body": "No agregamos otra herramienta al stack. Reemplazamos el stack." },
+        { "number": "02", "title": "Resultados antes que estética", "body": "Si no genera ingresos o ahorra costos, no entra al sistema. Punto." },
+        { "number": "03", "title": "Implementación rápida o no la hacemos", "body": "Setenta y dos horas de diagnóstico a entrega. Si no cumplimos, no paga." },
+        { "number": "04", "title": "Su negocio, su plataforma", "body": "Todo lo que construimos corre sobre su propio dominio, su propia marca, su propia infraestructura. Nunca dependiente de nosotros." }
+      ]
+    },
+    "numbers": {
+      "eyebrow": "Métricas",
+      "headline": "Bralto",
+      "headlineItalic": "en números.",
+      "stats": [
+        { "value": "8+", "label": "Años diseñando sistemas" },
+        { "value": "9+", "label": "Industrias atendidas" },
+        { "value": "<72h", "label": "Tiempo de entrega" },
+        { "value": "24/7", "label": "Operación sin parar" },
+        { "value": "10+", "label": "Herramientas reemplazadas" },
+        { "value": "100%", "label": "Personalizado a cada operación" }
+      ]
+    },
+    "brands": {
+      "eyebrow": "Quienes confían",
+      "headline": "Negocios que ya",
+      "headlineItalic": "operan con Bralto.",
+      "sub": "Desde restaurantes locales hasta operaciones multi-sucursal en turismo, salud, retail y servicios profesionales.",
+      "testimonialsLabel": "Lo que dicen"
+    },
+    "close": {
+      "headline": "Construyamos el sistema",
+      "headlineItalic": "que su negocio necesita.",
+      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso. Sin costo.",
+      "signature": "— Alejandro Aguilar, Fundador",
+      "cta": "Agendar llamada conmigo"
+    }
   },
   "PreciosPage": {
     "badge": "Bralto",

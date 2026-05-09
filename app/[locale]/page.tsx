@@ -7,7 +7,6 @@ import { PlatformSection } from '@/components/platform-section'
 import { GuaranteeSection } from '@/components/guarantee-section'
 import { PricingSection } from '@/components/pricing-section'
 import { TestimonialsSection } from '@/components/testimonials-section'
-import { FounderSection } from '@/components/founder-section'
 import { FaqSection } from '@/components/faq-section'
 import { FunnelLabSection } from '@/components/funnel-lab-section'
 import { FunnelVizSection } from '@/components/funnel-viz-section'
@@ -30,7 +29,6 @@ export default function Home() {
           <PricingSection />
           <TestimonialsSection />
           <FunnelLabSection />
-          <FounderSection />
           <FaqSection />
           <FinalCta />
         </div>
