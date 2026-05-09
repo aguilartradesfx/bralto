@@ -2,32 +2,30 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, ArrowUpRight, Check } from 'lucide-react'
-import { clients } from '../clients'
+import { clients } from '@/app/servicios/sitios-web/clients'
 
 export function generateStaticParams() {
-  return clients.map(c => ({ slug: c.id }))
+  return ['es', 'en'].flatMap(locale =>
+    clients.map(c => ({ locale, slug: c.id }))
+  )
 }
 
-export default async function ClientPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+export default async function ClientPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+  const { locale, slug } = await params
   const client = clients.find(c => c.id === slug)
   if (!client) notFound()
 
   const mid = Math.ceil(client.deliverables.length / 2)
   const firstHalf  = client.deliverables.slice(0, mid)
   const secondHalf = client.deliverables.slice(mid)
-  // Extra images beyond the two used in alternating sections
   const extraImages = client.images.slice(2)
 
   return (
     <div className="min-h-screen bg-[#080808] text-white antialiased">
 
-      {/* ══════════════════════════════════════════
-          HERO — cover image bg, name large
-      ══════════════════════════════════════════ */}
+      {/* HERO */}
       <section className="relative min-h-[65vh] flex flex-col justify-end overflow-hidden">
 
-        {/* Cover image */}
         <div className="absolute inset-0">
           <Image
             src={client.coverImage}
@@ -38,20 +36,17 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
             priority
           />
         </div>
-        {/* Overlays */}
         <div className="absolute inset-0 bg-[#080808]/55" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/30 to-transparent" />
 
-        {/* Back nav */}
         <Link
-          href="/servicios/sitios-web"
+          href={`/${locale}/servicios/sitios-web`}
           className="absolute top-8 left-6 md:left-12 z-10 inline-flex items-center gap-2 text-white/40 hover:text-white/80 transition-colors text-sm"
         >
           <ArrowLeft size={13} />
           Sitios web
         </Link>
 
-        {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto w-full px-6 md:px-12 pb-20 pt-32">
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5bb6ff] mb-5">
             {client.industry}
@@ -79,14 +74,11 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          SECCIÓN 1 — story + first half | image[0]
-      ══════════════════════════════════════════ */}
+      {/* SECTION 1 */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2">
 
-            {/* Text left */}
             <div className="px-6 md:px-12 py-20 lg:py-28 flex flex-col justify-center" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#5bb6ff] mb-8">El proyecto</p>
               <p className="text-base text-white/55 leading-relaxed mb-10 max-w-lg">
@@ -102,7 +94,6 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
               </ul>
             </div>
 
-            {/* Image right */}
             {client.images[0] && (
               <div className="relative overflow-hidden" style={{ minHeight: '480px' }}>
                 <Image
@@ -118,15 +109,12 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          SECCIÓN 2 — image[1] | second half
-      ══════════════════════════════════════════ */}
+      {/* SECTION 2 */}
       {client.images[1] && secondHalf.length > 0 && (
         <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#060607' }}>
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
-              {/* Image left */}
               <div className="relative overflow-hidden order-2 lg:order-1" style={{ minHeight: '480px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
                 <Image
                   src={client.images[1]}
@@ -137,7 +125,6 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
                 />
               </div>
 
-              {/* Text right */}
               <div className="order-1 lg:order-2 px-6 md:px-12 py-20 lg:py-28 flex flex-col justify-center">
                 <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#5bb6ff] mb-8">Lo que construimos</p>
                 <ul className="space-y-4">
@@ -154,11 +141,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
         </section>
       )}
 
-      {/* ══════════════════════════════════════════
-          IMÁGENES ADICIONALES
-          even index → centrada full-width + texto abajo
-          odd index  → split 50/50 como secciones 1 y 2
-      ══════════════════════════════════════════ */}
+      {/* EXTRA IMAGES */}
       {extraImages.length > 0 && (
         <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {extraImages.map((img, i) => {
@@ -168,11 +151,9 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
               : undefined
 
             if (i % 2 === 0) {
-              /* ── Centrada: imagen full-width dentro de max-w-7xl + texto abajo ── */
               return (
                 <div key={img} style={{ borderBottom }}>
                   <div className="max-w-7xl mx-auto">
-                    {/* Imagen: ancho del contenedor, altura responsiva */}
                     <div className="relative w-full h-[56vw] lg:h-[68vh]">
                       <Image
                         src={img}
@@ -182,7 +163,6 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
                         sizes="(max-width: 1280px) 100vw, 1280px"
                       />
                     </div>
-                    {/* Texto centrado abajo */}
                     <div
                       className="px-6 md:px-12 py-10 text-center"
                       style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
@@ -199,16 +179,11 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
               )
             }
 
-            /* ── Split 50/50: mismo max-w-7xl que secciones 1 y 2 ── */
             const imageLeft = Math.floor(i / 2) % 2 === 0
             return (
-              <div
-                key={img}
-                style={{ borderBottom }}
-              >
+              <div key={img} style={{ borderBottom }}>
                 <div className="max-w-7xl mx-auto">
                   <div className="grid grid-cols-1 lg:grid-cols-2">
-                    {/* Imagen */}
                     <div
                       className={`relative overflow-hidden h-[56vw] lg:h-[580px] ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
                       style={imageLeft
@@ -224,7 +199,6 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
                         sizes="(max-width: 1024px) 100vw, 50vw"
                       />
                     </div>
-                    {/* Texto */}
                     <div
                       className={`flex flex-col justify-center px-8 md:px-12 py-16 lg:py-20 ${imageLeft ? 'order-2' : 'order-2 lg:order-1'}`}
                     >
@@ -247,9 +221,7 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
         </section>
       )}
 
-      {/* ══════════════════════════════════════════
-          CTA FINAL
-      ══════════════════════════════════════════ */}
+      {/* CTA FINAL */}
       <section
         className="py-28 text-center"
         style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#060607' }}
@@ -268,14 +240,14 @@ export default async function ClientPage({ params }: { params: Promise<{ slug: s
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/agendar"
+              href={`/${locale}/agendar`}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#5bb6ff] hover:bg-[#7cc5ff] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(91,182,255,0.12)]"
             >
               Agendar llamada gratis
               <ArrowUpRight size={15} />
             </Link>
             <Link
-              href="/servicios/sitios-web"
+              href={`/${locale}/servicios/sitios-web`}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white/45 hover:text-white transition-all"
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
             >

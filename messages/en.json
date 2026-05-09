@@ -1,0 +1,521 @@
+{
+  "Navbar": {
+    "services": "Services",
+    "navLinks": {
+      "inicio": "Home",
+      "comoFunciona": "How it works",
+      "casosReales": "Real cases",
+      "plataforma": "Platform"
+    },
+    "presenciaHeading": "Digital Presence",
+    "automacionHeading": "Automation & AI",
+    "items": {
+      "sitiosWeb": { "label": "Professional websites", "desc": "Design, SEO & fast delivery" },
+      "produccionContenido": { "label": "Content production", "desc": "Videos, stories & strategy" },
+      "campanas": { "label": "Ad campaigns", "desc": "Meta, Google & more" },
+      "asesoria": { "label": "Marketing consulting", "desc": "Strategy & positioning" },
+      "automatizacion": { "label": "Process automation", "desc": "Workflows, agents & automations" },
+      "sistemasInternos": { "label": "Custom internal tools", "desc": "CRMs, dashboards & tools" },
+      "funnelLab": { "label": "FunnelLab", "desc": "Simulate your funnel before spending" }
+    },
+    "navigationHeading": "Navigation",
+    "ctaHeading": "Where to start?",
+    "ctaTitle": "30 minutes,",
+    "ctaTitle2": "no strings attached.",
+    "ctaDesc": "We'll understand your business and tell you what makes sense for you right now.",
+    "ctaBtn": "Book for free",
+    "seeAll": "See all services →",
+    "bookFree": "Book a free call →",
+    "bookCall": "Book a call",
+    "seeServices": "See services"
+  },
+  "Hero": {
+    "eyebrow": "Operations Infrastructure",
+    "actionWords": ["sales", "follow-ups", "bookings", "responses", "appointments", "workflows"],
+    "headline": "We automate your",
+    "subtitles": [
+      "so your business never skips a beat.",
+      "without missing a single opportunity.",
+      "while you sleep.",
+      "around the clock.",
+      "with zero human intervention.",
+      "without depending on your team."
+    ],
+    "cta1": "Book a call",
+    "cta2": "See how it works"
+  },
+  "HowItWorks": {
+    "label": "How it works",
+    "problem": "Today, any process that relies on a person is a liability.",
+    "headline": "Here's how we",
+    "headlineItalic": "change that.",
+    "sub": "Four steps. From the first call to a system that runs on its own.",
+    "stepLabel": "Step",
+    "steps": [
+      {
+        "title": "Discovery",
+        "body": "We map your business: how customers come in, who handles them, where deals slip through, and which processes depend on people."
+      },
+      {
+        "title": "Design",
+        "body": "We design the custom system: which channels to connect, how the AI agent operates, and how your team manages the day-to-day."
+      },
+      {
+        "title": "Build",
+        "body": "We build everything: website, AI agent, integrations, and workflows. One connected system, fully operational."
+      },
+      {
+        "title": "Delivery + Platform",
+        "body": "Everything live in under 72 hours, running on your own platform. Total control from one place."
+      }
+    ],
+    "includesPlatform": "Includes Bralto Platform",
+    "stats": [
+      { "value": "< 72 hrs", "label": "From discovery to a live system" },
+      { "value": "100%", "label": "Built for your operation" },
+      { "value": "24/7", "label": "Your system never stops" }
+    ]
+  },
+  "RobotSection": {
+    "label": "Use Cases",
+    "headline": "Every industry.",
+    "headlineItalic": "A custom solution.",
+    "problemLabel": "The problem",
+    "builtLabel": "What we built",
+    "bookCall": "Book a call",
+    "cases": [
+      {
+        "industry": "Travel Agency",
+        "label": "Tourism & Bookings",
+        "problem": "They were losing leads because response times were too slow or outside business hours. Customers would reach out at night and wake up already booked with the competition.",
+        "deliverables": [
+          "Website with an online booking engine",
+          "Call scheduling system with the sales team",
+          "Tour management platform with a custom dashboard",
+          "Automated post-booking follow-up"
+        ],
+        "result": "Tripled their converted inquiries in the first month.",
+        "automation": ["Instant 24/7 response", "Automatic quote builder", "Advisor scheduling"],
+        "stats": [{ "value": "3×", "label": "Conversions" }, { "value": "<2 min", "label": "Response time" }]
+      },
+      {
+        "industry": "Print Shop",
+        "label": "Production & Orders",
+        "problem": "The team was spending hours manually quoting jobs over WhatsApp. Every quote required back-and-forth with the customer to nail down the specs.",
+        "deliverables": [
+          "Automatic quote builder by material, size, and finish",
+          "Real-time order tracking system",
+          "Automated production status notifications",
+          "Client and recurring order management dashboard"
+        ],
+        "result": "Reduced quote time from 2 hours to under 4 minutes.",
+        "automation": ["Smart quote builder", "Order status tracker", "Automatic notifications"],
+        "stats": [{ "value": "96%", "label": "Less time" }, { "value": "0", "label": "Errors" }]
+      },
+      {
+        "industry": "Restaurant",
+        "label": "Reservations & Loyalty",
+        "problem": "Reservations were coming in scattered across WhatsApp, phone, and Instagram. Without follow-up, no-shows were constant and tables kept going empty.",
+        "deliverables": [
+          "Multichannel reservation agent (WhatsApp, Instagram, web)",
+          "Automatic reservation confirmations and reminders",
+          "Automatic reactivation of inactive customers with special offers",
+          "Real-time table and availability management dashboard"
+        ],
+        "result": "Eliminated no-shows and filled 95% of tables every night.",
+        "automation": ["Multichannel reservations", "Appointment reminders", "Customer reactivation"],
+        "stats": [{ "value": "100%", "label": "No no-shows" }, { "value": "2.4×", "label": "More bookings" }]
+      },
+      {
+        "industry": "Dental Clinic",
+        "label": "Health & Appointments",
+        "problem": "The front desk couldn't keep up with calls and messages to schedule, reschedule, and confirm appointments. Hours wasted on repetitive tasks.",
+        "deliverables": [
+          "24/7 WhatsApp scheduling agent",
+          "Automatic appointment reminders and pre-visit instructions",
+          "Post-visit follow-up and biannual cleaning reminders",
+          "Patient history and management dashboard"
+        ],
+        "result": "The front desk team recovered 3 hours a day for patient experience.",
+        "automation": ["24/7 scheduling", "Appointment reminders", "Post-visit follow-up"],
+        "stats": [{ "value": "68%", "label": "Fewer calls" }, { "value": "4.9★", "label": "Satisfaction" }]
+      },
+      {
+        "industry": "Veterinary Clinic",
+        "label": "Pet Health & Check-ups",
+        "problem": "Pet owners kept forgetting about vaccines and annual check-ups. The clinic was losing recurring revenue without a proactive way to remind them.",
+        "deliverables": [
+          "Personalized reminders by pet name and vaccine",
+          "Express WhatsApp scheduling without calling",
+          "Digital health record for each pet and their treatments",
+          "Automatic alerts for upcoming annual check-ups"
+        ],
+        "result": "Increased check-up visits by 40% in the first 60 days.",
+        "automation": ["Per-pet reminders", "Express scheduling", "Digital health records"],
+        "stats": [{ "value": "+40%", "label": "More visits" }, { "value": "60 days", "label": "To see it" }]
+      },
+      {
+        "industry": "Car Dealership",
+        "label": "Sales & Follow-up",
+        "problem": "Salespeople were losing track of dozens of prospects at once. Without consistent follow-up, cold leads were dropping off before they were ready to buy.",
+        "deliverables": [
+          "Automatic CRM with stage-by-stage follow-up",
+          "Reactivation of cold leads with personalized messages",
+          "Automatic test drive and closing appointment reminders",
+          "Real-time sales pipeline visible to the whole team"
+        ],
+        "result": "Closed 30% more deals without hiring a single extra salesperson.",
+        "automation": ["Automatic CRM", "Stage-based follow-up", "Lead reactivation"],
+        "stats": [{ "value": "+30%", "label": "More sales" }, { "value": "0", "label": "Lost prospects" }]
+      }
+    ]
+  },
+  "FunnelVizSection": {
+    "label": "Strategy",
+    "headline": "What a",
+    "headlineItalic": "well-built funnel looks like.",
+    "desc": "Pick your monthly ad spend and average sale value. See what happens next.",
+    "budgetLabel": "How much do you spend on ads per month?",
+    "ticketLabel": "What's each sale worth to you?",
+    "stages": ["See your ad", "Visit your site", "Reach out", "Buy"],
+    "stageDetails": [
+      "People who see your ad on Meta or Google",
+      "They click and land on your page or landing page",
+      "They message, schedule, or fill out a form",
+      "They close the deal and become customers"
+    ],
+    "dropText": "Out of every {ratio}, only 1 moves forward",
+    "revenueLabel": "Total revenue",
+    "roiLabel": "For every $1 you spend, you get back",
+    "netLabel": "Net profit",
+    "clientSingular": "customer",
+    "clientPlural": "customers",
+    "afterAds": "after paying for ads",
+    "disclaimer": "These numbers are possible.",
+    "disclaimerNote": "Not a guarantee.",
+    "disclaimerBody": "They depend on your industry, creatives, and market. What we do guarantee is building the funnel right to maximize them.",
+    "cta": "I want my funnel",
+    "unitLabel": "people"
+  },
+  "PlatformSection": {
+    "label": "Your operations hub",
+    "headline": "Everything we build",
+    "headlineItalic": "runs on your own platform.",
+    "desc": "When we deliver your automated system, we also hand over total control. Manage everything from one place.",
+    "tabs": {
+      "organizacion": {
+        "label": "Organization",
+        "features": [
+          "Visual sales pipeline",
+          "Built-in payments",
+          "Real-time reporting",
+          "Contact management & CRM",
+          "Workflow automations",
+          "Team tasks & follow-ups"
+        ]
+      },
+      "sitios": {
+        "label": "Websites",
+        "features": [
+          "No-code page builder",
+          "Smart forms",
+          "Integrated calendar",
+          "Sales funnels",
+          "Memberships & courses",
+          "Custom domain"
+        ]
+      },
+      "multicanal": {
+        "label": "Multichannel",
+        "features": [
+          "Automated campaigns",
+          "WhatsApp Business",
+          "Email marketing",
+          "Bulk SMS",
+          "Messenger & Instagram",
+          "Mobile app included"
+        ]
+      }
+    },
+    "replacesHeadline": "What Bralto replaces",
+    "replacesDesc": "Everything you're paying for separately, in one platform.",
+    "toolHeader": "Tool",
+    "costHeader": "Monthly cost",
+    "withoutLabel": "Without Bralto you'd pay",
+    "withLabel": "With Bralto",
+    "allToolsNote": "All the tools. One price. No surprises.",
+    "platformIncluded": "Platform comes included with every implementation. Also available standalone.",
+    "cta": "Start Free Trial",
+    "ctaNote": "Pay $0 today — Try the platform before you pay for it"
+  },
+  "GuaranteeSection": {
+    "headline": "Zero risk.",
+    "headlineItalic": "No fine print.",
+    "guarantees": [
+      {
+        "title": "Results guarantee",
+        "body": "If in the first month after activation you don't have qualified leads that cover your subscription cost, we keep working for free until it happens."
+      },
+      {
+        "title": "Delivery guarantee",
+        "body": "Every implementation is delivered live in under 72 hours. If we miss the deadline, you don't pay."
+      }
+    ]
+  },
+  "PricingSection": {
+    "label": "Investment Options",
+    "headline": "Two paths.",
+    "headlineItalic": "One goal.",
+    "desc": "Your business running leaner — without relying on more people.",
+    "foundation": {
+      "tier": "PLATFORM",
+      "sub": "Self-serve",
+      "price": "$87",
+      "period": "/ mo",
+      "name": "Bralto Platform",
+      "trialNote": "Pay $0 today — Try it before you pay.",
+      "desc": "For those who want to centralize their operations on their own. One platform that replaces 10+ tools.",
+      "features": [
+        "Sales CRM & pipelines",
+        "Website & landing pages",
+        "Calendar & scheduling",
+        "Email & SMS marketing",
+        "Workflow automations",
+        "Multichannel management (WhatsApp, IG, Email)",
+        "Mobile app included",
+        "Real-time reporting"
+      ],
+      "cta": "Start Free Trial"
+    },
+    "prime": {
+      "tier": "CUSTOM BUILD",
+      "sub": "Implementation",
+      "from": "Starting at",
+      "price": "$849",
+      "name": "Full-Service Package",
+      "priceNote": "Final price depends on your project scope.",
+      "desc": "We analyze your business, design the solution, and deliver everything ready to go. Bralto platform included.",
+      "features": [
+        "Everything in the Bralto Platform",
+        "Full operations audit",
+        "Custom solution design",
+        "Website development",
+        "Configured AI agents",
+        "Integrations with your existing tools",
+        "Custom internal dashboards",
+        "Delivered in under 72 hours",
+        "Post-launch support"
+      ],
+      "cta": "Book a Strategy Call"
+    },
+    "bottomNote": "Not sure which option fits?",
+    "bottomLink": "Book a call",
+    "bottomNote2": "and we'll help you figure it out — no commitment."
+  },
+  "TestimonialsSection": {
+    "label": "Testimonials",
+    "headline": "What our",
+    "headlineItalic": "clients say"
+  },
+  "TestimonialsData": {
+    "items": [
+      {
+        "quote": "We used to lose reservations every weekend. Now the agent takes them at 2am without a hitch. The restaurant is always packed.",
+        "name": "Carlos Méndez",
+        "position": "Owner",
+        "company": "La Hacienda Restaurant",
+        "industry": "Restaurant"
+      },
+      {
+        "quote": "Automated follow-up changed everything for us. Leads that used to go cold now close on their own. We tripled our conversions.",
+        "name": "María González",
+        "position": "Director",
+        "company": "Bienestar Clinic",
+        "industry": "Healthcare"
+      },
+      {
+        "quote": "We had over 1,000 products and quoting took hours. The agent handles it in seconds, with every detail exactly right.",
+        "name": "Roberto Sánchez",
+        "position": "Sales Manager",
+        "company": "Pronto Print",
+        "industry": "Print Shop"
+      },
+      {
+        "quote": "The platform replaced five tools we were paying for. Now everything is in one place and the team moves so much faster.",
+        "name": "Ana Martínez",
+        "position": "CEO",
+        "company": "Central Real Estate",
+        "industry": "Real Estate"
+      },
+      {
+        "quote": "Our guests get immediate attention at any hour. Reviews went up and so did occupancy.",
+        "name": "Fernando Torres",
+        "position": "Director",
+        "company": "Vista Real Hotel",
+        "industry": "Hospitality"
+      },
+      {
+        "quote": "Bralto didn't come in with a generic solution. They understood how we operate and built something that actually works for us.",
+        "name": "Laura Vega",
+        "position": "Founder",
+        "company": "Sol Travel Agency",
+        "industry": "Travel"
+      },
+      {
+        "quote": "The ROI was clear from month one. Every dollar we put into automation multiplied sales.",
+        "name": "Diego Romero",
+        "position": "Founding Partner",
+        "company": "Centro Financiero MX",
+        "industry": "Finance"
+      },
+      {
+        "quote": "Our sales team used to drag their feet on follow-up. Now the system handles it and they just close. Way less stress.",
+        "name": "Valentina Cruz",
+        "position": "Sales Director",
+        "company": "AutoPrime Dealership",
+        "industry": "Automotive"
+      },
+      {
+        "quote": "They implemented the whole system in 72 hours, just like they said. From day one we started seeing real results.",
+        "name": "Marcos Jiménez",
+        "position": "Principal",
+        "company": "Visión Educational Institute",
+        "industry": "Education"
+      }
+    ]
+  },
+  "FunnelLabSection": {
+    "badge1": "New",
+    "badge2": "Free tool",
+    "title": "FunnelLab",
+    "titleItalic": "by Bralto.",
+    "desc": "Simulate your complete sales funnel and predict your strategy's outcome — before spending a dime on ads.",
+    "bullets": [
+      "Predict how many leads and sales you'll generate before you spend",
+      "Spot the bottleneck that's killing your conversions",
+      "Compare scenarios: webinar or VSL? Meta or Google?",
+      "AI analysis included — tells you exactly where to improve"
+    ],
+    "cta": "Try FunnelLab free",
+    "cardTitle": "Active simulation",
+    "cardSub": "Sales funnel — Google Ads",
+    "stages": ["Visitors", "Leads", "Prospects", "Customers"],
+    "roiLabel": "Projected ROI",
+    "cpaLabel": "Cost per customer"
+  },
+  "FounderSection": {
+    "label": "About the founder",
+    "headline": "Hey, I'm",
+    "headlineItalic": "Alejandro Aguilar.",
+    "role": "Founder, Bralto",
+    "body1": "I founded Bralto because I kept seeing the same problem across businesses: great products, great teams — but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late.",
+    "body2": "Bralto was built to fix that. Today we combine an all-in-one platform with custom implementations — so restaurants, clinics, real estate agencies, hotels, and dozens of other industries can operate with the efficiency of a large company, without the cost of being one.",
+    "yearsValue": "8+",
+    "yearsDesc": "Years designing automated acquisition systems"
+  },
+  "FaqSection": {
+    "label": "FAQ",
+    "headline": "Everything you",
+    "headlineItalic": "need to know",
+    "faqs": [
+      {
+        "q": "What kind of businesses do you work with?",
+        "a": "Any business with processes that depend on people: restaurants, clinics, print shops, hotels, real estate agencies, travel agencies, financial advisors, and more. If there's a manual process, we can probably automate it."
+      },
+      {
+        "q": "What does the full-service package include?",
+        "a": "Everything your business needs: website, AI agents, automations, integrations with your existing tools, internal management dashboards, and the Bralto platform so you can control everything from one place."
+      },
+      {
+        "q": "How much does it cost?",
+        "a": "Depends on the scope. Simple implementations can start at $800 and go up from there. Book a call and we'll give you an exact quote after we understand your operation."
+      },
+      {
+        "q": "How long does implementation take?",
+        "a": "Simple implementations are delivered in under 72 hours. More complex projects can take 1–2 weeks. We always give you a clear timeline before we start."
+      },
+      {
+        "q": "What is the Bralto platform?",
+        "a": "It's the operations hub where everything we build runs. From there, you manage conversations, contacts, calendar, payments, emails, and more. It's included with every implementation, or available standalone for $87/month."
+      },
+      {
+        "q": "What if it doesn't work?",
+        "a": "If in the first month after launch you don't have qualified leads that cover your subscription cost, we keep working for free until it happens. Zero risk."
+      }
+    ]
+  },
+  "FinalCta": {
+    "label": "Ready to automate?",
+    "phrases": [
+      "Your competitors are probably already looking into this.",
+      "In this game, whoever moves first wins.",
+      "While you're reading this, someone else is already automating.",
+      "The first to automate captures the market.",
+      "Every day without automation is an edge you're handing to your competition."
+    ],
+    "desc": "One 30-minute conversation can change how your business operates — forever.",
+    "cta": "Book a Strategy Call",
+    "ctaNote": "30 minutes. No commitment. No cost.",
+    "stats": [
+      { "value": "9+", "label": "Industries served" },
+      { "value": "72h", "label": "Delivery time" },
+      { "value": "24/7", "label": "Always running" }
+    ]
+  },
+  "Footer": {
+    "tagline": "Digital infrastructure so your business runs without depending on people.",
+    "copyright": "All rights reserved.",
+    "sections": {
+      "navigation": {
+        "label": "Navigation",
+        "links": {
+          "inicio": "Home",
+          "comoFunciona": "How it works",
+          "plataforma": "Platform",
+          "casosReales": "Real cases"
+        }
+      },
+      "legal": {
+        "label": "Legal",
+        "links": {
+          "privacidad": "Privacy Policy",
+          "terminos": "Terms of Service"
+        }
+      },
+      "start": {
+        "label": "Get Started",
+        "links": {
+          "agendar": "Book a Call",
+          "empezar": "Get Started Now"
+        }
+      },
+      "social": {
+        "label": "Social"
+      }
+    }
+  },
+  "PreciosPage": {
+    "badge": "Bralto",
+    "badgeSub": "Services & pricing",
+    "headline": "Everything",
+    "headlineItalic": "we do.",
+    "desc": "Reference pricing so you have a ballpark. The final number always depends on scope — we'll nail it down together on the call.",
+    "services": {
+      "sitiosWeb": { "name": "Professional websites", "from": "From $997", "period": "one-time", "desc": "Custom design, SEO included, and fast delivery. Your online presence built to convert." },
+      "produccionContenido": { "name": "Content production", "from": "From $650", "period": "per month", "desc": "Videos, stories, and monthly editorial strategy. We produce and publish for you." },
+      "campanas": { "name": "Ad campaigns", "from": "Custom pricing", "period": "monthly management fee", "desc": "End-to-end Meta Ads and Google Ads management, with weekly optimization and reporting." },
+      "automatizacion": { "name": "Process automation", "from": "From $1,450", "period": "one-time", "desc": "Workflows, AI agents, and integrations that run your operation on autopilot." },
+      "sistemasInternos": { "name": "Custom internal tools", "from": "From $1,997", "period": "by scope", "desc": "CRMs, dashboards, internal portals, and tools built for your operation." },
+      "asesoria": { "name": "Marketing consulting", "from": "Custom pricing", "period": "by format", "desc": "Strategy, positioning, and a 90-day roadmap to grow with intention." },
+      "funnelLab": { "name": "FunnelLab", "from": "Free", "period": "to get started", "desc": "Simulate your full sales funnel, spot bottlenecks, and choose the most profitable strategy before you invest." }
+    },
+    "viewDetails": "View details",
+    "ctaLabel": "Not sure where to start?",
+    "ctaHeadline": "Let's talk",
+    "ctaHeadlineItalic": "no pressure.",
+    "ctaDesc": "30 minutes to understand your business and figure out what makes sense for you today.",
+    "ctaBtn": "Book a free call",
+    "ctaBack": "Back to home",
+    "home": "Home"
+  }
+}

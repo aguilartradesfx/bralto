@@ -1,0 +1,521 @@
+{
+  "Navbar": {
+    "services": "Servicios",
+    "navLinks": {
+      "inicio": "Inicio",
+      "comoFunciona": "Cómo funciona",
+      "casosReales": "Casos reales",
+      "plataforma": "Plataforma"
+    },
+    "presenciaHeading": "Presencia digital",
+    "automacionHeading": "Automatización e IA",
+    "items": {
+      "sitiosWeb": { "label": "Sitios web profesionales", "desc": "Diseño, SEO y entrega rápida" },
+      "produccionContenido": { "label": "Producción de contenido", "desc": "Videos, stories y estrategia" },
+      "campanas": { "label": "Campañas publicitarias", "desc": "Ads en Meta, Google y más" },
+      "asesoria": { "label": "Asesoría de marketing", "desc": "Estrategia y posicionamiento" },
+      "automatizacion": { "label": "Automatización de procesos", "desc": "Flujos, agentes y workflows" },
+      "sistemasInternos": { "label": "Sistemas internos a medida", "desc": "CRMs, dashboards y herramientas" },
+      "funnelLab": { "label": "FunnelLab", "desc": "Simulá tu funnel antes de invertir" }
+    },
+    "navigationHeading": "Navegación",
+    "ctaHeading": "¿Por dónde empezar?",
+    "ctaTitle": "30 minutos,",
+    "ctaTitle2": "sin compromiso.",
+    "ctaDesc": "Entendemos tu negocio y te decimos qué tiene sentido para vos hoy.",
+    "ctaBtn": "Agendar gratis",
+    "seeAll": "Ver todos los servicios →",
+    "bookFree": "Agendá una llamada gratis →",
+    "bookCall": "Agendar llamada",
+    "seeServices": "Ver servicios"
+  },
+  "Hero": {
+    "eyebrow": "Infraestructura de operaciones",
+    "actionWords": ["ventas", "seguimientos", "reservas", "respuestas", "citas", "procesos"],
+    "headline": "Automatizamos sus",
+    "subtitles": [
+      "para que su negocio nunca pare.",
+      "sin perder una sola oportunidad.",
+      "mientras usted duerme.",
+      "las 24 horas del día.",
+      "con cero intervención humana.",
+      "sin depender de su equipo."
+    ],
+    "cta1": "Agendar una llamada",
+    "cta2": "Ver cómo funciona"
+  },
+  "HowItWorks": {
+    "label": "Cómo funciona",
+    "problem": "Hoy, cada proceso que depende de una persona es un riesgo.",
+    "headline": "Así es como",
+    "headlineItalic": "lo cambiamos.",
+    "sub": "Cuatro pasos. De la primera llamada a su sistema funcionando solo.",
+    "stepLabel": "Paso",
+    "steps": [
+      {
+        "title": "Diagnóstico",
+        "body": "Analizamos su negocio: cómo llegan los clientes, quién los atiende, dónde se pierden oportunidades y qué procesos dependen de personas."
+      },
+      {
+        "title": "Diseño",
+        "body": "Diseñamos el sistema a la medida: canales a conectar, cómo opera el agente de IA y cómo gestiona su equipo el día a día."
+      },
+      {
+        "title": "Construcción",
+        "body": "Desarrollamos todo: sitio web, agente de IA, integraciones y flujos. Un solo sistema conectado y funcionando."
+      },
+      {
+        "title": "Entrega + Plataforma",
+        "body": "Entregamos todo funcionando en menos de 72 horas sobre su propia plataforma. Control total desde un solo lugar."
+      }
+    ],
+    "includesPlatform": "Incluye Plataforma Bralto",
+    "stats": [
+      { "value": "< 72 hrs", "label": "De diagnóstico a sistema funcionando" },
+      { "value": "100%", "label": "Personalizado a su operación" },
+      { "value": "24/7", "label": "Su sistema nunca para" }
+    ]
+  },
+  "RobotSection": {
+    "label": "Casos de uso",
+    "headline": "Cada industria.",
+    "headlineItalic": "Una solución a medida.",
+    "problemLabel": "El problema",
+    "builtLabel": "Lo que construimos",
+    "bookCall": "Agendar llamada",
+    "cases": [
+      {
+        "industry": "Agencia de Viajes",
+        "label": "Turismo & Reservas",
+        "problem": "Perdían leads porque respondían tarde o fuera de horario. Los clientes consultaban de noche y amanecían con la competencia.",
+        "deliverables": [
+          "Sitio web con motor de reservas en línea",
+          "Sistema de agendamiento de llamadas con el equipo de ventas",
+          "Plataforma de administración de tours con interfaz propia",
+          "Automatización de seguimiento post-reserva"
+        ],
+        "result": "Triplicaron las consultas convertidas en el primer mes.",
+        "automation": ["Respuesta inmediata 24/7", "Cotizador automático", "Agenda con asesor"],
+        "stats": [{ "value": "3×", "label": "Conversiones" }, { "value": "<2 min", "label": "Tiempo de respuesta" }]
+      },
+      {
+        "industry": "Imprenta",
+        "label": "Producción & Pedidos",
+        "problem": "El equipo pasaba horas cotizando trabajos manualmente por WhatsApp. Cada cotización requería ir y venir con el cliente para definir especificaciones.",
+        "deliverables": [
+          "Cotizador automático por material, tamaño y acabado",
+          "Sistema de seguimiento de pedidos en tiempo real",
+          "Notificaciones automáticas de estado de producción",
+          "Panel de gestión de clientes y pedidos recurrentes"
+        ],
+        "result": "Redujeron el tiempo de cotización de 2 horas a menos de 4 minutos.",
+        "automation": ["Cotizador inteligente", "Estado de pedidos", "Notificaciones automáticas"],
+        "stats": [{ "value": "96%", "label": "Menos tiempo" }, { "value": "0", "label": "Errores" }]
+      },
+      {
+        "industry": "Restaurante",
+        "label": "Reservas & Fidelización",
+        "problem": "Las reservas llegaban dispersas por WhatsApp, teléfono e Instagram. Sin seguimiento, los no-shows eran moneda corriente y las mesas se perdían.",
+        "deliverables": [
+          "Agente de reservas multicanal (WhatsApp, Instagram, web)",
+          "Confirmaciones y recordatorios automáticos de reserva",
+          "Reactivación automática de clientes inactivos con ofertas",
+          "Panel de gestión de mesas y disponibilidad en tiempo real"
+        ],
+        "result": "Eliminaron los no-shows y llenaron el 95% de las mesas cada noche.",
+        "automation": ["Reservas multicanal", "Recordatorios de cita", "Reactivación de clientes"],
+        "stats": [{ "value": "100%", "label": "Sin no-shows" }, { "value": "2.4×", "label": "Más reservas" }]
+      },
+      {
+        "industry": "Clínica Dental",
+        "label": "Salud & Citas Médicas",
+        "problem": "La recepcionista no daba abasto con llamadas y mensajes para agendar, reagendar y confirmar citas. Horas perdidas en tareas repetitivas.",
+        "deliverables": [
+          "Agente de agendamiento 24/7 por WhatsApp",
+          "Recordatorios automáticos de cita y pre-consulta",
+          "Seguimiento post-consulta y limpieza semestral",
+          "Panel de historial y gestión de pacientes"
+        ],
+        "result": "El equipo de recepción recuperó 3 horas diarias para la experiencia del paciente.",
+        "automation": ["Agendamiento 24/7", "Recordatorios de cita", "Seguimiento post-consulta"],
+        "stats": [{ "value": "68%", "label": "Menos llamadas" }, { "value": "4.9★", "label": "Satisfacción" }]
+      },
+      {
+        "industry": "Veterinaria",
+        "label": "Salud Animal & Control",
+        "problem": "Los dueños de mascotas olvidaban las vacunas y controles anuales. La clínica perdía ingresos recurrentes sin una forma de recordarles proactivamente.",
+        "deliverables": [
+          "Recordatorios personalizados por nombre de mascota y vacuna",
+          "Agendamiento express desde WhatsApp sin llamar",
+          "Historial digital de cada mascota y sus tratamientos",
+          "Alertas automáticas de próximos controles anuales"
+        ],
+        "result": "Aumentaron las visitas de control un 40% en los primeros 60 días.",
+        "automation": ["Recordatorios por mascota", "Agendamiento express", "Historial digital"],
+        "stats": [{ "value": "+40%", "label": "Más visitas" }, { "value": "60 días", "label": "Para verlo" }]
+      },
+      {
+        "industry": "Agencia de Autos",
+        "label": "Ventas & Seguimiento",
+        "problem": "Los vendedores perdían el hilo con decenas de prospectos simultáneos. Sin seguimiento consistente, los leads fríos se perdían antes de madurar.",
+        "deliverables": [
+          "CRM automático con seguimiento por etapa de compra",
+          "Reactivación de leads inactivos con mensajes personalizados",
+          "Recordatorios automáticos de test drive y citas de cierre",
+          "Pipeline de ventas visible en tiempo real para todo el equipo"
+        ],
+        "result": "Cerraron 30% más ventas sin contratar un solo vendedor adicional.",
+        "automation": ["CRM automático", "Seguimiento por etapa", "Reactivación de leads"],
+        "stats": [{ "value": "+30%", "label": "Más ventas" }, { "value": "0", "label": "Prospectos perdidos" }]
+      }
+    ]
+  },
+  "FunnelVizSection": {
+    "label": "Estrategia",
+    "headline": "Cómo se ve un",
+    "headlineItalic": "embudo bien hecho.",
+    "desc": "Elegí cuánto invertís y cuánto vale cada venta. Mirá qué pasa después.",
+    "budgetLabel": "¿Cuánto invertís por mes en publicidad?",
+    "ticketLabel": "¿Cuánto vale cada venta para vos?",
+    "stages": ["Ven el anuncio", "Entran a tu sitio", "Te contactan", "Compran"],
+    "stageDetails": [
+      "Personas que ven tu publicidad en Meta o Google",
+      "Hacen clic y llegan a tu página o landing page",
+      "Te escriben, agendan o llenan un formulario",
+      "Cierran el trato y se convierten en clientes"
+    ],
+    "dropText": "De cada {ratio}, solo 1 pasa al siguiente paso",
+    "revenueLabel": "Total facturado",
+    "roiLabel": "Por cada $1 invertido, recuperás",
+    "netLabel": "Ganancia neta",
+    "clientSingular": "cliente",
+    "clientPlural": "clientes",
+    "afterAds": "después de pagar la publicidad",
+    "disclaimer": "Estos números son posibles.",
+    "disclaimerNote": "No son garantía.",
+    "disclaimerBody": "Dependen del rubro, los creativos y el mercado. Lo que sí garantizamos es construir el embudo correctamente para maximizarlos.",
+    "cta": "Quiero mi embudo",
+    "unitLabel": "personas"
+  },
+  "PlatformSection": {
+    "label": "Su centro de operaciones",
+    "headline": "Todo lo que construimos",
+    "headlineItalic": "corre sobre su propia plataforma.",
+    "desc": "Cuando le entregamos su sistema automatizado, también le entregamos el control total. Desde un solo lugar usted gestiona todo.",
+    "tabs": {
+      "organizacion": {
+        "label": "Organización",
+        "features": [
+          "Pipeline visual de ventas",
+          "Pagos integrados",
+          "Reportes en tiempo real",
+          "Gestión de contactos y CRM",
+          "Automatizaciones de flujo",
+          "Tareas y seguimientos del equipo"
+        ]
+      },
+      "sitios": {
+        "label": "Sitios Web",
+        "features": [
+          "Constructor de páginas sin código",
+          "Formularios inteligentes",
+          "Agenda integrada",
+          "Funnels de venta",
+          "Membresías y cursos",
+          "Dominio personalizado"
+        ]
+      },
+      "multicanal": {
+        "label": "Multicanal",
+        "features": [
+          "Campañas automatizadas",
+          "WhatsApp Business",
+          "Email marketing",
+          "SMS masivos",
+          "Messenger e Instagram",
+          "App móvil incluida"
+        ]
+      }
+    },
+    "replacesHeadline": "Lo que Bralto reemplaza",
+    "replacesDesc": "Todo lo que pagas por separado, en una sola plataforma.",
+    "toolHeader": "Herramienta",
+    "costHeader": "Costo mensual",
+    "withoutLabel": "Sin Bralto pagarías",
+    "withLabel": "Con Bralto",
+    "allToolsNote": "Todas las herramientas. Un solo precio. Sin sorpresas.",
+    "platformIncluded": "La plataforma viene incluida con cada implementación. También está disponible de forma independiente.",
+    "cta": "Iniciar Prueba Gratuita",
+    "ctaNote": "Hoy paga $0 — Pruebe el sistema antes de pagarlo"
+  },
+  "GuaranteeSection": {
+    "headline": "Sin riesgo.",
+    "headlineItalic": "Sin letra pequeña.",
+    "guarantees": [
+      {
+        "title": "Garantía de resultados",
+        "body": "Si en el primer mes después de la activación no hay leads calificados que cubran el costo de la mensualidad, seguimos trabajando gratis hasta lograrlo."
+      },
+      {
+        "title": "Entrega garantizada",
+        "body": "Cada implementación se entrega funcionando en menos de 72 horas. Si no cumplimos, no paga."
+      }
+    ]
+  },
+  "PricingSection": {
+    "label": "Modelos de Inversión",
+    "headline": "Dos caminos.",
+    "headlineItalic": "Un mismo objetivo.",
+    "desc": "Que su negocio opere mejor, sin depender de más personas.",
+    "foundation": {
+      "tier": "PLATAFORMA",
+      "sub": "Self-serve",
+      "price": "$87",
+      "period": "/ mes",
+      "name": "Plataforma Bralto",
+      "trialNote": "Hoy paga $0 — Pruebe antes de pagar.",
+      "desc": "Para quienes quieren centralizar su operación por su cuenta. Una sola plataforma que reemplaza más de 10 herramientas.",
+      "features": [
+        "CRM y embudos de venta",
+        "Sitio web y landing pages",
+        "Calendario y agendamiento",
+        "Email y SMS marketing",
+        "Automatizaciones de flujo",
+        "Gestión multicanal (WhatsApp, IG, Email)",
+        "App móvil incluida",
+        "Reportes en tiempo real"
+      ],
+      "cta": "Iniciar Prueba Gratuita"
+    },
+    "prime": {
+      "tier": "CUSTOM BUILD",
+      "sub": "Implementación",
+      "from": "Desde",
+      "price": "$849",
+      "name": "Servicio Integral",
+      "priceNote": "El precio final depende del alcance de su proyecto.",
+      "desc": "Analizamos su negocio, diseñamos la solución, y le entregamos todo funcionando. La plataforma Bralto viene incluida.",
+      "features": [
+        "Todo lo de la Plataforma Bralto",
+        "Diagnóstico completo de su operación",
+        "Diseño de solución a la medida",
+        "Desarrollo de sitio web",
+        "Agentes de IA configurados",
+        "Integraciones con sus herramientas",
+        "Interfaces de gestión internas",
+        "Entrega en menos de 72 horas",
+        "Soporte post-implementación"
+      ],
+      "cta": "Agendar Llamada Estratégica"
+    },
+    "bottomNote": "¿No está seguro cuál es la mejor opción?",
+    "bottomLink": "Agendemos una llamada",
+    "bottomNote2": "y le ayudamos a decidir — sin compromiso."
+  },
+  "TestimonialsSection": {
+    "label": "Testimonios",
+    "headline": "Lo que dicen",
+    "headlineItalic": "nuestros clientes"
+  },
+  "TestimonialsData": {
+    "items": [
+      {
+        "quote": "Antes perdíamos reservas todos los fines de semana. Ahora el agente las toma a las 2am sin problema. El restaurante está siempre lleno.",
+        "name": "Carlos Méndez",
+        "position": "Propietario",
+        "company": "Restaurante La Hacienda",
+        "industry": "Restaurante"
+      },
+      {
+        "quote": "El seguimiento automático nos cambió la vida. Los leads que antes se enfriaban ahora cierran solos. Triplicamos conversiones.",
+        "name": "María González",
+        "position": "Directora",
+        "company": "Clínica Bienestar",
+        "industry": "Salud"
+      },
+      {
+        "quote": "Teníamos más de 1,000 productos y responder cotizaciones nos tomaba horas. El agente lo hace en segundos, con todos los detalles correctos.",
+        "name": "Roberto Sánchez",
+        "position": "Gerente Comercial",
+        "company": "Imprenta Pronto",
+        "industry": "Imprenta"
+      },
+      {
+        "quote": "La plataforma reemplazó cinco herramientas que usábamos. Ahora todo está en un solo lugar y el equipo trabaja mucho más rápido.",
+        "name": "Ana Martínez",
+        "position": "CEO",
+        "company": "Inmobiliaria Central",
+        "industry": "Inmobiliaria"
+      },
+      {
+        "quote": "Nuestros huéspedes reciben atención inmediata a cualquier hora. Las reseñas mejoraron y las ocupaciones también.",
+        "name": "Fernando Torres",
+        "position": "Director",
+        "company": "Hotel Vista Real",
+        "industry": "Hotelería"
+      },
+      {
+        "quote": "Bralto no llegó con una solución genérica. Entendieron cómo operamos y construyeron algo que realmente funciona para nosotros.",
+        "name": "Laura Vega",
+        "position": "Fundadora",
+        "company": "Agencia Viajes Sol",
+        "industry": "Turismo"
+      },
+      {
+        "quote": "El ROI fue claro desde el primer mes. Cada peso invertido en automatización multiplicó las ventas.",
+        "name": "Diego Romero",
+        "position": "Socio Fundador",
+        "company": "Centro Financiero MX",
+        "industry": "Finanzas"
+      },
+      {
+        "quote": "Antes el equipo de ventas se quejaba de dar seguimiento. Ahora el sistema lo hace solo y ellos solo cierran. Mucho menos estrés.",
+        "name": "Valentina Cruz",
+        "position": "Directora Comercial",
+        "company": "Concesionaria AutoPrime",
+        "industry": "Automotriz"
+      },
+      {
+        "quote": "Implementaron el sistema en 72 horas como prometieron. Desde el día 1 empezamos a ver resultados concretos.",
+        "name": "Marcos Jiménez",
+        "position": "Rector",
+        "company": "Instituto Educativo Visión",
+        "industry": "Educación"
+      }
+    ]
+  },
+  "FunnelLabSection": {
+    "badge1": "Nuevo",
+    "badge2": "Herramienta gratuita",
+    "title": "FunnelLab",
+    "titleItalic": "by Bralto.",
+    "desc": "Simulá tu embudo de ventas completo y predecí el resultado de tu estrategia — antes de gastar un peso en publicidad.",
+    "bullets": [
+      "Predecí cuántos leads y ventas vas a generar antes de gastar",
+      "Identificá el cuello de botella que mata tus conversiones",
+      "Compará escenarios: ¿webinar o VSL? ¿Meta o Google?",
+      "Análisis con IA incluido — te dice exactamente dónde mejorar"
+    ],
+    "cta": "Probar FunnelLab gratis",
+    "cardTitle": "Simulación activa",
+    "cardSub": "Funnel de ventas — Google Ads",
+    "stages": ["Visitas", "Leads", "Prospectos", "Clientes"],
+    "roiLabel": "ROI proyectado",
+    "cpaLabel": "Costo por cliente"
+  },
+  "FounderSection": {
+    "label": "Sobre el fundador",
+    "headline": "Hola, soy",
+    "headlineItalic": "Alejandro Aguilar.",
+    "role": "Fundador, Bralto",
+    "body1": "Fundé Bralto porque vi el mismo problema en demasiados negocios: buenos productos, buenos equipos, pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde.",
+    "body2": "Bralto nació para resolver eso. Hoy combinamos una plataforma todo en uno con implementaciones hechas a medida — para que restaurantes, clínicas, inmobiliarias, hoteles y docenas de industrias más puedan operar con la eficiencia de una empresa grande, sin el costo de serlo.",
+    "yearsValue": "8+",
+    "yearsDesc": "Años diseñando sistemas de adquisición automatizados"
+  },
+  "FaqSection": {
+    "label": "Preguntas frecuentes",
+    "headline": "Todo lo que",
+    "headlineItalic": "necesita saber",
+    "faqs": [
+      {
+        "q": "¿Qué tipo de negocios atienden?",
+        "a": "Cualquier negocio que tenga procesos que dependan de personas: restaurantes, clínicas, imprentas, hoteles, inmobiliarias, agencias de viaje, asesores financieros, y más. Si hay un proceso manual, probablemente lo podemos automatizar."
+      },
+      {
+        "q": "¿Qué incluye el servicio integral?",
+        "a": "Todo lo que su negocio necesite: sitio web, agentes de IA, automatizaciones, integraciones con sus herramientas actuales, interfaces de gestión interna, y la plataforma Bralto para que controle todo desde un solo lugar."
+      },
+      {
+        "q": "¿Cuánto cuesta?",
+        "a": "Depende del alcance. Puede ir desde $800 por una implementación simple hasta proyectos más complejos. Agendá una llamada y le damos un presupuesto exacto después de entender su operación."
+      },
+      {
+        "q": "¿Cuánto tiempo toma la implementación?",
+        "a": "Implementaciones simples se entregan en menos de 72 horas. Proyectos más complejos pueden tomar 1-2 semanas. Siempre le damos un timeline claro antes de empezar."
+      },
+      {
+        "q": "¿Qué es la plataforma Bralto?",
+        "a": "Es el centro de operaciones donde corre todo lo que construimos. Desde ahí usted gestiona conversaciones, contactos, calendario, pagos, correos, y más. Viene incluida con cada implementación, o puede contratarla de forma independiente por $87/mes."
+      },
+      {
+        "q": "¿Qué pasa si no funciona?",
+        "a": "Si en el primer mes no hay resultados que cubran su inversión, seguimos trabajando gratis hasta lograrlo. Sin riesgo."
+      }
+    ]
+  },
+  "FinalCta": {
+    "label": "¿Listo para automatizar?",
+    "phrases": [
+      "Tu competencia posiblemente está considerando algo como esto.",
+      "En este juego, gana el que se mueve primero.",
+      "Mientras lees esto, alguien más ya está automatizando.",
+      "El que automatiza primero, captura el mercado.",
+      "Cada día sin automatizar es una ventaja que le regalas a tu competencia."
+    ],
+    "desc": "Una conversación de 30 minutos puede cambiar cómo opera tu negocio para siempre.",
+    "cta": "Agendar Llamada Estratégica",
+    "ctaNote": "30 minutos. Sin compromiso. Sin costo.",
+    "stats": [
+      { "value": "9+", "label": "Industrias atendidas" },
+      { "value": "72h", "label": "Tiempo de implementación" },
+      { "value": "24/7", "label": "Operación sin parar" }
+    ]
+  },
+  "Footer": {
+    "tagline": "Infraestructura digital para que su negocio opere sin depender de personas.",
+    "copyright": "Todos los derechos reservados.",
+    "sections": {
+      "navigation": {
+        "label": "Navegación",
+        "links": {
+          "inicio": "Inicio",
+          "comoFunciona": "Cómo funciona",
+          "plataforma": "Plataforma",
+          "casosReales": "Casos reales"
+        }
+      },
+      "legal": {
+        "label": "Legal",
+        "links": {
+          "privacidad": "Política de Privacidad",
+          "terminos": "Términos de Servicio"
+        }
+      },
+      "start": {
+        "label": "Empezar",
+        "links": {
+          "agendar": "Agendar Llamada",
+          "empezar": "Empezar Ahora"
+        }
+      },
+      "social": {
+        "label": "Redes Sociales"
+      }
+    }
+  },
+  "PreciosPage": {
+    "badge": "Bralto",
+    "badgeSub": "Servicios y precios",
+    "headline": "Todo lo que",
+    "headlineItalic": "hacemos.",
+    "desc": "Precios de referencia para que tengas una idea. El definitivo siempre depende del alcance — lo cerramos juntos en la llamada.",
+    "services": {
+      "sitiosWeb": { "name": "Sitios web profesionales", "from": "Desde $997", "period": "pago único", "desc": "Diseño a medida, SEO incluido y entrega rápida. Tu presencia online lista para convertir." },
+      "produccionContenido": { "name": "Producción de contenido", "from": "Desde $650", "period": "por mes", "desc": "Videos, stories y estrategia editorial mensual. Producimos y publicamos por vos." },
+      "campanas": { "name": "Campañas publicitarias", "from": "A convenir", "period": "fee de gestión mensual", "desc": "Gestión de Meta Ads y Google Ads de punta a punta, con optimización y reporte semanal." },
+      "automatizacion": { "name": "Automatización de procesos", "from": "Desde $1,450", "period": "pago único", "desc": "Workflows, agentes de IA e integraciones que hacen correr tu operación sola." },
+      "sistemasInternos": { "name": "Sistemas internos a medida", "from": "Desde $1,997", "period": "según alcance", "desc": "CRMs, dashboards, portales internos y herramientas construidas para tu operación." },
+      "asesoria": { "name": "Asesoría de marketing", "from": "A convenir", "period": "según formato", "desc": "Estrategia, posicionamiento y roadmap de 90 días para crecer con intención." },
+      "funnelLab": { "name": "FunnelLab", "from": "Gratis", "period": "para empezar", "desc": "Simulá tu embudo de ventas completo, identificá cuellos de botella y elegí la estrategia más rentable antes de invertir." }
+    },
+    "viewDetails": "Ver detalles",
+    "ctaLabel": "¿No sabés por dónde empezar?",
+    "ctaHeadline": "Hablemos",
+    "ctaHeadlineItalic": "sin compromiso.",
+    "ctaDesc": "30 minutos para entender tu negocio y proponerte qué tiene sentido para vos hoy.",
+    "ctaBtn": "Agendar llamada gratis",
+    "ctaBack": "Volver al inicio",
+    "home": "Inicio"
+  }
+}

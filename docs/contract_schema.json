@@ -1,0 +1,250 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bralto Contract Schema",
+  "description": "Schema completo de datos para generar un contrato Bralto desde el formulario interno. Todos los campos bajo `cliente`, `proyecto`, `pago`, `servicios` son editables desde el form. Los campos bajo `firma` se rellenan automáticamente cuando el cliente firma en el enlace público.",
+  "type": "object",
+  "required": ["cliente", "proyecto", "pago", "servicios"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "UUID del contrato. Generado por Supabase."
+    },
+    "slug": {
+      "type": "string",
+      "description": "Slug único para el enlace público compartible. Ejemplo: 'american-outlet-2026-a7k3'. Generado al crear el contrato."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "sent", "viewed", "signed_by_client", "signed_fully", "cancelled"],
+      "default": "draft"
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+
+    "cliente": {
+      "type": "object",
+      "description": "Datos del cliente. Todos los campos son editables desde el formulario interno.",
+      "required": [
+        "empresa_nombre", "tipo_sociedad", "cedula_juridica", "domicilio_legal",
+        "jurisdiccion", "giro_comercial",
+        "representante_nombre", "representante_profesion", "representante_estado_civil",
+        "representante_direccion", "representante_documento", "representante_cargo",
+        "correo_facturacion", "correo_notificaciones"
+      ],
+      "properties": {
+        "empresa_nombre": { "type": "string", "example": "American Outlet Sociedad Anónima" },
+        "tipo_sociedad": {
+          "type": "string",
+          "enum": ["Sociedad Anónima", "S.R.L.", "LLC", "E.I.R.L.", "Persona Física", "Otra"],
+          "example": "Sociedad Anónima"
+        },
+        "cedula_juridica": { "type": "string", "example": "3-101-123456" },
+        "domicilio_legal": { "type": "string", "example": "San José, Costa Rica, Avenida Central..." },
+        "jurisdiccion": { "type": "string", "example": "costarricense", "default": "costarricense" },
+        "giro_comercial": { "type": "string", "example": "venta al detalle de artículos para el hogar" },
+        "representante_nombre": { "type": "string", "example": "Juan Pérez Mora" },
+        "representante_profesion": { "type": "string", "example": "empresario" },
+        "representante_estado_civil": {
+          "type": "string",
+          "enum": ["soltero(a)", "casado(a)", "divorciado(a)", "viudo(a)", "unión libre"]
+        },
+        "representante_direccion": { "type": "string" },
+        "representante_documento": { "type": "string", "example": "1-1234-5678" },
+        "representante_cargo": {
+          "type": "string",
+          "example": "Apoderado Generalísimo sin límite de suma",
+          "default": "Apoderado Generalísimo sin límite de suma"
+        },
+        "correo_facturacion": { "type": "string", "format": "email" },
+        "correo_notificaciones": { "type": "string", "format": "email" }
+      }
+    },
+
+    "proyecto": {
+      "type": "object",
+      "required": ["nombre_paquete", "vigencia_numero", "vigencia_texto"],
+      "properties": {
+        "nombre_paquete": {
+          "type": "string",
+          "description": "Nombre comercial del paquete. Ejemplo: 'Paquete Retail 360', 'Paquete IA Voz Empresarial'",
+          "example": "Paquete Retail 360"
+        },
+        "vigencia_numero": {
+          "type": "string",
+          "description": "Vigencia numérica del contrato. Ejemplo: '1 año', '6 meses', 'servicio único'",
+          "example": "1 año",
+          "default": "1 año"
+        },
+        "vigencia_texto": {
+          "type": "string",
+          "description": "Vigencia escrita en texto legal. Ejemplo: 'un (1) año', 'seis (6) meses'",
+          "default": "un (1) año"
+        },
+        "tiene_referencias_visuales": { "type": "boolean", "default": false },
+        "descripcion_adicional": {
+          "type": "string",
+          "description": "Campo libre para descripción adicional del proyecto. Opcional."
+        }
+      }
+    },
+
+    "pago": {
+      "type": "object",
+      "required": ["monto_inicial", "monto_inicial_letras", "tiene_mensualidad"],
+      "properties": {
+        "monto_inicial": {
+          "type": "number",
+          "description": "Monto inicial en USD (solo número, sin símbolo)",
+          "example": 3500
+        },
+        "monto_inicial_letras": {
+          "type": "string",
+          "description": "Monto inicial escrito en letras para validez legal. Ejemplo: 'tres mil quinientos'",
+          "example": "tres mil quinientos"
+        },
+        "tiene_mensualidad": {
+          "type": "boolean",
+          "description": "Checkbox en el formulario. Si es false, se oculta toda referencia a mensualidad y se activa la cláusula de pago único.",
+          "default": true
+        },
+        "monto_mensual": {
+          "type": ["number", "null"],
+          "description": "Monto mensual en USD. Solo requerido si tiene_mensualidad = true.",
+          "example": 750
+        },
+        "monto_mensual_letras": {
+          "type": ["string", "null"],
+          "example": "setecientos cincuenta"
+        }
+      }
+    },
+
+    "servicios": {
+      "type": "object",
+      "description": "Checkboxes de servicios. Cada uno activa su cláusula correspondiente en el contrato. Al menos uno debe ser true.",
+      "properties": {
+        "ads": {
+          "type": "boolean",
+          "title": "Gestión de Campañas Publicitarias (Meta / Google / TikTok)",
+          "default": false
+        },
+        "sistema_llamadas_ia": {
+          "type": "boolean",
+          "title": "Sistema de Llamadas con IA (entrantes/salientes)",
+          "default": false
+        },
+        "agente_whatsapp": {
+          "type": "boolean",
+          "title": "Agente de WhatsApp con IA",
+          "default": false
+        },
+        "sitio_web": {
+          "type": "boolean",
+          "title": "Diseño y Desarrollo de Sitio Web",
+          "default": false
+        },
+        "crm_plataforma": {
+          "type": "boolean",
+          "title": "Configuración de Plataforma Bralto (CRM)",
+          "default": false
+        },
+        "automatizaciones": {
+          "type": "boolean",
+          "title": "Automatizaciones e Integraciones",
+          "default": false
+        },
+        "produccion_contenido": {
+          "type": "boolean",
+          "title": "Producción de Contenido (flyers, reels, foto, video)",
+          "default": false
+        },
+        "gestion_redes": {
+          "type": "boolean",
+          "title": "Gestión y Publicación de Redes Sociales",
+          "default": false
+        },
+        "seo": {
+          "type": "boolean",
+          "title": "SEO y Posicionamiento",
+          "default": false
+        },
+        "tracking": {
+          "type": "boolean",
+          "title": "Configuración de Tracking (GTM / GA4 / Pixel)",
+          "default": false
+        },
+        "email_marketing": {
+          "type": "boolean",
+          "title": "Email Marketing",
+          "default": false
+        },
+        "agente_servicio_cliente": {
+          "type": "boolean",
+          "title": "Agente de IA para Servicio al Cliente",
+          "default": false
+        },
+        "activaciones_tienda": {
+          "type": "boolean",
+          "title": "Activaciones en Tienda y Eventos",
+          "default": false
+        },
+        "otros": {
+          "type": "boolean",
+          "title": "Otros servicios (especificar)",
+          "default": false
+        },
+        "otros_descripcion": {
+          "type": ["string", "null"],
+          "description": "Texto libre. Solo requerido si otros = true."
+        },
+        "requiere_consumo_ia": {
+          "type": "boolean",
+          "description": "FLAG CALCULADO en el backend. Se activa automáticamente si alguno de estos servicios está en true: sistema_llamadas_ia, agente_whatsapp, agente_servicio_cliente, automatizaciones. Controla la inclusión de la Cláusula Décima Tercera sobre costos de IA.",
+          "default": false
+        },
+        "servicios_no_incluye_contenido": {
+          "type": "boolean",
+          "description": "FLAG CALCULADO. Se activa automáticamente si produccion_contenido = false Y gestion_redes = false. Inserta la cláusula de exclusión de contenido.",
+          "default": true
+        }
+      }
+    },
+
+    "entregables": {
+      "type": "array",
+      "description": "Lista libre de entregables específicos del paquete. Cada servicio activado puede generar entregables por defecto que el usuario puede editar.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "servicio": { "type": "string", "description": "Servicio al que pertenece el entregable" },
+          "descripcion": { "type": "string" },
+          "cantidad": { "type": ["number", "string", "null"] },
+          "unidad": { "type": ["string", "null"], "example": "piezas / mes / campañas" }
+        }
+      }
+    },
+
+    "firma": {
+      "type": "object",
+      "description": "Campos rellenados automáticamente al momento de la firma. NO son editables desde el formulario interno.",
+      "properties": {
+        "dia": { "type": ["string", "null"] },
+        "mes": { "type": ["string", "null"] },
+        "anio": { "type": ["string", "null"] },
+        "cliente_canvas": {
+          "type": ["string", "null"],
+          "description": "Data URL base64 del trazo de firma en canvas"
+        },
+        "cliente_timestamp": { "type": ["string", "null"], "format": "date-time" },
+        "cliente_ip": { "type": ["string", "null"] },
+        "cliente_user_agent": { "type": ["string", "null"] },
+        "cliente_aceptacion_terminos": { "type": "boolean", "default": false },
+        "bralto_canvas": {
+          "type": ["string", "null"],
+          "description": "Firma precargada de Bralto (imagen estática) o firma en vivo desde panel interno"
+        },
+        "bralto_timestamp": { "type": ["string", "null"], "format": "date-time" }
+      }
+    }
+  }
+}

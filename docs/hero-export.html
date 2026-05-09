@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hero Export — FunnelLab</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* ─── FADE-IN ANIMATION (opcional) ─────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeUp 0.7s ease both; }
+    .fade-in-d1 { animation-delay: 0.1s; }
+    .fade-in-d2 { animation-delay: 0.2s; }
+
+    /* ─── HERO SECTION ──────────────────────────────────── */
+    .hero {
+      position: relative;
+      padding-top: 112px;   /* pt-28 */
+      padding-bottom: 0;
+      overflow: hidden;
+      background: #080808;
+    }
+
+    /* Gradientes de fondo */
+    .hero-glow-top {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 80% 55% at 50% -10%,
+        rgba(255,255,255,0.09) 0%,
+        rgba(255,255,255,0.03) 40%,
+        transparent 70%);
+    }
+    .hero-glow-left {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 50% 40% at 30% 50%,
+        rgba(255,255,255,0.03) 0%,
+        transparent 60%);
+    }
+
+    /* ─── TEXTO DEL HERO ─────────────────────────────────── */
+    .hero-text {
+      position: relative;
+      max-width: 1024px;   /* max-w-5xl */
+      margin: 0 auto;
+      padding: 0 24px;
+      margin-bottom: 64px; /* mb-16 */
+      text-align: left;
+    }
+
+    /* Badge */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid rgba(249, 115, 22, 0.30);
+      background: rgba(249, 115, 22, 0.08);
+      font-size: 12px;
+      font-weight: 500;
+      color: #fb923c;
+      margin-bottom: 28px;
+    }
+    .hero-badge svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+    /* Título */
+    .hero-title {
+      font-size: clamp(36px, 6vw, 60px);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      margin-bottom: 24px;
+    }
+    .hero-title .muted { color: #aaaaaa; }
+
+    /* Subtítulo */
+    .hero-subtitle {
+      font-size: clamp(17px, 2vw, 20px);
+      color: rgba(255,255,255,0.40);
+      max-width: 672px;
+      margin-bottom: 40px;
+      line-height: 1.625;
+    }
+
+    /* Botones CTA */
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: #e8e8e8; }
+    .btn-primary svg { width: 16px; height: 16px; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.50);
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+      background: transparent;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.25);
+      color: #ffffff;
+    }
+
+    /* ─── MOCKUP WRAPPER ─────────────────────────────────── */
+    .hero-mock-wrapper {
+      position: relative;
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 24px;
+      -webkit-mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+    }
+    .hero-mock-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 70% 50% at 50% 30%,
+        rgba(255,255,255,0.06) 0%,
+        transparent 70%);
+    }
+
+    /* ─── FUNNEL BUILDER MOCK ────────────────────────────── */
+    .mock {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #0a0a0a;
+      overflow: hidden;
+      box-shadow:
+        0 0 40px rgba(255,255,255,0.05),
+        0 0 80px rgba(255,255,255,0.03),
+        0 40px 120px -20px rgba(0,0,0,0.95);
+    }
+
+    /* Browser bar */
+    .mock-browser-bar {
+      height: 36px;
+      background: #0d0d0d;
+      border-bottom: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .mock-traffic-lights {
+      display: flex;
+      gap: 6px;
+    }
+    .mock-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #222;
+    }
+    .mock-url-bar {
+      flex: 1;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .mock-url-inner {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 6px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+    }
+    .mock-url-text {
+      font-size: 9px;
+      color: #333;
+    }
+
+    /* App toolbar */
+    .mock-toolbar {
+      height: 44px;
+      background: #0d0d0d;
+      border-bottom: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .mock-toolbar-logo {
+      height: 20px;
+      width: auto;
+      opacity: 0.75;
+      flex-shrink: 0;
+    }
+    .mock-divider-v {
+      width: 1px;
+      height: 20px;
+      background: #1e1e1e;
+      flex-shrink: 0;
+    }
+    .mock-project-name {
+      font-size: 11px;
+      color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mock-scenario-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #1e1e1e;
+      background: #111;
+    }
+    .mock-chip-text {
+      font-size: 10px;
+      color: #4a4a4a;
+    }
+    .mock-toolbar-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .mock-save-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #1e1e1e;
+      background: #111;
+    }
+    .mock-simulate-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .mock-simulate-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.3);
+    }
+    .mock-simulate-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    /* App body */
+    .mock-body {
+      display: flex;
+      height: 320px;
+    }
+
+    /* Left sidebar */
+    .mock-sidebar {
+      width: 44px;
+      flex-shrink: 0;
+      border-right: 1px solid #1a1a1a;
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 8px;
+    }
+    .mock-sidebar-item {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid #1e1e1e;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mock-sidebar-item.active {
+      border-color: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+    }
+    .mock-sidebar-icon {
+      font-size: 10px;
+      color: #3a3a3a;
+    }
+    .mock-sidebar-item.active .mock-sidebar-icon {
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Canvas */
+    .mock-canvas {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: #060606;
+      background-image: radial-gradient(circle, #1c1c1c 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    .mock-canvas-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+    }
+    .mock-nodes-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-left: 20px;
+      padding-right: 12px;
+    }
+
+    /* Nodes */
+    .mock-node {
+      flex-shrink: 0;
+      width: 112px;
+      border-radius: 12px;
+      border: 1px solid #222;
+      background: #0f0f0f;
+      padding: 10px;
+    }
+    .mock-node.highlighted {
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 0 20px rgba(255,255,255,0.03);
+    }
+    .mock-node-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .mock-node-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mock-node.highlighted .mock-node-icon {
+      background: rgba(255,255,255,0.08);
+    }
+    .mock-node-icon span { font-size: 9px; color: #666; font-weight: 700; }
+    .mock-node.highlighted .mock-node-icon span { color: rgba(255,255,255,0.5); }
+
+    .mock-node-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .mock-node-sub {
+      font-size: 8px;
+      color: #444;
+      margin-bottom: 6px;
+    }
+    .mock-node-metric {
+      background: #141414;
+      border-radius: 8px;
+      padding: 4px 6px;
+      text-align: center;
+    }
+    .mock-node.highlighted .mock-node-metric {
+      background: rgba(255,255,255,0.05);
+    }
+    .mock-metric-val {
+      font-size: 10px;
+      font-weight: 700;
+      color: #666;
+    }
+    .mock-node.highlighted .mock-metric-val { color: rgba(255,255,255,0.7); }
+    .mock-metric-lbl {
+      font-size: 8px;
+      color: #444;
+      margin-left: 2px;
+    }
+
+    /* Arrow connector */
+    .mock-arrow {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .mock-arrow-line {
+      width: 20px;
+      height: 1px;
+      background: #2a2a2a;
+    }
+
+    /* Vertical separator */
+    .mock-sep-v {
+      width: 1px;
+      height: 56px;
+      background: #1a1a1a;
+      flex-shrink: 0;
+      margin: 0 4px;
+    }
+
+    /* Results widget */
+    .mock-results {
+      flex-shrink: 0;
+      width: 100px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #0d0d0d;
+      padding: 10px;
+    }
+    .mock-results-title {
+      font-size: 8px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .mock-results-row { margin-bottom: 6px; }
+    .mock-results-label { font-size: 8px; color: #555; }
+    .mock-results-value { font-size: 11px; font-weight: 700; color: #fff; }
+
+    /* Status badge inside canvas */
+    .mock-status-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: #0f0f0f;
+      border: 1px solid #1e1e1e;
+    }
+    .mock-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .mock-status-text { font-size: 9px; color: #555; }
+
+    /* Right panel */
+    .mock-right-panel {
+      width: 176px;
+      flex-shrink: 0;
+      border-left: 1px solid #1a1a1a;
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+    .mock-panel-title {
+      font-size: 9px;
+      color: #444;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+    .mock-ai-msg {
+      padding: 8px;
+      border-radius: 8px;
+      background: #111;
+      border: 1px solid #1a1a1a;
+      margin-bottom: 8px;
+    }
+    .mock-ai-msg.highlight { border-color: rgba(255,255,255,0.06); }
+    .mock-ai-text { font-size: 8px; color: #555; line-height: 1.625; }
+    .mock-ai-msg.highlight .mock-ai-text { color: rgba(255,255,255,0.3); }
+
+    .mock-panel-bottom {
+      border-top: 1px solid #1a1a1a;
+      padding-top: 10px;
+      margin-top: auto;
+    }
+    .mock-panel-sub {
+      font-size: 9px;
+      color: #444;
+      margin-bottom: 8px;
+    }
+    .mock-bar-row { margin-bottom: 6px; }
+    .mock-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+    .mock-bar-label { font-size: 8px; color: #444; }
+    .mock-bar-track {
+      height: 4px;
+      background: #111;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .mock-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: #2e2e2e;
+    }
+    .mock-bar-fill.bright { background: rgba(255,255,255,0.25); }
+
+    /* Status bar */
+    .mock-status-bar {
+      height: 28px;
+      background: #0d0d0d;
+      border-top: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .mock-statusbar-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mock-statusbar-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .mock-statusbar-text { font-size: 9px; color: #444; }
+    .mock-statusbar-sep { font-size: 9px; color: #2a2a2a; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .mock-sidebar { display: none; }
+      .mock-right-panel { display: none; }
+      .mock-scenario-chip { display: none; }
+      .mock-save-btn { display: none; }
+      .hero-title { font-size: 32px; }
+    }
+    @media (max-width: 1024px) {
+      .mock-right-panel { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+  ════════════════════════════════════════════════════════
+  HERO SECTION
+  Puntos de personalización marcados con 👉
+
+  Estructura:
+    1. Badge (etiqueta pequeña arriba del título)
+    2. Título (h1)
+    3. Subtítulo
+    4. Botones CTA
+    5. Mockup del producto (FunnelBuilderMock)
+  ════════════════════════════════════════════════════════
+  -->
+
+  <section class="hero">
+
+    <!-- Luces de fondo — no tocar salvo para ajustar colores -->
+    <div class="hero-glow-top"></div>
+    <div class="hero-glow-left"></div>
+
+    <!-- ── BLOQUE DE TEXTO ── -->
+    <div class="hero-text fade-in">
+
+      <!-- 👉 Badge: cambiá el ícono SVG y el texto -->
+      <div class="hero-badge">
+        <!-- Ícono Zap (Lucide) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+        </svg>
+        <!-- 👉 Texto del badge -->
+        Simulá, predecí y optimizá con IA
+      </div>
+
+      <!-- 👉 Título principal. Usa <br> para el salto de línea. -->
+      <!-- La clase .muted pone el texto en gris (#aaa) -->
+      <h1 class="hero-title">
+        Simulá tu funnel<br />
+        antes de gastar <span class="muted">un centavo</span>
+      </h1>
+
+      <!-- 👉 Subtítulo -->
+      <p class="hero-subtitle">
+        Para marketers, agencias y emprendedores: construí funnels visualmente,
+        predecí conversiones y detectá cuellos de botella antes de invertir.
+      </p>
+
+      <!-- 👉 CTAs: cambiá href y textos -->
+      <div class="hero-ctas">
+        <a href="/register" class="btn-primary">
+          Empezar gratis
+          <!-- Ícono ArrowRight -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+          </svg>
+        </a>
+        <a href="#demo" class="btn-secondary" onclick="document.getElementById('demo')?.scrollIntoView({behavior:'smooth'});return false;">
+          Ver demo en vivo
+        </a>
+      </div>
+
+    </div>
+
+    <!-- ── MOCKUP DEL PRODUCTO ── -->
+    <div class="hero-mock-wrapper fade-in fade-in-d2">
+      <div class="hero-mock-glow"></div>
+
+      <div class="mock">
+
+        <!-- Browser title bar -->
+        <div class="mock-browser-bar">
+          <div class="mock-traffic-lights">
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+          </div>
+          <div class="mock-url-bar">
+            <div class="mock-url-inner">
+              <!-- 👉 URL que aparece en la barra del "browser" -->
+              <span class="mock-url-text">funnellab.io/project/e-commerce-q1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- App toolbar -->
+        <div class="mock-toolbar">
+          <!-- 👉 Logo pequeño dentro del mock — reemplazar src -->
+          <img src="/logo.png" alt="" class="mock-toolbar-logo" />
+          <div class="mock-divider-v"></div>
+          <!-- 👉 Nombre del proyecto -->
+          <span class="mock-project-name">E-commerce Q1 2025</span>
+          <div class="mock-scenario-chip">
+            <span class="mock-chip-text">Escenario 1</span>
+            <svg width="7" height="5" viewBox="0 0 7 5" fill="none">
+              <path d="M1 1l2.5 2.5L6 1" stroke="#3a3a3a" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mock-toolbar-actions">
+            <div class="mock-save-btn">
+              <span class="mock-chip-text">Guardar</span>
+            </div>
+            <div class="mock-simulate-btn">
+              <div class="mock-simulate-dot"></div>
+              <span class="mock-simulate-text">Simular</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- App body -->
+        <div class="mock-body">
+
+          <!-- Left sidebar -->
+          <div class="mock-sidebar">
+            <div class="mock-sidebar-item active">
+              <span class="mock-sidebar-icon">◈</span>
+            </div>
+            <div class="mock-sidebar-item">
+              <span class="mock-sidebar-icon">▣</span>
+            </div>
+            <div class="mock-sidebar-item">
+              <span class="mock-sidebar-icon">✉</span>
+            </div>
+            <div class="mock-sidebar-item">
+              <span class="mock-sidebar-icon">◎</span>
+            </div>
+            <div class="mock-sidebar-item">
+              <span class="mock-sidebar-icon">⬡</span>
+            </div>
+          </div>
+
+          <!-- Canvas -->
+          <div class="mock-canvas">
+            <div class="mock-canvas-inner">
+              <div class="mock-nodes-row">
+
+                <!-- Node: Facebook Ads (highlighted/active) -->
+                <div class="mock-node highlighted">
+                  <div class="mock-node-header">
+                    <div class="mock-node-icon"><span>◈</span></div>
+                    <span class="mock-node-name">Facebook Ads</span>
+                  </div>
+                  <!-- 👉 Descripción del nodo -->
+                  <p class="mock-node-sub">$1,000/mes · CPC $0.80</p>
+                  <div class="mock-node-metric">
+                    <!-- 👉 Métrica principal del nodo -->
+                    <span class="mock-metric-val">1,250</span>
+                    <span class="mock-metric-lbl">visitas</span>
+                  </div>
+                </div>
+
+                <!-- Flecha -->
+                <div class="mock-arrow">
+                  <div class="mock-arrow-line"></div>
+                  <svg width="5" height="8" viewBox="0 0 5 8" fill="none">
+                    <path d="M0 0L5 4L0 8" fill="#2a2a2a"/>
+                  </svg>
+                </div>
+
+                <!-- Node: Landing Page -->
+                <div class="mock-node">
+                  <div class="mock-node-header">
+                    <div class="mock-node-icon"><span>▣</span></div>
+                    <span class="mock-node-name">Landing Page</span>
+                  </div>
+                  <p class="mock-node-sub">Conversión 25%</p>
+                  <div class="mock-node-metric">
+                    <span class="mock-metric-val">312</span>
+                    <span class="mock-metric-lbl">leads</span>
+                  </div>
+                </div>
+
+                <!-- Flecha -->
+                <div class="mock-arrow">
+                  <div class="mock-arrow-line"></div>
+                  <svg width="5" height="8" viewBox="0 0 5 8" fill="none">
+                    <path d="M0 0L5 4L0 8" fill="#2a2a2a"/>
+                  </svg>
+                </div>
+
+                <!-- Node: Checkout -->
+                <div class="mock-node">
+                  <div class="mock-node-header">
+                    <div class="mock-node-icon"><span>◎</span></div>
+                    <span class="mock-node-name">Checkout</span>
+                  </div>
+                  <p class="mock-node-sub">Producto $97</p>
+                  <div class="mock-node-metric">
+                    <span class="mock-metric-val">109</span>
+                    <span class="mock-metric-lbl">clientes</span>
+                  </div>
+                </div>
+
+                <!-- Separador vertical -->
+                <div class="mock-sep-v"></div>
+
+                <!-- Results widget -->
+                <div class="mock-results">
+                  <!-- 👉 Las métricas del panel de resultados -->
+                  <p class="mock-results-title">Resultado</p>
+                  <div class="mock-results-row">
+                    <p class="mock-results-label">Revenue</p>
+                    <p class="mock-results-value">$10,573</p>
+                  </div>
+                  <div class="mock-results-row">
+                    <p class="mock-results-label">ROAS</p>
+                    <p class="mock-results-value">10.6x</p>
+                  </div>
+                  <div class="mock-results-row">
+                    <p class="mock-results-label">Profit</p>
+                    <p class="mock-results-value">$9,573</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Status badge (esquina inferior derecha del canvas) -->
+            <div class="mock-status-badge">
+              <div class="mock-status-dot"></div>
+              <!-- 👉 Texto del badge de estado -->
+              <span class="mock-status-text">Simulación lista · ROAS 10.6x</span>
+            </div>
+          </div>
+
+          <!-- Right panel (oculto en tablet/mobile) -->
+          <div class="mock-right-panel">
+            <p class="mock-panel-title">Análisis IA</p>
+            <div class="mock-ai-msg">
+              <p class="mock-ai-text">ROAS 10.6x. Funnel bien optimizado.</p>
+            </div>
+            <div class="mock-ai-msg highlight">
+              <p class="mock-ai-text">A/B test en landing puede mejorar +20% revenue.</p>
+            </div>
+            <div class="mock-panel-bottom">
+              <p class="mock-panel-sub">Embudo</p>
+              <!-- 👉 Barras de conversión del embudo -->
+              <div class="mock-bar-row">
+                <div class="mock-bar-labels">
+                  <span class="mock-bar-label">Visitas</span>
+                  <span class="mock-bar-label">100%</span>
+                </div>
+                <div class="mock-bar-track">
+                  <div class="mock-bar-fill" style="width:100%"></div>
+                </div>
+              </div>
+              <div class="mock-bar-row">
+                <div class="mock-bar-labels">
+                  <span class="mock-bar-label">Leads</span>
+                  <span class="mock-bar-label">25%</span>
+                </div>
+                <div class="mock-bar-track">
+                  <div class="mock-bar-fill" style="width:25%"></div>
+                </div>
+              </div>
+              <div class="mock-bar-row">
+                <div class="mock-bar-labels">
+                  <span class="mock-bar-label">Clientes</span>
+                  <span class="mock-bar-label">9%</span>
+                </div>
+                <div class="mock-bar-track">
+                  <div class="mock-bar-fill bright" style="width:9%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /mock-body -->
+
+        <!-- Status bar (bottom) -->
+        <div class="mock-status-bar">
+          <div class="mock-statusbar-item">
+            <div class="mock-statusbar-dot"></div>
+            <span class="mock-statusbar-text">Simulación completada</span>
+          </div>
+          <span class="mock-statusbar-sep">·</span>
+          <span class="mock-statusbar-text">3 nodos</span>
+          <span class="mock-statusbar-sep">·</span>
+          <span class="mock-statusbar-text">ROAS 10.6x</span>
+        </div>
+
+      </div><!-- /mock -->
+    </div><!-- /hero-mock-wrapper -->
+
+  </section>
+
+</body>
+</html>
