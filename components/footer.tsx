@@ -3,44 +3,45 @@ import type { ComponentProps, ReactNode } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { InstagramIcon, LinkedinIcon } from 'lucide-react'
 import Image from 'next/image'
-
-interface FooterLink  { title: string; href: string; icon?: React.ComponentType<{ className?: string }> }
-interface FooterSection { label: string; links: FooterLink[] }
-
-const footerLinks: FooterSection[] = [
-  {
-    label: 'Navegación',
-    links: [
-      { title: 'Inicio',         href: '#inicio' },
-      { title: 'Cómo funciona',  href: '#como-funciona' },
-      { title: 'Plataforma',     href: '#plataforma' },
-      { title: 'Casos reales',   href: '#casos-reales' },
-    ],
-  },
-  {
-    label: 'Legal',
-    links: [
-      { title: 'Política de Privacidad', href: '/privacidad' },
-      { title: 'Términos de Servicio',   href: '/terminos' },
-    ],
-  },
-  {
-    label: 'Empezar',
-    links: [
-      { title: 'Agendar Llamada', href: '#contacto' },
-      { title: 'Empezar Ahora',   href: 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t' },
-    ],
-  },
-  {
-    label: 'Redes Sociales',
-    links: [
-      { title: 'Instagram', href: '#', icon: InstagramIcon },
-      { title: 'LinkedIn',  href: '#', icon: LinkedinIcon },
-    ],
-  },
-]
+import { useTranslations, useLocale } from 'next-intl'
 
 export function Footer() {
+  const t      = useTranslations('Footer')
+  const locale = useLocale()
+
+  const sections = [
+    {
+      label: t('sections.navigation.label'),
+      links: [
+        { title: t('sections.navigation.links.inicio'),       href: `/${locale}/#inicio` },
+        { title: t('sections.navigation.links.comoFunciona'), href: `/${locale}/#como-funciona` },
+        { title: t('sections.navigation.links.plataforma'),   href: `/${locale}/#plataforma` },
+        { title: t('sections.navigation.links.casosReales'),  href: `/${locale}/#casos-reales` },
+      ],
+    },
+    {
+      label: t('sections.legal.label'),
+      links: [
+        { title: t('sections.legal.links.privacidad'), href: `/${locale}/privacidad` },
+        { title: t('sections.legal.links.terminos'),   href: `/${locale}/terminos` },
+      ],
+    },
+    {
+      label: t('sections.start.label'),
+      links: [
+        { title: t('sections.start.links.agendar'), href: `/${locale}/agendar` },
+        { title: t('sections.start.links.empezar'), href: 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t' },
+      ],
+    },
+    {
+      label: t('sections.social.label'),
+      links: [
+        { title: 'Instagram', href: '#', Icon: InstagramIcon },
+        { title: 'LinkedIn',  href: '#', Icon: LinkedinIcon },
+      ],
+    },
+  ]
+
   return (
     <footer className="relative w-full border-t border-white/[0.05] bg-[#060607] px-6 py-12 lg:py-16">
       {/* Glow line */}
@@ -51,16 +52,16 @@ export function Footer() {
         <AnimatedContainer className="space-y-4">
           <Image src="/logo-white.svg" alt="Bralto" width={100} height={30} className="h-7 w-auto object-contain opacity-80" />
           <p className="mt-4 text-sm leading-relaxed text-white/28 md:mt-0 max-w-xs">
-            Infraestructura digital para que su negocio opere sin depender de personas.
+            {t('tagline')}
           </p>
           <p className="text-xs text-white/18">
-            © {new Date().getFullYear()} Bralto. Todos los derechos reservados.
+            © {new Date().getFullYear()} Bralto. {t('copyright')}
           </p>
         </AnimatedContainer>
 
         {/* Links grid */}
         <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
-          {footerLinks.map((section, index) => (
+          {sections.map((section, index) => (
             <AnimatedContainer key={section.label} delay={0.1 + index * 0.08}>
               <div>
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25">
@@ -73,7 +74,7 @@ export function Footer() {
                         href={link.href}
                         className="inline-flex items-center gap-1.5 text-white/35 transition-colors duration-200 hover:text-white/65"
                       >
-                        {link.icon && <link.icon className="h-3.5 w-3.5" />}
+                        {'Icon' in link && link.Icon && <link.Icon className="h-3.5 w-3.5" />}
                         {link.title}
                       </a>
                     </li>

@@ -41,6 +41,8 @@
       "con cero intervención humana.",
       "sin depender de su equipo."
     ],
+    "statusActive": "Sistema activo",
+    "statusCustomers": "51 clientes",
     "cta1": "Agendar una llamada",
     "cta2": "Ver cómo funciona"
   },
@@ -493,6 +495,16 @@
         "label": "Redes Sociales"
       }
     }
+  },
+  "LogoCloud": {
+    "heading": "Nichos con los que funciona",
+    "niches": [
+      "Restaurantes", "Hoteles", "Clínicas", "Inmobiliarias", "Gimnasios",
+      "Abogados", "Academias", "Farmacias", "Talleres", "Aseguradoras",
+      "Salones de Belleza", "Contadores", "Agencias de Viaje", "Tiendas Online",
+      "Concesionarios", "Asesores Financieros", "Dentistas", "Imprentas",
+      "Veterinarias", "Centros Médicos"
+    ]
   },
   "PreciosPage": {
     "badge": "Bralto",

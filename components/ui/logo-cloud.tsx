@@ -2,36 +2,18 @@
 
 import { InfiniteSlider } from '@/components/ui/infinite-slider'
 import {
-  Utensils, BedDouble, Building2, Dumbbell, Scale, GraduationCap,
+  Utensils, BedDouble, Stethoscope, Building2, Dumbbell, Scale, GraduationCap,
   Pill, Wrench, ShieldCheck, Scissors, Calculator, Plane,
-  ShoppingBag, Car, TrendingUp, Stethoscope, Smile, Printer, PawPrint, Cross,
+  ShoppingBag, Car, TrendingUp, Smile, Printer, PawPrint, Cross,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
-const niches: { icon: LucideIcon; label: string }[] = [
-  { icon: Utensils,      label: 'Restaurantes' },
-  { icon: BedDouble,     label: 'Hoteles' },
-  { icon: Stethoscope,   label: 'Clínicas' },
-  { icon: Building2,     label: 'Inmobiliarias' },
-  { icon: Dumbbell,      label: 'Gimnasios' },
-  { icon: Scale,         label: 'Abogados' },
-  { icon: GraduationCap, label: 'Academias' },
-  { icon: Pill,          label: 'Farmacias' },
-  { icon: Wrench,        label: 'Talleres' },
-  { icon: ShieldCheck,   label: 'Aseguradoras' },
-  { icon: Scissors,      label: 'Salones de Belleza' },
-  { icon: Calculator,    label: 'Contadores' },
-  { icon: Plane,         label: 'Agencias de Viaje' },
-  { icon: ShoppingBag,   label: 'Tiendas Online' },
-  { icon: Car,           label: 'Concesionarios' },
-  { icon: TrendingUp,    label: 'Asesores Financieros' },
-  { icon: Smile,         label: 'Dentistas' },
-  { icon: Printer,       label: 'Imprentas' },
-  { icon: PawPrint,      label: 'Veterinarias' },
-  { icon: Cross,         label: 'Centros Médicos' },
+const ICONS: LucideIcon[] = [
+  Utensils, BedDouble, Stethoscope, Building2, Dumbbell, Scale, GraduationCap,
+  Pill, Wrench, ShieldCheck, Scissors, Calculator, Plane,
+  ShoppingBag, Car, TrendingUp, Smile, Printer, PawPrint, Cross,
 ]
-
-const loopedNiches = [...niches, ...niches, ...niches]
 
 function NicheItem({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
@@ -44,12 +26,17 @@ function NicheItem({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
 }
 
 export function LogoCloud() {
+  const t = useTranslations('LogoCloud')
+  const niches = t.raw('niches') as string[]
+  const nicheItems = ICONS.map((icon, i) => ({ icon, label: niches[i] ?? '' }))
+  const loopedNiches = [...nicheItems, ...nicheItems, ...nicheItems]
+
   return (
     <section className="relative bg-[#060607] py-10">
       {/* Top separator */}
       <div className="mx-auto max-w-3xl px-6 text-center mb-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20 mb-4">
-          Nichos con los que funciona
+          {t('heading')}
         </p>
         <div className="mx-auto h-px max-w-xs bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
       </div>

@@ -4,7 +4,7 @@
     "navLinks": {
       "inicio": "Home",
       "comoFunciona": "How it works",
-      "casosReales": "Real cases",
+      "casosReales": "Case studies",
       "plataforma": "Platform"
     },
     "presenciaHeading": "Digital Presence",
@@ -27,12 +27,14 @@
     "seeAll": "See all services →",
     "bookFree": "Book a free call →",
     "bookCall": "Book a call",
-    "seeServices": "See services"
+    "seeServices": "View pricing"
   },
   "Hero": {
-    "eyebrow": "Operations Infrastructure",
-    "actionWords": ["sales", "follow-ups", "bookings", "responses", "appointments", "workflows"],
-    "headline": "We automate your",
+    "eyebrow": "Revenue Infrastructure",
+    "actionWords": ["On autopilot."],
+    "headline": "Your sales pipeline.",
+    "statusActive": "System active",
+    "statusCustomers": "51 customers",
     "subtitles": [
       "so your business never skips a beat.",
       "without missing a single opportunity.",
@@ -95,7 +97,7 @@
           "Automated post-booking follow-up"
         ],
         "result": "Tripled their converted inquiries in the first month.",
-        "automation": ["Instant 24/7 response", "Automatic quote builder", "Advisor scheduling"],
+        "automation": ["Instant 24/7 response", "Automatic quote builder", "Schedule with a rep"],
         "stats": [{ "value": "3×", "label": "Conversions" }, { "value": "<2 min", "label": "Response time" }]
       },
       {
@@ -184,7 +186,7 @@
       "They message, schedule, or fill out a form",
       "They close the deal and become customers"
     ],
-    "dropText": "Out of every {ratio}, only 1 moves forward",
+    "dropText": "Only 1 in {ratio} makes it to the next step",
     "revenueLabel": "Total revenue",
     "roiLabel": "For every $1 you spend, you get back",
     "netLabel": "Net profit",
@@ -194,7 +196,7 @@
     "disclaimer": "These numbers are possible.",
     "disclaimerNote": "Not a guarantee.",
     "disclaimerBody": "They depend on your industry, creatives, and market. What we do guarantee is building the funnel right to maximize them.",
-    "cta": "I want my funnel",
+    "cta": "Build my funnel",
     "unitLabel": "people"
   },
   "PlatformSection": {
@@ -246,7 +248,7 @@
     "allToolsNote": "All the tools. One price. No surprises.",
     "platformIncluded": "Platform comes included with every implementation. Also available standalone.",
     "cta": "Start Free Trial",
-    "ctaNote": "Pay $0 today — Try the platform before you pay for it"
+    "ctaNote": "Pay $0 today — Try it before you pay"
   },
   "GuaranteeSection": {
     "headline": "Zero risk.",
@@ -254,7 +256,7 @@
     "guarantees": [
       {
         "title": "Results guarantee",
-        "body": "If in the first month after activation you don't have qualified leads that cover your subscription cost, we keep working for free until it happens."
+        "body": "If in the first month after activation you don't have qualified leads that cover your subscription cost, we keep working for free until you do."
       },
       {
         "title": "Delivery guarantee",
@@ -266,7 +268,7 @@
     "label": "Investment Options",
     "headline": "Two paths.",
     "headlineItalic": "One goal.",
-    "desc": "Your business running leaner — without relying on more people.",
+    "desc": "Your business running smarter — without hiring more people.",
     "foundation": {
       "tier": "PLATFORM",
       "sub": "Self-serve",
@@ -300,7 +302,7 @@
         "Full operations audit",
         "Custom solution design",
         "Website development",
-        "Configured AI agents",
+        "Custom AI agents built for you",
         "Integrations with your existing tools",
         "Custom internal dashboards",
         "Delivered in under 72 hours",
@@ -472,7 +474,7 @@
           "inicio": "Home",
           "comoFunciona": "How it works",
           "plataforma": "Platform",
-          "casosReales": "Real cases"
+          "casosReales": "Case studies"
         }
       },
       "legal": {
@@ -486,13 +488,23 @@
         "label": "Get Started",
         "links": {
           "agendar": "Book a Call",
-          "empezar": "Get Started Now"
+          "empezar": "Start Now"
         }
       },
       "social": {
         "label": "Social"
       }
     }
+  },
+  "LogoCloud": {
+    "heading": "Industries it works for",
+    "niches": [
+      "Restaurants", "Hotels", "Clinics", "Real Estate", "Gyms",
+      "Lawyers", "Academies", "Pharmacies", "Auto Shops", "Insurance",
+      "Beauty Salons", "Accountants", "Travel Agencies", "Online Stores",
+      "Dealerships", "Financial Advisors", "Dentists", "Print Shops",
+      "Veterinary Clinics", "Medical Centers"
+    ]
   },
   "PreciosPage": {
     "badge": "Bralto",

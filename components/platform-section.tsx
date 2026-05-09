@@ -3,25 +3,28 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, X } from 'lucide-react'
 import { LiquidMetalButton } from '@/components/ui/liquid-metal-button'
-import { useTranslations } from 'next-intl'
-
-const replaced = [
-  { tool: 'HubSpot',               price: '$800+/mes' },
-  { tool: 'ClickFunnels',          price: '$297/mes' },
-  { tool: 'Wix',                   price: '$39/mes' },
-  { tool: 'Typeform',              price: '$59/mes' },
-  { tool: 'Mailchimp',             price: '$350/mes' },
-  { tool: 'Calendly',              price: '$16/mes' },
-  { tool: 'Twilio / SMS',          price: '$200+/mes' },
-  { tool: 'ManyChat',              price: '$145/mes' },
-  { tool: 'Kajabi',                price: '$149/mes' },
-  { tool: 'Stripe + integrations', price: '$120+/mes' },
-]
+import { useTranslations, useLocale } from 'next-intl'
 
 const TAB_IDS = ['organizacion', 'sitios', 'multicanal'] as const
 
 export function PlatformSection() {
   const t = useTranslations('PlatformSection')
+  const locale = useLocale()
+  const period = locale === 'en' ? '/mo' : '/mes'
+
+  const replaced = [
+    { tool: 'HubSpot',               price: `$800+${period}` },
+    { tool: 'ClickFunnels',          price: `$297${period}` },
+    { tool: 'Wix',                   price: `$39${period}` },
+    { tool: 'Typeform',              price: `$59${period}` },
+    { tool: 'Mailchimp',             price: `$350${period}` },
+    { tool: 'Calendly',              price: `$16${period}` },
+    { tool: 'Twilio / SMS',          price: `$200+${period}` },
+    { tool: 'ManyChat',              price: `$145${period}` },
+    { tool: 'Kajabi',                price: `$149${period}` },
+    { tool: 'Stripe + integrations', price: `$120+${period}` },
+  ]
+
   const [activeTab, setActiveTab] = useState<typeof TAB_IDS[number]>('organizacion')
 
   const tabs = TAB_IDS.map((id) => ({
@@ -150,7 +153,7 @@ export function PlatformSection() {
                 <span className="text-5xl font-bold text-white/18 line-through" style={{ textDecorationColor: 'rgba(239,68,68,0.35)' }}>
                   $6,000+
                 </span>
-                <span className="text-xl text-white/25 ml-1">/mes</span>
+                <span className="text-xl text-white/25 ml-1">{period}</span>
               </div>
               <div className="my-8 h-px w-16 bg-white/[0.08]" />
               <p className="text-[10px] text-white/28 uppercase tracking-widest mb-3">{t('withLabel')}</p>
@@ -158,7 +161,7 @@ export function PlatformSection() {
                 <span className="text-6xl font-bold" style={{ color: '#ff6d28', textShadow: '0 0 30px rgba(255,109,40,0.35)' }}>
                   $87
                 </span>
-                <span className="text-xl text-white/40 ml-1">/mes</span>
+                <span className="text-xl text-white/40 ml-1">{period}</span>
               </div>
               <p className="text-xs text-white/28 mt-4 max-w-xs">{t('allToolsNote')}</p>
 

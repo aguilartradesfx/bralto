@@ -40,7 +40,7 @@ const RESELL_OFFSET = DONUT_C / 4 - SAAS_LEN
 const REBILL_OFFSET = DONUT_C / 4 - SAAS_LEN - RESELL_LEN
 
 // ─── Agency Dashboard Mockup — Dark Bento style ───────────────────────────────
-function AgencyMock() {
+function AgencyMock({ statusActive, statusCustomers }: { statusActive: string; statusCustomers: string }) {
   return (
     <div
       className="w-full rounded-[20px] border border-white/[0.07] overflow-hidden"
@@ -210,10 +210,10 @@ function AgencyMock() {
       <div className="h-7 bg-[#0e0e12] border-t border-white/[0.05] flex items-center px-4 gap-3">
         <div className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 4px rgba(52,211,153,0.8)' }} />
-          <span className="text-[9px] text-white/30">Sistema activo</span>
+          <span className="text-[9px] text-white/30">{statusActive}</span>
         </div>
         <span className="text-[9px] text-white/15">·</span>
-        <span className="text-[9px] text-white/30">51 clientes</span>
+        <span className="text-[9px] text-white/30">{statusCustomers}</span>
         <span className="text-[9px] text-white/15">·</span>
         <span className="text-[9px] text-white/30">MRR $653</span>
       </div>
@@ -397,7 +397,7 @@ export function Hero() {
             background: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(91,182,255,0.04) 0%, transparent 70%)',
           }}
         />
-        <AgencyMock />
+        <AgencyMock statusActive={t('statusActive')} statusCustomers={t('statusCustomers')} />
       </motion.div>
     </section>
   )
