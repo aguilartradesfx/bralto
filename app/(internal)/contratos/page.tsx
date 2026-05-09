@@ -53,7 +53,7 @@ export default async function ContratosPage({ searchParams }: Props) {
         </div>
         <Link
           href="/contratos/nuevo"
-          className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white text-sm font-medium rounded-lg transition-colors"
         >
           <Plus size={15} />
           Nuevo contrato
@@ -68,7 +68,7 @@ export default async function ContratosPage({ searchParams }: Props) {
             href={`/contratos?status=${value}${q ? `&q=${q}` : ''}`}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               (status ?? 'all') === value
-                ? 'bg-orange-500 text-white'
+                ? 'bg-[#5bb6ff] text-white'
                 : 'bg-white/5 text-white/50 hover:text-white/80 hover:bg-white/10'
             }`}
           >
@@ -84,7 +84,7 @@ export default async function ContratosPage({ searchParams }: Props) {
             name="q"
             defaultValue={q}
             placeholder="Buscar..."
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/60 w-full md:w-56"
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#5bb6ff]/60 w-full md:w-56"
           />
         </form>
       </div>
@@ -94,7 +94,7 @@ export default async function ContratosPage({ searchParams }: Props) {
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <FileText size={32} className="text-white/10 mb-3" />
           <p className="text-white/30 text-sm">No hay contratos{status && status !== 'all' ? ' con este estado' : ''}</p>
-          <Link href="/contratos/nuevo" className="text-orange-400 hover:text-orange-300 text-sm mt-2">
+          <Link href="/contratos/nuevo" className="text-[#5bb6ff] hover:text-[#5bb6ff] text-sm mt-2">
             Crear el primero →
           </Link>
         </div>
@@ -146,7 +146,7 @@ export default async function ContratosPage({ searchParams }: Props) {
                             href={`${siteUrl}/c/${contract.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/30 hover:text-orange-400 transition-colors"
+                            className="text-white/30 hover:text-[#5bb6ff] transition-colors"
                             title="Abrir enlace público"
                           >
                             <ExternalLink size={13} />

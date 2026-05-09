@@ -23,7 +23,7 @@ export default async function EditarContratoPage({ params }: Props) {
     return (
       <div className="p-8">
         <p className="text-white/50">Este contrato no puede editarse en su estado actual.</p>
-        <a href={`/contratos/${id}`} className="text-orange-400 text-sm mt-2 inline-block">
+        <a href={`/contratos/${id}`} className="text-[#5bb6ff] text-sm mt-2 inline-block">
           ← Volver al contrato
         </a>
       </div>

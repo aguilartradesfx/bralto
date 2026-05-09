@@ -127,7 +127,7 @@ export function ProspectPanel({ prospect, onClose, onProspectUpdated }: Prospect
                   href={prospect.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/30 hover:text-orange-400 transition-colors flex-shrink-0"
+                  className="text-white/30 hover:text-[#5bb6ff] transition-colors flex-shrink-0"
                   title="Ver perfil en LinkedIn"
                 >
                   <ExternalLink size={13} />
@@ -157,13 +157,13 @@ export function ProspectPanel({ prospect, onClose, onProspectUpdated }: Prospect
               onClick={() => setActiveTab(id)}
               className={`flex-1 py-2.5 text-xs font-medium transition-colors relative ${
                 activeTab === id
-                  ? 'text-orange-400'
+                  ? 'text-[#5bb6ff]'
                   : 'text-white/40 hover:text-white/70'
               }`}
             >
               {label}
               {activeTab === id && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500" />
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#5bb6ff]" />
               )}
             </button>
           ))}
@@ -280,7 +280,7 @@ export function ProspectPanel({ prospect, onClose, onProspectUpdated }: Prospect
                     {prospect.trigger_signals.map((s, i) => (
                       <span
                         key={i}
-                        className="px-2 py-0.5 bg-orange-500/10 text-orange-300/70 text-xs rounded"
+                        className="px-2 py-0.5 bg-[#5bb6ff]/10 text-[#5bb6ff]/70 text-xs rounded"
                       >
                         {s}
                       </span>
@@ -341,7 +341,7 @@ export function ProspectPanel({ prospect, onClose, onProspectUpdated }: Prospect
                       <div
                         className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                           isAgent
-                            ? 'bg-orange-500/15 border border-orange-500/20 rounded-tr-sm'
+                            ? 'bg-[#5bb6ff]/15 border border-[#5bb6ff]/20 rounded-tr-sm'
                             : 'bg-white/[0.06] border border-white/[0.08] rounded-tl-sm'
                         }`}
                       >
@@ -412,7 +412,7 @@ export function ProspectPanel({ prospect, onClose, onProspectUpdated }: Prospect
                 value={currentStatus}
                 onChange={(e) => handleStatusChange(e.target.value as ProspectStatus)}
                 disabled={updating}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-orange-500/60 disabled:opacity-50 pr-8"
+                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-[#5bb6ff]/60 disabled:opacity-50 pr-8"
               >
                 {PROSPECT_STATUSES.map((s) => (
                   <option key={s} value={s}>

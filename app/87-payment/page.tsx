@@ -3,24 +3,24 @@ import { CheckCircle, Mail, ArrowRight, Clock } from 'lucide-react'
 
 export default function PaymentConfirmationPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-12 md:py-20">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,rgba(249,115,22,0.07),transparent)] pointer-events-none" />
+    <div className="min-h-screen bg-[#131316] text-white px-4 py-12 md:py-20">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,rgba(91,182,255,0.05),transparent)] pointer-events-none" />
 
       <div className="relative z-10 max-w-lg mx-auto">
 
         {/* Check icon */}
         <div className="flex justify-center mb-8">
           <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-[#F97316]/20 blur-xl scale-150" />
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#F97316]/10 border border-[#F97316]/25">
-              <CheckCircle size={38} className="text-[#F97316]" />
+            <div className="absolute inset-0 rounded-full bg-[#5bb6ff]/20 blur-xl scale-150" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#5bb6ff]/10 border border-[#5bb6ff]/25">
+              <CheckCircle size={38} className="text-[#5bb6ff]" />
             </div>
           </div>
         </div>
 
         {/* Heading */}
         <div className="text-center mb-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff] mb-3">
             Pago recibido
           </p>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
@@ -36,8 +36,8 @@ export default function PaymentConfirmationPage() {
         <div className="rounded-2xl border border-white/8 bg-white/[0.025] divide-y divide-white/[0.06] mb-4">
 
           <div className="flex items-start gap-4 p-5">
-            <div className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F97316]/10 border border-[#F97316]/20 mt-0.5">
-              <Mail size={14} className="text-[#F97316]" />
+            <div className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#5bb6ff]/10 border border-[#5bb6ff]/20 mt-0.5">
+              <Mail size={14} className="text-[#5bb6ff]" />
             </div>
             <div>
               <p className="text-sm font-semibold text-white mb-1">Revisá tu correo</p>
@@ -73,8 +73,8 @@ export default function PaymentConfirmationPage() {
             </span>
           </div>
 
-          <div className="rounded-xl bg-[#F97316]/[0.06] border border-[#F97316]/15 px-4 py-3 mb-4">
-            <p className="text-xs text-[#F97316]/80 leading-relaxed">
+          <div className="rounded-xl bg-[#5bb6ff]/[0.06] border border-[#5bb6ff]/15 px-4 py-3 mb-4">
+            <p className="text-xs text-[#5bb6ff]/80 leading-relaxed">
               Si intentás acceder antes de completar la configuración del correo, la cuenta no funcionará. Esperá las instrucciones primero.
             </p>
           </div>

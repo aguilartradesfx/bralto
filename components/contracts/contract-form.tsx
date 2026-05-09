@@ -190,7 +190,7 @@ export function ContractForm({ clients, initialData }: Props) {
   }
 
   const fieldClass =
-    'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-orange-500/60 focus:ring-1 focus:ring-orange-500/30 transition-colors'
+    'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#5bb6ff]/60 focus:ring-1 focus:ring-[#5bb6ff]/30 transition-colors'
   const labelClass = 'block text-xs text-white/50 mb-1.5'
   const errorClass = 'text-red-400 text-xs mt-1'
   const sectionClass = 'bg-[#111111] rounded-xl p-5 space-y-4'
@@ -208,7 +208,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 1. CLIENTE */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">1</span>
+              <span className="w-5 h-5 rounded-full bg-[#5bb6ff]/20 text-[#5bb6ff] text-xs flex items-center justify-center font-bold">1</span>
               Cliente
             </h2>
             <ClientSelector
@@ -292,7 +292,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 2. PROYECTO */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">2</span>
+              <span className="w-5 h-5 rounded-full bg-[#5bb6ff]/20 text-[#5bb6ff] text-xs flex items-center justify-center font-bold">2</span>
               Proyecto
             </h2>
             <div className="space-y-3">
@@ -338,7 +338,7 @@ export function ContractForm({ clients, initialData }: Props) {
                 <input
                   type="checkbox"
                   {...register('proyecto.tiene_referencias_visuales')}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-orange-500 focus:ring-orange-500/30 focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#5bb6ff] focus:ring-[#5bb6ff]/30 focus:ring-offset-0"
                 />
                 <span className="text-sm text-white/70">Incluye referencias visuales como anexo</span>
               </label>
@@ -348,7 +348,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 3. SERVICIOS */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">3</span>
+              <span className="w-5 h-5 rounded-full bg-[#5bb6ff]/20 text-[#5bb6ff] text-xs flex items-center justify-center font-bold">3</span>
               Servicios activados
             </h2>
             <ServicesSection form={form} />
@@ -357,7 +357,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 4. ENTREGABLES */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">4</span>
+              <span className="w-5 h-5 rounded-full bg-[#5bb6ff]/20 text-[#5bb6ff] text-xs flex items-center justify-center font-bold">4</span>
               Entregables <span className="text-white/30 font-normal text-xs">(opcional)</span>
             </h2>
             <DeliverablesTable form={form} />
@@ -366,7 +366,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 5. PRECIO */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">5</span>
+              <span className="w-5 h-5 rounded-full bg-[#5bb6ff]/20 text-[#5bb6ff] text-xs flex items-center justify-center font-bold">5</span>
               Precio y pago
             </h2>
             <div className="space-y-4">
@@ -404,7 +404,7 @@ export function ContractForm({ clients, initialData }: Props) {
                 <input
                   type="checkbox"
                   {...register('pago.tiene_mensualidad')}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-orange-500 focus:ring-orange-500/30 focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#5bb6ff] focus:ring-[#5bb6ff]/30 focus:ring-offset-0"
                 />
                 <span className="text-sm text-white/70">Incluye mensualidad</span>
               </label>
@@ -446,7 +446,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 6. ENLACE DE PAGO */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 text-xs flex items-center justify-center font-bold">6</span>
+              <span className="w-5 h-5 rounded-full bg-[#5bb6ff]/20 text-[#5bb6ff] text-xs flex items-center justify-center font-bold">6</span>
               Enlace de pago <span className="text-white/30 font-normal text-xs">(opcional)</span>
             </h2>
             <div>
@@ -464,7 +464,7 @@ export function ContractForm({ clients, initialData }: Props) {
         </form>
 
         {/* ── Sticky bottom bar ────────────────────────────────── */}
-        <div className="fixed bottom-0 left-0 md:left-56 right-0 bg-[#0d0d0d]/95 backdrop-blur border-t border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 z-30">
+        <div className="fixed bottom-0 left-0 md:left-56 right-0 bg-[#131316]/95 backdrop-blur border-t border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 z-30">
           {publicUrl ? (
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <Link2 size={14} className="text-green-400 shrink-0" />
@@ -473,7 +473,7 @@ export function ContractForm({ clients, initialData }: Props) {
                 href={publicUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-orange-400 hover:text-orange-300 truncate"
+                className="text-sm text-[#5bb6ff] hover:text-[#5bb6ff] truncate"
               >
                 {publicUrl}
               </a>
@@ -522,7 +522,7 @@ export function ContractForm({ clients, initialData }: Props) {
                 if (errs.payment_link) sections.push('Enlace de pago')
                 setSendError(sections.length ? `Campos incompletos: ${sections.join(', ')}` : 'Revisá el formulario antes de continuar.')
               })}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-orange-500 hover:bg-orange-400 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
               >
                 <Link2 size={14} />
                 {saving ? 'Guardando...' : sending ? 'Enviando...' : 'Firmar y enviar'}

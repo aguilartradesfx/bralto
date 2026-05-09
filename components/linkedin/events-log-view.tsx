@@ -79,7 +79,7 @@ export function EventsLogView() {
               setFilterType(e.target.value)
               setPage(0)
             }}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white/70 focus:outline-none focus:border-orange-500/60"
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white/70 focus:outline-none focus:border-[#5bb6ff]/60"
           >
             <option value="">Todos los tipos</option>
             {eventTypes.map((t) => (

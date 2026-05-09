@@ -15,7 +15,7 @@ export function SignalDots({ isDecisionMaker, hasBudgetSignal, mentionedProblem,
         <span
           key={i}
           title={LABELS[i]}
-          className={`w-2 h-2 rounded-full ${val ? 'bg-orange-400' : 'bg-white/15'}`}
+          className={`w-2 h-2 rounded-full ${val ? 'bg-[#5bb6ff]' : 'bg-white/15'}`}
         />
       ))}
     </div>
@@ -35,7 +35,7 @@ export function SignalList({ isDecisionMaker, hasBudgetSignal, mentionedProblem,
         <div key={label} className="flex items-center gap-2.5 text-sm">
           <span
             className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
-              value ? 'bg-orange-500/20 text-orange-400' : 'bg-white/5 text-white/20'
+              value ? 'bg-[#5bb6ff]/20 text-[#5bb6ff]' : 'bg-white/5 text-white/20'
             }`}
           >
             {value ? '✓' : '×'}

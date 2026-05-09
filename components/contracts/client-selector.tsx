@@ -46,7 +46,7 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
             const client = clients.find((c) => c.id === id)
             if (client) handleSelectClient(client)
           }}
-          className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500/60 focus:ring-1 focus:ring-orange-500/30 transition-colors pr-10"
+          className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#5bb6ff]/60 focus:ring-1 focus:ring-[#5bb6ff]/30 transition-colors pr-10"
         >
           <option value="">— Seleccionar cliente existente —</option>
           {clients.map((c) => (
@@ -62,14 +62,14 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
       </div>
 
       {selectedClient && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-orange-500/10 rounded-lg">
-          <span className="text-xs text-orange-400 flex-1">
+        <div className="flex items-center gap-2 px-3 py-2 bg-[#5bb6ff]/10 rounded-lg">
+          <span className="text-xs text-[#5bb6ff] flex-1">
             Datos precargados desde <strong>{selectedClient.empresa_nombre}</strong>. Podés editar los campos abajo.
           </span>
           <button
             type="button"
             onClick={() => onClientSelect(null)}
-            className="text-orange-400/60 hover:text-orange-400"
+            className="text-[#5bb6ff]/60 hover:text-[#5bb6ff]"
           >
             <X size={13} />
           </button>
@@ -80,7 +80,7 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
       <button
         type="button"
         onClick={() => setShowNew((v) => !v)}
-        className="flex items-center gap-1.5 text-xs text-white/40 hover:text-orange-400 transition-colors"
+        className="flex items-center gap-1.5 text-xs text-white/40 hover:text-[#5bb6ff] transition-colors"
       >
         <Plus size={12} />
         {showNew ? 'Ocultar formulario de nuevo cliente' : 'Nuevo cliente (guardar en lista)'}
@@ -141,12 +141,12 @@ function NewClientQuickForm({ onCreated }: { onCreated: (client: ClientRow) => v
       ].map(({ name, label, required }) => (
         <div key={name}>
           <label className="block text-xs text-white/50 mb-1">
-            {label} {required && <span className="text-orange-500">*</span>}
+            {label} {required && <span className="text-[#5bb6ff]">*</span>}
           </label>
           <input
             name={name}
             required={required}
-            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-orange-500/60 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#5bb6ff]/60 transition-colors"
           />
         </div>
       ))}
@@ -156,7 +156,7 @@ function NewClientQuickForm({ onCreated }: { onCreated: (client: ClientRow) => v
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-white text-sm font-medium rounded-md px-4 py-2 transition-colors"
+        className="w-full bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:opacity-50 text-white text-sm font-medium rounded-md px-4 py-2 transition-colors"
       >
         {loading ? 'Guardando...' : 'Guardar cliente'}
       </button>

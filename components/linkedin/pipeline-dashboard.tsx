@@ -299,15 +299,15 @@ export function PipelineDashboard() {
           ).map(({ label, value, Icon, highlight }) => (
             <div
               key={label}
-              className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4 hover:border-orange-500/20 transition-colors group"
+              className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4 hover:border-[#5bb6ff]/20 transition-colors group"
             >
               <Icon
                 size={14}
-                className="text-white/20 mb-2 group-hover:text-orange-500/50 transition-colors"
+                className="text-white/20 mb-2 group-hover:text-[#5bb6ff]/50 transition-colors"
               />
               <p
                 className={`text-2xl font-bold tabular-nums ${
-                  highlight ? 'text-orange-400' : 'text-white'
+                  highlight ? 'text-[#5bb6ff]' : 'text-white'
                 }`}
               >
                 {value}
@@ -327,7 +327,7 @@ export function PipelineDashboard() {
               value={value}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                 activeTab === value
-                  ? 'text-orange-400 border-orange-500'
+                  ? 'text-[#5bb6ff] border-[#5bb6ff]'
                   : 'text-white/40 border-transparent hover:text-white/70'
               }`}
             >
@@ -336,7 +336,7 @@ export function PipelineDashboard() {
                 <span
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     activeTab === value
-                      ? 'bg-orange-500/20 text-orange-400'
+                      ? 'bg-[#5bb6ff]/20 text-[#5bb6ff]'
                       : 'bg-white/[0.06] text-white/30'
                   }`}
                 >
@@ -527,13 +527,13 @@ export function PipelineDashboard() {
                 placeholder="Buscar nombre o empresa..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/60 w-56"
+                className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#5bb6ff]/60 w-56"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/70 focus:outline-none focus:border-orange-500/60"
+              className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white/70 focus:outline-none focus:border-[#5bb6ff]/60"
             >
               <option value="all">Todos los estados</option>
               {(
@@ -563,7 +563,7 @@ export function PipelineDashboard() {
                 max={100}
                 value={minScore}
                 onChange={(e) => setMinScore(Number(e.target.value))}
-                className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-sm text-white/70 focus:outline-none focus:border-orange-500/60 w-16 text-center"
+                className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-sm text-white/70 focus:outline-none focus:border-[#5bb6ff]/60 w-16 text-center"
               />
             </div>
           </div>

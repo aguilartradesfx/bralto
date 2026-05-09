@@ -42,8 +42,8 @@ export function CookieConsent() {
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center gap-3 shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F97316]/10 border border-[#F97316]/20">
-                  <Cookie size={15} className="text-[#F97316]" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
+                  <Cookie size={15} className="text-[#5bb6ff]" />
                 </div>
                 <span className="text-sm font-semibold text-white">Cookies</span>
               </div>
@@ -61,7 +61,7 @@ export function CookieConsent() {
                 </button>
                 <button
                   onClick={() => accept('all')}
-                  className="rounded-lg bg-[#F97316] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#ea6c0c] transition-colors duration-150"
+                  className="rounded-lg bg-[#5bb6ff] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#7cc5ff] transition-colors duration-150"
                 >
                   Aceptar todo
                 </button>

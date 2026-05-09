@@ -37,7 +37,7 @@ export function DeliverablesTable({ form }: Props) {
         <button
           type="button"
           onClick={handleGenerateDefaults}
-          className="flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-[#5bb6ff] hover:text-[#5bb6ff] transition-colors"
         >
           <Sparkles size={12} />
           Generar por defecto

@@ -134,14 +134,14 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 className={cn(
                   'relative mx-auto flex h-11 w-11 items-center justify-center rounded-full text-base font-semibold transition-all duration-150',
                   selected
-                    ? 'bg-[#F97316] text-white shadow-[0_0_14px_rgba(249,115,22,0.45)]'
+                    ? 'bg-[#5bb6ff] text-white shadow-[0_0_14px_rgba(91,182,255,0.12)]'
                     : selectable
-                    ? 'text-white hover:bg-[#F97316]/20 hover:text-[#F97316] cursor-pointer'
+                    ? 'text-white hover:bg-[#5bb6ff]/20 hover:text-[#5bb6ff] cursor-pointer'
                     : 'text-white/15 cursor-default',
                 )}
               >
                 {today && !selected && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-[#F97316]" />
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-[#5bb6ff]" />
                 )}
                 {date.getDate()}
               </button>

@@ -5,7 +5,7 @@ export const STATUS_CONFIG: Record<ProspectStatus, { label: string; className: s
   conexion_enviada: { label: 'Conexión enviada', className: 'bg-sky-500/15 text-sky-400' },
   conectado: { label: 'Conectado', className: 'bg-blue-500/15 text-blue-400' },
   conversando: { label: 'Conversando', className: 'bg-amber-500/15 text-amber-400' },
-  calificado: { label: 'Calificado', className: 'bg-orange-500/15 text-orange-400' },
+  calificado: { label: 'Calificado', className: 'bg-[#5bb6ff]/15 text-[#5bb6ff]' },
   agendado: { label: 'Agendado', className: 'bg-emerald-500/15 text-emerald-400' },
   no_califica: { label: 'No califica', className: 'bg-red-500/10 text-red-400/80' },
   no_respondio: { label: 'No respondió', className: 'bg-white/5 text-white/35' },

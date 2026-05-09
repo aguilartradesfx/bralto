@@ -97,7 +97,7 @@ export function BraltoSignButton({ contractId }: Props) {
           </div>
           <div
             ref={containerRef}
-            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-orange-500'}`}
+            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-[#5bb6ff]'}`}
           >
             <SignatureCanvas
               ref={sigRef}
@@ -128,7 +128,7 @@ export function BraltoSignButton({ contractId }: Props) {
           <button
             disabled={isEmpty || loading}
             onClick={handleSign}
-            className="px-5 py-2 bg-orange-500 hover:bg-orange-400 disabled:bg-white/10 disabled:text-white/30 text-white text-sm font-semibold rounded-lg transition-colors"
+            className="px-5 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:bg-white/10 disabled:text-white/30 text-white text-sm font-semibold rounded-lg transition-colors"
           >
             {loading ? 'Firmando...' : 'Confirmar firma'}
           </button>
@@ -142,7 +142,7 @@ export function BraltoSignButton({ contractId }: Props) {
     <>
       <button
         onClick={openModal}
-        className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold rounded-lg transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white text-sm font-semibold rounded-lg transition-colors"
       >
         <PenLine size={14} />
         Firmar como Bralto

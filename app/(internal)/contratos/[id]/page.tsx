@@ -54,7 +54,7 @@ export default async function ContratoDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen" id="print-contract">
       {/* Top bar — offset below mobile nav (h-14) */}
-      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 bg-[#0d0d0d]/95 backdrop-blur z-10 no-print">
+      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 bg-[#131316]/95 backdrop-blur z-10 no-print">
         <div className="flex items-center gap-3">
           <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors shrink-0">
             ← Contratos
@@ -71,7 +71,7 @@ export default async function ContratoDetailPage({ params }: Props) {
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] rounded-lg text-xs text-white/50 min-w-0">
               <span className="truncate max-w-[140px] md:max-w-[200px]">{publicUrl}</span>
               <CopyButton text={publicUrl} />
-              <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-orange-400 transition-colors">
+              <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-[#5bb6ff] transition-colors">
                 <ExternalLink size={12} />
               </a>
             </div>
@@ -136,8 +136,8 @@ export default async function ContratoDetailPage({ params }: Props) {
         )}
 
         {c.status === 'signed_by_client' && (
-          <div className="mb-8 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl no-print">
-            <p className="text-sm font-medium text-orange-400">
+          <div className="mb-8 p-4 bg-[#5bb6ff]/10 border border-[#5bb6ff]/20 rounded-xl no-print">
+            <p className="text-sm font-medium text-[#5bb6ff]">
               Esperando tu firma — usá el botón &quot;Firmar como Bralto&quot; para completar el contrato.
             </p>
           </div>

@@ -42,9 +42,9 @@ function MobileButton({
       onClick={onClick}
       className={cn(
         'relative inline-flex items-center justify-center font-semibold rounded-lg',
-        'bg-[#F97316] text-white tracking-tight',
-        'shadow-[0_0_20px_rgba(249,115,22,0.35)]',
-        'transition-shadow duration-300 hover:shadow-[0_0_32px_rgba(249,115,22,0.55)]',
+        'bg-[#ffa845] text-black tracking-tight',
+        'shadow-[0_0_20px_rgba(255,168,69,0.3)]',
+        'transition-shadow duration-300 hover:shadow-[0_0_32px_rgba(255,168,69,0.5)]',
         sizeClasses[size],
         className
       )}
@@ -106,11 +106,12 @@ function DesktopButton({
       )}
       style={{
         background: isHovered
-          ? `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, #fb923c 0%, #F97316 30%, #ea6c0c 60%, #c2510a 100%)`
-          : 'linear-gradient(135deg, #ea6c0c 0%, #F97316 40%, #fb923c 70%, #F97316 100%)',
+          ? `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, #ffd085 0%, #ffa845 30%, #f59e0b 60%, #d97706 100%)`
+          : 'linear-gradient(135deg, #f59e0b 0%, #ffa845 40%, #ffd085 70%, #ffa845 100%)',
+        color: 'black',
         boxShadow: isHovered
-          ? '0 0 40px rgba(249,115,22,0.5), 0 0 80px rgba(249,115,22,0.2), inset 0 1px 0 rgba(255,255,255,0.2)'
-          : '0 0 20px rgba(249,115,22,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
+          ? '0 0 40px rgba(255,168,69,0.5), 0 0 80px rgba(255,168,69,0.2), inset 0 1px 0 rgba(255,255,255,0.3)'
+          : '0 0 20px rgba(255,168,69,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
         transition: 'box-shadow 0.3s ease',
       }}
     >

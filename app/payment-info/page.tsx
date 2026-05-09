@@ -22,7 +22,7 @@ function CopyButton({ value }: { value: string }) {
       className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 border border-white/8 hover:border-white/15 transition-all"
     >
       {copied
-        ? <Check size={13} className="text-[#F97316]" />
+        ? <Check size={13} className="text-[#5bb6ff]" />
         : <Copy size={13} className="text-white/35 group-hover:text-white/55" />
       }
     </button>
@@ -64,7 +64,7 @@ export default function PaymentInfoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-10 md:py-14">
+    <div className="min-h-screen bg-[#131316] text-white px-4 py-10 md:py-14">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_35%_at_50%_0%,rgba(249,115,22,0.05),transparent)] pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl mx-auto">
@@ -81,8 +81,8 @@ export default function PaymentInfoPage() {
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#5bb6ff]" />
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff]">
               Información de Pago
             </p>
           </div>
@@ -101,15 +101,15 @@ export default function PaymentInfoPage() {
           <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F97316]/10 border border-[#F97316]/20">
-                  <span className="text-sm font-bold text-[#F97316]">$</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
+                  <span className="text-sm font-bold text-[#5bb6ff]">$</span>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-white leading-tight">Cuenta en Dólares</p>
                   <p className="text-xs text-white/30 mt-0.5">USD</p>
                 </div>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#F97316]/12 border border-[#F97316]/22 text-[#F97316]">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#5bb6ff]/12 border border-[#5bb6ff]/22 text-[#5bb6ff]">
                 BAC
               </span>
             </div>
@@ -130,7 +130,7 @@ export default function PaymentInfoPage() {
                   <p className="text-xs text-white/30 mt-0.5">CRC</p>
                 </div>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#F97316]/12 border border-[#F97316]/22 text-[#F97316]">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#5bb6ff]/12 border border-[#5bb6ff]/22 text-[#5bb6ff]">
                 BAC
               </span>
             </div>
@@ -144,8 +144,8 @@ export default function PaymentInfoPage() {
         {/* Converter */}
         <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 mb-4">
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F97316]/10 border border-[#F97316]/20">
-              <ArrowLeftRight size={15} className="text-[#F97316]" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
+              <ArrowLeftRight size={15} className="text-[#5bb6ff]" />
             </div>
             <div>
               <p className="text-sm font-semibold text-white leading-tight">Convertidor de Moneda</p>
@@ -159,7 +159,7 @@ export default function PaymentInfoPage() {
           <div className="flex items-end gap-3">
             <div className="flex-1">
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25 mb-2">{fromLabel}</p>
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus-within:border-[#F97316]/35 transition-all">
+              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus-within:border-[#5bb6ff]/35 transition-all">
                 <span className="text-white/30 text-sm mr-2 shrink-0">{fromPrefix}</span>
                 <input
                   type="number"
@@ -174,7 +174,7 @@ export default function PaymentInfoPage() {
 
             <button
               onClick={handleSwap}
-              className="shrink-0 mb-0.5 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-[#F97316]/12 hover:border-[#F97316]/25 transition-all"
+              className="shrink-0 mb-0.5 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-[#5bb6ff]/12 hover:border-[#5bb6ff]/25 transition-all"
             >
               <ArrowLeftRight size={13} className="text-white/35" />
             </button>
@@ -183,7 +183,7 @@ export default function PaymentInfoPage() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25 mb-2">{toLabel}</p>
               <div className="flex items-center bg-white/[0.02] border border-white/8 rounded-xl px-4 py-3">
                 <span className="text-white/20 text-sm mr-2 shrink-0">{toPrefix}</span>
-                <span className={`text-sm ${converted ? 'text-[#F97316] font-semibold' : 'text-white/20'}`}>
+                <span className={`text-sm ${converted ? 'text-[#5bb6ff] font-semibold' : 'text-white/20'}`}>
                   {converted || '0.00'}
                 </span>
               </div>
@@ -207,8 +207,8 @@ export default function PaymentInfoPage() {
         {/* Stripe */}
         <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 md:p-6">
           <div className="flex items-start gap-3 mb-5">
-            <div className="shrink-0 flex h-9 w-9 items-center justify-center rounded-xl bg-[#F97316]/10 border border-[#F97316]/20">
-              <CreditCard size={15} className="text-[#F97316]" />
+            <div className="shrink-0 flex h-9 w-9 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
+              <CreditCard size={15} className="text-[#5bb6ff]" />
             </div>
             <div>
               <p className="text-sm font-semibold text-white leading-tight">¿Ya discutimos el precio?</p>
@@ -218,7 +218,7 @@ export default function PaymentInfoPage() {
 
           <p className="text-sm text-white/45 leading-relaxed mb-6">
             Elige el monto que acordamos, ingresa tu información y listo. El pago es procesado de forma segura por{' '}
-            <span className="text-[#F97316]">Stripe</span>.
+            <span className="text-[#5bb6ff]">Stripe</span>.
           </p>
 
           <a

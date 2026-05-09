@@ -8,7 +8,7 @@ export default async function InternalLayout({ children }: { children: React.Rea
   if (!user) redirect('/login')
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white">
+    <div className="min-h-screen bg-[#060607] text-white">
       <InternalNav />
       <main className="pt-14 md:pt-0 md:ml-56 min-h-screen">{children}</main>
     </div>

@@ -65,7 +65,7 @@ export function ServicesSection({ form }: Props) {
                 <input
                   type="checkbox"
                   {...register(`servicios.${key as keyof ContractDataInput['servicios']}` as never)}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-orange-500 focus:ring-orange-500/30 focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#5bb6ff] focus:ring-[#5bb6ff]/30 focus:ring-offset-0 cursor-pointer"
                 />
                 <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
                   {label}
@@ -83,7 +83,7 @@ export function ServicesSection({ form }: Props) {
           <input
             type="checkbox"
             {...register('servicios.otros')}
-            className="w-4 h-4 rounded border-white/20 bg-white/5 text-orange-500 focus:ring-orange-500/30 focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#5bb6ff] focus:ring-[#5bb6ff]/30 focus:ring-offset-0 cursor-pointer"
           />
           <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
             Otros servicios (especificar)
@@ -94,7 +94,7 @@ export function ServicesSection({ form }: Props) {
             {...register('servicios.otros_descripcion')}
             rows={3}
             placeholder="Describe los servicios adicionales..."
-            className="mt-2 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/60 focus:ring-1 focus:ring-orange-500/30 transition-colors resize-none"
+            className="mt-2 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#5bb6ff]/60 focus:ring-1 focus:ring-[#5bb6ff]/30 transition-colors resize-none"
           />
         )}
       </div>

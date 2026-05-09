@@ -71,14 +71,14 @@ const services = [
 
 export default function PreciosPage() {
   return (
-    <div className="min-h-screen bg-[#080808] text-white antialiased">
+    <div className="min-h-screen bg-[#060607] text-white antialiased">
 
       {/* ═══════════════════════════════════════════
           HERO
       ═══════════════════════════════════════════ */}
-      <section className="relative pt-40 pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(249,115,22,0.07),transparent)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#080808]" />
+      <section className="grid-bg relative pt-40 pb-28 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(91,182,255,0.05),transparent)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#060607]" />
 
         <Link
           href="/"
@@ -93,7 +93,7 @@ export default function PreciosPage() {
             className="inline-flex items-center gap-2.5 mb-10 px-4 py-2 rounded-full"
             style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
           >
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F97316] text-white">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#5bb6ff] text-white">
               Bralto
             </span>
             <span className="text-sm text-white/75">Servicios y precios</span>
@@ -101,11 +101,11 @@ export default function PreciosPage() {
 
           <h1
             className="font-bold tracking-tight leading-[0.92] text-white mb-7"
-            style={{ fontSize: 'clamp(3.2rem, 8vw, 7.5rem)' }}
+            style={{ fontSize: 'clamp(2.4rem, 5vw, 4.2rem)' }}
           >
             Todo lo que
             <br />
-            <span style={{ color: 'rgba(255,255,255,0.25)' }}>hacemos.</span>
+            <em style={{ fontFamily: 'var(--font-instrument-serif)', fontStyle: 'italic', fontWeight: 400, color: 'rgba(255,255,255,0.25)' }}>hacemos.</em>
           </h1>
 
           <p className="text-lg text-white/50 leading-relaxed max-w-xl">
@@ -120,19 +120,16 @@ export default function PreciosPage() {
       ═══════════════════════════════════════════ */}
       <section className="pb-32" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px"
-            style={{ background: 'rgba(255,255,255,0.05)' }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {services.map((s) => (
               <Link
                 key={s.slug}
                 href={s.href}
-                className="group relative bg-[#080808] px-9 py-10 flex flex-col gap-6 hover:bg-[#0d0d0d] transition-colors"
+                className="group relative rounded-card bg-[#131316] border border-white/[0.06] px-9 py-10 flex flex-col gap-6 hover:bg-[#1a1a1e] transition-colors"
               >
                 {/* Icon */}
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/8 group-hover:bg-[#F97316]/10 group-hover:border-[#F97316]/20 transition-all">
-                  <s.icon size={16} className="text-white/35 group-hover:text-[#F97316] transition-colors" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/8 group-hover:bg-[#5bb6ff]/10 group-hover:border-[#5bb6ff]/20 transition-all">
+                  <s.icon size={16} className="text-white/35 group-hover:text-[#5bb6ff] transition-colors" />
                 </div>
 
                 {/* Name + description */}
@@ -148,7 +145,7 @@ export default function PreciosPage() {
                 </div>
 
                 {/* CTA hint */}
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-white/30 group-hover:text-[#F97316] transition-colors">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-white/30 group-hover:text-[#5bb6ff] transition-colors">
                   Ver detalles
                   <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -156,7 +153,7 @@ export default function PreciosPage() {
                 {/* Bottom shimmer */}
                 <div
                   className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: 'linear-gradient(to right, transparent, rgba(249,115,22,0.3), transparent)' }}
+                  style={{ background: 'linear-gradient(to right, transparent, rgba(91,182,255,0.2), transparent)' }}
                 />
               </Link>
             ))}
@@ -168,12 +165,12 @@ export default function PreciosPage() {
           CTA FINAL
       ═══════════════════════════════════════════ */}
       <section className="relative py-40 overflow-hidden" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(249,115,22,0.08),transparent)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(255,168,69,0.05),transparent)] pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-12 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F97316] mb-6">¿No sabés por dónde empezar?</p>
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#5bb6ff] mb-6">¿No sabés por dónde empezar?</p>
           <h2
             className="font-bold tracking-tight leading-[0.92] text-white mb-8"
-            style={{ fontSize: 'clamp(2.8rem, 7vw, 6rem)' }}
+            style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
           >
             Hablemos<br />
             <span style={{ color: 'rgba(255,255,255,0.2)' }}>sin compromiso.</span>
@@ -185,7 +182,7 @@ export default function PreciosPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={AGENDAR}
-              className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-[#F97316] hover:bg-[#ea6c0c] text-white font-semibold transition-all hover:shadow-[0_0_48px_rgba(249,115,22,0.45)]"
+              className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-full bg-[#ffa845] hover:bg-[#f59e0b] text-black font-semibold transition-all hover:shadow-[0_0_48px_rgba(255,168,69,0.25)]"
             >
               Agendar llamada gratis
               <ArrowRight size={16} />

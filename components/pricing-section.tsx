@@ -1,253 +1,211 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Check } from 'lucide-react'
-
-const plans = {
-  plataforma: {
-    badge: 'Autogestión',
-    badgeStyle: 'border border-white/[0.1] text-white/40',
-    name: 'Plataforma Bralto',
-    nameColor: 'text-white/30',
-    price: '$87',
-    priceSuffix: '/mes',
-    priceNote: 'Hoy paga $0 — Pruebe antes de pagar.',
-    description:
-      'Para quienes quieren centralizar su operación por su cuenta. Una sola plataforma que reemplaza más de 10 herramientas.',
-    features: [
-      'CRM y embudos de venta',
-      'Sitio web y landing pages',
-      'Calendario y agendamiento',
-      'Email y SMS marketing',
-      'Automatizaciones de flujo',
-      'Gestión multicanal (WhatsApp, IG, Email)',
-      'App móvil incluida',
-      'Reportes en tiempo real',
-    ],
-    checkBg: 'bg-white/[0.05] border-white/[0.1]',
-    checkColor: 'text-white/40',
-    featureColor: 'text-white/55',
-    dividerColor: 'via-white/[0.07]',
-    cardBorder: 'border-white/[0.08]',
-    cardBg: 'bg-[#0e0e0e]',
-    topEdge: 'via-white/[0.09]',
-    cta: {
-      label: 'Iniciar Prueba Gratuita',
-      href: 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t',
-      external: true,
-      style:
-        'border border-white/[0.14] text-white/70 hover:border-white/30 hover:text-white',
-    },
-  },
-  integral: {
-    badge: 'Recomendado',
-    badgeStyle: 'bg-[#F97316] text-white',
-    name: 'Servicio Integral',
-    nameColor: 'text-[#F97316]/70',
-    price: 'Desde $849',
-    priceSuffix: '',
-    priceNote: 'El precio final depende del alcance de su proyecto.',
-    description:
-      'Analizamos su negocio, diseñamos la solución, y le entregamos todo funcionando. La plataforma Bralto viene incluida.',
-    features: [
-      'Todo lo de la Plataforma Bralto',
-      'Diagnóstico completo de su operación',
-      'Diseño de solución a la medida',
-      'Desarrollo de sitio web',
-      'Agentes de IA configurados',
-      'Integraciones con sus herramientas',
-      'Interfaces de gestión internas',
-      'Entrega en menos de 72 horas',
-      'Soporte post-implementación',
-    ],
-    checkBg: 'bg-[#F97316]/15 border-[#F97316]/25',
-    checkColor: 'text-[#F97316]',
-    featureColor: 'text-white/65',
-    dividerColor: 'via-[#F97316]/15',
-    cardBorder: 'border-[#F97316]/25',
-    cardBg: 'bg-[#0f0a06]',
-    topEdge: 'via-[#F97316]/45',
-    cta: {
-      label: 'Agendar Llamada Estratégica',
-      href: '/agendar',
-      external: false,
-      style: 'bg-[#F97316] text-white hover:bg-[#ea6c0c]',
-    },
-  },
-} as const
-
-type PlanKey = keyof typeof plans
+import { motion } from 'framer-motion'
+import { BarChart2, Sparkles, Check, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 
 export function PricingSection() {
-  const [selected, setSelected] = useState<PlanKey>('integral')
-  const plan = plans[selected]
+  const t  = useTranslations('PricingSection')
+  const locale = useLocale()
+
+  const foundationFeatures = t.raw('foundation.features') as string[]
+  const primeFeatures      = t.raw('prime.features') as string[]
 
   return (
-    <section id="inversion" className="relative overflow-hidden bg-[#080808] py-28">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_30%_at_50%_0%,rgba(249,115,22,0.04),transparent)]" />
+    <section id="inversion" className="relative overflow-hidden py-28">
 
-      <div className="relative z-10 mx-auto max-w-2xl px-6">
+      <div className="relative z-10 mx-auto max-w-[1240px] px-8">
 
-        {/* Header */}
-        <div className="mb-12 text-center">
-          <motion.p
+        {/* ── Header ── */}
+        <div className="mb-16 text-center">
+          <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-surface px-3.5 py-1.5"
+            style={{ border: '1px solid rgba(255,255,255,0.06)' }}
           >
-            Inversión
-          </motion.p>
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan" style={{ boxShadow: '0 0 8px #5bb6ff' }} />
+            <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-white/45">
+              {t('label')}
+            </span>
+          </motion.div>
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.08 }}
-            className="text-4xl font-bold tracking-tight text-white md:text-5xl leading-[1.08]"
+            className="mb-4 font-serif text-[clamp(44px,5.5vw,64px)] font-normal leading-[1.05] tracking-[-0.02em] text-white"
           >
-            Dos caminos.{' '}
-            <span className="text-[#F97316]">Un mismo objetivo.</span>
+            {t('headline')}{' '}
+            <em className="italic text-amber/75">{t('headlineItalic')}</em>
           </motion.h2>
+
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.14 }}
-            className="mt-4 text-base text-white/40"
+            className="mx-auto max-w-[520px] text-base text-white/35"
           >
-            Que su negocio opere mejor, sin depender de más personas.
+            {t('desc')}
           </motion.p>
         </div>
 
-        {/* Toggle selector */}
+        {/* ── Cards Stage ── */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="mb-8 flex rounded-xl border border-white/[0.07] bg-white/[0.03] p-1"
+          transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex min-h-[580px] flex-col items-center justify-center gap-6 py-10 md:flex-row md:gap-0"
+          style={{ perspective: '1800px' }}
         >
-          {(['integral', 'plataforma'] as PlanKey[]).map((key) => (
-            <button
-              key={key}
-              onClick={() => setSelected(key)}
-              className={`relative flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                selected === key
-                  ? 'text-white'
-                  : 'text-white/35 hover:text-white/60'
-              }`}
-            >
-              {selected === key && (
-                <motion.span
-                  layoutId="tab-bg"
-                  className="absolute inset-0 rounded-lg bg-white/[0.07] border border-white/[0.1]"
-                  transition={{ type: 'spring', stiffness: 380, damping: 35 }}
-                />
-              )}
-              <span className="relative z-10">
-                {key === 'integral' ? 'Servicio Integral' : 'Plataforma Bralto'}
-              </span>
-              {key === 'integral' && (
-                <span className="relative z-10 ml-2 rounded-full bg-[#F97316] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
-                  Recomendado
-                </span>
-              )}
-            </button>
-          ))}
-        </motion.div>
 
-        {/* Card */}
-        <AnimatePresence mode="wait">
+          {/* ── Foundation Card (cyan) ── */}
           <motion.div
-            key={selected}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className={`relative flex flex-col rounded-2xl border ${plan.cardBorder} ${plan.cardBg} p-8 overflow-hidden`}
+            initial={{ rotateY: 15, rotateZ: -6, zIndex: 2 }}
+            whileHover={{ rotateY: 0, rotateZ: 0, y: -8, zIndex: 5 }}
+            transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+            className="relative flex w-full shrink-0 flex-col overflow-hidden rounded-card md:w-[340px]"
+            style={{
+              background: 'linear-gradient(180deg, #18181c 0%, #0d0d10 100%)',
+              border: '1px solid rgba(91,182,255,0.15)',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)',
+              transformStyle: 'preserve-3d',
+            }}
           >
-            {/* Top edge highlight */}
-            <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${plan.topEdge} to-transparent`} />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(91,182,255,0.5), transparent)' }} />
+            <div className="pointer-events-none absolute inset-0"
+              style={{ background: 'radial-gradient(ellipse 70% 40% at 50% 0%, rgba(91,182,255,0.06), transparent)' }} />
 
-            {/* Badge + plan name row */}
-            <div className="mb-6 flex items-center gap-3">
-              <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${plan.badgeStyle}`}>
-                {plan.badge}
-              </span>
-            </div>
-            <p className={`mb-1 text-xs font-semibold uppercase tracking-[0.18em] ${plan.nameColor}`}>
-              {plan.name}
-            </p>
+            <div className="relative z-10 flex flex-1 flex-col p-7">
+              <div className="mb-[60px] flex items-start justify-between">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[11px]"
+                  style={{ background: '#0a0a0c', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <BarChart2 size={20} color="#5bb6ff" strokeWidth={2} />
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium tracking-[0.04em] text-cyan">{t('foundation.tier')}</p>
+                  <p className="mt-1 text-[10.5px] uppercase tracking-[0.18em] text-white/35">{t('foundation.sub')}</p>
+                </div>
+              </div>
 
-            {/* Price */}
-            <div className="mb-1 flex items-baseline gap-1">
-              <span className="text-5xl font-black tracking-tight text-white">
-                {plan.price}
-              </span>
-              {plan.priceSuffix && (
-                <span className="text-lg text-white/35">{plan.priceSuffix}</span>
-              )}
-            </div>
-            <p className="mb-6 text-sm text-white/30">{plan.priceNote}</p>
+              <div className="mb-3 flex items-baseline gap-1.5">
+                <span className="text-[56px] font-light leading-none tracking-[-0.04em] text-cyan">{t('foundation.price')}</span>
+                <span className="text-xs uppercase tracking-[0.12em] text-white/35">{t('foundation.period')}</span>
+              </div>
+              <p className="mb-1 text-sm font-medium text-white/80">{t('foundation.name')}</p>
+              <p className="mb-5 text-xs text-white/28">{t('foundation.trialNote')}</p>
 
-            {/* Divider */}
-            <div className={`mb-6 h-px w-full bg-gradient-to-r from-transparent ${plan.dividerColor} to-transparent`} />
+              <div className="mb-5 h-px w-full"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(91,182,255,0.15), transparent)' }} />
 
-            {/* Description */}
-            <p className="mb-8 text-sm leading-relaxed text-white/45">
-              {plan.description}
-            </p>
+              <p className="mb-8 text-sm leading-relaxed text-white/40">{t('foundation.desc')}</p>
 
-            {/* Features — two columns on wider screens */}
-            <ul className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
-              {plan.features.map((feat) => (
-                <li key={feat} className={`flex items-start gap-3 text-sm ${plan.featureColor}`}>
-                  <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${plan.checkBg}`}>
-                    <Check size={10} className={plan.checkColor} strokeWidth={3} />
-                  </span>
-                  {feat}
-                </li>
-              ))}
-            </ul>
+              <ul className="mb-8 flex flex-1 flex-col gap-3.5">
+                {foundationFeatures.map((feat) => (
+                  <li key={feat} className="flex items-center gap-3 text-sm text-white/55">
+                    <Check size={16} color="#5bb6ff" strokeWidth={2.5} className="shrink-0" />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
 
-            {/* CTA */}
-            {plan.cta.external ? (
               <a
-                href={plan.cta.href}
+                href="https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-200 ${plan.cta.style}`}
+                className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[13px] font-medium uppercase tracking-[0.14em] text-white/65 transition-all duration-200 hover:border-white/[0.16] hover:bg-white/[0.08] hover:text-white"
               >
-                {plan.cta.label}
+                {t('foundation.cta')}
+                <ArrowRight size={14} />
               </a>
-            ) : (
-              <a
-                href={plan.cta.href}
-                className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-200 ${plan.cta.style}`}
-              >
-                {plan.cta.label}
-              </a>
-            )}
+            </div>
           </motion.div>
-        </AnimatePresence>
 
-        {/* Bottom note */}
+          {/* ── Prime Card (amber) ── */}
+          <motion.div
+            initial={{ rotateY: -15, rotateZ: 8, zIndex: 1 }}
+            whileHover={{ rotateY: 0, rotateZ: 0, y: -8, zIndex: 5 }}
+            transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+            className="relative flex w-full shrink-0 flex-col overflow-hidden rounded-card md:-ml-[60px] md:w-[340px]"
+            style={{
+              background: 'linear-gradient(180deg, #1a150b 0%, #0d0a06 100%)',
+              border: '1px solid rgba(255,168,69,0.2)',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(255,168,69,0.06), inset 0 1px 0 rgba(255,255,255,0.06)',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            <div className="pointer-events-none absolute left-6 right-6 top-0 h-px"
+              style={{ background: 'linear-gradient(90deg, transparent, #ffa845, transparent)', boxShadow: '0 0 8px rgba(255,168,69,0.6)' }} />
+            <div className="pointer-events-none absolute inset-0"
+              style={{ background: 'radial-gradient(ellipse 70% 40% at 50% 0%, rgba(255,168,69,0.08), transparent)' }} />
+
+            <div className="relative z-10 flex flex-1 flex-col p-7">
+              <div className="mb-[60px] flex items-start justify-between">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[11px]"
+                  style={{ background: '#0a0a0c', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <Sparkles size={20} color="#ffa845" strokeWidth={2} />
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium tracking-[0.04em] text-amber">{t('prime.tier')}</p>
+                  <p className="mt-1 text-[10.5px] uppercase tracking-[0.18em] text-white/35">{t('prime.sub')}</p>
+                </div>
+              </div>
+
+              <div className="mb-3 flex items-baseline gap-2">
+                <span className="self-start pt-2 text-xs uppercase tracking-[0.1em] text-white/35">{t('prime.from')}</span>
+                <span className="text-[56px] font-light leading-none tracking-[-0.04em] text-amber">{t('prime.price')}</span>
+              </div>
+              <p className="mb-1 text-sm font-medium text-white/80">{t('prime.name')}</p>
+              <p className="mb-5 text-xs text-white/28">{t('prime.priceNote')}</p>
+
+              <div className="mb-5 h-px w-full"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,168,69,0.2), transparent)' }} />
+
+              <p className="mb-8 text-sm leading-relaxed text-white/40">{t('prime.desc')}</p>
+
+              <ul className="mb-8 flex flex-1 flex-col gap-3.5">
+                {primeFeatures.map((feat) => (
+                  <li key={feat} className="flex items-center gap-3 text-sm text-white/55">
+                    <Check size={16} color="#ffa845" strokeWidth={2.5} className="shrink-0" />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href={`/${locale}/agendar`}
+                className="flex w-full items-center justify-between rounded-xl bg-[#ffa845] px-4 py-3.5 text-[13px] font-medium uppercase tracking-[0.14em] text-black transition-all duration-200 hover:bg-[#f59e0b]"
+              >
+                {t('prime.cta')}
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </motion.div>
+
+        </motion.div>
+
+        {/* ── Bottom note ── */}
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mt-8 text-center text-sm text-white/30"
+          transition={{ delay: 0.35 }}
+          className="mt-4 text-center text-sm text-white/25"
         >
-          ¿No está seguro cuál es la mejor opción?{' '}
+          {t('bottomNote')}{' '}
           <a
             href="#contacto"
-            className="text-white/50 underline underline-offset-4 hover:text-white/70 transition-colors duration-200"
+            className="text-white/40 underline underline-offset-4 transition-colors duration-200 hover:text-white/65"
           >
-            Agendemos una llamada
+            {t('bottomLink')}
           </a>{' '}
-          y le ayudamos a decidir — sin compromiso.
+          {t('bottomNote2')}
         </motion.p>
 
       </div>

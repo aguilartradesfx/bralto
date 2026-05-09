@@ -10,10 +10,23 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        mono: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['var(--font-geist)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'Menlo', 'Monaco', 'monospace'],
+        serif: ['var(--font-instrument-serif)', 'Georgia', 'serif'],
       },
       colors: {
+        // Brand accents — Dark Bento system
+        cyan: {
+          DEFAULT: '#5bb6ff',
+          dim: 'rgba(91,182,255,0.12)',
+          glow: 'rgba(91,182,255,0.28)',
+        },
+        amber: {
+          DEFAULT: '#ffa845',
+          dim: 'rgba(255,168,69,0.12)',
+          glow: 'rgba(255,168,69,0.28)',
+        },
+        // Keep orange for backward compat (internal pages, contracts, etc.)
         orange: {
           DEFAULT: '#F97316',
           50: 'rgba(249,115,22,0.05)',
@@ -23,10 +36,14 @@ const config: Config = {
           600: '#EA6C0C',
         },
         surface: {
-          DEFAULT: '#111111',
-          secondary: '#161616',
-          tertiary: '#1a1a1a',
+          DEFAULT: '#131316',
+          secondary: '#1a1a1e',
+          tertiary: '#1d1d22',
         },
+      },
+      borderRadius: {
+        card: '22px',
+        'card-lg': '28px',
       },
       keyframes: {
         shimmer: {
@@ -49,6 +66,14 @@ const config: Config = {
           '0%, 100%': { opacity: '0.4' },
           '50%': { opacity: '0.8' },
         },
+        'pulse-dot': {
+          '0%, 100%': { opacity: '1', boxShadow: '0 0 0 0 rgba(52,211,153,0.5)' },
+          '50%': { opacity: '0.85', boxShadow: '0 0 0 5px rgba(52,211,153,0)' },
+        },
+        'cursor-blink': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
       },
       animation: {
         shimmer: 'shimmer 3s linear infinite',
@@ -58,6 +83,8 @@ const config: Config = {
         'scroll-up-fast': 'scroll-up 22s linear infinite',
         'fade-in-up': 'fade-in-up 0.6s ease forwards',
         glow: 'glow 3s ease-in-out infinite',
+        'pulse-dot': 'pulse-dot 2s ease-in-out infinite',
+        'cursor-blink': 'cursor-blink 1s step-end infinite',
       },
     },
   },

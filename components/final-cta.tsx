@@ -2,30 +2,30 @@
 import { motion } from 'framer-motion'
 import { LiquidMetalButton } from '@/components/ui/liquid-metal-button'
 import { Typewriter } from '@/components/ui/typewriter'
-
-const CTA_PHRASES = [
-  'Tu competencia posiblemente está considerando algo como esto.',
-  'En este juego, gana el que se mueve primero.',
-  'Mientras lees esto, alguien más ya está automatizando.',
-  'El que automatiza primero, captura el mercado.',
-  'Cada día sin automatizar es una ventaja que le regalas a tu competencia.',
-]
+import { useTranslations, useLocale } from 'next-intl'
 
 export function FinalCta() {
+  const t = useTranslations('FinalCta')
+  const locale = useLocale()
+  const phrases = t.raw('phrases') as string[]
+  const stats = t.raw('stats') as { value: string; label: string }[]
+  const statColors = ['#5bb6ff', '#5bb6ff', '#ffa845']
+
   return (
-    <section id="contacto" className="relative py-32 overflow-hidden bg-[#080808]">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(249,115,22,0.06),transparent)]" />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-200 to-transparent" />
+    <section id="contacto" className="relative py-32 overflow-hidden">
+      <div
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' }}
+      />
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-6"
+          className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28 mb-6"
         >
-          ¿Listo para automatizar?
+          {t('label')}
         </motion.p>
 
         <motion.h2
@@ -33,15 +33,15 @@ export function FinalCta() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1] mb-8"
+          className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-[1.1] mb-8"
         >
           <Typewriter
-            text={CTA_PHRASES}
+            text={phrases}
             speed={38}
             deleteSpeed={18}
             waitTime={3800}
             cursorChar="_"
-            cursorClassName="ml-1 text-[#F97316]"
+            cursorClassName="ml-1 text-[#5bb6ff]"
             stableSize
           />
         </motion.h2>
@@ -51,9 +51,9 @@ export function FinalCta() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="text-lg text-white/40 max-w-lg mx-auto mb-12"
+          className="text-lg text-white/35 max-w-lg mx-auto mb-12"
         >
-          Una conversación de 30 minutos puede cambiar cómo opera tu negocio para siempre.
+          {t('desc')}
         </motion.p>
 
         <motion.div
@@ -63,13 +63,13 @@ export function FinalCta() {
           transition={{ delay: 0.28 }}
           className="flex flex-col items-center gap-4"
         >
-          <LiquidMetalButton href="/agendar" size="lg">
-            Agendar Llamada Estratégica
+          <LiquidMetalButton href={`/${locale}/agendar`} size="lg">
+            {t('cta')}
           </LiquidMetalButton>
-          <p className="text-sm text-white/30">30 minutos. Sin compromiso. Sin costo.</p>
+          <p className="text-sm text-white/25">{t('ctaNote')}</p>
         </motion.div>
 
-        {/* Social proof strip */}
+        {/* Social proof */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -77,14 +77,10 @@ export function FinalCta() {
           transition={{ delay: 0.4 }}
           className="mt-16 flex flex-wrap items-center justify-center gap-8"
         >
-          {[
-            ['9+', 'Industrias atendidas'],
-            ['72h', 'Tiempo de implementación'],
-            ['24/7', 'Operación sin parar'],
-          ].map(([stat, label]) => (
-            <div key={stat} className="text-center">
-              <p className="text-2xl font-bold text-white">{stat}</p>
-              <p className="text-xs text-white/30 mt-0.5">{label}</p>
+          {stats.map(({ value, label }, i) => (
+            <div key={value} className="text-center">
+              <p className="text-2xl font-bold text-white" style={{ textShadow: `0 0 20px ${statColors[i]}50` }}>{value}</p>
+              <p className="text-xs text-white/25 mt-0.5">{label}</p>
             </div>
           ))}
         </motion.div>

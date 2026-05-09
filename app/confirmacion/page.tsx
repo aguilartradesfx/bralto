@@ -21,17 +21,17 @@ export default function ConfirmacionPage() {
   const strokeDash = circumference - (circumference * count) / 10
 
   return (
-    <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-[#060607] flex flex-col items-center justify-center px-6">
       {/* Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(249,115,22,0.07),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(91,182,255,0.05),transparent)] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-md">
         {/* Check icon */}
-        <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#F97316]/25 bg-[#F97316]/10">
-          <CheckCircle size={40} className="text-[#F97316]" />
+        <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#5bb6ff]/25 bg-[#5bb6ff]/10">
+          <CheckCircle size={40} className="text-[#5bb6ff]" />
         </div>
 
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff] mb-4">
           ¡Solicitud recibida!
         </p>
 
@@ -62,7 +62,7 @@ export default function ConfirmacionPage() {
               cy="36"
               r="28"
               fill="none"
-              stroke="#F97316"
+              stroke="#5bb6ff"
               strokeWidth="3"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDash}

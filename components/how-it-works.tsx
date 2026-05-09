@@ -3,106 +3,79 @@
 import { motion } from 'framer-motion'
 import { Search, Pencil, Hammer, Rocket } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
-const steps: {
-  number: string
-  icon: LucideIcon
-  title: string
-  body: string
-  highlight: boolean
-}[] = [
-  {
-    number: '01',
-    icon: Search,
-    title: 'Diagnóstico',
-    body: 'Analizamos su negocio: cómo llegan los clientes, quién los atiende, dónde se pierden oportunidades y qué procesos dependen de personas.',
-    highlight: false,
-  },
-  {
-    number: '02',
-    icon: Pencil,
-    title: 'Diseño',
-    body: 'Diseñamos el sistema a la medida: canales a conectar, cómo opera el agente de IA y cómo gestiona su equipo el día a día.',
-    highlight: false,
-  },
-  {
-    number: '03',
-    icon: Hammer,
-    title: 'Construcción',
-    body: 'Desarrollamos todo: sitio web, agente de IA, integraciones y flujos. Un solo sistema conectado y funcionando.',
-    highlight: false,
-  },
-  {
-    number: '04',
-    icon: Rocket,
-    title: 'Entrega + Plataforma',
-    body: 'Entregamos todo funcionando en menos de 72 horas sobre su propia plataforma. Control total desde un solo lugar.',
-    highlight: true,
-  },
-]
+const STEP_ICONS: LucideIcon[] = [Search, Pencil, Hammer, Rocket]
+const STEP_HIGHLIGHT = [false, false, false, true]
 
 export function HowItWorks() {
-  return (
-    <section id="como-funciona" className="relative py-28 bg-[#080808] overflow-hidden">
+  const t = useTranslations('HowItWorks')
 
-      {/* Subtle top glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_35%_at_50%_0%,rgba(249,115,22,0.05),transparent)]" />
+  const steps = (t.raw('steps') as { title: string; body: string }[]).map(
+    (s, i) => ({
+      ...s,
+      number: String(i + 1).padStart(2, '0'),
+      icon: STEP_ICONS[i],
+      highlight: STEP_HIGHLIGHT[i],
+    })
+  )
+
+  const stats = t.raw('stats') as { value: string; label: string }[]
+  const statColors = ['#5bb6ff', '#5bb6ff', '#ffa845']
+
+  return (
+    <section id="como-funciona" className="relative py-28 overflow-hidden">
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
 
-        {/* ── Header: problem → solution frame ─────────────────── */}
+        {/* Header */}
         <div className="text-center mb-20">
-
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316] mb-5"
+            className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28 mb-5"
           >
-            Cómo Funciona
+            {t('label')}
           </motion.p>
-
-          {/* Problem hook */}
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.06 }}
-            className="text-sm text-white/35 mb-4 tracking-wide"
+            className="text-sm text-white/30 mb-4 tracking-wide"
           >
-            Hoy, cada proceso que depende de una persona es un riesgo.
+            {t('problem')}
           </motion.p>
-
-          {/* Main headline */}
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.08] text-white mb-5"
+            className="text-4xl md:text-5xl font-semibold tracking-tight leading-[1.08] text-white mb-5"
           >
-            Así es como
-            <span className="text-[#F97316]"> lo cambiamos.</span>
+            {t('headline')}{' '}
+            <em style={{ fontFamily: 'var(--font-instrument-serif)', fontStyle: 'italic', fontWeight: 400, color: 'rgba(255,168,69,0.8)' }}>
+              {t('headlineItalic')}
+            </em>
           </motion.h2>
-
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.16 }}
-            className="text-base text-white/40 max-w-sm mx-auto leading-relaxed"
+            className="text-base text-white/35 max-w-sm mx-auto leading-relaxed"
           >
-            Cuatro pasos. De la primera llamada a su sistema funcionando solo.
+            {t('sub')}
           </motion.p>
         </div>
 
-        {/* ── Steps: timeline grid ──────────────────────────────── */}
+        {/* Steps grid */}
         <div className="relative">
+          {/* Connecting line — desktop */}
+          <div className="hidden lg:block absolute top-[2.875rem] left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
 
-          {/* Horizontal connecting line — desktop only */}
-          <div className="hidden lg:block absolute top-[2.875rem] left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {steps.map((step, i) => {
               const Icon = step.icon
               return (
@@ -116,33 +89,35 @@ export function HowItWorks() {
                 >
                   {/* Timeline dot — desktop */}
                   <div
-                    className={`hidden lg:flex absolute top-[2.25rem] left-1/2 -translate-x-1/2 w-[1.25rem] h-[1.25rem] rounded-full items-center justify-center z-10
-                    ring-[5px] ${
+                    className={`hidden lg:flex absolute top-[2.25rem] left-1/2 -translate-x-1/2 w-5 h-5 rounded-full items-center justify-center z-10 ring-[5px] ${
                       step.highlight
-                        ? 'bg-[#F97316] ring-[#F97316]/20'
-                        : 'bg-[#181818] ring-[#080808] border border-white/[0.1]'
+                        ? 'bg-[#ffa845] ring-[#ffa845]/15'
+                        : 'bg-[#1d1d22] ring-[#060607] border border-white/[0.08]'
                     }`}
                   >
-                    {step.highlight && (
-                      <div className="w-[0.4rem] h-[0.4rem] rounded-full bg-white/90" />
-                    )}
+                    {step.highlight && <div className="w-1.5 h-1.5 rounded-full bg-white/90" />}
                   </div>
 
                   {/* Card */}
                   <div
-                    className={`relative h-full lg:mt-11 p-6 rounded-2xl border overflow-hidden transition-all duration-300 group ${
+                    className={`relative h-full lg:mt-11 p-6 rounded-card border overflow-hidden transition-all duration-300 group ${
                       step.highlight
-                        ? 'bg-[#0f0a06] border-[#F97316]/20'
-                        : 'bg-[#0e0e0e] border-white/[0.07] hover:border-white/[0.14] hover:bg-[#111]'
+                        ? 'bg-[#1a140a] border-[#ffa845]/20'
+                        : 'bg-[#131316] border-white/[0.06] hover:border-white/[0.12]'
                     }`}
                   >
-                    {/* Ghost number — decorative */}
+                    {/* Top edge highlight */}
+                    <div className={`absolute inset-x-0 top-0 h-px ${
+                      step.highlight
+                        ? 'bg-gradient-to-r from-transparent via-[#ffa845]/45 to-transparent'
+                        : 'bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'
+                    }`} />
+
+                    {/* Ghost number */}
                     <span
                       className="absolute -top-3 -right-1 text-[5.5rem] font-black leading-none select-none pointer-events-none"
                       style={{
-                        color: step.highlight
-                          ? 'rgba(249,115,22,0.07)'
-                          : 'rgba(255,255,255,0.032)',
+                        color: step.highlight ? 'rgba(255,168,69,0.07)' : 'rgba(255,255,255,0.025)',
                         fontVariantNumeric: 'tabular-nums',
                       }}
                     >
@@ -150,52 +125,30 @@ export function HowItWorks() {
                     </span>
 
                     {/* Icon */}
-                    <div
-                      className={`mb-5 flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
-                        step.highlight
-                          ? 'bg-[#F97316]/10 border-[#F97316]/25 text-[#F97316]'
-                          : 'bg-white/[0.04] border-white/[0.08] text-white/40 group-hover:text-[#F97316]/65 group-hover:border-[#F97316]/15'
-                      }`}
-                    >
+                    <div className={`mb-5 flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
+                      step.highlight
+                        ? 'bg-[#ffa845]/10 border-[#ffa845]/25 text-[#ffa845]'
+                        : 'bg-white/[0.04] border-white/[0.07] text-white/35 group-hover:text-[#5bb6ff]/70 group-hover:border-[#5bb6ff]/15'
+                    }`}>
                       <Icon size={16} />
                     </div>
 
-                    {/* Step label */}
-                    <p
-                      className={`text-[10px] font-mono font-semibold uppercase tracking-[0.18em] mb-2 ${
-                        step.highlight ? 'text-[#F97316]/60' : 'text-white/18'
-                      }`}
-                    >
-                      Paso {step.number}
+                    <p className={`text-[10px] font-mono font-semibold uppercase tracking-[0.18em] mb-2 ${
+                      step.highlight ? 'text-[#ffa845]/55' : 'text-white/18'
+                    }`}>
+                      {t('stepLabel')} {step.number}
                     </p>
 
-                    {/* Title */}
-                    <h3 className="text-[1rem] font-semibold text-white mb-2.5 leading-snug">
-                      {step.title}
-                    </h3>
+                    <h3 className="text-base font-semibold text-white mb-2.5 leading-snug">{step.title}</h3>
+                    <p className="text-sm text-white/40 leading-relaxed">{step.body}</p>
 
-                    {/* Body */}
-                    <p className="text-sm text-white/42 leading-relaxed">
-                      {step.body}
-                    </p>
-
-                    {/* Step 4 footer */}
                     {step.highlight && (
-                      <div className="mt-5 pt-4 border-t border-[#F97316]/10">
-                        <span className="text-[10px] text-[#F97316]/55 font-semibold uppercase tracking-[0.14em]">
-                          Incluye Plataforma Bralto
+                      <div className="mt-5 pt-4 border-t border-[#ffa845]/10">
+                        <span className="text-[10px] text-[#ffa845]/55 font-semibold uppercase tracking-[0.14em]">
+                          {t('includesPlatform')}
                         </span>
                       </div>
                     )}
-
-                    {/* Top edge highlight */}
-                    <div
-                      className={`absolute inset-x-0 top-0 h-px ${
-                        step.highlight
-                          ? 'bg-gradient-to-r from-transparent via-[#F97316]/45 to-transparent'
-                          : 'bg-gradient-to-r from-transparent via-white/[0.09] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'
-                      }`}
-                    />
                   </div>
                 </motion.div>
               )
@@ -203,25 +156,23 @@ export function HowItWorks() {
           </div>
         </div>
 
-        {/* ── Outcome strip ─────────────────────────────────────── */}
+        {/* Outcome strip */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.42 }}
-          className="mt-20 rounded-2xl border border-white/[0.06] bg-white/[0.015] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.05] overflow-hidden"
+          className="mt-16 rounded-card border border-white/[0.06] bg-[#131316] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.05] overflow-hidden"
         >
-          {[
-            { stat: '< 72 hrs', label: 'De diagnóstico a sistema funcionando' },
-            { stat: '100%', label: 'Personalizado a su operación' },
-            { stat: '24/7', label: 'Su sistema nunca para' },
-          ].map(({ stat, label }) => (
-            <div
-              key={stat}
-              className="flex flex-col items-center justify-center py-7 px-6 text-center"
-            >
-              <span className="text-2xl font-bold text-[#F97316] mb-1.5">{stat}</span>
-              <span className="text-xs text-white/35 leading-snug">{label}</span>
+          {stats.map(({ value, label }, i) => (
+            <div key={value} className="flex flex-col items-center justify-center py-7 px-6 text-center">
+              <span
+                className="text-2xl font-bold mb-1.5"
+                style={{ color: statColors[i], textShadow: `0 0 20px ${statColors[i]}40` }}
+              >
+                {value}
+              </span>
+              <span className="text-xs text-white/30 leading-snug">{label}</span>
             </div>
           ))}
         </motion.div>

@@ -41,15 +41,15 @@ export default async function AdminPage() {
           <Link
             key={href}
             href={href}
-            className="group flex flex-col gap-3 p-5 bg-white/[0.03] border border-white/[0.07] rounded-xl hover:border-orange-500/30 hover:bg-white/[0.05] transition-all"
+            className="group flex flex-col gap-3 p-5 bg-white/[0.03] border border-white/[0.07] rounded-xl hover:border-[#5bb6ff]/30 hover:bg-white/[0.05] transition-all"
           >
             <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Icon size={15} className="text-orange-400" />
+              <div className="w-8 h-8 rounded-lg bg-[#5bb6ff]/10 flex items-center justify-center">
+                <Icon size={15} className="text-[#5bb6ff]" />
               </div>
               <ArrowRight
                 size={14}
-                className="text-white/20 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all"
+                className="text-white/20 group-hover:text-[#5bb6ff] group-hover:translate-x-0.5 transition-all"
               />
             </div>
             <div>

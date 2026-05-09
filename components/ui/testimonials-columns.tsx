@@ -2,90 +2,17 @@
 import { useRef, useState, useEffect } from 'react'
 import { useInView } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
-// TODO: Reemplazar con testimonios reales
-export const testimonials = [
-  {
-    quote:
-      'Antes perdíamos reservas todos los fines de semana. Ahora el agente las toma a las 2am sin problema. El restaurante está siempre lleno.',
-    name: 'Carlos Méndez',
-    position: 'Propietario',
-    company: 'Restaurante La Hacienda',
-    industry: 'Restaurante',
-  },
-  {
-    quote:
-      'El seguimiento automático nos cambió la vida. Los leads que antes se enfriaban ahora cierran solos. Triplicamos conversiones.',
-    name: 'María González',
-    position: 'Directora',
-    company: 'Clínica Bienestar',
-    industry: 'Salud',
-  },
-  {
-    quote:
-      'Teníamos más de 1,000 productos y responder cotizaciones nos tomaba horas. El agente lo hace en segundos, con todos los detalles correctos.',
-    name: 'Roberto Sánchez',
-    position: 'Gerente Comercial',
-    company: 'Imprenta Pronto',
-    industry: 'Imprenta',
-  },
-  {
-    quote:
-      'La plataforma reemplazó cinco herramientas que usábamos. Ahora todo está en un solo lugar y el equipo trabaja mucho más rápido.',
-    name: 'Ana Martínez',
-    position: 'CEO',
-    company: 'Inmobiliaria Central',
-    industry: 'Inmobiliaria',
-  },
-  {
-    quote:
-      'Nuestros huéspedes reciben atención inmediata a cualquier hora. Las reseñas mejoraron y las ocupaciones también.',
-    name: 'Fernando Torres',
-    position: 'Director',
-    company: 'Hotel Vista Real',
-    industry: 'Hotelería',
-  },
-  {
-    quote:
-      'Bralto no llegó con una solución genérica. Entendieron cómo operamos y construyeron algo que realmente funciona para nosotros.',
-    name: 'Laura Vega',
-    position: 'Fundadora',
-    company: 'Agencia Viajes Sol',
-    industry: 'Turismo',
-  },
-  {
-    quote:
-      'El ROI fue claro desde el primer mes. Cada peso invertido en automatización multiplicó las ventas.',
-    name: 'Diego Romero',
-    position: 'Socio Fundador',
-    company: 'Centro Financiero MX',
-    industry: 'Finanzas',
-  },
-  {
-    quote:
-      'Antes el equipo de ventas se quejaba de dar seguimiento. Ahora el sistema lo hace solo y ellos solo cierran. Mucho menos estrés.',
-    name: 'Valentina Cruz',
-    position: 'Directora Comercial',
-    company: 'Concesionaria AutoPrime',
-    industry: 'Automotriz',
-  },
-  {
-    quote:
-      'Implementaron el sistema en 72 horas como prometieron. Desde el día 1 empezamos a ver resultados concretos.',
-    name: 'Marcos Jiménez',
-    position: 'Rector',
-    company: 'Instituto Educativo Visión',
-    industry: 'Educación',
-  },
-]
-
-interface TestimonialCardProps {
+interface TestimonialItem {
   quote: string
   name: string
   position: string
   company: string
   industry: string
 }
+
+interface TestimonialCardProps extends TestimonialItem {}
 
 function TestimonialCard({ quote, name, position, company, industry }: TestimonialCardProps) {
   return (
@@ -110,7 +37,7 @@ function TestimonialCard({ quote, name, position, company, industry }: Testimoni
 }
 
 interface ColumnProps {
-  items: typeof testimonials
+  items: TestimonialItem[]
   speed?: string
   className?: string
   isPlaying?: boolean
@@ -132,6 +59,9 @@ function Column({ items, speed = 'animate-scroll-up', className, isPlaying = tru
 }
 
 export function TestimonialsColumns() {
+  const t = useTranslations('TestimonialsData')
+  const testimonials = t.raw('items') as TestimonialItem[]
+
   const col1 = testimonials.slice(0, 3)
   const col2 = testimonials.slice(3, 6)
   const col3 = testimonials.slice(6, 9)

@@ -45,14 +45,11 @@ export default async function PublicContractPage({ params }: Props) {
 
   return (
     <>
-      {/* Header — dark with orange, as per brief */}
-      <header className="bg-gradient-to-r from-[#111111] to-[#1a1a1a] border-b border-white/10">
+      <header className="bg-[#060607] border-b border-white/[0.06]">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-white font-bold text-lg tracking-tight">Bralto</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-white/40">
-            <span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />
+          <span className="text-white font-bold text-lg tracking-tight">Bralto</span>
+          <div className="flex items-center gap-2 text-xs text-white/35">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#5bb6ff] inline-block" />
             Documento legal — firma electrónica
           </div>
         </div>

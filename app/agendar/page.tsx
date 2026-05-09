@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { GodRays } from '@paper-design/shaders-react'
 import { GlassCalendar } from '@/components/ui/glass-calendar'
 
 // ─── Config ──────────────────────────────────────────────────────────────────
@@ -149,14 +148,14 @@ function OptionCard({
       onClick={onClick}
       className={`w-full text-left rounded-xl border px-4 py-3 text-sm transition-all duration-150 flex items-center gap-3 ${
         selected
-          ? 'border-[#F97316]/40 bg-[#F97316]/10 text-white'
+          ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-white'
           : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
       }`}
     >
       <span
         className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all ${
           selected
-            ? 'border-[#F97316] bg-[#F97316]'
+            ? 'border-[#5bb6ff] bg-[#5bb6ff]'
             : 'border-white/[0.2] bg-transparent'
         }`}
       >
@@ -177,9 +176,9 @@ function StepIndicator({ step }: { step: number }) {
             <div
               className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
                 i < step
-                  ? 'bg-[#F97316] text-white'
+                  ? 'bg-[#5bb6ff] text-white'
                   : i === step
-                  ? 'border-2 border-[#F97316] text-[#F97316] bg-transparent'
+                  ? 'border-2 border-[#5bb6ff] text-[#5bb6ff] bg-transparent'
                   : 'border border-white/[0.1] text-white/20 bg-transparent'
               }`}
             >
@@ -196,7 +195,7 @@ function StepIndicator({ step }: { step: number }) {
           {i < steps.length - 1 && (
             <div
               className={`h-px w-12 sm:w-20 mx-1 mb-4 transition-all duration-500 ${
-                i < step ? 'bg-[#F97316]/40' : 'bg-white/[0.07]'
+                i < step ? 'bg-[#5bb6ff]/40' : 'bg-white/[0.07]'
               }`}
             />
           )}
@@ -387,27 +386,11 @@ export default function AgendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808]">
-      {/* Hero background — same GodRays as home */}
-      <GodRays
-        colorBack="#00000000"
-        colors={['#a1a1aa40', '#e4e4e740', '#71717a40', '#52525b40']}
-        colorBloom="#a1a1aa"
-        offsetX={0.85}
-        offsetY={-1}
-        intensity={0.45}
-        spotty={0.45}
-        midSize={10}
-        midIntensity={0}
-        density={0.38}
-        bloom={0.3}
-        speed={0.4}
-        scale={1.6}
-        style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}
-      />
+    <div className="min-h-screen bg-[#060607]">
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(91,182,255,0.04),transparent)]" />
 
       {/* Top bar */}
-      <header className="relative z-10 border-b border-white/[0.05] bg-[#080808]/60 backdrop-blur-sm">
+      <header className="relative z-10 border-b border-white/[0.05] bg-[#060607]/60 backdrop-blur-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <a href="/" className="flex items-center gap-2">
             <Image
@@ -432,7 +415,7 @@ export default function AgendarPage() {
       <main className="relative z-10 mx-auto max-w-3xl px-6 py-12">
         {/* Hero */}
         <div className="mb-10 text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#F97316]">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff]">
             Llamada Estratégica Gratuita
           </p>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">
@@ -454,7 +437,7 @@ export default function AgendarPage() {
             className={`mb-6 flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-colors duration-300 ${
               countdown < 60
                 ? 'border-red-500/25 bg-red-500/5 text-red-400'
-                : 'border-[#F97316]/20 bg-[#F97316]/5 text-[#F97316]/80'
+                : 'border-[#5bb6ff]/20 bg-[#5bb6ff]/5 text-[#5bb6ff]/80'
             }`}
           >
             <span>Horario reservado temporalmente</span>
@@ -493,7 +476,7 @@ export default function AgendarPage() {
                 >
                   <h2 className="mb-4 text-base font-semibold text-white">
                     Horarios disponibles —{' '}
-                    <span className="text-[#F97316]">
+                    <span className="text-[#5bb6ff]">
                       {DAYS_ES[form.selectedDate.getDay()]}{' '}
                       {form.selectedDate.getDate()} de{' '}
                       {MONTHS_ES[form.selectedDate.getMonth()]}
@@ -513,7 +496,7 @@ export default function AgendarPage() {
                             booked
                               ? 'border-white/[0.04] bg-white/[0.01] text-white/20 cursor-not-allowed'
                               : selected
-                              ? 'border-[#F97316]/40 bg-[#F97316]/10 text-white'
+                              ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-white'
                               : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
                           }`}
                         >
@@ -542,39 +525,39 @@ export default function AgendarPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-white/40">
-                    Nombre <span className="text-[#F97316]">*</span>
+                    Nombre <span className="text-[#5bb6ff]">*</span>
                   </label>
                   <input
                     type="text"
                     value={form.nombre}
                     onChange={(e) => update('nombre', e.target.value)}
                     placeholder="Alejandro"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#F97316]/40 focus:bg-[#F97316]/5"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
                   />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-white/40">
-                    Apellido <span className="text-[#F97316]">*</span>
+                    Apellido <span className="text-[#5bb6ff]">*</span>
                   </label>
                   <input
                     type="text"
                     value={form.apellido}
                     onChange={(e) => update('apellido', e.target.value)}
                     placeholder="García"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#F97316]/40 focus:bg-[#F97316]/5"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-white/40">
-                  Teléfono <span className="text-[#F97316]">*</span>
+                  Teléfono <span className="text-[#5bb6ff]">*</span>
                 </label>
                 <div className="flex gap-2">
                   <select
                     value={form.countryCode}
                     onChange={(e) => update('countryCode', e.target.value)}
-                    className="rounded-xl border border-white/[0.08] bg-[#111] px-3 py-3 text-sm text-white/70 outline-none transition-all duration-150 focus:border-[#F97316]/40 shrink-0"
+                    className="rounded-xl border border-white/[0.08] bg-[#111] px-3 py-3 text-sm text-white/70 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 shrink-0"
                   >
                     {COUNTRY_CODES.map(({ code, label }) => (
                       <option key={code} value={code}>
@@ -587,21 +570,21 @@ export default function AgendarPage() {
                     value={form.telefono}
                     onChange={(e) => update('telefono', e.target.value)}
                     placeholder="55 1234 5678"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#F97316]/40 focus:bg-[#F97316]/5"
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-white/40">
-                  Correo electrónico <span className="text-[#F97316]">*</span>
+                  Correo electrónico <span className="text-[#5bb6ff]">*</span>
                 </label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => update('email', e.target.value)}
                   placeholder="alejandro@empresa.com"
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#F97316]/40 focus:bg-[#F97316]/5"
+                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
                 />
               </div>
             </div>
@@ -621,7 +604,7 @@ export default function AgendarPage() {
                 <div key={q.id}>
                   <p className="mb-3 text-sm font-semibold text-white/80">
                     {q.question}
-                    <span className="ml-1 text-[#F97316]">*</span>
+                    <span className="ml-1 text-[#5bb6ff]">*</span>
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {q.options.map((opt) => (
@@ -667,7 +650,7 @@ export default function AgendarPage() {
           {step < 2 ? (
             <button
               onClick={next}
-              className="flex items-center gap-2 rounded-xl bg-[#F97316] px-6 py-3 text-sm font-semibold text-white hover:bg-[#ea6c0c] transition-colors duration-150"
+              className="flex items-center gap-2 rounded-xl bg-[#ffa845] px-6 py-3 text-sm font-semibold text-black hover:bg-[#f59e0b] transition-colors duration-150"
             >
               Continuar
               <ChevronRight size={15} />
@@ -676,7 +659,7 @@ export default function AgendarPage() {
             <button
               onClick={submit}
               disabled={submitting}
-              className="flex items-center gap-2 rounded-xl bg-[#F97316] px-6 py-3 text-sm font-semibold text-white hover:bg-[#ea6c0c] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-xl bg-[#5bb6ff] px-6 py-3 text-sm font-semibold text-white hover:bg-[#7cc5ff] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {submitting ? 'Agendando…' : 'Agendar llamada'}
               {!submitting && <ArrowRight size={15} />}
