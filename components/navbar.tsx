@@ -30,7 +30,7 @@ export function Navbar() {
     { label: t('navLinks.inicio'),        href: `/${locale}/#inicio` },
     { label: t('navLinks.comoFunciona'),  href: `/${locale}/#como-funciona` },
     { label: t('navLinks.sobreNosotros'), href: `/${locale}/sobre-nosotros` },
-    { label: t('navLinks.plataforma'),    href: `/${locale}/#plataforma` },
+    { label: t('navLinks.casosReales'),   href: `/${locale}/#casos-reales` },
   ]
 
   const serviceCols = [
@@ -121,13 +121,13 @@ export function Navbar() {
 
           {/* Nav links */}
           {navLinks.slice(0, 4).map(link => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="rounded-full px-3.5 py-2 text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/[0.05] transition-all duration-200"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -201,14 +201,14 @@ export function Navbar() {
                   <ul className="space-y-0.5">
                     {navLinks.map(link => (
                       <li key={link.href}>
-                        <a
+                        <Link
                           href={link.href}
                           onClick={closeMega}
                           className="group flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-white/55 hover:text-white hover:bg-white/[0.05] transition-all"
                         >
                           {link.label}
                           <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-35 transition-opacity shrink-0 ml-2" />
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -306,13 +306,13 @@ export function Navbar() {
               <ul className="flex flex-col gap-0.5 mb-3">
                 {navLinks.map(link => (
                   <li key={link.href}>
-                    <a
+                    <Link
                       href={link.href}
                       onClick={closeMobile}
                       className="block rounded-xl px-3 py-2.5 text-sm font-medium text-white/55 hover:text-white hover:bg-white/[0.05] transition-all"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
