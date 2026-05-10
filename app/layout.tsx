@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 import { CookieConsent } from '@/components/cookie-consent'
-import { OrganizationJsonLd, WebSiteJsonLd, LocalBusinessJsonLd } from '@/components/seo/JsonLd'
+import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 
 const geist = Geist({
   subsets: ['latin'],
@@ -115,7 +115,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: `if(history.scrollRestoration)history.scrollRestoration='manual';history.replaceState(null,'',window.location.pathname);window.scrollTo(0,0);` }} />
         <OrganizationJsonLd />
         <WebSiteJsonLd />
-        <LocalBusinessJsonLd />
       </head>
       <body>
         {/* Google Tag Manager (noscript) */}
