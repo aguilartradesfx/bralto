@@ -26,6 +26,11 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bralto.io'),
+  icons: {
+    icon: '/Favicon.png',
+    shortcut: '/Favicon.png',
+    apple: '/Favicon.png',
+  },
   title: {
     default: 'Bralto — Automatización e Infraestructura Digital para Negocios',
     template: '%s | Bralto',
