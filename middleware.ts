@@ -64,6 +64,11 @@ export async function middleware(request: NextRequest) {
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   )
 
+  // Routes that live outside the locale tree — skip locale redirect
+  if (pathname.startsWith('/propuestas/')) {
+    return NextResponse.next()
+  }
+
   if (!hasLocalePrefix) {
     const preferred = getPreferredLocale(request)
     // Preserve query and hash
