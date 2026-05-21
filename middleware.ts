@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
   )
 
   // Routes that live outside the locale tree — skip locale redirect
-  if (pathname.startsWith('/propuestas/') || pathname.startsWith('/Proposal-')) {
+  if (pathname.startsWith('/propuestas/') || pathname.startsWith('/Proposal-') || pathname.startsWith('/AO-Guidelines')) {
     return NextResponse.next()
   }
 
