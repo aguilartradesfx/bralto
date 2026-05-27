@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Web · Dr. Eric Rojas · Bralto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #ffffff;
+  --bg-elev: #fafafa;
+  --bg-tech: #0a0a0a;
+  --bg-tech-elev: #1a1a1a;
+  --ink: #0a0a0a;
+  --ink-soft: #222222;
+  --ink-mute: #555555;
+  --ink-faint: #888888;
+  --rule: rgba(0,0,0,0.10);
+  --rule-soft: rgba(0,0,0,0.06);
+  --gold: #ff6b2b;
+  --gold-soft: #ff9165;
+  --gold-faint: rgba(255,107,43,0.08);
+  --red: #e74c3c;
+  --green: #22c55e;
+  --tech-accent: #ff6b2b;
+  --tech-ink: rgba(255,255,255,0.92);
+  --tech-mute: rgba(255,255,255,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 20% 30%, rgba(255,107,43,0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(255,107,43,0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 80px 48px 120px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 720px) {
+  .page { padding: 56px 24px 80px; }
+}
+
+/* === Top meta bar === */
+.meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 80px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.meta-bar .doc-id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meta-bar .doc-id::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* === Hero === */
+.hero {
+  margin-bottom: 96px;
+}
+
+.hero .eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero .eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.hero h1 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 300;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+
+.hero h1 em {
+  font-style: normal;
+  font-weight: 300;
+  color: var(--gold);
+}
+
+.hero .lede {
+  font-family: 'Sora', sans-serif;
+  font-size: 21px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  font-weight: 300;
+  max-width: 620px;
+  margin-top: 32px;
+}
+
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 56px;
+  background: var(--rule);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.hero-meta > div {
+  background: var(--bg);
+  padding: 20px 0;
+}
+
+.hero-meta .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+
+.hero-meta .value {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .hero-meta {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+  .hero-meta > div { padding: 16px 0; }
+}
+
+/* === Section structure === */
+section.block {
+  margin-bottom: 96px;
+  scroll-margin-top: 40px;
+}
+
+.block-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.block-num {
+  font-family: 'Sora', sans-serif;
+  font-weight: 300;
+  font-size: clamp(72px, 9vw, 104px);
+  line-height: 0.85;
+  color: var(--gold);
+  flex-shrink: 0;
+  width: 140px;
+  letter-spacing: -0.05em;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  margin-top: -8px;
+}
+
+.block-title {
+  flex: 1;
+  padding-top: 12px;
+}
+
+.block-title h2 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: clamp(34px, 4.5vw, 48px);
+  line-height: 1.0;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.block-title .subtitle {
+  font-family: 'Sora', sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink-mute);
+  letter-spacing: -0.005em;
+  max-width: 580px;
+}
+
+@media (max-width: 720px) {
+  .block-header { flex-direction: column; gap: 8px; }
+  .block-num { font-size: 72px; width: auto; margin-top: 0; }
+  .block-title { padding-top: 0; }
+}
+
+.block-body p {
+  margin-bottom: 20px;
+  color: var(--ink-soft);
+  font-size: 16.5px;
+  line-height: 1.75;
+}
+
+.block-body p strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.block-body em {
+  font-family: 'Sora', sans-serif;
+  font-weight: 400;
+  color: var(--ink);
+  font-size: 17.5px;
+}
+
+.block-body ul {
+  list-style: none;
+  margin: 16px 0 24px;
+  padding: 0;
+}
+
+.block-body ul li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 12px;
+  color: var(--ink-soft);
+  font-size: 16.5px;
+  line-height: 1.7;
+}
+
+.block-body ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 12px;
+  height: 1px;
+  background: var(--gold);
+}
+
+/* === Sub-issues within a block === */
+.sub-issue {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px dashed var(--rule);
+}
+
+.sub-issue:first-of-type {
+  border-top: 1px solid var(--rule);
+}
+
+.sub-issue h3 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 500;
+  font-size: 23px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.sub-issue .consequence {
+  background: var(--gold-faint);
+  border-left: 2px solid var(--gold);
+  padding: 16px 20px;
+  margin: 20px 0 24px;
+  font-size: 15.5px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.sub-issue .consequence strong {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.evidence-box {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  border-radius: 2px;
+  overflow-x: auto;
+}
+
+.evidence-box .ev-label {
+  font-family: 'Sora', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.evidence-box .ev-content {
+  color: var(--ink);
+}
+
+/* === Technical analysis (collapsible) === */
+details.tech {
+  margin-top: 24px;
+  background: var(--bg-tech);
+  color: var(--tech-ink);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+details.tech[open] {
+  box-shadow: 0 4px 24px rgba(10, 10, 10, 0.08);
+}
+
+details.tech summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tech-accent);
+  font-weight: 500;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+details.tech summary::-webkit-details-marker { display: none; }
+
+details.tech summary:hover {
+  background: var(--bg-tech-elev);
+}
+
+details.tech summary .label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+details.tech summary .label-wrap::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--tech-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 107, 43, 0.45);
+}
+
+details.tech summary .indicator {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 300;
+  transition: transform 0.3s ease;
+  color: var(--tech-accent);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+details.tech[open] summary .indicator {
+  transform: rotate(45deg);
+}
+
+details.tech .tech-content {
+  padding: 0 22px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--tech-ink);
+}
+
+details.tech .tech-content p {
+  margin-bottom: 14px;
+  color: var(--tech-mute);
+}
+
+details.tech .tech-content strong {
+  color: var(--tech-accent);
+  font-weight: 500;
+}
+
+details.tech .tech-content code {
+  background: var(--bg-tech-elev);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--tech-ink);
+  border: 1px solid rgba(255, 107, 43, 0.18);
+}
+
+details.tech .tech-content ul {
+  margin: 12px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+details.tech .tech-content ul li {
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 8px;
+  color: var(--tech-mute);
+  font-size: 13px;
+}
+
+details.tech .tech-content ul li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--tech-accent);
+}
+
+details.tech .tech-content .tech-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tech-accent);
+  border: 1px solid rgba(255, 107, 43, 0.3);
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-right: 6px;
+  margin-bottom: 8px;
+}
+
+/* === Executive summary === */
+.exec-summary {
+  margin-bottom: 96px;
+}
+
+.exec-card {
+  display: flex;
+  gap: 24px;
+  padding: 22px 0;
+  border-top: 1px solid var(--rule);
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: padding 0.25s ease, background 0.25s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.exec-card:last-of-type {
+  border-bottom: 1px solid var(--rule);
+}
+
+.exec-card:hover {
+  padding-left: 16px;
+}
+
+.exec-card:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.exec-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: var(--gold);
+  transform: translate(-12px, -50%);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.exec-card .ec-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 28px;
+}
+
+.exec-card .ec-body {
+  flex: 1;
+}
+
+.exec-card .ec-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: color 0.25s ease;
+}
+
+.exec-card:hover .ec-title {
+  color: var(--gold);
+}
+
+.exec-card .ec-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  transition: color 0.25s ease, transform 0.25s ease;
+  line-height: 1;
+}
+
+.exec-card:hover .ec-arrow {
+  color: var(--gold);
+  transform: translateX(4px);
+}
+
+/* === Cover letter === */
+.cover-letter {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  padding: 48px;
+  margin-bottom: 96px;
+  position: relative;
+}
+
+.cover-letter::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 40px;
+  height: 40px;
+  border-top: 2px solid var(--gold);
+  border-left: 2px solid var(--gold);
+}
+
+.cover-letter::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 40px;
+  height: 40px;
+  border-bottom: 2px solid var(--gold);
+  border-right: 2px solid var(--gold);
+}
+
+.cover-letter .salutation {
+  font-family: 'Sora', sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  margin-bottom: 28px;
+  letter-spacing: -0.02em;
+}
+
+.cover-letter p {
+  margin-bottom: 18px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.cover-letter .signature {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.cover-letter .signature strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .cover-letter { padding: 32px 24px; }
+}
+
+/* === Section divider === */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 80px 0 64px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.divider .dot {
+  width: 4px;
+  height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+}
+
+/* === Summary table === */
+.summary-table {
+  margin-top: 48px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+}
+
+.summary-table .st-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.summary-table .st-row:last-child {
+  border-bottom: none;
+}
+
+.summary-table .st-row.header {
+  background: var(--bg-tech);
+  color: var(--tech-ink);
+}
+
+.summary-table .st-row.header > div {
+  padding: 14px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tech-accent);
+  font-weight: 500;
+}
+
+.summary-table .st-row:not(.header) > div {
+  padding: 18px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.summary-table .st-row:not(.header) > div:first-child {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .summary-table .st-row { grid-template-columns: 1fr; }
+  .summary-table .st-row.header { display: none; }
+  .summary-table .st-row:not(.header) > div { padding: 12px 18px; }
+  .summary-table .st-row:not(.header) > div:first-child { padding-top: 18px; }
+  .summary-table .st-row:not(.header) > div:last-child { padding-bottom: 18px; border-bottom: 1px solid var(--rule-soft); }
+}
+
+/* === Conclusion === */
+.conclusion {
+  background: var(--bg-tech);
+  color: var(--tech-ink);
+  padding: 64px 48px;
+  margin-top: 80px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.conclusion::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 107, 43, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.conclusion .c-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tech-accent);
+  margin-bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.conclusion .c-kicker::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--tech-accent);
+}
+
+.conclusion h2 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 300;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  margin-bottom: 24px;
+  color: var(--tech-ink);
+}
+
+.conclusion h2 em {
+  font-style: normal;
+  color: var(--tech-accent);
+  font-weight: 300;
+}
+
+.conclusion p {
+  font-size: 16.5px;
+  line-height: 1.75;
+  color: var(--tech-mute);
+  margin-bottom: 20px;
+  max-width: 680px;
+}
+
+.conclusion ul {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+}
+
+.conclusion ul li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+  color: var(--tech-mute);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.conclusion ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 12px;
+  height: 1px;
+  background: var(--tech-accent);
+}
+
+.conclusion .next-step {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 107, 43, 0.2);
+}
+
+@media (max-width: 720px) {
+  .conclusion { padding: 40px 24px; }
+}
+
+/* === Footer === */
+.footer {
+  margin-top: 80px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.footer .brand {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .footer { flex-direction: column; gap: 16px; align-items: flex-start; }
+}
+
+/* Smooth open animation for details */
+details.tech > .tech-content-wrap {
+  overflow: hidden;
+}
+
+/* Quote callout */
+.quote-callout {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink);
+  padding: 12px 0 12px 28px;
+  border-left: 2px solid var(--gold);
+  margin: 28px 0;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Meta bar -->
+  <div class="meta-bar">
+    <div class="doc-id">DOC · BRA-DER-2026-05 · CONFIDENCIAL</div>
+    <div>v.01</div>
+  </div>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="eyebrow">Diagnóstico Web</div>
+    <h1>Dr. <em>Eric Rojas</em><br>Dermatología Láser Center</h1>
+    <p class="lede">Análisis del estado actual de drericrojas.com, los puntos donde su sitio está trabajando en contra de su clínica, y la oportunidad concreta que representa una reconstrucción desde cero.</p>
+
+    <div class="hero-meta">
+      <div>
+        <div class="label">Cliente</div>
+        <div class="value">Dr. Eric Rojas Blanco</div>
+      </div>
+      <div>
+        <div class="label">Fecha</div>
+        <div class="value">Mayo 2026</div>
+      </div>
+      <div>
+        <div class="label">Preparado por</div>
+        <div class="value">Bralto</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cover letter -->
+  <section class="cover-letter">
+    <div class="salutation">Estimado Dr. Rojas,</div>
+    <p>Antes de proponerle cualquier rediseño, hicimos un análisis detallado de su sitio web actual. Lo que sigue es un resumen, en lenguaje claro, de todo lo que encontramos.</p>
+    <p>El objetivo de este documento no es señalar errores por señalarlos. Es mostrarle, con ejemplos concretos, qué está pasando hoy con su presencia digital y qué oportunidades se están dejando pasar.</p>
+    <p>Su clínica tiene veinte años de trayectoria, tres sedes, un tratamiento exclusivo (Slim Láser) y una autoridad médica reconocida en Costa Rica. Sin embargo, su sitio web actual no lo está comunicando por muchos motivos técnicos, algunos de ellos críticos.</p>
+    <p>A continuación está el diagnóstico, organizado por las áreas que más importan para una clínica como la suya: cuántos pacientes nuevos llegan, cuántos terminan agendando, qué imagen se llevan, y qué tan fácil es para usted mantener su sitio.</p>
+    <p>En cada sección encontrará un botón <em>Análisis técnico</em> que puede desplegar si le interesa ver el detalle técnico debajo de cada problema. No es necesario para entender el diagnóstico — está ahí solo si quiere profundizar.</p>
+    <div class="signature">
+      Atentamente,<br>
+      <strong>Equipo Bralto</strong>
+    </div>
+  </section>
+
+  <!-- Panorama general -->
+  <section class="exec-summary">
+    <div class="divider">
+      <span>Panorama general</span>
+      <span class="dot"></span>
+      <span>Toque cada área para ir a la sección</span>
+    </div>
+
+    <p style="font-size: 28px; font-weight: 300; color: var(--ink); margin-bottom: 18px; line-height: 1.25; letter-spacing: -0.03em;">
+      En una frase: su sitio web actual está trabajando en contra de su clínica, no a favor.
+    </p>
+    <p style="font-size: 15.5px; color: var(--ink-mute); margin-bottom: 40px; line-height: 1.7; max-width: 580px;">
+      El análisis cubre ocho áreas de impacto. Cada una se desarrolla en detalle más adelante en el documento, con evidencia concreta y, opcionalmente, análisis técnico para profundizar.
+    </p>
+
+    <a href="#section-01" class="exec-card">
+      <div class="ec-num">01</div>
+      <div class="ec-body">
+        <div class="ec-title">Visibilidad orgánica</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-02" class="exec-card">
+      <div class="ec-num">02</div>
+      <div class="ec-body">
+        <div class="ec-title">Conversión a citas</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-03" class="exec-card">
+      <div class="ec-num">03</div>
+      <div class="ec-body">
+        <div class="ec-title">Autoridad de marca</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-04" class="exec-card">
+      <div class="ec-num">04</div>
+      <div class="ec-body">
+        <div class="ec-title">Imagen profesional</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-05" class="exec-card">
+      <div class="ec-num">05</div>
+      <div class="ec-body">
+        <div class="ec-title">Identidad visual</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-06" class="exec-card">
+      <div class="ec-num">06</div>
+      <div class="ec-body">
+        <div class="ec-title">Experiencia mobile</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-07" class="exec-card">
+      <div class="ec-num">07</div>
+      <div class="ec-body">
+        <div class="ec-title">Mantenibilidad técnica</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <a href="#section-08" class="exec-card">
+      <div class="ec-num">08</div>
+      <div class="ec-body">
+        <div class="ec-title">Funcionalidades ausentes</div>
+      </div>
+      <div class="ec-arrow">→</div>
+    </a>
+
+    <p style="margin-top: 48px; font-size: 16px; color: var(--ink-soft); line-height: 1.75;">
+      <strong style="color: var(--ink);">Nuestra recomendación:</strong> un rebuild completo desde cero, no parches. Las secciones a continuación explican el porqué con evidencia concreta.
+    </p>
+  </section>
+
+  <!-- ====================== SECTION 1 ====================== -->
+  <section class="block" id="section-01">
+    <div class="block-header">
+      <div class="block-num">01</div>
+      <div class="block-title">
+        <h2>Visibilidad orgánica</h2>
+        <div class="subtitle">Por qué Google no le está dando la visibilidad que su clínica merece</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Es muy probable que su clínica ya aparezca en Google cuando alguien busca su nombre directamente. Eso es bueno. El problema no es ese.</p>
+      <p>El problema es lo que pasa cuando alguien <em>no</em> lo conoce todavía y busca cosas como "dermatólogo en San José", "tratamiento de acné", "depilación láser en Alajuela" o "clínica dermatológica cerca de mí". Ahí su sitio queda en desventaja frente a competidores que están mejor identificados ante Google — aunque tengan menos trayectoria que usted.</p>
+
+      <div class="sub-issue">
+        <h3>1.1 — El sitio no se identifica como clínica médica</h3>
+        <p>Existe una "etiqueta invisible" que los sitios web incluyen para decirle a Google: <em>soy una clínica médica, atiendo en estas direcciones, tengo estos horarios, mi médico se llama así y se especializa en esto.</em> Su sitio no la tiene. Para Google, hoy es solo "una página web más".</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Cuando un paciente busca dermatólogo cerca, Google prioriza clínicas que sí están bien identificadas. Su clínica queda fuera de esos resultados aunque tenga más experiencia.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">Schema.org</span> <span class="tech-tag">JSON-LD</span> <span class="tech-tag">Local SEO</span></p>
+            <p>El sitio no implementa <strong>Schema markup</strong> en ninguna de sus páginas. Para una clínica médica los esquemas críticos son <code>MedicalBusiness</code>, <code>Physician</code>, <code>MedicalClinic</code>, <code>MedicalProcedure</code> y <code>LocalBusiness</code>. Ninguno está presente.</p>
+            <p>Esto bloquea:</p>
+            <ul>
+              <li>Rich results en SERP (horarios, dirección, rating embebido)</li>
+              <li>Aparición en el Knowledge Panel lateral de Google</li>
+              <li>Posicionamiento en el Local Pack (mapa con 3 resultados destacados)</li>
+              <li>Indexación correcta en Google My Business linkado</li>
+            </ul>
+            <p>Sumado a esto, no hay <code>sitemap.xml</code> bien estructurado ni <code>robots.txt</code> optimizado. En el rebuild se implementará schema en cada nivel de página, sitemap automatizado en Next.js, y configuración correcta de Google Search Console + GMB.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>1.2 — El título principal de su sitio dice "Home2"</h3>
+        <p>Cuando alguien busca su clínica en Google, el primer resultado debería decir algo como <em>"Dr. Eric Rojas — Dermatología en Costa Rica"</em>. En cambio, hoy dice literalmente:</p>
+        <div class="evidence-box">
+          <div class="ev-label">Lo que aparece hoy</div>
+          <div class="ev-content">Home2 - Dr. Eric Rojas - Dermatología Laser Center</div>
+        </div>
+        <p>"Home2" no es un texto que alguien haya escrito a propósito. Es el nombre por defecto que tienen las páginas duplicadas dentro de WordPress, y nadie lo cambió antes de publicar el sitio. Eso mismo es lo que ve cualquier persona que comparta el link de su sitio en WhatsApp, Facebook o Instagram.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          La primera impresión es de descuido. Antes de que el paciente entre al sitio, ya recibió una señal negativa.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">Meta tags</span> <span class="tech-tag">Open Graph</span></p>
+            <p>El meta tag <code>&lt;title&gt;</code> del home está literalmente como <code>"Home2 - Dr. Eric Rojas - Dermatología Laser Center"</code>. El slug de URL es <code>/inicio-new-2/</code>, lo que indica que la página actual es una duplicación del home original que quedó publicada como definitiva sin renombrar.</p>
+            <p>Mismo problema en Open Graph:</p>
+            <ul>
+              <li><code>og:title</code> = "Home2 - Dr. Eric Rojas..."</li>
+              <li><code>og:image</code> = el logo en JPG (1200×630), no una imagen visual fuerte</li>
+              <li><code>og:description</code> = "Dermatología médica y estética con resultados reales."</li>
+            </ul>
+            <p>En el rebuild cada página tendrá title, meta description, OG y Twitter Card optimizados con keywords locales: "dermatólogo Costa Rica", "clínica dermatológica San José", etc.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>1.3 — Los enlaces internos están desordenados</h3>
+        <p>Las direcciones de las páginas dentro de su sitio incluyen cosas como:</p>
+        <ul>
+          <li><code>/inicio-new-2/</code> — la versión "nueva" del home que quedó pegada como oficial</li>
+          <li><code>/corporal-2/</code> — el "-2" significa que hubo una página corporal antes que se eliminó sin avisarle a Google</li>
+          <li><code>/dr-eric-rojas-1700/</code>, <code>/dr-eric-rojas-1701/</code>, … hasta <code>/dr-eric-rojas-1711/</code> — son 12 páginas seguidas, todas con el mismo título</li>
+        </ul>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          A Google le cuesta entender qué es importante en su sitio. Cuando hay 12 páginas con el mismo título, Google no sabe cuál mostrar y normalmente termina no mostrando ninguna.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">URL structure</span> <span class="tech-tag">301 redirects</span> <span class="tech-tag">Duplicate content</span></p>
+            <p>La estructura de URLs presenta tres problemas concretos:</p>
+            <ul>
+              <li><strong>Slugs con sufijo numérico</strong> (<code>corporal-2</code>, <code>inicio-new-2</code>) indican migraciones sin 301 redirect desde la versión original — penalización por contenido duplicado y pérdida de link equity histórico</li>
+              <li><strong>12 posts idénticos</strong> (<code>/dr-eric-rojas-1700</code> a <code>/dr-eric-rojas-1711</code>) que cada uno solo embebe un video MP4 sin texto, sin alt tags, sin meta description única. Google los lee como thin content y los puede marcar como spam</li>
+              <li><strong>URLs basadas en categorías de WordPress</strong> tipo <code>/category/slim-laser/</code> en vez de URLs descriptivas tipo <code>/tratamientos/slim-laser</code></li>
+            </ul>
+            <p>El rebuild migrará a una arquitectura semántica con 301 redirects desde las URLs viejas para preservar el SEO existente.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 2 ====================== -->
+  <section class="block" id="section-02">
+    <div class="block-header">
+      <div class="block-num">02</div>
+      <div class="block-title">
+        <h2>Conversión a citas</h2>
+        <div class="subtitle">Por qué quienes llegan al sitio no terminan agendando</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Suponga que un paciente encontró su sitio. Llega a la página de inicio. ¿Qué pasa después? Hoy, lo más probable es que se vaya sin agendar. Estas son las razones:</p>
+
+      <div class="sub-issue">
+        <h3>2.1 — No existe ninguna automatización de citas dentro del sitio</h3>
+        <p>Este es probablemente el problema más caro de todos los que encontramos.</p>
+        <p>Hoy en su sitio no hay forma de agendar una cita directamente. Todo el flujo de citas depende de canales humanos: los pacientes pueden llamar al 2248-3535 o escribir por WhatsApp al 6184-3535 (o al 6179-3535 si es consulta virtual).</p>
+        <p>Esto introduce una <strong>limitante humana</strong>: cuando hay picos de tráfico —después de una campaña en redes, recomendaciones boca a boca, época de fin de año, una mención en algún medio— las personas que atienden esos canales se saturan. Llamadas que no se contestan. Mensajes que se acumulan. Cada paciente no respondido es un paciente que probablemente busque otra clínica antes de que ustedes alcancen a devolverle el mensaje.</p>
+        <p>En 2026, los pacientes esperan ver el calendario disponible y reservar una cita sin necesidad de hablar con nadie — especialmente fuera del horario de oficina. Si alguien entra al sitio a las 9 de la noche con dudas sobre acné o melasma, su clínica no tiene cómo capturarlo hasta el día siguiente.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Estimamos que entre el 30% y el 50% de las consultas potenciales se pierden en este paso, especialmente las nocturnas, las de fin de semana, y las que ocurren durante picos de tráfico cuando los canales humanos están saturados.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>2.2 — No hay botón visible para agendar ni WhatsApp flotante</h3>
+        <p>En su sitio actual no existe un botón visible y permanente que diga "Agendar cita". Los números de teléfono están escritos como texto plano dentro del contenido, no como botones que el paciente pueda tocar desde su celular para llamar directamente.</p>
+        <p>Tampoco hay un botón flotante de WhatsApp — el formato estándar que tienen casi todas las clínicas hoy en Costa Rica, y que es probablemente el canal principal de consultas iniciales.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Pacientes que estarían dispuestos a contactarlo simplemente no lo hacen porque les da pereza el paso intermedio. Cada clic extra reduce alrededor de un 20% las personas que llegan al final.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">CTAs</span> <span class="tech-tag">tap-to-call</span> <span class="tech-tag">Sticky elements</span></p>
+            <p>Los teléfonos en el sitio aparecen como texto plano (<code>Tel: 2248-3535</code>) y no como enlaces <code>tel:</code> con tap-to-call estructurado. En mobile esto significa que el usuario tiene que copiar manualmente el número.</p>
+            <p>Sin sticky CTA en header ni FAB de WhatsApp. El UX estándar 2026 incluye:</p>
+            <ul>
+              <li>Sticky header con CTA "Agendar" visible en scroll</li>
+              <li>FAB de WhatsApp persistente bottom-right con animación pulse sutil</li>
+              <li>Click-to-call <code>tel:</code> en todos los números visibles</li>
+              <li>UTM tracking en cada CTA para medir conversión por canal</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>2.3 — Los precios están escondidos en una FAQ</h3>
+        <p>El costo de la consulta (₡55,000 presencial, ₡40,000 virtual) está enterrado en la sección de Preguntas Frecuentes dentro de la página de Clínicas. El paciente que quiere saber cuánto cuesta tiene que cazarlo entre múltiples páginas.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Estudios de comportamiento web muestran que los pacientes que no encuentran información de precios en menos de 30 segundos asumen que es "caro" o "complicado" y se van. La transparencia de precios aumenta la confianza y la conversión.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>2.4 — No hay galería real de antes y después</h3>
+        <p>En dermatología y estética, los resultados visuales son <strong>el factor número uno de decisión</strong>. Un paciente que está considerando un tratamiento de Slim Láser, corrección de nariz, o eliminación de acné necesita ver qué le pasó a otra persona como él o ella.</p>
+        <p>Su sitio actual no tiene una galería estructurada de antes y después con casos reales.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Su clínica está compitiendo con otras que sí muestran resultados visuales — y está perdiendo la decisión antes de que el paciente siquiera levante el teléfono.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>2.5 — La sección "Estos son parte de nuestros clientes" no son clientes</h3>
+        <p>En la página de inicio hay una sección titulada "Estos son parte de nuestros clientes" con 12 imágenes en grilla. Si uno mira con atención:</p>
+        <ul>
+          <li>Los 12 títulos dicen exactamente lo mismo: "Dr. Eric Rojas"</li>
+          <li>Las imágenes son capturas de pantalla del navegador Opera, recortadas en baja calidad</li>
+          <li>No hay nombre de paciente, ni historia, ni testimonio escrito</li>
+        </ul>
+        <p>Pero hay algo peor: cuando un paciente le hace clic a cualquiera de esas tarjetas, lo manda a una página interna que solamente muestra un video MP4 incrustado, sin contexto, sin nombre del paciente, sin descripción del caso. Esos videos tardan en cargar (especialmente en conexiones lentas), abren una página que se ve incompleta, y el paciente termina presionando "atrás" porque no entiende qué está mirando.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          En lugar de generar confianza, esta sección destruye la credibilidad. El paciente entra esperando ver pruebas reales del trabajo de su clínica y se encuentra con una experiencia pesada, confusa y poco profesional.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">Thin content</span> <span class="tech-tag">Performance</span> <span class="tech-tag">Asset optimization</span></p>
+            <p>Las 12 "tarjetas de cliente" son posts individuales WordPress numerados secuencialmente (<code>/dr-eric-rojas-1700</code> a <code>/dr-eric-rojas-1711</code>). Cada uno contiene únicamente:</p>
+            <ul>
+              <li>Una imagen og que es captura del navegador Opera con filename literal <code>Opera-Snapshot_2026-05-26_201304_www.drericrojas.com_.png</code></li>
+              <li>Un video MP4 hospedado directamente en el servidor (sin CDN, sin compresión adaptativa) — ej. <code>fget.io_1779840728217.mp4</code></li>
+              <li>El mismo footer/widget de tratamientos del 2020 repetido en cada post</li>
+            </ul>
+            <p>Problemas concretos:</p>
+            <ul>
+              <li>Videos servidos sin streaming adaptativo (HLS/DASH) — el browser descarga el archivo completo antes de reproducir</li>
+              <li>Sin <code>poster</code> attribute en el <code>&lt;video&gt;</code> → cuadro gris mientras carga</li>
+              <li>Sin lazy loading correcto</li>
+              <li>Sin captions ni alt text</li>
+              <li>Google indexa estas páginas como thin content y baja la calidad agregada del dominio</li>
+            </ul>
+            <p>En el rebuild: galería real antes/después con Cloudinary (mismo setup que Nanku/Hidasol), filtrado por tratamiento, lightbox responsive, optimización automática WebP/AVIF, lazy loading, y testimonios con foto y nombre del paciente con consentimiento documentado.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 3 ====================== -->
+  <section class="block" id="section-03">
+    <div class="block-header">
+      <div class="block-num">03</div>
+      <div class="block-title">
+        <h2>Autoridad de marca</h2>
+        <div class="subtitle">Por qué el sitio no transmite la autoridad que usted representa</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Usted tiene veinte años de experiencia, tres clínicas, sub-especialidades médicas (incluyendo Dermato-Oncología), un tratamiento exclusivo desarrollado por usted (Slim Láser), tecnología de punta (Láser Alexandrita, ND, CO2 fraccionado, Fotofinder), y una línea de productos propia con farmacia y delivery.</p>
+      <div class="quote-callout">Nada de eso se destaca en su sitio.</div>
+
+      <div class="sub-issue">
+        <h3>3.1 — Una oportunidad: indexar sus credenciales en Google</h3>
+        <p>Algo que sumaría muchísimo a la confianza del paciente potencial es que Google tenga indexados —y muestre en los resultados— datos concretos sobre usted como profesional: universidad de formación, cantidad de pacientes atendidos en los últimos veinte años, especializaciones formales, membresías en colegios médicos y sociedades dermatológicas, publicaciones, conferencias, y otros datos similares que reflejan trayectoria.</p>
+        <p>Hoy, en la página "Dr. Eric Rojas", el contenido se limita a un párrafo corto que menciona que usted es "uno de los dermatólogos más reconocidos en el territorio nacional" — una frase válida, pero genérica, que cualquier clínica podría escribir.</p>
+        <div class="consequence">
+          <strong>Oportunidad</strong>
+          Convertir esa biografía corta en una página de credenciales detallada y bien estructurada es uno de los cambios de mayor impacto y menor costo. Los datos concretos son lo que diferencia a un buen dermatólogo del dermatólogo en el que confiar.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>3.2 — Slim Láser es un diferenciador único y exclusivo</h3>
+        <p>Slim Láser es un tratamiento desarrollado por su clínica y que solo se realiza con ustedes. Es exactamente el tipo de servicio que merece tener su propia página dedicada, con su propia narrativa, su propia explicación del proceso paso a paso, su propia galería de antes y después, y sus propios testimonios.</p>
+        <p>Hoy, en el sitio, Slim Láser aparece como una categoría más dentro de "Estética" — sin página propia, sin explicación detallada del procedimiento, sin resultados visualizables, y sin reflejar el peso comercial que tiene como tratamiento exclusivo.</p>
+        <div class="consequence">
+          <strong>Oportunidad</strong>
+          Darle a Slim Láser una página dedicada y bien construida lo convertiría en la puerta de entrada premium de su clínica. Pacientes que buscan específicamente este tratamiento en Google podrían llegar directo a una página optimizada y agendar desde ahí.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>3.3 — Su tecnología no se vende como atributo de marca</h3>
+        <p>El Fotofinder (sistema digital para detectar cáncer de piel), el Láser Alexandrita con enfriamiento integrado, el Láser CO2 fraccionado — son piezas de equipo que justifican un ticket más alto y diferencian su clínica de otras. Hoy se mencionan de pasada dentro de párrafos largos.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          El paciente promedio no sabe que su clínica tiene tecnología superior a la competencia. La autoridad técnica se pierde en el texto.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>3.4 — La sección "Famosos nos visitan" puede replantearse</h3>
+        <p>En la página "Dr. Eric Rojas" hay un bloque titulado "FAMOSOS NOS VISITAN". El contenido en sí es valioso: figuras públicas que confían en su clínica son una prueba de autoridad importante. Lo que sugerimos es replantear cómo se nombra y se presenta esa sección.</p>
+        <p>Una alternativa sería renombrarla como <em>"Personalidades que confían en nosotros"</em>, <em>"Pacientes destacados"</em>, o simplemente <em>"Destacados"</em>, manteniendo a las mismas personas pero con un encuadre que comunique exclusividad y autoridad médica. El cambio está en la presentación, no en quién aparece.</p>
+        <div class="consequence">
+          <strong>Oportunidad</strong>
+          El mismo contenido, mejor presentado, deja de funcionar como un atractivo social y empieza a operar como prueba de confianza profesional — que es lo que el paciente premium valora al elegir un dermatólogo.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>3.5 — Sus sedes no comunican infraestructura</h3>
+        <p>Tiene dos clínicas activas (Paseo Colón y La Radial) y una temporalmente cerrada (San Carlos). En el sitio actual, las clínicas se muestran como datos sueltos: una dirección, un teléfono, un mapa. <strong>No hay fotos de las clínicas por dentro.</strong> No hay fotos del equipo médico. No hay fotos de la fachada para que el paciente reconozca el lugar cuando llegue.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          El paciente no puede visualizar dónde va a entrar. La incertidumbre reduce la probabilidad de agendar.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 4 ====================== -->
+  <section class="block" id="section-04">
+    <div class="block-header">
+      <div class="block-num">04</div>
+      <div class="block-title">
+        <h2>Imagen profesional</h2>
+        <div class="subtitle">Errores que están dañando activamente su imagen profesional</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Esta sección es importante leerla porque son problemas que cualquier paciente puede ver hoy mismo en su sitio, y que envían el mensaje equivocado sobre la calidad de su clínica.</p>
+
+      <div class="sub-issue">
+        <h3>4.1 — Errores ortográficos en el menú principal</h3>
+        <p>Justo en el menú de navegación — el primer texto que ve cualquier paciente — aparece la palabra:</p>
+        <div class="evidence-box">
+          <div class="ev-label">Lo que aparece hoy en el menú</div>
+          <div class="ev-content">Correción de Nariz</div>
+        </div>
+        <p>Es "Corrección", con dos C.</p>
+        <p>Dentro de la página de Estética, en la sección de Corrección Estética de Nariz, aparecen tres errores en una sola lista:</p>
+        <ul>
+          <li><strong>"Leventa"</strong> — debería ser "Levanta"</li>
+          <li><strong>"Perfilala"</strong> — debería ser "Perfílala"</li>
+          <li><strong>"Corregur Hundimientos"</strong> — debería ser "Corrige Hundimientos"</li>
+        </ul>
+        <p>En la página de Nuestras Clínicas se repite dos veces la palabra <strong>"prodecimientos"</strong> (procedimientos, mal escrita).</p>
+        <p>En la página de Salud, en una de las secciones, su propio nombre aparece como <strong>"Dr. Erick Rojas"</strong> (con K), cuando su marca es "Eric" sin K.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          En el campo médico, los detalles importan. Un paciente que ve errores de ortografía en el menú principal inconscientemente extrapola: si descuidan algo tan visible, ¿qué pasará con los detalles del tratamiento?
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>4.2 — El contenido principal está congelado desde 2014</h3>
+        <p>Las páginas de Salud y Estética — donde el paciente lee sobre tratamientos como acné, melasma, cáncer de piel, hidrafacial — tienen fecha de actualización registrada en <strong>febrero de 2014</strong>. Doce años sin tocarse.</p>
+        <p>Es muy probable que el texto que está hoy publicado sea exactamente el mismo que se escribió aquel año. Las imágenes que acompañan esos textos tienen también fecha de 2014 y aspecto consistente con esa época: archivos JPG de baja calidad que se ven pixelados en pantallas modernas.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Cualquier paciente que llegue a esas páginas siente que entró a un sitio abandonado. Y en medicina, "abandonado" se asocia con "desactualizado" — exactamente lo opuesto a la imagen de "tecnología de punta" que su clínica quiere proyectar.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">Content freshness</span> <span class="tech-tag">SEO decay</span></p>
+            <p>Los meta tags de las páginas declaran:</p>
+            <ul>
+              <li><code>article:modified_time: 2014-02-16T19:46:25-06:00</code> en <code>/salud/</code></li>
+              <li><code>article:modified_time: 2014-02-18T09:57:28-06:00</code> en <code>/estetica/</code></li>
+            </ul>
+            <p>Google usa <code>article:modified_time</code> como señal de freshness. Páginas marcadas como "última actualización 2014" en un sector que evoluciona rápido (nuevos tratamientos, nueva tecnología láser, nuevos protocolos) reciben menos prioridad en resultados frente a competidores con contenido reciente.</p>
+            <p>Las imágenes referenciadas en esas páginas siguen apuntando a archivos en <code>/wp-content/uploads/2014/02/</code>: <code>acne_titulo1.jpg</code>, <code>melasma.jpg</code>, <code>cancer_de_piel.jpg</code>, <code>hiperhidrosis.jpg</code>, <code>Escleroterapia.jpg</code>, <code>Rosacea.jpg</code> — todas JPGs comprimidos de hace 12 años.</p>
+            <p>En el rebuild todo el contenido se reescribe con copy actualizado al protocolo y tecnología actual de la clínica, y las imágenes se reemplazan por material profesional nuevo (foto producción o stock médico premium).</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>4.3 — Los horarios están pegados sin formato</h3>
+        <p>En la página de Clínicas, los horarios de atención aparecen así:</p>
+        <div class="evidence-box">
+          <div class="ev-label">Lo que ve el paciente</div>
+          <div class="ev-content">Lunes: 7:00 A.M – 5:00 P.M<br>Martes: 7:00 A.M – 6:00 P.M<br>Miércoles: 2:00 P.M – 6:00 P.M  Jueves: 7:00 A.M – 6:00 P.M  Viernes: 7:00 A.M – 2:00 P.M  Sábado. 7:00 A.M – 5:00 P.M  Domingo: Cerrado</div>
+        </div>
+        <p>A partir del miércoles, todo el resto de la semana aparece pegado en una sola línea sin separación. En un celular es muy difícil de leer.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          El paciente que quiere saber si la clínica está abierta el sábado tiene que esforzarse para encontrarlo. Muchos no lo hacen.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>4.4 — La sede de San Carlos sigue listada como si estuviera activa</h3>
+        <p>La clínica de San Carlos está cerrada temporalmente, pero en el sitio aparece con la misma prominencia que las dos sedes activas: con su mapa, su dirección, sus horarios. El aviso de "Cerrado temporalmente" está en letra chica al lado.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Un paciente de la zona de San Carlos podría manejar hasta allá pensando que está abierta. Eso es una mala experiencia que termina convertida en una mala reseña pública.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>4.5 — El logo principal está en muy baja calidad</h3>
+        <p>El logo que aparece arriba a la izquierda en cada página es un archivo de 115 × 86 píxeles (más chico que la palma de su mano en pantalla). En monitores modernos y celulares de alta resolución se ve borroso.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          El primer elemento visual que ve el paciente — el logo de su marca — se ve mal. Es como tener la placa de la clínica oxidada en la entrada.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">Asset quality</span> <span class="tech-tag">SVG</span> <span class="tech-tag">Retina</span></p>
+            <p>El logo actual es <code>logo-eric-115x86x1x0x113x86x1777257479.jpg</code>: un JPG raster de 115×86 px con timestamp generado por Brizy. JPG además no soporta transparencia, lo cual rompe el branding si se usa sobre fondos no blancos.</p>
+            <p>En el rebuild el logo debe convertirse a <strong>SVG vectorial</strong> (escala infinita, peso mínimo) con fallback PNG transparente a 2x y 3x para soporte retina. La única versión decente que encontramos es <code>Logo-PNG-F.Negro_-1536x552.png</code> que sirve como base para vectorizar.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 5 ====================== -->
+  <section class="block" id="section-05">
+    <div class="block-header">
+      <div class="block-num">05</div>
+      <div class="block-title">
+        <h2>Identidad visual</h2>
+        <div class="subtitle">Por qué su sitio se ve "viejo" comparado con la competencia</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Independiente de los problemas técnicos, hay un tema de identidad visual que pesa mucho.</p>
+
+      <div class="sub-issue">
+        <h3>5.1 — No hay un sistema de diseño consistente</h3>
+        <p>Si uno navega por las distintas páginas de su sitio, da la impresión de que cada página fue diseñada por una persona diferente: las tipografías cambian, los colores varían, los espaciados no siguen un patrón, algunos botones tienen un estilo y otros tienen otro.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          El sitio se siente improvisado. Las clínicas dermatológicas premium en Latinoamérica trabajan con un sistema visual riguroso. Eso es lo que comunica "esta gente sabe lo que hace".
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>5.2 — La paleta de colores actual no transmite "premium médico"</h3>
+        <p>Su sitio actual usa colores genéricos. El sector dermatológico/estético premium en países como México, Colombia y Estados Unidos hoy trabaja con paletas oscuras, dorados metálicos, blancos elegantes y acentos minimalistas. Eso es lo que el paciente de alto poder adquisitivo asocia con "clínica seria, exclusiva, con tecnología real".</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Visualmente, su sitio se parece más a una clínica genérica que a la clínica del Dr. Eric Rojas Blanco con veinte años de trayectoria y un tratamiento propio.
+        </div>
+      </div>
+
+      <div class="sub-issue">
+        <h3>5.3 — La única foto suya es pequeña y antigua</h3>
+        <p>En todo el sitio hay una sola foto del Dr. Rojas, en baja resolución, recortada de forma genérica. Para una clínica donde el médico ES la marca, esto es un activo desaprovechado.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          El paciente nuevo que llega al sitio quiere conocerlo a usted — verle la cara, sentir confianza. Hoy esa confianza no se construye porque su imagen no está bien presentada.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 6 ====================== -->
+  <section class="block" id="section-06">
+    <div class="block-header">
+      <div class="block-num">06</div>
+      <div class="block-title">
+        <h2>Experiencia mobile</h2>
+        <div class="subtitle">Por qué los pacientes que usan celular tienen una mala experiencia</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Más del 70% de los pacientes que buscan un dermatólogo lo hacen desde el celular. Su sitio actual tiene tres problemas serios en mobile:</p>
+
+      <div class="sub-issue">
+        <h3>6.1 — No se puede hacer zoom</h3>
+        <p>En su sitio se desactivó la posibilidad de hacer zoom en el celular. Eso es un problema técnico, pero también es una falla de <strong>accesibilidad</strong>: pacientes con baja visión, adultos mayores, o personas que solo quieren ver una foto más grande, no pueden hacerlo.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Excluye directamente a un grupo importante de pacientes — y en el caso de los adultos mayores, es una violación de accesibilidad básica.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">WCAG</span> <span class="tech-tag">Accessibility</span> <span class="tech-tag">Viewport meta</span></p>
+            <p>El meta viewport está configurado como:</p>
+            <p><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"&gt;</code></p>
+            <p>El <code>user-scalable=0</code> y el <code>maximum-scale=1.0</code> bloquean el pinch-to-zoom. Esto viola directamente <strong>WCAG 2.1 nivel A — criterio 1.4.4</strong> (Resize text). Además constituye una falla de accesibilidad bajo la Ley 7600 de Costa Rica en lo aplicable a servicios digitales.</p>
+            <p>En el rebuild el viewport correcto será: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></p>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>6.2 — El video del hero no funciona en todos los celulares</h3>
+        <p>El video que reproduce en la página de inicio está en un formato (<code>.m4v</code>) que es específico de productos Apple antiguos. En muchos celulares Android y en navegadores modernos, ese video puede no reproducirse correctamente, o tarda mucho en cargar.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Pacientes que entran al sitio desde celulares Android (la mayoría en Costa Rica) pueden ver un cuadro en blanco donde debería estar el video.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">Video encoding</span> <span class="tech-tag">Cross-browser</span></p>
+            <p>El video hero está servido como <code>/wp-content/uploads/2026/05/6.m4v</code>. M4V es un contenedor propietario de Apple QuickTime que no tiene soporte consistente en Chrome Android, Firefox Mobile, ni Samsung Internet — los tres navegadores más usados en CR fuera de iOS.</p>
+            <p>Además se está sirviendo sin <code>playsinline</code>, sin <code>muted</code>, sin <code>preload="metadata"</code>, sin poster image fallback, sin source alternativo en WebM o MP4 H.264.</p>
+            <p>En el rebuild: re-encode a MP4 (H.264 baseline para máxima compatibilidad), poster JPG/WebP optimizado para LCP, y servir desde Cloudinary con f_auto / q_auto para compresión adaptativa por dispositivo.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>6.3 — Los botones son demasiado pequeños para tocar con el dedo</h3>
+        <p>Los enlaces y botones del sitio son del tamaño que se diseñó para clic con mouse, no para tocar con el dedo. En un celular, eso significa que el paciente toca un elemento y abre otro por error con frecuencia.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Frustración. El paciente abandona el sitio porque "no le funciona el celular".
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 7 ====================== -->
+  <section class="block" id="section-07">
+    <div class="block-header">
+      <div class="block-num">07</div>
+      <div class="block-title">
+        <h2>Mantenibilidad técnica</h2>
+        <div class="subtitle">Por qué el sitio es difícil de mantener y por qué eso le afecta</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Esta sección es más técnica, pero la incluimos porque tiene impacto directo en cuánto le cuesta a su clínica mantener el sitio funcionando.</p>
+
+      <div class="sub-issue">
+        <h3>7.1 — El sitio está construido sobre dos sistemas a la vez</h3>
+        <p>Para construir una página web hay distintos "constructores" (las herramientas que arman las páginas visualmente). Lo normal es elegir uno y trabajar con ese. Su sitio tiene <strong>dos constructores activos al mismo tiempo</strong>: algunas páginas se hicieron con uno, otras con el otro, y algunas tienen partes de ambos.</p>
+        <p>Una analogía médica: es como si su clínica tuviera dos sistemas de historia clínica corriendo en paralelo. Cuando un paciente vuelve, nadie sabe en cuál archivo buscar. Si uno se cae, no se sabe si el otro tiene la información actualizada.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Cada vez que quiera actualizar algo, es probable que algo más se rompa. Los costos de mantenimiento son más altos. Si los constructores se actualizan (lo cual pasa varias veces al año), el sitio puede romperse sin aviso. Nadie que tome el sitio después puede entenderlo fácilmente.
+        </div>
+
+        <details class="tech">
+          <summary>
+            <span class="label-wrap">Análisis técnico</span>
+            <span class="indicator">+</span>
+          </summary>
+          <div class="tech-content">
+            <p><span class="tech-tag">WordPress</span> <span class="tech-tag">Page builders</span> <span class="tech-tag">Tech debt</span></p>
+            <p>El sitio corre sobre WordPress con <strong>Elementor 4.0.5</strong> declarado en el meta-generator de todas las páginas. Simultáneamente sirve assets desde rutas <code>/wp-content/uploads/brizy/imgs/</code>, lo que confirma que <strong>Brizy</strong> también está activo (o estuvo, con assets que el theme sigue referenciando).</p>
+            <p>Esta convivencia produce:</p>
+            <ul>
+              <li>CSS de ambos builders cargando en paralelo</li>
+              <li>JS de ambos builders cargando en paralelo</li>
+              <li>Render-blocking resources que disparan el FCP/LCP</li>
+              <li>Conflictos de specificity que generan estilos inconsistentes entre páginas</li>
+              <li>Imposibilidad de hacer un theme update sin riesgo de breakage en cascada</li>
+            </ul>
+            <p>El rebuild migra a stack moderno (estándar Bralto):</p>
+            <ul>
+              <li><strong>Next.js 15 + TypeScript + Tailwind</strong></li>
+              <li><strong>Framer Motion</strong> para microinteracciones</li>
+              <li><strong>Cloudinary</strong> para gestión de assets (mismo setup que Nanku/Hidasol)</li>
+              <li><strong>Vercel deploy</strong> con dominio en GoDaddy (igual flujo de DNS que ya manejamos)</li>
+              <li><strong>Content management</strong> via headless CMS o MDX según volumen editorial deseado</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="sub-issue">
+        <h3>7.2 — El sitio carga lento</h3>
+        <p>Por la mezcla de sistemas, su sitio carga librerías duplicadas. Esto significa que el navegador del paciente tiene que descargar más datos de los necesarios cada vez que entra.</p>
+        <div class="consequence">
+          <strong>Consecuencia</strong>
+          Por cada segundo extra que tarda en cargar, el 7% de los pacientes abandonan antes de ver el contenido. Sitios bien construidos cargan en menos de 2 segundos.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SECTION 8 ====================== -->
+  <section class="block" id="section-08">
+    <div class="block-header">
+      <div class="block-num">08</div>
+      <div class="block-title">
+        <h2>Funcionalidades ausentes</h2>
+        <div class="subtitle">Lo que falta y que una clínica de su nivel debería tener</div>
+      </div>
+    </div>
+
+    <div class="block-body">
+      <p>Estas son funcionalidades que clínicas competidoras ya están ofreciendo, y que hoy su sitio no tiene:</p>
+
+      <div class="summary-table">
+        <div class="st-row header">
+          <div>Funcionalidad ausente</div>
+          <div>Por qué importa</div>
+          <div>Status competidores</div>
+        </div>
+        <div class="st-row">
+          <div>Sistema de agendamiento online</div>
+          <div>Reserva sin llamar, las 24 horas</div>
+          <div>Estándar 2026</div>
+        </div>
+        <div class="st-row">
+          <div>WhatsApp flotante</div>
+          <div>Canal principal de consulta en CR</div>
+          <div>Casi universal</div>
+        </div>
+        <div class="st-row">
+          <div>Galería antes/después estructurada</div>
+          <div>Principal motor de decisión en estética</div>
+          <div>Diferenciador básico</div>
+        </div>
+        <div class="st-row">
+          <div>Página dedicada Slim Láser</div>
+          <div>Es su tratamiento exclusivo</div>
+          <div>Su ventaja única</div>
+        </div>
+        <div class="st-row">
+          <div>Testimonios reales con nombre y foto</div>
+          <div>Confianza social documentada</div>
+          <div>Estándar premium</div>
+        </div>
+        <div class="st-row">
+          <div>Página de credenciales del Dr. Rojas</div>
+          <div>Universidades, especializaciones, certificaciones</div>
+          <div>Esperado en sector</div>
+        </div>
+        <div class="st-row">
+          <div>Información de precios visible</div>
+          <div>Transparencia que reduce fricción</div>
+          <div>Tendencia 2024+</div>
+        </div>
+        <div class="st-row">
+          <div>Blog / educación dermatológica</div>
+          <div>Posicionamiento orgánico en Google</div>
+          <div>Clínicas líderes lo tienen</div>
+        </div>
+        <div class="st-row">
+          <div>Aviso médico legal y política de privacidad</div>
+          <div>Cumplimiento legal básico</div>
+          <div>Requerido</div>
+        </div>
+        <div class="st-row">
+          <div>Logos de certificaciones</div>
+          <div>Colegio de Médicos, FDA, etc.</div>
+          <div>Esperado en sector</div>
+        </div>
+        <div class="st-row">
+          <div>Newsletter / lista de pacientes</div>
+          <div>Retención y upsell de tratamientos</div>
+          <div>Underused, alto ROI</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== CONCLUSION ====================== -->
+  <section class="conclusion">
+    <div class="c-kicker">Conclusión</div>
+    <h2>Su clínica tiene <em>todo</em> lo necesario para ser la referencia dermatológica de Costa Rica.</h2>
+    <p>Veinte años de trayectoria, tres sedes, un tratamiento propio, tecnología de primer nivel, y un médico titular con autoridad real en el sector.</p>
+    <p>Su sitio web actual no refleja nada de eso. Peor: en varios puntos lo contradice.</p>
+    <p style="margin-top: 32px;"><strong style="color: var(--tech-accent);">Nuestra recomendación es un rebuild completo</strong> — un sitio nuevo, construido desde cero, con:</p>
+    <ul>
+      <li>Identidad visual premium (paleta oscura con dorado metálico, estilo glassmorphism 3D que comunique autoridad médica y lujo accesible)</li>
+      <li>Arquitectura de información ordenada (cinco pilares de tratamiento + páginas dedicadas para los servicios estrella)</li>
+      <li>Sistema de agendamiento integrado con automatización completa y WhatsApp flotante</li>
+      <li>Galería real de antes/después con casos documentados</li>
+      <li>Página completa de credenciales y bio del Dr. Rojas</li>
+      <li>Optimización para Google con identificación clara como clínica médica</li>
+      <li>Experiencia mobile excelente y accesible</li>
+      <li>Estructura técnica moderna que permita actualizar el contenido fácilmente sin riesgo de romper nada</li>
+    </ul>
+
+    <div class="next-step">
+      <p style="color: var(--tech-ink); font-size: 21px; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 0; line-height: 1.4;">El siguiente paso, si lo aprueba, es presentarle la propuesta visual del nuevo sitio para que la revise antes de iniciar la construcción.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div>
+      <div class="brand">Bralto</div>
+      <div style="margin-top: 4px; color: var(--ink-mute);">Infraestructura digital · Bralto.io</div>
+    </div>
+    <div style="text-align: right;">
+      <div>Documento confidencial</div>
+      <div style="margin-top: 4px;">Mayo 2026 · v.01</div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
