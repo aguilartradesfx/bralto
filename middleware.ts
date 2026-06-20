@@ -69,6 +69,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/propuestas/') ||
     pathname.startsWith('/Proposal-') ||
     pathname.startsWith('/AO-Guidelines') ||
+    pathname.startsWith('/brand/') ||
     pathname.startsWith('/Diagnostico-')
   ) {
     return NextResponse.next()

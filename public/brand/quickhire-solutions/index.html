@@ -110,16 +110,16 @@
     -webkit-mask-image:radial-gradient(120% 80% at 50% 40%,#000 30%,transparent 75%);
             mask-image:radial-gradient(120% 80% at 50% 40%,#000 30%,transparent 75%);
   }
-  .hero .wrap{position:relative;z-index:2}
+  .hero .wrap{position:relative;z-index:2;width:100%;text-align:center}
   .hero-eyebrow{
     font-family:var(--font-display);font-weight:600;text-transform:uppercase;
     letter-spacing:.32em;font-size:.8rem;color:rgba(255,255,255,.85);margin-bottom:1.4rem;
-    display:flex;align-items:center;gap:.8rem;
+    display:flex;align-items:center;justify-content:center;gap:.8rem;
   }
   .hero-eyebrow::before{content:"";width:34px;height:1px;background:rgba(255,255,255,.6)}
   .hero h1{font-size:clamp(3rem,8.5vw,6.5rem);font-weight:700;letter-spacing:-.035em;text-shadow:0 6px 30px rgba(11,30,77,.25)}
   .hero-sub{font-family:var(--font-display);font-weight:500;font-size:clamp(1.2rem,3vw,2rem);color:rgba(255,255,255,.92);margin-top:.4rem}
-  .hero-tag{margin-top:2rem;font-size:clamp(1.05rem,1.8vw,1.35rem);color:rgba(255,255,255,.9);max-width:38ch}
+  .hero-tag{margin:2rem auto 0;font-size:clamp(1.05rem,1.8vw,1.35rem);color:rgba(255,255,255,.9);max-width:42ch}
   .hero-tag strong{font-weight:600}
   .scroll-cue{position:absolute;left:50%;bottom:2.2rem;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.7);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase}
   .scroll-cue .chev{width:22px;height:22px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);animation:bob 1.8s ease-in-out infinite}
@@ -264,6 +264,23 @@
   .footer .contact a{color:#cfe0ff}
   .footer .crafted{margin-top:2.2rem;font-size:.82rem;color:#7e97cf}
 
+  /* ---------- real logo assets ---------- */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .hero-logo{width:min(68vw,340px);height:auto;display:block;margin:.4rem auto 1.8rem;filter:drop-shadow(0 14px 44px rgba(11,30,77,.3))}
+  .logo-variants{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+  @media(max-width:760px){.logo-variants{grid-template-columns:1fr}}
+  .lv-card{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm);background:#fff}
+  .lv-frame{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:2.2rem}
+  .lv-frame img{width:100%;max-width:220px;height:auto}
+  .lv-frame.on-white{background:#fff}
+  .lv-frame.on-cloud{background:var(--cloud)}
+  .lv-frame.on-navy{background:var(--navy)}
+  .lv-card figcaption{padding:1rem 1.3rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line)}
+  .lv-card .t{font-family:var(--font-display);font-weight:600;color:var(--navy)}
+  .lv-card .d{font-size:.84rem;color:var(--slate)}
+  .badge.dark{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .footer-logo{width:178px;height:auto;margin:0 auto 1.4rem;display:block}
+
   /* ---------- reveal motion (progressive enhancement: hidden only when JS is active) ---------- */
   .js .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
   .js .reveal.in{opacity:1;transform:none}
@@ -291,7 +308,8 @@
 <header class="hero" id="top">
   <div class="wrap">
     <div class="hero-eyebrow">Brand Guidelines · 2026</div>
-    <h1>Quickhire<br>Solutions</h1>
+    <img class="hero-logo" src="/brand/quickhire/logo-white.svg" alt="Quickhire Solutions logo" width="228" height="206">
+    <h1 class="sr-only">Quickhire Solutions</h1>
     <div class="hero-sub">Brand Guidelines</div>
     <p class="hero-tag"><strong>US staffing, done right.</strong> The complete system for our logo, color, type, voice and the way our brand shows up in the world.</p>
   </div>
@@ -326,15 +344,19 @@
       <p class="lead" style="margin-top:1rem">Our mark pairs a location pin with a person — the promise of putting the right people exactly where they’re needed. Three approved variants, each for a specific background.</p>
     </div>
 
-    <div class="logo-grid reveal">
-      <div class="logo-card">
-        <div class="frame"><img src="/brand/quickhire/logo-on-light.webp" alt="Quickhire Solutions primary logo on a light background" loading="lazy" width="2560" height="1429"></div>
-        <div class="cap"><div><div class="t">Primary · on light</div><div class="d">Default use over neutral / light surfaces</div></div><span class="badge">Color</span></div>
-      </div>
-      <div class="logo-card">
-        <div class="frame"><img src="/brand/quickhire/signage-reception.webp" alt="Quickhire Solutions logo in white on a deep navy surface" loading="lazy" width="2560" height="1429"></div>
-        <div class="cap"><div><div class="t">White · on dark</div><div class="d">For navy / deep-blue backgrounds only</div></div><span class="badge">Mono</span></div>
-      </div>
+    <div class="logo-variants reveal">
+      <figure class="lv-card">
+        <div class="lv-frame on-white"><img src="/brand/quickhire/logo-primary.svg" alt="Quickhire Solutions primary color logo"></div>
+        <figcaption><div><div class="t">Primary</div><div class="d">Color · default use</div></div><span class="badge">Color</span></figcaption>
+      </figure>
+      <figure class="lv-card">
+        <div class="lv-frame on-cloud"><img src="/brand/quickhire/logo-dark.svg" alt="Quickhire Solutions dark monochrome logo"></div>
+        <figcaption><div><div class="t">Dark</div><div class="d">Mono · on light</div></div><span class="badge">Mono</span></figcaption>
+      </figure>
+      <figure class="lv-card">
+        <div class="lv-frame on-navy"><img src="/brand/quickhire/logo-white.svg" alt="Quickhire Solutions white monochrome logo"></div>
+        <figcaption><div><div class="t">White</div><div class="d">Mono · on dark</div></div><span class="badge dark">Mono</span></figcaption>
+      </figure>
     </div>
 
     <div class="rules">
@@ -354,7 +376,7 @@
       <div class="reveal">
         <h3 style="margin-bottom:1rem">Clear space</h3>
         <div class="clearspace">
-          <div class="cs-box"><img src="/brand/quickhire/logo-on-light.webp" alt="Logo with clear space guides"></div>
+          <div class="cs-box"><img src="/brand/quickhire/logo-dark.svg" alt="Logo with clear space guides"></div>
           <p class="cs-note">Keep a minimum clear space of <b>X</b> on every side, where <b>X</b> equals the height of the logotype’s initial. Nothing should intrude into this margin.</p>
         </div>
       </div>
@@ -364,10 +386,10 @@
       <h3 style="margin-bottom:.4rem">Incorrect usage</h3>
       <p style="color:var(--slate);font-size:.95rem">Four things to never do with the mark.</p>
       <div class="dont-grid">
-        <div class="dont stretch"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t stretch or distort</div></div>
-        <div class="dont recolor"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t recolor</div></div>
-        <div class="dont shadow"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t add drop shadows</div></div>
-        <div class="dont contrast"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t use on low contrast</div></div>
+        <div class="dont stretch"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-primary.svg" alt=""></div><div class="lbl">Don’t stretch or distort</div></div>
+        <div class="dont recolor"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-primary.svg" alt=""></div><div class="lbl">Don’t recolor</div></div>
+        <div class="dont shadow"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-primary.svg" alt=""></div><div class="lbl">Don’t add drop shadows</div></div>
+        <div class="dont contrast"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-primary.svg" alt=""></div><div class="lbl">Don’t use on low contrast</div></div>
       </div>
     </div>
   </div>
@@ -499,7 +521,7 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div class="wrap">
-    <div class="mark"><span class="nav-dot"></span> Quickhire Solutions</div>
+    <img class="footer-logo" src="/brand/quickhire/logo-white.svg" alt="Quickhire Solutions" width="228" height="206">
     <div><span class="conf">Confidential — for internal use only</span></div>
     <div class="meta">Quickhire Solutions · Brand Guidelines · 2026</div>
     <div class="contact">
