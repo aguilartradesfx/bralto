@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<script>document.documentElement.classList.add('js');</script>
+<title>Quickhire Solutions — Brand Guidelines</title>
+<meta name="description" content="Quickhire Solutions brand guidelines — logo, color, typography, photography, voice and applications. Confidential, for internal use only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#3B82F6;
+    --brand:#2563EB;
+    --deep:#1D4ED8;
+    --navy:#0B1E4D;
+    --cloud:#F4F7FF;
+    --ink:#0B1220;
+    --slate:#64748B;
+    --line:#E2E8F4;
+    --white:#FFFFFF;
+    --grad:linear-gradient(135deg,#3B82F6 0%,#1D4ED8 100%);
+    --grad-deep:linear-gradient(135deg,#1D4ED8 0%,#0B1E4D 100%);
+    --maxw:1180px;
+    --r:16px;
+    --shadow:0 18px 50px -20px rgba(11,30,77,.35);
+    --shadow-sm:0 8px 24px -12px rgba(11,30,77,.28);
+    --font-display:'Sora',system-ui,sans-serif;
+    --font-body:'Inter',system-ui,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:var(--white);
+    line-height:1.5;
+    font-size:1.0625rem;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+
+  h1,h2,h3,h4{font-family:var(--font-display);line-height:1.08;letter-spacing:-.02em;font-weight:700}
+  h1{font-size:clamp(2.5rem,6vw,4.5rem)}
+  h2{font-size:clamp(1.85rem,3.4vw,2.6rem);font-weight:600}
+  h3{font-size:clamp(1.15rem,1.8vw,1.4rem);font-weight:600;letter-spacing:-.01em}
+  p{max-width:62ch}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.25rem,4vw,2.5rem)}
+  section{padding:clamp(4.5rem,9vw,8rem) 0;scroll-margin-top:72px;position:relative}
+  .eyebrow{
+    font-family:var(--font-display);font-weight:600;
+    text-transform:uppercase;letter-spacing:.18em;font-size:.78rem;
+    color:var(--brand);margin-bottom:1rem;display:inline-block;
+  }
+  .lead{font-size:clamp(1.05rem,1.6vw,1.3rem);color:var(--slate);max-width:54ch}
+  .section-head{margin-bottom:clamp(2.5rem,5vw,4rem);max-width:60ch}
+
+  /* ---------- backgrounds ---------- */
+  .bg-cloud{background:var(--cloud)}
+  .bg-white{background:var(--white)}
+  .bg-navy{background:var(--navy);color:#E8F0FF}
+  .bg-navy .eyebrow{color:#7FB0FF}
+  .bg-navy h1,.bg-navy h2,.bg-navy h3{color:#fff}
+  .bg-navy .lead{color:#A9BEE8}
+  .bg-grad{background:var(--grad-deep);color:#fff}
+  .bg-grad .eyebrow{color:#cfe0ff}
+  .bg-grad .lead{color:#dbe6ff}
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:saturate(160%) blur(14px);
+    background:rgba(11,30,77,.72);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .nav-brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-display);font-weight:700;color:#fff;letter-spacing:-.01em;font-size:1.05rem}
+  .nav-dot{width:22px;height:22px;border-radius:6px;background:var(--grad);box-shadow:0 0 0 1px rgba(255,255,255,.15) inset}
+  .nav-links{display:flex;gap:.35rem}
+  .nav-links a{
+    color:#C3D2F2;font-size:.9rem;font-weight:500;padding:.45rem .7rem;border-radius:8px;
+    transition:color .2s,background .2s;
+  }
+  .nav-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+  @media(max-width:820px){.nav-links{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:92vh;display:flex;align-items:center;
+    background:var(--grad);color:#fff;overflow:hidden;position:relative;
+    padding:7rem 0 5rem;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 60% at 80% 15%,rgba(255,255,255,.22),transparent 60%),
+      radial-gradient(50% 50% at 10% 90%,rgba(13,30,77,.5),transparent 60%);
+    pointer-events:none;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+    background-size:54px 54px;
+    -webkit-mask-image:radial-gradient(120% 80% at 50% 40%,#000 30%,transparent 75%);
+            mask-image:radial-gradient(120% 80% at 50% 40%,#000 30%,transparent 75%);
+  }
+  .hero .wrap{position:relative;z-index:2}
+  .hero-eyebrow{
+    font-family:var(--font-display);font-weight:600;text-transform:uppercase;
+    letter-spacing:.32em;font-size:.8rem;color:rgba(255,255,255,.85);margin-bottom:1.4rem;
+    display:flex;align-items:center;gap:.8rem;
+  }
+  .hero-eyebrow::before{content:"";width:34px;height:1px;background:rgba(255,255,255,.6)}
+  .hero h1{font-size:clamp(3rem,8.5vw,6.5rem);font-weight:700;letter-spacing:-.035em;text-shadow:0 6px 30px rgba(11,30,77,.25)}
+  .hero-sub{font-family:var(--font-display);font-weight:500;font-size:clamp(1.2rem,3vw,2rem);color:rgba(255,255,255,.92);margin-top:.4rem}
+  .hero-tag{margin-top:2rem;font-size:clamp(1.05rem,1.8vw,1.35rem);color:rgba(255,255,255,.9);max-width:38ch}
+  .hero-tag strong{font-weight:600}
+  .scroll-cue{position:absolute;left:50%;bottom:2.2rem;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.7);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase}
+  .scroll-cue .chev{width:22px;height:22px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);animation:bob 1.8s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:rotate(45deg) translate(0,0);opacity:.6}50%{transform:rotate(45deg) translate(3px,3px);opacity:1}}
+
+  /* ---------- glance ---------- */
+  .glance-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+  @media(max-width:860px){.glance-grid{grid-template-columns:1fr}}
+  .pillars{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0}
+  @media(max-width:520px){.pillars{grid-template-columns:1fr}}
+  .pillar{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:1.4rem 1.4rem 1.5rem;box-shadow:var(--shadow-sm)}
+  .pillar .k{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--navy);margin-bottom:.35rem}
+  .pillar .v{font-size:.95rem;color:var(--slate)}
+  .pillar .ico{width:38px;height:38px;border-radius:10px;background:var(--grad);margin-bottom:.9rem;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-family:var(--font-display)}
+
+  /* ---------- logo ---------- */
+  .logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+  @media(max-width:760px){.logo-grid{grid-template-columns:1fr}}
+  .logo-card{border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .logo-card .frame{aspect-ratio:16/10;overflow:hidden}
+  .logo-card img{width:100%;height:100%;object-fit:cover}
+  .logo-card .cap{padding:1.1rem 1.3rem;background:var(--white);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .logo-card .cap .t{font-family:var(--font-display);font-weight:600;color:var(--navy)}
+  .logo-card .cap .d{font-size:.85rem;color:var(--slate)}
+  .badge{font-size:.7rem;font-weight:600;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.1em;padding:.3rem .6rem;border-radius:999px;background:var(--cloud);color:var(--brand);border:1px solid var(--line);white-space:nowrap}
+
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:3rem}
+  @media(max-width:760px){.rules{grid-template-columns:1fr;gap:2rem}}
+  .rule-list{list-style:none;display:flex;flex-direction:column;gap:.85rem}
+  .rule-list li{display:flex;gap:.7rem;font-size:.97rem;color:var(--ink);align-items:flex-start}
+  .rule-list li::before{content:"";flex:none;width:8px;height:8px;border-radius:3px;background:var(--grad);margin-top:.5rem}
+
+  /* clear space */
+  .clearspace{background:var(--cloud);border:1px dashed #B9C9EC;border-radius:var(--r);padding:2rem;position:relative}
+  .cs-box{position:relative;background:var(--white);border:1px solid var(--line);border-radius:10px;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .cs-box::before{content:"";position:absolute;inset:14%;border:1px dashed #9BB4E6;border-radius:6px}
+  .cs-box img{width:46%;object-fit:contain}
+  .cs-note{margin-top:1rem;font-size:.85rem;color:var(--slate)}
+  .cs-note b{color:var(--navy);font-family:var(--font-display)}
+  .minsize{display:flex;gap:1.4rem;align-items:flex-end;margin-top:1.4rem;flex-wrap:wrap}
+  .minsize .chip{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;font-size:.85rem;color:var(--slate)}
+  .minsize .chip b{display:block;font-family:var(--font-display);font-size:1.3rem;color:var(--navy);font-weight:700}
+
+  /* incorrect usage */
+  .dont-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.4rem}
+  @media(max-width:760px){.dont-grid{grid-template-columns:1fr 1fr}}
+  .dont{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--white)}
+  .dont .vis{aspect-ratio:1/1;background:#EEF2FB;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  .dont .vis img{width:62%}
+  .dont.stretch .vis img{transform:scaleX(1.7)}
+  .dont.recolor .vis img{filter:hue-rotate(135deg) saturate(2.4)}
+  .dont.shadow .vis img{filter:drop-shadow(7px 8px 0 rgba(0,0,0,.45))}
+  .dont.contrast .vis{background:#1D4ED8}
+  .dont .x{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:999px;background:#E11D48;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+  .dont .lbl{padding:.7rem .8rem;font-size:.82rem;color:var(--slate);font-weight:500}
+
+  /* ---------- color ---------- */
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+  @media(max-width:900px){.swatches{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:460px){.swatches{grid-template-columns:1fr}}
+  .swatch{border-radius:var(--r);overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);transition:transform .25s ease,box-shadow .25s ease;position:relative}
+  .swatch:hover{transform:translateY(-4px);box-shadow:0 20px 40px -18px rgba(0,0,0,.5)}
+  .swatch .chipc{height:104px}
+  .swatch .meta{padding:.85rem 1rem 1rem}
+  .swatch .nm{font-family:var(--font-display);font-weight:600;color:#fff;font-size:.98rem}
+  .swatch .role{font-size:.78rem;color:#9FB6E6;margin-top:.1rem}
+  .swatch .hex{font-family:var(--font-body);font-size:.85rem;color:#C9D8F5;margin-top:.55rem;display:flex;align-items:center;gap:.4rem;letter-spacing:.02em}
+  .swatch .hex .copy{margin-left:auto;font-size:.7rem;color:#7FB0FF;opacity:0;transition:opacity .2s}
+  .swatch:hover .hex .copy{opacity:1}
+  .swatch.copied .hex .copy{opacity:1;color:#6EE7B7}
+  .grad-sample{margin-top:1.4rem;border-radius:var(--r);height:140px;background:var(--grad);display:flex;align-items:flex-end;padding:1.1rem 1.3rem;color:#fff;font-family:var(--font-display);font-weight:600;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .grad-sample .code{margin-left:auto;font-family:var(--font-body);font-weight:500;font-size:.82rem;background:rgba(11,30,77,.35);padding:.3rem .6rem;border-radius:8px;cursor:pointer}
+  .toast{position:fixed;left:50%;bottom:2rem;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:.7rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:500;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:100;border:1px solid rgba(255,255,255,.12)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- typography ---------- */
+  .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem}
+  @media(max-width:760px){.type-grid{grid-template-columns:1fr}}
+  .type-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow-sm)}
+  .type-card .name{font-family:var(--font-display);font-weight:700;font-size:2rem;color:var(--navy)}
+  .type-card .use{font-size:.9rem;color:var(--brand);font-weight:600;margin:.3rem 0 1.4rem;text-transform:uppercase;letter-spacing:.08em}
+  .type-card .alpha{font-size:2.4rem;color:var(--ink);letter-spacing:-.01em;line-height:1.1;border-top:1px solid var(--line);padding-top:1.2rem}
+  .type-card.display .alpha{font-family:var(--font-display);font-weight:600}
+  .type-card.body .alpha{font-family:var(--font-body);font-weight:400}
+  .type-card .weights{margin-top:1rem;display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.85rem;color:var(--slate)}
+  .scale{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:1.6rem 2rem;box-shadow:var(--shadow-sm)}
+  .scale-row{display:flex;align-items:baseline;gap:1.2rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+  .scale-row:last-child{border-bottom:0}
+  .scale-row .tag{font-size:.75rem;color:var(--slate);font-family:var(--font-body);width:48px;flex:none;font-weight:600}
+  .scale-row .ex{font-family:var(--font-display);color:var(--navy);font-weight:600;line-height:1}
+  .scale-row .spec{margin-left:auto;font-size:.78rem;color:var(--slate)}
+  @media(max-width:560px){.scale-row .spec{display:none}}
+
+  /* ---------- photography ---------- */
+  .photo-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,5vw,4rem);align-items:center}
+  @media(max-width:860px){.photo-grid{grid-template-columns:1fr}}
+  .photo-figure{border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08)}
+  .photo-figure img{width:100%;aspect-ratio:4/5;object-fit:cover}
+  .do-dont{display:flex;flex-direction:column;gap:1rem;margin-top:2rem}
+  .dd{display:flex;gap:.8rem;align-items:flex-start;font-size:.97rem}
+  .dd .m{flex:none;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+  .dd.yes .m{background:rgba(110,231,183,.15);color:#34D399;border:1px solid rgba(110,231,183,.3)}
+  .dd.no .m{background:rgba(244,63,94,.12);color:#FB7185;border:1px solid rgba(244,63,94,.3)}
+
+  /* ---------- voice ---------- */
+  .voice-tags{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2.5rem}
+  @media(max-width:640px){.voice-tags{grid-template-columns:1fr}}
+  .voice-tag{border-radius:var(--r);padding:2rem;background:var(--grad);color:#fff;box-shadow:var(--shadow)}
+  .voice-tag:nth-child(2){background:var(--navy)}
+  .voice-tag .q{font-family:var(--font-display);font-weight:700;font-size:clamp(1.3rem,2.4vw,1.9rem);letter-spacing:-.02em;line-height:1.15}
+  .voice-tag .l{font-size:.82rem;opacity:.8;margin-top:.8rem;text-transform:uppercase;letter-spacing:.12em}
+  .voice-dd{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  @media(max-width:640px){.voice-dd{grid-template-columns:1fr}}
+  .vbox{border-radius:var(--r);padding:1.6rem 1.8rem;border:1px solid var(--line);background:var(--white)}
+  .vbox h4{font-family:var(--font-display);font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+  .vbox.do h4{color:#0E9F6E}
+  .vbox.dont2 h4{color:#E11D48}
+  .vbox p{font-size:.97rem;color:var(--ink)}
+  .vbox.dont2 p{color:var(--slate)}
+
+  /* ---------- applications ---------- */
+  .apps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem}
+  @media(max-width:900px){.apps-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.apps-grid{grid-template-columns:1fr}}
+  .app{border-radius:var(--r);overflow:hidden;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);box-shadow:var(--shadow);transition:transform .3s ease}
+  .app:hover{transform:translateY(-5px)}
+  .app .frame{aspect-ratio:16/10;overflow:hidden}
+  .app img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+  .app:hover img{transform:scale(1.04)}
+  .app .cap{padding:.95rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+  .app .cap .t{font-family:var(--font-display);font-weight:600;color:#fff;font-size:.98rem}
+  .app .cap .d{font-size:.8rem;color:#9FB6E6}
+
+  /* ---------- footer ---------- */
+  .footer{background:var(--grad-deep);color:#fff;padding:clamp(3.5rem,7vw,5.5rem) 0 3rem;text-align:center;position:relative;overflow:hidden}
+  .footer::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 0,rgba(59,130,246,.4),transparent 60%);pointer-events:none}
+  .footer .wrap{position:relative;z-index:2}
+  .footer .mark{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--font-display);font-weight:700;font-size:1.4rem;margin-bottom:1.4rem}
+  .footer .conf{display:inline-block;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#cfe0ff;border:1px solid rgba(255,255,255,.25);padding:.4rem .9rem;border-radius:999px;margin-bottom:1.6rem}
+  .footer .meta{color:#bcd0f7;font-size:.95rem}
+  .footer .contact{margin-top:1.2rem;color:#9FB6E6;font-size:.88rem;display:flex;gap:.6rem 1.4rem;justify-content:center;flex-wrap:wrap}
+  .footer .contact a{color:#cfe0ff}
+  .footer .crafted{margin-top:2.2rem;font-size:.82rem;color:#7e97cf}
+
+  /* ---------- reveal motion (progressive enhancement: hidden only when JS is active) ---------- */
+  .js .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
+  .js .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}.scroll-cue .chev{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="#top"><span class="nav-dot"></span> Quickhire Solutions</a>
+    <div class="nav-links">
+      <a href="#logo">Logo</a>
+      <a href="#color">Color</a>
+      <a href="#type">Typography</a>
+      <a href="#photography">Photography</a>
+      <a href="#voice">Voice</a>
+      <a href="#applications">Applications</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-eyebrow">Brand Guidelines · 2026</div>
+    <h1>Quickhire<br>Solutions</h1>
+    <div class="hero-sub">Brand Guidelines</div>
+    <p class="hero-tag"><strong>US staffing, done right.</strong> The complete system for our logo, color, type, voice and the way our brand shows up in the world.</p>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><span class="chev"></span></div>
+</header>
+
+<!-- BRAND AT A GLANCE -->
+<section class="bg-cloud" id="overview">
+  <div class="wrap">
+    <div class="glance-grid">
+      <div class="reveal">
+        <span class="eyebrow">Brand at a glance</span>
+        <h2>Great work starts with the right people.</h2>
+        <p class="lead" style="margin-top:1.2rem">Quickhire Solutions is an owner-led US staffing agency in Houston, TX, placing dependable, vetted workers across construction, hospitality, warehouse &amp; logistics, and automotive — often within 24–48 hours. People connecting people.</p>
+      </div>
+      <div class="pillars reveal">
+        <div class="pillar"><div class="ico">◆</div><div class="k">Owner-led</div><div class="v">Hands-on and accountable on every placement.</div></div>
+        <div class="pillar"><div class="ico">⚡</div><div class="k">Fast</div><div class="v">Dependable people, ready in 24–48 hours.</div></div>
+        <div class="pillar"><div class="ico">✓</div><div class="k">Dependable</div><div class="v">Vetted, reliable workers who show up.</div></div>
+        <div class="pillar"><div class="ico">♥</div><div class="k">Human</div><div class="v">Honest and direct — people connecting people.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGO -->
+<section class="bg-white" id="logo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Identity</span>
+      <h2>The logo</h2>
+      <p class="lead" style="margin-top:1rem">Our mark pairs a location pin with a person — the promise of putting the right people exactly where they’re needed. Three approved variants, each for a specific background.</p>
+    </div>
+
+    <div class="logo-grid reveal">
+      <div class="logo-card">
+        <div class="frame"><img src="/brand/quickhire/logo-on-light.webp" alt="Quickhire Solutions primary logo on a light background" loading="lazy" width="2560" height="1429"></div>
+        <div class="cap"><div><div class="t">Primary · on light</div><div class="d">Default use over neutral / light surfaces</div></div><span class="badge">Color</span></div>
+      </div>
+      <div class="logo-card">
+        <div class="frame"><img src="/brand/quickhire/signage-reception.webp" alt="Quickhire Solutions logo in white on a deep navy surface" loading="lazy" width="2560" height="1429"></div>
+        <div class="cap"><div><div class="t">White · on dark</div><div class="d">For navy / deep-blue backgrounds only</div></div><span class="badge">Mono</span></div>
+      </div>
+    </div>
+
+    <div class="rules">
+      <div class="reveal">
+        <h3 style="margin-bottom:1rem">Usage rules</h3>
+        <ul class="rule-list">
+          <li>Always keep the logo optically aligned — never stretched, rotated or skewed.</li>
+          <li>Use only the three approved variants. Don’t recolor or apply gradients to the mark.</li>
+          <li>Never place the white logo on a light background, or the dark logo on a dark one.</li>
+          <li>No hard drop shadows, outlines or effects on the logo.</li>
+        </ul>
+        <div class="minsize">
+          <div class="chip"><b>24px</b> min. height · digital</div>
+          <div class="chip"><b>12mm</b> min. height · print</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <h3 style="margin-bottom:1rem">Clear space</h3>
+        <div class="clearspace">
+          <div class="cs-box"><img src="/brand/quickhire/logo-on-light.webp" alt="Logo with clear space guides"></div>
+          <p class="cs-note">Keep a minimum clear space of <b>X</b> on every side, where <b>X</b> equals the height of the logotype’s initial. Nothing should intrude into this margin.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:3rem">
+      <h3 style="margin-bottom:.4rem">Incorrect usage</h3>
+      <p style="color:var(--slate);font-size:.95rem">Four things to never do with the mark.</p>
+      <div class="dont-grid">
+        <div class="dont stretch"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t stretch or distort</div></div>
+        <div class="dont recolor"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t recolor</div></div>
+        <div class="dont shadow"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t add drop shadows</div></div>
+        <div class="dont contrast"><div class="vis"><span class="x">✕</span><img src="/brand/quickhire/logo-on-light.webp" alt=""></div><div class="lbl">Don’t use on low contrast</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLOR -->
+<section class="bg-navy" id="color">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Color</span>
+      <h2>A confident blue system</h2>
+      <p class="lead" style="margin-top:1rem">The brand gradient is our signature — the most recognizable element of the identity. Click any swatch to copy its hex.</p>
+    </div>
+
+    <div class="swatches reveal">
+      <div class="swatch" data-hex="#3B82F6"><div class="chipc" style="background:#3B82F6"></div><div class="meta"><div class="nm">Sky Blue</div><div class="role">Gradient start · bright accents</div><div class="hex">#3B82F6 <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#2563EB"><div class="chipc" style="background:#2563EB"></div><div class="meta"><div class="nm">Brand Blue</div><div class="role">Primary · CTAs · links</div><div class="hex">#2563EB <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#1D4ED8"><div class="chipc" style="background:#1D4ED8"></div><div class="meta"><div class="nm">Deep Blue</div><div class="role">Gradient end · hover</div><div class="hex">#1D4ED8 <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#0B1E4D"><div class="chipc" style="background:#0B1E4D"></div><div class="meta"><div class="nm">Navy</div><div class="role">Dark backgrounds</div><div class="hex">#0B1E4D <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#F4F7FF"><div class="chipc" style="background:#F4F7FF;border-bottom:1px solid #e2e8f4"></div><div class="meta"><div class="nm">Cloud</div><div class="role">Light backgrounds</div><div class="hex">#F4F7FF <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#0B1220"><div class="chipc" style="background:#0B1220"></div><div class="meta"><div class="nm">Ink</div><div class="role">Body text on light</div><div class="hex">#0B1220 <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#64748B"><div class="chipc" style="background:#64748B"></div><div class="meta"><div class="nm">Slate</div><div class="role">Secondary text · lines</div><div class="hex">#64748B <span class="copy">Copy</span></div></div></div>
+      <div class="swatch" data-hex="#FFFFFF"><div class="chipc" style="background:#FFFFFF;border-bottom:1px solid #e2e8f4"></div><div class="meta"><div class="nm">White</div><div class="role">Backgrounds · text on dark</div><div class="hex">#FFFFFF <span class="copy">Copy</span></div></div></div>
+    </div>
+
+    <div class="grad-sample reveal" data-hex="linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)">
+      Brand gradient
+      <span class="code">linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)</span>
+    </div>
+  </div>
+</section>
+
+<!-- TYPOGRAPHY -->
+<section class="bg-cloud" id="type">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Typography</span>
+      <h2>Sora &amp; Inter</h2>
+      <p class="lead" style="margin-top:1rem">Sora gives headlines a modern, engineered confidence. Inter keeps body copy clean and highly legible across every screen.</p>
+    </div>
+
+    <div class="type-grid reveal">
+      <div class="type-card display">
+        <div class="name">Sora</div>
+        <div class="use">Display · Headlines</div>
+        <div class="alpha">AaBbCc 0123<br>Right people.</div>
+        <div class="weights"><span>SemiBold 600</span><span>Bold 700</span></div>
+      </div>
+      <div class="type-card body">
+        <div class="name">Inter</div>
+        <div class="use">Body · UI</div>
+        <div class="alpha">AaBbCc 0123<br>Dependable, vetted people.</div>
+        <div class="weights"><span>Regular 400</span><span>Medium 500</span></div>
+      </div>
+    </div>
+
+    <div class="scale reveal">
+      <div class="scale-row"><span class="tag">H1</span><span class="ex" style="font-size:2.6rem">Great work</span><span class="spec">clamp(2.5rem, 5vw, 4.5rem) · Sora 700 · LH 1.1</span></div>
+      <div class="scale-row"><span class="tag">H2</span><span class="ex" style="font-size:1.9rem">Right people, right place</span><span class="spec">clamp(1.75rem, 3vw, 2.5rem) · Sora 600</span></div>
+      <div class="scale-row"><span class="tag">Body</span><span class="ex" style="font-size:1.0625rem;font-family:var(--font-body);font-weight:400;color:var(--slate)">Dependable people, ready to show up — often within 48 hours.</span><span class="spec">1–1.125rem · Inter 400 · LH 1.5</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTOGRAPHY -->
+<section class="bg-grad" id="photography">
+  <div class="wrap">
+    <div class="photo-grid">
+      <div class="reveal">
+        <span class="eyebrow">Photography</span>
+        <h2>Real people, real work.</h2>
+        <p class="lead" style="margin-top:1rem;color:#dbe6ff">Documentary and authentic — capable, dignified blue-collar workers, mid-task in their real environments. Natural light, warm tones with blue accents, candid never staged.</p>
+        <div class="do-dont">
+          <div class="dd yes"><span class="m">✓</span><span>Construction (hard hat + hi-vis), hospitality, warehouse &amp; logistics, automotive — people doing the work.</span></div>
+          <div class="dd yes"><span class="m">✓</span><span>Natural light, warm tones, candid moments, genuine expressions.</span></div>
+          <div class="dd no"><span class="m">✕</span><span>No generic offices, suits &amp; ties, or corporate stock photography.</span></div>
+        </div>
+      </div>
+      <figure class="photo-figure reveal">
+        <img src="/brand/quickhire/photography-style.webp" alt="A Quickhire Solutions worker in a hard hat and hi-vis vest" loading="lazy" width="2560" height="1429">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- VOICE & TONE -->
+<section class="bg-cloud" id="voice">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Voice &amp; Tone</span>
+      <h2>Clear, direct, human.</h2>
+      <p class="lead" style="margin-top:1rem">We talk about dependable people, speed and results — human, never corporate. Honest and close.</p>
+    </div>
+
+    <div class="voice-tags reveal">
+      <div class="voice-tag"><div class="q">“US staffing, done right.”</div><div class="l">Primary tagline</div></div>
+      <div class="voice-tag"><div class="q">“Great work starts with the right people.”</div><div class="l">Hero line</div></div>
+    </div>
+
+    <div class="voice-dd reveal">
+      <div class="vbox do"><h4>✓ Do</h4><p>“Dependable people, ready to show up — often within 48 hours.”</p></div>
+      <div class="vbox dont2"><h4>✕ Don’t</h4><p>“Synergistic talent acquisition paradigms.” Avoid corporate jargon and buzzwords.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- APPLICATIONS -->
+<section class="bg-navy" id="applications">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Applications</span>
+      <h2>The brand in the world</h2>
+      <p class="lead" style="margin-top:1rem">How the identity comes to life across print, signage, credentials, digital and workwear.</p>
+    </div>
+
+    <div class="apps-grid reveal">
+      <div class="app"><div class="frame"><img src="/brand/quickhire/business-card.webp" alt="Quickhire Solutions business cards" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Business cards</span><span class="d">Print</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/signage-reception.webp" alt="Quickhire Solutions reception signage" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Reception signage</span><span class="d">Environmental</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/lanyard-badge.webp" alt="Quickhire Solutions ID badge and lanyard" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">ID &amp; credentials</span><span class="d">Field staff</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/device-mockup.webp" alt="Quickhire Solutions website on laptop and phone" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Digital</span><span class="d">Web &amp; mobile</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/apparel.webp" alt="Quickhire Solutions workwear — hard hat, polo and hi-vis vest" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Workwear</span><span class="d">On site</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/stationery-flatlay.webp" alt="Quickhire Solutions stationery flatlay" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Stationery</span><span class="d">Print</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/cap.webp" alt="Quickhire Solutions branded cap" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Headwear</span><span class="d">Merch</span></div></div>
+      <div class="app"><div class="frame"><img src="/brand/quickhire/water-bottle.webp" alt="Quickhire Solutions branded water bottle" loading="lazy" width="2560" height="1429"></div><div class="cap"><span class="t">Drinkware</span><span class="d">Merch</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="mark"><span class="nav-dot"></span> Quickhire Solutions</div>
+    <div><span class="conf">Confidential — for internal use only</span></div>
+    <div class="meta">Quickhire Solutions · Brand Guidelines · 2026</div>
+    <div class="contact">
+      <span>Houston, TX</span>
+      <a href="mailto:Quickhiretx@gmail.com">Quickhiretx@gmail.com</a>
+      <a href="tel:+17865386940">+1 (786) 538-6940</a>
+    </div>
+    <div class="crafted">Crafted by Bralto</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+  // Reveal on scroll (with safety net so content never stays hidden)
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    function revealAll(){els.forEach(function(e){e.classList.add('in');});}
+    if(!('IntersectionObserver' in window)){revealAll();return;}
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}
+      });
+    },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(e){io.observe(e);});
+    // safety net: if anything is still hidden after 3s, reveal it
+    setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(e){
+      var r=e.getBoundingClientRect(); if(r.top < window.innerHeight){e.classList.add('in');}
+    });},3000);
+  })();
+
+  // Copy-to-clipboard for swatches + gradient
+  (function(){
+    var toast = document.getElementById('toast'), t;
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(t);
+      t = setTimeout(function(){toast.classList.remove('show');},1400);
+    }
+    function copy(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){return navigator.clipboard.writeText(text);}
+      var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+    document.querySelectorAll('[data-hex]').forEach(function(el){
+      el.addEventListener('click',function(){
+        var val = el.getAttribute('data-hex');
+        copy(val).then(function(){
+          showToast('Copied  ' + val);
+          el.classList.add('copied');
+          var c = el.querySelector('.copy'); if(c){var o=c.textContent;c.textContent='Copied!';setTimeout(function(){c.textContent=o;el.classList.remove('copied');},1300);}
+        });
+      });
+    });
+  })();
+</script>
+</body>
+</html>
