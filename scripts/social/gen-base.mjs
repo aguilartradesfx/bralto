@@ -36,7 +36,7 @@ No other colors than orange and dark neutrals. Photorealistic, 35mm, shallow dep
 const prompt = args.prompt && args.prompt !== true ? args.prompt : DEFAULT_PROMPT
 
 // ── Gemini (Nano Banana Pro = gemini-3-pro-image) ─────────────────────────────
-async function genGemini() {
+async function genGemini(prompt) {
   const key = process.env.GEMINI_API_KEY
   if (!key) throw new Error('Falta GEMINI_API_KEY en el entorno')
   const models = ['gemini-3-pro-image-preview', 'gemini-3-pro-image']
@@ -74,7 +74,7 @@ async function genGemini() {
 }
 
 // ── OpenAI (gpt-image-1) ──────────────────────────────────────────────────────
-async function genOpenai() {
+async function genOpenai(prompt) {
   const key = process.env.OPENAI_API_KEY
   if (!key) throw new Error('Falta OPENAI_API_KEY en el entorno')
   const res = await fetch('https://api.openai.com/v1/images/generations', {
@@ -90,8 +90,17 @@ async function genOpenai() {
   return Buffer.from(b64, 'base64')
 }
 
-// ── run ───────────────────────────────────────────────────────────────────────
-console.log(`→ Generando imagen base con ${provider}…`)
-const buf = provider === 'openai' ? await genOpenai() : await genGemini()
-await writeFile(out, buf)
-console.log(`✓ Guardada: ${out} (${(buf.length / 1024).toFixed(0)} KB)`)
+// ── API reutilizable ──────────────────────────────────────────────────────────
+export async function genBase({ prompt, provider = 'gemini', outPath }) {
+  const buf = provider === 'openai' ? await genOpenai(prompt) : await genGemini(prompt)
+  await writeFile(outPath, buf)
+  return outPath
+}
+
+// ── CLI: solo si se ejecuta directamente ──────────────────────────────────────
+import { fileURLToPath } from 'node:url'
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  console.log(`→ Generando imagen base con ${provider}…`)
+  const path = await genBase({ prompt, provider, outPath: out })
+  console.log(`✓ Guardada: ${path}`)
+}
