@@ -9,9 +9,10 @@ export function blankCanvas(hex) {
 
 export async function compositeSvg(baseSharpOrPath, svgString, outPath) {
   await mkdir(dirname(outPath), { recursive: true })
-  const base = typeof baseSharpOrPath === 'string'
-    ? sharp(baseSharpOrPath).resize(W, H, { fit: 'cover', position: 'top' })
-    : baseSharpOrPath.resize(W, H, { fit: 'cover', position: 'top' })
+  const src = (typeof baseSharpOrPath === 'string' || Buffer.isBuffer(baseSharpOrPath))
+    ? sharp(baseSharpOrPath)
+    : baseSharpOrPath
+  const base = src.resize(W, H, { fit: 'cover', position: 'top' })
   await base.composite([{ input: Buffer.from(svgString), top: 0, left: 0 }]).png().toFile(outPath)
   const meta = await sharp(outPath).metadata()
   return { width: meta.width, height: meta.height, outPath }
