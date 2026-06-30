@@ -18,17 +18,25 @@ function badge(kind, x, y) {
 
 export async function renderInterior({ outPath, pill: pillLabel, heading, headingAccent, cards, index, total }) {
   const headLines = wrapText(heading, { fontSize: 60, maxWidth: W - MARGIN * 2 })
+  // Medir todo el bloque para centrarlo verticalmente en el área (entre contador y footer).
+  const measured = cards.map((c) => {
+    const bodyLines = wrapText(c.body, { fontSize: 30, maxWidth: W - MARGIN * 2 - 56, charRatio: 0.5 })
+    return { c, bodyLines, cardH: 70 + bodyLines.length * 38 + 18 }
+  })
+  const cardsH = measured.reduce((s, m) => s + m.cardH + 22, 0) - 22
+  const blockH = 140 + headLines.length * 70 + cardsH
+  const REGION_TOP = 150, REGION_BOTTOM = 1285
+  const pillTop = Math.max(REGION_TOP, Math.round((REGION_TOP + REGION_BOTTOM) / 2 - blockH / 2))
+  const headY0 = pillTop + 100
   const headSvg = headLines.map((l, i) => {
     const colored = headingAccent && l.includes(headingAccent)
       ? l.split(headingAccent).map((p, j, a) => escapeXml(p) + (j < a.length - 1 ? `<tspan fill="${COLORS.orange}">${escapeXml(headingAccent)}</tspan>` : '')).join('')
       : escapeXml(l)
-    return `<text x="${MARGIN}" y="${300 + i * 70}" font-family="${FONT}" font-size="60" font-weight="800" letter-spacing="-1.6" fill="${COLORS.ink}">${colored}</text>`
+    return `<text x="${MARGIN}" y="${headY0 + i * 70}" font-family="${FONT}" font-size="60" font-weight="800" letter-spacing="-1.6" fill="${COLORS.ink}">${colored}</text>`
   }).join('')
 
-  let y = 300 + headLines.length * 70 + 40
-  const cardSvg = cards.map((c) => {
-    const bodyLines = wrapText(c.body, { fontSize: 30, maxWidth: W - MARGIN * 2 - 56, charRatio: 0.5 })
-    const cardH = 70 + bodyLines.length * 38 + 18
+  let y = headY0 + headLines.length * 70 + 40
+  const cardSvg = measured.map(({ c, bodyLines, cardH }) => {
     const hasBadge = c.kind === 'good' || c.kind === 'bad'
     const titleX = hasBadge ? MARGIN + 72 : MARGIN + 28
     const block = `
@@ -41,6 +49,6 @@ export async function renderInterior({ outPath, pill: pillLabel, heading, headin
   }).join('')
 
   const inner = (index ? counter({ index, total, variant: 'cream' }) : '') +
-    pill({ y: 200, label: pillLabel, variant: 'cream' }) + headSvg + cardSvg + footer({ variant: 'cream' })
+    pill({ y: pillTop, label: pillLabel, variant: 'cream' }) + headSvg + cardSvg + footer({ variant: 'cream' })
   return compositeSvg(blankCanvas(COLORS.cream), svgDoc(inner), outPath)
 }
