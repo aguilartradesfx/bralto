@@ -26,14 +26,14 @@ export function accentTspans(line, accent, color = COLORS.orange) {
 }
 
 export function pill({ x = MARGIN, y, label, variant = 'dark' }) {
-  const w = 28 + label.length * 11.5 + 22
+  const text = label.toUpperCase()
+  const w = 46 + text.length * 13.4 + 22   // 13.4px/char aprox para 20px bold + tracking
   const bg = variant === 'cream' ? COLORS.ink : 'rgba(255,255,255,0.10)'
   const stroke = variant === 'cream' ? 'none' : 'rgba(255,255,255,0.18)'
-  const fg = COLORS.white
   return `
-    <rect x="${x}" y="${y}" rx="23" ry="23" width="${w}" height="46" fill="${bg}" stroke="${stroke}"/>
-    <circle cx="${x + 31}" cy="${y + 23}" r="5.5" fill="${COLORS.orange}"/>
-    <text x="${x + 50}" y="${y + 31}" font-family="${FONT}" font-size="20" font-weight="700" letter-spacing="1.4" fill="${fg}">${escapeXml(label.toUpperCase())}</text>`
+    <rect x="${x}" y="${y}" rx="23" ry="23" width="${w.toFixed(0)}" height="46" fill="${bg}" stroke="${stroke}"/>
+    <circle cx="${x + 26}" cy="${y + 23}" r="5.5" fill="${COLORS.orange}"/>
+    <text x="${x + 44}" y="${y + 31}" font-family="${FONT}" font-size="20" font-weight="700" letter-spacing="1.4" fill="${COLORS.white}">${escapeXml(text)}</text>`
 }
 
 export function footer({ variant = 'dark' }) {
