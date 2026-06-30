@@ -27,3 +27,9 @@ yarn-error.log*
 .DS_Store
 *.pem
 .vercel
+
+# Backups locales (no comitear contenido restaurable de Supabase)
+.local-backups/
+
+# Brainstorm companion (mockups locales, no versionar)
+.superpowers/
