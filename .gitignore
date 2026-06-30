@@ -33,3 +33,6 @@ yarn-error.log*
 
 # Brainstorm companion (mockups locales, no versionar)
 .superpowers/
+
+# Social — PNGs generados (regenerables por código)
+scripts/social/out/
