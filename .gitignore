@@ -36,3 +36,5 @@ yarn-error.log*
 
 # Social — PNGs generados (regenerables por código)
 scripts/social/out/
+# Placeholders de demo (los reales van con nombre propio)
+scripts/social/assets/_*

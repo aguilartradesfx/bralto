@@ -34,7 +34,7 @@ for (let i = 0; i < spec.slides.length; i++) {
     await ensureBase(s.aiPrompt, basePath)
     await renderCover({ basePath, outPath: out, pill: s.pill, headline: s.headline, accent: s.accent, subtitle: s.subtitle, index: idx, total })
   } else if (s.type === 'interior') {
-    await renderInterior({ outPath: out, pill: s.pill, heading: s.heading, headingAccent: s.headingAccent, cards: s.cards, index: idx, total })
+    await renderInterior({ outPath: out, pill: s.pill, heading: s.heading, headingAccent: s.headingAccent, blocks: s.blocks, cards: s.cards, index: idx, total })
   } else if (s.type === 'prompt-showcase') {
     const grid = []
     for (let g = 0; g < (s.aiPromptForGrid || []).length; g++) {
