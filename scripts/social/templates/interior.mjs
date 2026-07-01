@@ -1,5 +1,6 @@
 import sharp from 'sharp'
 import { mkdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { blankCanvas } from '../lib/render.mjs'
 import { svgDoc, pill, footer, counter, escapeXml, wrapText } from '../lib/svg.mjs'
@@ -36,9 +37,11 @@ async function measure(b) {
   }
   if (b.type === 'metric') return { ...b, h: 132 }
   if (b.type === 'shot') {
-    const meta = await sharp(b.src).metadata()
+    // Si la captura real aún no existe, usa el placeholder (se ve dónde va).
+    const src = existsSync(b.src) ? b.src : 'scripts/social/assets/_placeholder-shot.png'
+    const meta = await sharp(src).metadata()
     const dispH = Math.round(CONTENT_W * (meta.height / meta.width))
-    return { ...b, dispH, h: dispH + (b.caption ? 46 : 0) }
+    return { ...b, src, dispH, h: dispH + (b.caption ? 46 : 0) }
   }
   const bodyLines = wrapBody(b.body, 30, 56, 0.5)
   return { ...b, type: 'card', bodyLines, h: 66 + bodyLines.length * 38 + 16 }

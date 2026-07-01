@@ -23,7 +23,7 @@ export default {
       blocks: [
         { type: 'card', kind: 'good', title: 'Guárdalo como Skill', body: 'Convierte el prompt final en un Skill de Claude o un snippet. Reutilízalo en cada propuesta nueva.' },
         { type: 'metric', value: '10 min → 2 min', label: 'por propuesta, a partir de la segunda' },
-        { type: 'shot', src: 'scripts/social/assets/_placeholder-shot.png', caption: 'Tu Skill guardado en Claude (aquí va tu captura)' },
+        { type: 'shot', src: 'scripts/social/assets/claude-skill.png', caption: 'Tu Skill guardado en Claude (aquí va tu captura)' },
       ] },
 
     { type: 'closing', headline: '¿Lo vas a probar?', ctaLines: ['Guárdalo para tu próxima propuesta', 'Coméntame "PROPUESTA" y te paso mi prompt'], handle: '@bralto' },
