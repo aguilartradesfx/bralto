@@ -34,13 +34,13 @@ function interiorPrompt(s) {
     }
   })
   return [
-    'Crea UNA slide de carrusel para redes, vertical 3:4, premium y rica en información, para una marca de IA para agencias llamada "Bralto".',
-    'ESTILO DE MARCA: fondo crema cálido (#F4F1EA), texto casi-negro, el ÚNICO color de acento es naranja vivo (#FF6A00). Titular en negrita estilo Helvetica Neue; cuerpo de texto PEQUEÑO, limpio y muy legible; buen aire; sensación editorial tipo keynote de Apple. Abajo-izquierda un pequeño wordmark "bralto." (el punto en naranja); abajo-derecha "desliza ››" en gris. Un tag pequeño tipo etiqueta que diga "' + s.pill + '".',
-    'IMPORTANTE: TÚ decides la composición y el acomodo — diséñala bonita, rica y con jerarquía; no apiles cajas planas. Puedes AGREGAR mockups de UI realistas y con buen gusto (un botón, una burbuja de chat, un panel de app, un campo de prompt) que ilustren la idea, como mini-capturas del proceso.',
-    `TEMA DE LA SLIDE: "${s.heading}". Resalta la palabra clave "${s.accent || ''}" en naranja.`,
-    'INFORMACIÓN A COMUNICAR (organízala y reformúlala como mejor se vea; mantén la precisión; puedes sumar micro-detalles o ejemplos pequeños que ayuden):',
+    'Diseña UNA slide de carrusel vertical 3:4 para "Bralto" (marca de IA para agencias). Piensa como diseñador senior: hazla MUY GRÁFICA y visual, no una lista de texto. Tú decides toda la composición.',
+    'PALETA ESTRICTA (respétala exacto): fondo crema #F4F1EA, texto casi-negro #0d0d0d, y UN solo color de acento: naranja #FF6A00. Nada de azules, morados u otros colores (verde/rojo permitidos SOLO en una palomita/tache diminutos). Tipografía tipo Helvetica Neue.',
+    'SÉ GRÁFICO: usa mockups de UI realistas (paneles de app, botones, campos, burbujas de chat), íconos simples, diagramas o flechas para explicar la idea. Que se ENTIENDA de un vistazo. Texto pequeño pero nítido y muy legible.',
+    `TEMA DE LA SLIDE: "${s.heading}". Resalta la palabra clave "${s.accent || ''}" en naranja. Etiqueta pequeña tipo tag: "${s.pill}".`,
+    'USA SOLO esta información y este texto en español (LatAm). NO inventes texto, NO uses lorem ipsum, NO agregues frases de relleno. Escribe TODO correctamente, sin errores de ortografía:',
     ...info.map((x) => `- ${x}`),
-    'TODO el texto en español (LatAm), pequeño pero perfectamente legible y bien escrito, sin letras inventadas. Solo naranja como acento (verde/rojo permitidos solo en palomita/tache diminutos). Sin marca de agua.',
+    'Abajo-izquierda: wordmark pequeño "bralto." (el punto en naranja). Abajo-derecha: "desliza ››" en gris. Sin marca de agua ni firma.',
   ].join('\n')
 }
 
@@ -54,7 +54,7 @@ for (let i = 0; i < spec.slides.length; i++) {
     console.log(`  = ${out} (existente)`)
   } else {
     const raw = `${outDir}/raw-${n}.png`
-    await genBase({ prompt: interiorPrompt(s), provider, outPath: raw })
+    await genBase({ prompt: interiorPrompt(s), provider, outPath: raw, imageSize: '4K' })
     // Normaliza a 1080x1440 sin recortar (letterbox crema si el ratio difiere, ej. gpt 2:3).
     await sharp(raw).resize(1080, 1440, { fit: 'contain', background: '#F4F1EA' }).png().toFile(out)
     console.log(`  ✓ ${out} (${provider})`)

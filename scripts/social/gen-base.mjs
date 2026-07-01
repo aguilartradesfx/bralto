@@ -36,7 +36,7 @@ No other colors than orange and dark neutrals. Photorealistic, 35mm, shallow dep
 const prompt = args.prompt && args.prompt !== true ? args.prompt : DEFAULT_PROMPT
 
 // ── Gemini (Nano Banana Pro = gemini-3-pro-image) ─────────────────────────────
-async function genGemini(prompt) {
+async function genGemini(prompt, imageSize = '2K') {
   const key = process.env.GEMINI_API_KEY
   if (!key) throw new Error('Falta GEMINI_API_KEY en el entorno')
   const models = ['gemini-3-pro-image-preview', 'gemini-3-pro-image']
@@ -47,7 +47,7 @@ async function genGemini(prompt) {
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig: {
         responseModalities: ['IMAGE'],
-        imageConfig: { aspectRatio: '3:4', imageSize: '2K' },
+        imageConfig: { aspectRatio: '3:4', imageSize },
       },
     }
     const res = await fetch(url, {
@@ -91,8 +91,8 @@ async function genOpenai(prompt) {
 }
 
 // ── API reutilizable ──────────────────────────────────────────────────────────
-export async function genBase({ prompt, provider = 'gemini', outPath }) {
-  const buf = provider === 'openai' ? await genOpenai(prompt) : await genGemini(prompt)
+export async function genBase({ prompt, provider = 'gemini', outPath, imageSize = '2K' }) {
+  const buf = provider === 'openai' ? await genOpenai(prompt) : await genGemini(prompt, imageSize)
   await writeFile(outPath, buf)
   return outPath
 }
