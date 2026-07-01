@@ -22,6 +22,12 @@ function badge(kind, x, y) {
 
 const wrapBody = (text, fs, pad, cr) => wrapText(text, { fontSize: fs, maxWidth: CONTENT_W - pad, charRatio: cr })
 
+// Resalta los [PLACEHOLDERS] en naranja: el usuario ve al instante qué debe reemplazar.
+const tokens = (line, color = COLORS.orange) =>
+  line.split(/(\[[^\]]+\])/g).map((p) =>
+    /^\[[^\]]+\]$/.test(p) ? `<tspan fill="${color}" font-weight="700">${escapeXml(p)}</tspan>` : escapeXml(p),
+  ).join('')
+
 // Mide la altura de cada bloque (algunos requieren leer metadata de imagen → async).
 async function measure(b) {
   if (b.type === 'prompt') {
@@ -85,12 +91,12 @@ export async function renderInterior({ outPath, pill: pillLabel, heading, headin
         <rect x="${MARGIN}" y="${y}" rx="16" ry="16" width="${CONTENT_W}" height="${m.h}" fill="${CARD_BG[m.kind]}" stroke="${COLORS.borderCream}"/>
         ${badge(m.kind, MARGIN + 28, y + 22)}
         <text x="${titleX}" y="${y + 48}" font-family="${FONT}" font-size="30" font-weight="700" fill="${CARD_TITLE[m.kind]}">${escapeXml(m.title)}</text>
-        ${m.bodyLines.map((l, i) => `<text x="${MARGIN + 28}" y="${y + 90 + i * 38}" font-family="${FONT}" font-size="30" font-weight="500" fill="${COLORS.ink}">${escapeXml(l)}</text>`).join('')}`
+        ${m.bodyLines.map((l, i) => `<text x="${MARGIN + 28}" y="${y + 90 + i * 38}" font-family="${FONT}" font-size="30" font-weight="500" fill="${COLORS.ink}">${tokens(l)}</text>`).join('')}`
     } else if (m.type === 'prompt') {
       svg += `
         <rect x="${MARGIN}" y="${y}" rx="16" ry="16" width="${CONTENT_W}" height="${m.h}" fill="#141414"/>
         <text x="${MARGIN + 28}" y="${y + 42}" font-family="ui-monospace, Menlo, monospace" font-size="17" font-weight="700" letter-spacing="1.5" fill="${COLORS.orange}">PROMPT</text>
-        ${m.lines.map((l, i) => `<text x="${MARGIN + 28}" y="${y + 80 + i * 34}" font-family="ui-monospace, Menlo, monospace" font-size="25" fill="#e4e4e7">${escapeXml(l)}</text>`).join('')}
+        ${m.lines.map((l, i) => `<text x="${MARGIN + 28}" y="${y + 80 + i * 34}" font-family="ui-monospace, Menlo, monospace" font-size="25" fill="#e4e4e7">${tokens(l)}</text>`).join('')}
         ${m.note ? `<text x="${MARGIN + 28}" y="${y + m.h - 22}" font-family="${FONT}" font-size="24" font-weight="600" fill="${COLORS.orange}">${escapeXml(m.note)}</text>` : ''}`
     } else if (m.type === 'metric') {
       svg += `

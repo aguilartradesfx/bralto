@@ -7,9 +7,9 @@ export default {
 
     { type: 'interior', pill: 'paso 1', heading: 'Dale tu contexto, no una orden', headingAccent: 'contexto',
       blocks: [
-        { type: 'card', kind: 'good', title: 'Haz esto', body: 'En un solo mensaje pégale: tu oferta, tus precios y 2 propuestas que ya ganaste. Aprende tu tono y tu estructura.' },
-        { type: 'card', kind: 'bad', title: 'No esto', body: '"Hazme una propuesta para un cliente de marketing" — sin contexto sale un texto genérico que no cierra.' },
-        { type: 'prompt', text: 'Eres mi copywriter de agencia. Te paso mi oferta, precios y 2 propuestas ganadas. Aprende mi voz y estructura, y espera mi brief.', note: 'Coméntame "PROPUESTA" y te paso el prompt completo' },
+        { type: 'card', kind: 'good', title: 'Haz esto', body: 'Pégale tu oferta, precios y 2 propuestas ganadas. Ej: para una [CLÍNICA VETERINARIA], súmale su web y su competencia.' },
+        { type: 'card', kind: 'bad', title: 'No esto', body: '"Hazme una propuesta para un cliente" — sin contexto sale un texto genérico que no cierra.' },
+        { type: 'prompt', text: 'Eres el copywriter de [TU AGENCIA]. Te paso mi oferta, precios y 2 propuestas ganadas. Aprende mi voz. Luego te doy el brief de [CLIENTE], ej: [CLÍNICA VETERINARIA].', note: 'Coméntame "PROPUESTA" y te paso el prompt completo' },
       ] },
 
     { type: 'interior', pill: 'paso 2', heading: 'Pide estructura, luego relleno', headingAccent: 'estructura',
