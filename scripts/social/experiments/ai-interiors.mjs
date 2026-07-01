@@ -37,6 +37,7 @@ function interiorPrompt(s) {
     'Diseña UNA slide de carrusel vertical 3:4 para "Bralto" (marca de IA para agencias). Piensa como diseñador senior: hazla MUY GRÁFICA y visual, no una lista de texto. Tú decides toda la composición.',
     'PALETA ESTRICTA (respétala exacto): fondo crema #F4F1EA, texto casi-negro #0d0d0d, y UN solo color de acento: naranja #FF6A00. Nada de azules, morados u otros colores (verde/rojo permitidos SOLO en una palomita/tache diminutos). Tipografía tipo Helvetica Neue.',
     'SÉ GRÁFICO: usa mockups de UI realistas (paneles de app, botones, campos, burbujas de chat), íconos simples, diagramas o flechas para explicar la idea. Que se ENTIENDA de un vistazo. Texto pequeño pero nítido y muy legible.',
+    'MÁRGENES SEGUROS (crítico): deja un margen de seguridad amplio en TODO el borde (mínimo ~10% arriba, abajo y a los lados). NINGÚN texto, botón, ícono ni elemento importante debe tocar los bordes ni quedar pegado a las esquinas; todo el contenido dentro del área segura central. No cortes texto.',
     `TEMA DE LA SLIDE: "${s.heading}". Resalta la palabra clave "${s.accent || ''}" en naranja. Etiqueta pequeña tipo tag: "${s.pill}".`,
     'USA SOLO esta información y este texto en español (LatAm). NO inventes texto, NO uses lorem ipsum, NO agregues frases de relleno. Escribe TODO correctamente, sin errores de ortografía:',
     ...info.map((x) => `- ${x}`),
