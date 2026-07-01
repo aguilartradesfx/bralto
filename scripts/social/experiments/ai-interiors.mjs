@@ -16,31 +16,32 @@ const srcDir = `scripts/social/out/${spec.slug}`
 const outDir = `scripts/social/out/${spec.slug}__ai-${provider}`
 await mkdir(outDir, { recursive: true })
 
-// Describe el interior al modelo con el estilo de marca + el contenido exacto.
+// Le damos la INFORMACIÓN y el estilo de marca; el modelo decide la composición
+// (y puede agregar mockups de UI). No le dictamos el orden.
 function interiorPrompt(s) {
-  const p = []
-  p.push('Design ONE premium social-media carousel slide, vertical 3:4 aspect ratio.')
-  p.push('Background: warm off-white cream (#F4F1EA). Minimalist, editorial, high-end, generous clean spacing.')
-  p.push('Typography: bold heavy grotesque sans-serif like Helvetica Neue, near-black (#0d0d0d). The ONLY accent color is vivid orange (#FF6A00) — no blues, greens or other accents except the badges noted below.')
-  p.push(`TOP-LEFT: a small black rounded-pill tag, white UPPERCASE text "${s.pill}", with a tiny orange dot to the left of the text.`)
-  p.push(`HEADLINE below, large and bold near-black, with the word "${s.accent || ''}" colored orange: "${s.heading}".`)
   const items = s.blocks || (s.cards || []).map((c) => ({ type: 'card', ...c }))
+  const info = []
   items.forEach((b) => {
     if (b.type === 'card') {
-      const badge = b.kind === 'good' ? 'a small green rounded-square badge with a white checkmark' : b.kind === 'bad' ? 'a small red rounded-square badge with a white X' : 'no badge'
-      const bg = b.kind === 'bad' ? 'light warm-gray' : 'white'
-      p.push(`A ${bg} rounded card containing ${badge}, a bold title "${b.title}", and body text "${b.body}".`)
+      const mark = b.kind === 'good' ? '✓ (positivo, palomita verde)' : b.kind === 'bad' ? '✗ (negativo, tache rojo)' : '(neutral)'
+      info.push(`${mark} ${b.title}: ${b.body}`)
     } else if (b.type === 'prompt') {
-      p.push(`A dark near-black rounded box like a code terminal, with a small orange monospace label "PROMPT" and light-gray monospace text: "${b.text}". Any bracketed placeholder like [TU AGENCIA] must be colored orange.`)
+      info.push(`Un PROMPT de ejemplo, mostrado como una cajita oscura tipo terminal con texto monoespaciado pequeño: "${b.text}". Nota chica en naranja: "${b.note || ''}". Los placeholders entre [corchetes] van en naranja.`)
     } else if (b.type === 'metric') {
-      p.push(`A very large bold ORANGE number "${b.value}" with a small gray caption under it: "${b.label}".`)
+      info.push(`Un dato/métrica destacado en grande: "${b.value}" — ${b.label}.`)
     } else if (b.type === 'shot') {
-      p.push(`A rounded light-gray framed area (placeholder for a screenshot) with a small caption "${b.caption || ''}".`)
+      info.push(`Un mockup realista de interfaz (captura simulada) que ilustre: ${b.caption}. Dibuja botones, paneles o ventanas creíbles.`)
     }
   })
-  p.push('BOTTOM-LEFT: small bold "bralto." wordmark, the period in orange. BOTTOM-RIGHT: "desliza ››" in gray.')
-  p.push('ALL text spelled correctly in Spanish (LatAm), crisp and perfectly legible, no gibberish. No watermark, no signature.')
-  return p.join(' ')
+  return [
+    'Crea UNA slide de carrusel para redes, vertical 3:4, premium y rica en información, para una marca de IA para agencias llamada "Bralto".',
+    'ESTILO DE MARCA: fondo crema cálido (#F4F1EA), texto casi-negro, el ÚNICO color de acento es naranja vivo (#FF6A00). Titular en negrita estilo Helvetica Neue; cuerpo de texto PEQUEÑO, limpio y muy legible; buen aire; sensación editorial tipo keynote de Apple. Abajo-izquierda un pequeño wordmark "bralto." (el punto en naranja); abajo-derecha "desliza ››" en gris. Un tag pequeño tipo etiqueta que diga "' + s.pill + '".',
+    'IMPORTANTE: TÚ decides la composición y el acomodo — diséñala bonita, rica y con jerarquía; no apiles cajas planas. Puedes AGREGAR mockups de UI realistas y con buen gusto (un botón, una burbuja de chat, un panel de app, un campo de prompt) que ilustren la idea, como mini-capturas del proceso.',
+    `TEMA DE LA SLIDE: "${s.heading}". Resalta la palabra clave "${s.accent || ''}" en naranja.`,
+    'INFORMACIÓN A COMUNICAR (organízala y reformúlala como mejor se vea; mantén la precisión; puedes sumar micro-detalles o ejemplos pequeños que ayuden):',
+    ...info.map((x) => `- ${x}`),
+    'TODO el texto en español (LatAm), pequeño pero perfectamente legible y bien escrito, sin letras inventadas. Solo naranja como acento (verde/rojo permitidos solo en palomita/tache diminutos). Sin marca de agua.',
+  ].join('\n')
 }
 
 const pad = (n) => String(n).padStart(2, '0')
