@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BarChart2, Sparkles, Check, ArrowRight } from 'lucide-react'
+import { BarChart2, Sparkles, Check, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
+
+const ESSENTIALS_PLAN_KEY = 'essentials_monthly'
 
 // ── Shared card bodies ────────────────────────────────────────────────────────
 
@@ -17,6 +19,29 @@ function FoundationCardBody({
   locale: string
   features: string[]
 }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function startCheckout() {
+    setError(null)
+    setLoading(true)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: ESSENTIALS_PLAN_KEY, locale }),
+      })
+      const data = (await res.json()) as { url?: string; error?: string }
+      if (!res.ok || !data.url) {
+        throw new Error(data.error ?? `Checkout failed (${res.status})`)
+      }
+      window.location.href = data.url
+    } catch (err) {
+      setLoading(false)
+      setError(err instanceof Error ? err.message : 'Unexpected error')
+    }
+  }
+
   return (
     <div
       className="relative flex w-full flex-col overflow-hidden rounded-card"
@@ -64,15 +89,20 @@ function FoundationCardBody({
           ))}
         </ul>
 
-        <a
-          href="https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[13px] font-medium uppercase tracking-[0.14em] text-white/65 transition-all duration-200 hover:border-white/[0.16] hover:bg-white/[0.08] hover:text-white"
+        <button
+          type="button"
+          onClick={startCheckout}
+          disabled={loading}
+          className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[13px] font-medium uppercase tracking-[0.14em] text-white/65 transition-all duration-200 hover:border-white/[0.16] hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {t('foundation.cta')}
-          <ArrowRight size={14} />
-        </a>
+          {loading
+            ? locale === 'en' ? 'Redirecting…' : 'Redirigiendo…'
+            : t('foundation.cta')}
+          {loading ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
+        </button>
+        {error && (
+          <p className="mt-3 text-center text-xs text-rose-300/80">{error}</p>
+        )}
       </div>
     </div>
   )
