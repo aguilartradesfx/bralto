@@ -75,6 +75,7 @@ export type UpsertContactInput = {
   phone?: string
   firstName?: string
   lastName?: string
+  companyName?: string
   tags?: string[]
   customFields?: Array<{ id: string; value: string | number | boolean }>
   source?: string
@@ -94,6 +95,7 @@ export async function upsertContact(input: UpsertContactInput): Promise<GhlConta
     lastName: input.lastName,
     source: input.source ?? 'Bralto Website',
   }
+  if (input.companyName) body.companyName = input.companyName
   if (input.tags?.length) body.tags = input.tags
   if (input.customFields?.length) body.customFields = input.customFields
 
