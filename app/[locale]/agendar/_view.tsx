@@ -277,6 +277,9 @@ export default function AgendarPage() {
   const [errors, setErrors] = useState<string[]>([])
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
   const [lockedSlots, setLockedSlots] = useState<Set<string>>(new Set())
+  // Curated slots that are actually free in GHL. `null` = couldn't check
+  // (GHL down) → don't restrict, show all curated slots as before.
+  const [ghlAvailable, setGhlAvailable] = useState<Set<string> | null>(null)
 
   const [sessionId] = useState<string>(() =>
     typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36),
@@ -291,6 +294,7 @@ export default function AgendarPage() {
       .then((data) => {
         setBookedSlots(new Set(data.booked ?? []))
         setLockedSlots(new Set(data.locked ?? []))
+        setGhlAvailable(Array.isArray(data.ghlAvailable) ? new Set(data.ghlAvailable) : null)
       })
       .catch(() => {})
   }
@@ -527,9 +531,11 @@ export default function AgendarPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {TIME_SLOTS.map(({ id, label }) => {
                       const selected = form.selectedTime === id
+                      const key = slotKey(form.selectedDate!, id)
                       const booked =
-                        bookedSlots.has(slotKey(form.selectedDate!, id)) ||
-                        lockedSlots.has(slotKey(form.selectedDate!, id))
+                        bookedSlots.has(key) ||
+                        lockedSlots.has(key) ||
+                        (ghlAvailable !== null && !ghlAvailable.has(key))
                       return (
                         <button
                           key={id}

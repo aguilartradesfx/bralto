@@ -1,4 +1,5 @@
 import { NextResponse, after } from 'next/server'
+import { createBookingInGhl, getGhlAvailableSlotKeys } from '@/lib/ghl/bookings'
 
 // Redis key for permanently confirmed bookings
 const KEY = 'bralto:booked_slots'
@@ -17,17 +18,29 @@ function getRedis() {
 
 export async function GET() {
   const redis = getRedis()
-  if (!redis) return NextResponse.json({ booked: [], locked: [] })
+
+  // Real availability from GHL, so the site hides curated slots already taken/
+  // blocked in GHL. Independent of Redis and non-fatal: on any failure we return
+  // `ghlAvailable: null` and the UI falls back to showing all curated slots.
+  const ghlPromise: Promise<string[] | null> = getGhlAvailableSlotKeys().catch((err) => {
+    console.warn('[bookings] GHL free-slots failed:', err)
+    return null
+  })
+
+  if (!redis) {
+    return NextResponse.json({ booked: [], locked: [], ghlAvailable: await ghlPromise })
+  }
 
   try {
-    const [booked, lockKeys] = await Promise.all([
+    const [booked, lockKeys, ghlAvailable] = await Promise.all([
       redis.smembers(KEY) as Promise<string[]>,
       redis.keys('bralto:lock:*') as Promise<string[]>,
+      ghlPromise,
     ])
     const locked = lockKeys.map((k: string) => k.replace('bralto:lock:', ''))
-    return NextResponse.json({ booked: booked ?? [], locked })
+    return NextResponse.json({ booked: booked ?? [], locked, ghlAvailable })
   } catch {
-    return NextResponse.json({ booked: [], locked: [] })
+    return NextResponse.json({ booked: [], locked: [], ghlAvailable: await ghlPromise })
   }
 }
 
@@ -163,32 +176,22 @@ export async function POST(req: Request) {
       } catch { /* Supabase save is non-critical — booking is already locked in Redis */ }
     }
 
-    // Fire-and-forget webhook to N8N — uses after() so the function stays
-    // alive until the fetch completes even after the response is sent
-    const webhookUrl = process.env.N8N_WEBHOOK_URL
-    if (webhookUrl) {
-      const { nombre, apellido, countryCode, telefono, email, answers } = body
-      const payload = JSON.stringify({
-        slot_key: slot,
-        nombre,
-        apellido,
-        telefono: `${countryCode ?? ''}${telefono ?? ''}`,
-        email,
-        answers,
-        booked_at: new Date().toISOString(),
-      })
-      after(async () => {
-        try {
-          await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: payload,
-          })
-        } catch (err) {
-          console.error('[n8n webhook] failed:', err)
-        }
-      })
-    }
+    // Push the booking into GHL (contact + appointment + tag) after responding.
+    const { nombre, apellido, countryCode, telefono, email, answers } = body
+    after(async () => {
+      try {
+        await createBookingInGhl({
+          slotKey: slot,
+          firstName: nombre ?? '',
+          lastName: apellido ?? '',
+          phone: `${countryCode ?? ''}${telefono ?? ''}`,
+          email: email ?? '',
+          answers,
+        })
+      } catch (err) {
+        console.error('[bookings → ghl] failed:', err)
+      }
+    })
 
     return NextResponse.json({ success: true })
   }
