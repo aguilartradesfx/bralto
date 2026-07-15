@@ -8,13 +8,15 @@ const BRALTO_LOCATION_ID =
 const BRALTO_CALENDAR_ID =
   process.env.HIGHLEVEL_BRALTO_CALENDAR_ID ?? 'LUZgumbKyrgNJy05MsRY'
 
-// Curated website times → hour of day (Costa Rica, -06:00).
+// Curated website times → slot id (Costa Rica, -06:00). Matched on exact HH:MM
+// so a curated slot is only "free" when that precise time is open in GHL (a
+// booked 09:00 must block "9am" even if 09:30 is still open).
 // Must stay in sync with TIME_SLOTS in app/[locale]/agendar/_view.tsx.
-const CURATED_HOUR_TO_ID: Record<number, string> = {
-  9: '9am',
-  13: '1pm',
-  15: '3pm',
-  17: '5pm',
+const CURATED_TIME_TO_ID: Record<string, string> = {
+  '09:00': '9am',
+  '13:00': '1pm',
+  '15:00': '3pm',
+  '17:00': '5pm',
 }
 
 // Returns the slotKeys ("YYYY-MM-DD-<id>") among our curated times that are
@@ -46,9 +48,10 @@ export async function getGhlAvailableSlotKeys(): Promise<string[]> {
     const slots = (val as { slots?: string[] })?.slots
     if (!Array.isArray(slots)) continue
     for (const iso of slots) {
+      // iso like "2026-07-16T09:00:00-06:00"
       const date = iso.slice(0, 10)
-      const hour = Number.parseInt(iso.slice(11, 13), 10)
-      const id = CURATED_HOUR_TO_ID[hour]
+      const hhmm = iso.slice(11, 16)
+      const id = CURATED_TIME_TO_ID[hhmm]
       if (id) available.push(`${date}-${id}`)
     }
   }
