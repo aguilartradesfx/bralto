@@ -15,7 +15,7 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { StartTrialButton } from '@/components/start-trial-button'
 
-const CYAN = '#5bb6ff'
+const NEON = '#ff6d28' // naranja neón de marca (mismo que PlatformSection)
 
 // Feature catalog lives in the shared PlatformSection namespace (single source of truth).
 const CATEGORIES = [
@@ -59,7 +59,7 @@ export default function PlataformaPage() {
 
       {/* ── HERO ── */}
       <section className="grid-bg relative overflow-hidden pt-40 pb-28">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(91,182,255,0.06),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(255,109,40,0.06),transparent)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#060607]" />
 
         <Link
@@ -75,7 +75,7 @@ export default function PlataformaPage() {
             className="mb-8 inline-flex items-center gap-2.5 rounded-full px-4 py-2"
             style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
           >
-            <span className="inline-flex items-center rounded-full bg-[#5bb6ff] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+            <span className="inline-flex items-center rounded-full bg-[#ff6d28] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
               {t('badge')}
             </span>
             <span className="text-sm text-white/75">{t('badgeSub')}</span>
@@ -99,7 +99,7 @@ export default function PlataformaPage() {
           {/* Price */}
           <div className="mb-2 flex items-baseline justify-center gap-2">
             <span className="text-sm uppercase tracking-[0.12em] text-white/35">{t('priceLabel')}</span>
-            <span className="text-6xl font-bold tracking-[-0.03em]" style={{ color: CYAN, textShadow: '0 0 30px rgba(91,182,255,0.3)' }}>
+            <span className="text-6xl font-bold tracking-[-0.03em]" style={{ color: NEON, textShadow: '0 0 30px rgba(255,109,40,0.3)' }}>
               {t('price')}
             </span>
             <span className="text-xl text-white/40">{t('period')}</span>
@@ -139,15 +139,15 @@ export default function PlataformaPage() {
             {categories.map((cat) => (
               <div key={cat.id} className="rounded-card border border-white/[0.06] bg-[#131316] p-7">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
-                    <cat.icon size={17} style={{ color: CYAN }} />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ff6d28]/10 border border-[#ff6d28]/20">
+                    <cat.icon size={17} style={{ color: NEON }} />
                   </div>
                   <h3 className="text-lg font-semibold text-white">{cat.label}</h3>
                 </div>
                 <ul className="flex flex-col gap-3.5">
                   {cat.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-3 text-sm text-white/60">
-                      <Check size={15} className="shrink-0" style={{ color: CYAN }} />
+                      <Check size={15} className="shrink-0" style={{ color: NEON }} />
                       {feature}
                     </li>
                   ))}
@@ -201,7 +201,7 @@ export default function PlataformaPage() {
                 <div className="my-8 h-px w-16 bg-white/[0.08]" />
                 <p className="mb-3 text-[10px] uppercase tracking-widest text-white/28">{t('withLabel')}</p>
                 <div className="mb-2">
-                  <span className="text-6xl font-bold" style={{ color: CYAN, textShadow: '0 0 30px rgba(91,182,255,0.35)' }}>
+                  <span className="text-6xl font-bold" style={{ color: NEON, textShadow: '0 0 30px rgba(255,109,40,0.35)' }}>
                     $87
                   </span>
                   <span className="ml-1 text-xl text-white/40">{period}</span>
@@ -224,8 +224,8 @@ export default function PlataformaPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {details.map((d) => (
               <div key={d.title} className="rounded-card border border-white/[0.06] bg-[#131316] p-7">
-                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
-                  <Check size={15} style={{ color: CYAN }} />
+                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-[#ff6d28]/10 border border-[#ff6d28]/20">
+                  <Check size={15} style={{ color: NEON }} />
                 </div>
                 <h3 className="mb-2 text-base font-semibold text-white">{d.title}</h3>
                 <p className="text-sm leading-relaxed text-white/40">{d.desc}</p>
@@ -256,9 +256,9 @@ export default function PlataformaPage() {
 
       {/* ── FINAL CTA ── */}
       <section className="relative overflow-hidden py-40" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(91,182,255,0.06),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_50%,rgba(255,109,40,0.06),transparent)]" />
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center md:px-12">
-          <p className="mb-6 text-xs font-bold uppercase tracking-[0.22em]" style={{ color: CYAN }}>{t('finalLabel')}</p>
+          <p className="mb-6 text-xs font-bold uppercase tracking-[0.22em]" style={{ color: NEON }}>{t('finalLabel')}</p>
           <h2 className="mb-8 font-bold leading-[0.95] tracking-tight text-white" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
             {t('finalHeadline')}
             <br />

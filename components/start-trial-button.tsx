@@ -50,7 +50,7 @@ export function StartTrialButton({
         disabled={loading}
         className={
           className ??
-          'inline-flex items-center justify-center gap-2.5 rounded-full bg-[#5bb6ff] px-10 py-4 font-semibold text-black transition-all hover:shadow-[0_0_48px_rgba(91,182,255,0.3)] disabled:cursor-not-allowed disabled:opacity-60'
+          'inline-flex items-center justify-center gap-2.5 rounded-full bg-[#ff6d28] px-10 py-4 font-semibold text-black transition-all hover:shadow-[0_0_48px_rgba(255,109,40,0.3)] disabled:cursor-not-allowed disabled:opacity-60'
         }
       >
         {loading ? (locale === 'en' ? 'Redirecting…' : 'Redirigiendo…') : label}
