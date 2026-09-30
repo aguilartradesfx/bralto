@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { hostKind, isPanelPath, resolveHostRouting } from './host-routing.ts'
+import { hostKind, isPanelPath, isPrivateSurface, PRIVATE_SURFACE_JS, resolveHostRouting } from './host-routing.ts'
 
 test('hostKind reconoce hosts con mayúsculas y puerto', () => {
   assert.equal(hostKind('Admin.Bralto.io:443'), 'admin')
@@ -62,4 +62,32 @@ test('otros hosts (localhost, previews): todo pasa', () => {
   assert.deepEqual(resolveHostRouting('localhost:3000', '/contratos'), { action: 'next' })
   assert.deepEqual(resolveHostRouting('localhost:3000', '/es'), { action: 'next' })
   assert.deepEqual(resolveHostRouting('bralto-git-x.vercel.app', '/login'), { action: 'next' })
+})
+
+const SURFACES: [host: string, pathname: string, isPrivate: boolean][] = [
+  ['admin.bralto.io', '/admin', true],
+  ['admin.bralto.io', '/login', true],
+  ['Admin.Bralto.io', '/contratos/abc', true],
+  ['www.bralto.io', '/c/acme-x1y2', true],
+  ['www.bralto.io', '/c/acme-x1y2/firmado', true],
+  ['localhost', '/solicitudes', true],
+  ['www.bralto.io', '/', false],
+  ['www.bralto.io', '/es/precios', false],
+  ['www.bralto.io', '/propuestas/abc123', false],
+  ['www.bralto.io', '/contacto', false],
+  ['localhost', '/es', false],
+]
+
+test('isPrivateSurface: panel y firma de contratos, sin analítica ni banner de cookies', () => {
+  for (const [host, pathname, expected] of SURFACES) {
+    assert.equal(isPrivateSurface(host, pathname), expected, `${host}${pathname}`)
+  }
+})
+
+test('PRIVATE_SURFACE_JS (snippet inline de GTM) decide igual que isPrivateSurface', () => {
+  const evaluate = new Function('location', `return ${PRIVATE_SURFACE_JS}`)
+  for (const [host, pathname, expected] of SURFACES) {
+    // location.hostname del navegador nunca trae puerto
+    assert.equal(evaluate({ hostname: host, pathname }), expected, `${host}${pathname}`)
+  }
 })

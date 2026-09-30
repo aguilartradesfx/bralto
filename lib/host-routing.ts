@@ -43,3 +43,18 @@ export function resolveHostRouting(host: string | null, pathname: string, search
   }
   return { action: 'next' }
 }
+
+// Superficies privadas: el panel y las páginas de firma de contratos (/c/<slug>, el slug da acceso al contrato).
+// Ahí no se cargan analítica ni banner de cookies, ni se indexan.
+const CLIENT_PRIVATE_PREFIX = '/c/'
+
+export function isPrivateSurface(host: string | null, pathname: string): boolean {
+  return hostKind(host) === 'admin' || isPanelPath(pathname) || pathname.startsWith(CLIENT_PRIVATE_PREFIX)
+}
+
+// La misma regla como expresión JS para scripts inline (lee `location` del navegador)
+export const PRIVATE_SURFACE_JS =
+  `(${JSON.stringify([...ADMIN_HOSTS])}.indexOf(location.hostname.toLowerCase())>=0` +
+  `||${JSON.stringify(PANEL_EXACT)}.indexOf(location.pathname)>=0` +
+  `||${JSON.stringify(PANEL_PREFIXES)}.some(function(p){return location.pathname===p||location.pathname.indexOf(p+'/')===0})` +
+  `||location.pathname.indexOf(${JSON.stringify(CLIENT_PRIVATE_PREFIX)})===0)`
