@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 import { Trash2 } from 'lucide-react'
-import { deleteProposal } from '@/app/propuestas/actions'
+import { deleteProposal } from '@/app/(internal)/propuestas/actions'
 import { useRouter } from 'next/navigation'
 
 interface Props {
