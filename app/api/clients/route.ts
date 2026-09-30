@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { requireApiPermission } from '@/lib/panel-session'
 
 const clientSchema = z.object({
   empresa_nombre: z.string().min(1),
@@ -12,8 +13,8 @@ const clientSchema = z.object({
 
 export async function GET() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { denied } = await requireApiPermission('can_view_clients', 'can_view_contracts')
+  if (denied) return denied
 
   const { data, error } = await supabase
     .from('clients')
@@ -26,8 +27,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { user, denied } = await requireApiPermission('can_view_clients', 'can_view_contracts')
+  if (denied) return denied
 
   let body: unknown
   try {

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { requireApiPermission } from '@/lib/panel-session'
 
 export async function DELETE(
   _req: Request,
@@ -8,8 +9,8 @@ export async function DELETE(
   const { id } = await params
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  const { denied } = await requireApiPermission('can_view_contracts')
+  if (denied) return denied
 
   const { data: contract } = await supabase
     .from('contracts')

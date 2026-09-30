@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { requireApiPermission } from '@/lib/panel-session'
 
 const body = z.object({
   signature: z.string().min(10),
@@ -14,8 +15,8 @@ export async function POST(
   const supabase = await createClient()
 
   // Verify authenticated
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  const { denied } = await requireApiPermission('can_view_contracts')
+  if (denied) return denied
 
   let parsed
   try {

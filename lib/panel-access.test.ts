@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { hasPermission, requiredPermission } from './panel-access.ts'
+import { apiAccessStatus, hasPermission, requiredPermission } from './panel-access.ts'
 
 function profile(overrides: Partial<Record<string, boolean>> = {}) {
   return {
@@ -44,4 +44,19 @@ test('colaborador ve solo lo asignado', () => {
   assert.equal(hasPermission(user, 'can_submit_proposals'), true)
   assert.equal(hasPermission(user, 'can_view_contracts'), false)
   assert.equal(hasPermission(user, 'is_admin'), false)
+})
+
+test('APIs: sin sesión → 401', () => {
+  assert.equal(apiAccessStatus(false, null, ['can_view_contracts']), 401)
+})
+
+test('APIs: cuenta sin perfil o sin el permiso → 403', () => {
+  assert.equal(apiAccessStatus(true, null, ['can_submit_proposals']), 403)
+  assert.equal(apiAccessStatus(true, profile({ can_view_clients: true }), ['can_view_contracts']), 403)
+})
+
+test('APIs: basta con uno de los permisos aceptados', () => {
+  const soloContratos = profile({ can_view_contracts: true })
+  assert.equal(apiAccessStatus(true, soloContratos, ['can_view_clients', 'can_view_contracts']), 200)
+  assert.equal(apiAccessStatus(true, profile({ is_admin: true }), ['is_admin']), 200)
 })

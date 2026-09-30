@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { requireApiPermission } from '@/lib/panel-session'
 
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  const { denied } = await requireApiPermission('can_submit_proposals')
+  if (denied) return denied
 
   const service = createServiceClient()
   const { data, error } = await service
@@ -35,9 +34,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  const { user, denied } = await requireApiPermission('can_submit_proposals')
+  if (denied) return denied
 
   const body = await request.json()
   const {

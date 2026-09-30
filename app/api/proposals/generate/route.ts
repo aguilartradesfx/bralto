@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { getResend, FROM } from '@/lib/email/resend'
 import { BRALTO_SERVICES, BUDGET_LABELS, TIMELINE_LABELS, type ProposalRequest } from '@/types/proposals'
 import { renderProposalTemplate } from '@/lib/proposals/render-template'
 import { publishProposal } from '@/lib/proposals/publish'
+import { requireApiPermission } from '@/lib/panel-session'
 
 export const maxDuration = 60
 
@@ -47,9 +47,8 @@ function buildConfirmationEmail(
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  const { user, denied } = await requireApiPermission('can_submit_proposals')
+  if (denied) return denied
 
   const { proposal_id } = await request.json()
   if (!proposal_id) return NextResponse.json({ error: 'proposal_id requerido' }, { status: 400 })

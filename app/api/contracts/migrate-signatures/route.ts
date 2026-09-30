@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requireApiPermission } from '@/lib/panel-session'
 import { createServiceClient } from '@/lib/supabase/service'
 import { getBraltoSignatureDataUrl } from '@/lib/contracts/bralto-signature'
 
 // One-time migration: replaces old SVG Bralto signature with new PNG on all contracts
 export async function POST() {
-  const authClient = await createClient()
-  const { data: { user } } = await authClient.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { denied } = await requireApiPermission('is_admin')
+  if (denied) return denied
 
   const supabase = createServiceClient()
   const newSig = getBraltoSignatureDataUrl()

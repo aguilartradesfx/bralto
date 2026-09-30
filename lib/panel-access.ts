@@ -30,3 +30,13 @@ export function hasPermission(
   if (profile.is_admin) return true
   return profile[permission] === true
 }
+
+// Acceso a las APIs del panel: 401 sin sesión, 403 si no tiene ninguno de los permisos aceptados
+export function apiAccessStatus(
+  hasSession: boolean,
+  profile: Pick<UserProfile, PanelPermission> | null,
+  permissions: PanelPermission[],
+): 200 | 401 | 403 {
+  if (!hasSession) return 401
+  return permissions.some((p) => hasPermission(profile, p)) ? 200 : 403
+}

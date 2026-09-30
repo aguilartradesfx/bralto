@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getResend, FROM } from '@/lib/email/resend'
 import { emailContractSent } from '@/lib/email/templates'
+import { requireApiPermission } from '@/lib/panel-session'
 
 export async function POST(
   _req: Request,
@@ -10,8 +11,8 @@ export async function POST(
   const { id } = await params
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { user, denied } = await requireApiPermission('can_view_contracts')
+  if (denied) return denied
 
   const { data: existing } = await supabase
     .from('contracts')
