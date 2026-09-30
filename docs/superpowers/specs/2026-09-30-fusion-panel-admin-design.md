@@ -61,7 +61,7 @@ El middleware clasifica cada request según el host:
 
 - **Lista unificada** en `/propuestas` (panel): todas las filas de `generated_proposals`. Si una propuesta corresponde a una `proposal_requests` (match por slug extraído de `proposal_requests.generated_url`), muestra además servicios, quién la solicitó y estado (incl. aceptada). Permite copiar link, abrir y eliminar.
 - **Generar** (`/api/proposals/generate`): inserta directo en `generated_proposals` vía una función compartida (`lib/proposals/publish.ts`) que también usa `/api/proposals/receive`. Se elimina la llamada HTTP a `BRALTO_API_URL`.
-- **Eliminar publicada** (`/api/proposals/[id]/generated` DELETE): borra directo en `generated_proposals` en vez de llamar a la API de Bralto.
+- **Eliminar publicada**: server action en la lista de propuestas; borra directo en `generated_proposals` (ver "Ajustes durante la implementación").
 - **Aceptar** (`/api/proposals/[id]/accept`): sin cambios de lógica (CORS para `bralto.io`/`www.bralto.io`, webhook n8n, emails). `render-template.ts` mantiene `https://admin.bralto.io` como base del endpoint de aceptación.
 - La URL pública de una propuesta se construye con `NEXT_PUBLIC_SITE_URL` (en prod `https://bralto.io`).
 
@@ -79,6 +79,15 @@ El middleware clasifica cada request según el host:
 4. Checklist de verificación en producción.
 5. Rollback: devolver el dominio al proyecto viejo (queda desplegado sin cambios).
 6. Tras 1–2 semanas estable: archivar el repo Linkedin React, borrar su proyecto en Vercel, revocar el token de GitHub embebido en su remote.
+
+## Ajustes durante la implementación
+
+- Las redirecciones entre hosts son **307** (no 308) para que un rollback del dominio no quede cacheado en navegadores.
+- El destino público de las redirecciones es `https://www.bralto.io` (dominio canónico; `bralto.io` ya redirige ahí en Vercel).
+- `/c/` se agregó a las rutas fuera del árbol de idiomas: hoy `www.bralto.io/c/<slug>` redirige a `/es/c/<slug>` y da 404. Con esto los links de firma (incluidos los viejos `admin.bralto.io/c/<slug>`, que ahora redirigen) funcionan.
+- `/api/proposals/[id]/generated` no se portó: borrar una propuesta publicada lo hace la server action `deleteProposal` de `app/(internal)/propuestas/actions.ts` (borra en `generated_proposals` y limpia `generated_url` de la solicitud).
+- `/login` y `/propuestas` en `localhost` ya no pasan por la redirección de idioma (antes daban 404 en `www.bralto.io`).
+- Usuarios sin fila en `user_profiles` (hoy: `alinaramirezgamboa@gmail.com`, `josuea421@gmail.com`) solo ven "Inicio" hasta que un admin les asigne permisos en `/usuarios`.
 
 ## Fuera de alcance
 
