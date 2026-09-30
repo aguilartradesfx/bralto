@@ -37,8 +37,14 @@ test('una fecha explícita en los datos se respeta', () => {
   assert.deepEqual(closingDate(md), ['5', 'enero', '2026'])
 })
 
-test('solo automatizaciones: sin cláusula de consumo de IA (regla vigente en producción)', () => {
+test('solo automatizaciones: incluye la cláusula de consumo de IA (regla original de Bralto)', () => {
   const md = renderContractMarkdown(contract({ servicios: { automatizaciones: true } }), template)
+  assert.equal(md.includes(AI_CONSUMPTION_CLAUSE), true)
+  assert.match(md, /### DÉCIMA CUARTA: TERMINACIÓN ANTICIPADA/)
+})
+
+test('sin servicios de IA ni automatizaciones: sin cláusula de consumo de IA', () => {
+  const md = renderContractMarkdown(contract({ servicios: { ads: true, seo: true } }), template)
   assert.equal(md.includes(AI_CONSUMPTION_CLAUSE), false)
   assert.match(md, /### DÉCIMA TERCERA: TERMINACIÓN ANTICIPADA/)
 })
