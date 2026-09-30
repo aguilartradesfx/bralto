@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FileText, Users, LogOut, Menu, X, Network, LayoutDashboard, ScrollText } from 'lucide-react'
+import { FileText, Users, LogOut, Menu, X, LayoutDashboard, ScrollText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 
@@ -11,7 +11,6 @@ const navItems = [
   { href: '/admin', label: 'Inicio', icon: LayoutDashboard },
   { href: '/contratos', label: 'Contratos', icon: FileText },
   { href: '/clientes', label: 'Clientes', icon: Users },
-  { href: '/linkedin-pipeline', label: 'LinkedIn Pipeline', icon: Network },
   { href: '/propuestas', label: 'Propuestas', icon: ScrollText },
 ]
 

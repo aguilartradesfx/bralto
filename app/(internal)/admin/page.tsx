@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { FileText, Users, Network, ArrowRight } from 'lucide-react'
+import { FileText, Users, ArrowRight } from 'lucide-react'
 
 const sections = [
   {
@@ -14,12 +14,6 @@ const sections = [
     icon: Users,
     label: 'Clientes',
     description: 'Base de datos de clientes activos e históricos.',
-  },
-  {
-    href: '/linkedin-pipeline',
-    icon: Network,
-    label: 'LinkedIn Pipeline',
-    description: 'Dashboard de prospección y seguimiento de leads.',
   },
 ]
 
