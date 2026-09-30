@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Cookie, X } from 'lucide-react'
+import { isPrivateSurface } from '@/lib/host-routing'
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
+    // Panel and contract signing pages load no tracking, so there is nothing to consent to
+    if (isPrivateSurface(window.location.hostname, window.location.pathname)) return
     const consent = localStorage.getItem('bralto_cookie_consent')
     if (!consent) {
       const t = setTimeout(() => setVisible(true), 1500)

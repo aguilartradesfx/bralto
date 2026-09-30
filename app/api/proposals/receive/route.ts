@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { nanoid } from 'nanoid'
-import { createServiceClient } from '@/lib/supabase/service'
+import { publishProposal } from '@/lib/proposals/publish'
 
 function validateApiKey(req: Request): boolean {
   const key = req.headers.get('x-api-key')
@@ -33,26 +32,10 @@ export async function POST(req: Request) {
     )
   }
 
-  const slug = nanoid(12)
-  const now = new Date()
-  const expires_at = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString()
-
-  const supabase = createServiceClient()
-  const { error } = await supabase.from('generated_proposals').insert({
-    slug,
-    client_name,
-    project_name,
-    html_content,
-    expires_at,
-    created_by,
-  })
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bralto.io'
-
-  return NextResponse.json(
-    { url: `${siteUrl}/propuestas/${slug}`, slug, expires_at },
-    { status: 201 },
-  )
+  try {
+    const published = await publishProposal({ client_name, project_name, html_content, created_by })
+    return NextResponse.json(published, { status: 201 })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 })
+  }
 }

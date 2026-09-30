@@ -3,6 +3,9 @@ import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import { isPanelPath, resolveHostRouting } from './lib/host-routing'
+import { hasPermission, requiredPermission, type PanelPermission } from './lib/panel-access'
+import type { UserProfile } from './types/user-profiles'
 
 // Spanish-speaking countries → es, everything else → en
 const SPANISH_COUNTRIES = new Set([
@@ -24,64 +27,84 @@ const intlMiddleware = createIntlMiddleware({
   localeDetection: false, // we handle detection ourselves via geo
 })
 
-const INTERNAL_ROUTES = ['/admin', '/contratos', '/clientes', '/linkedin-pipeline']
+// Public routes that live outside the locale tree (no /es or /en prefix)
+const NON_LOCALE_PREFIXES = [
+  '/propuestas/',
+  '/c/',
+  '/Proposal-',
+  '/AO-Guidelines',
+  '/brand/',
+  '/Diagnostico-',
+  '/87-payment',
+  '/payment-info',
+]
+
+const PERMISSION_COLUMNS = 'is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
+
+// Session + section permission check for panel routes
+async function guardPanel(request: NextRequest): Promise<NextResponse> {
+  let response = NextResponse.next({ request })
+  try {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll() },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            response = NextResponse.next({ request })
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options)
+            )
+          },
+        },
+      }
+    )
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.redirect(new URL('/login', request.url))
+
+    const permission = requiredPermission(request.nextUrl.pathname)
+    if (permission) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select(PERMISSION_COLUMNS)
+        .eq('id', user.id)
+        .maybeSingle()
+      if (!hasPermission(profile as Pick<UserProfile, PanelPermission> | null, permission)) {
+        return NextResponse.redirect(new URL('/admin', request.url))
+      }
+    }
+  } catch {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+  return response
+}
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname, search } = request.nextUrl
 
-  // ── Auth check for internal routes ────────────────────────────────────────
-  const isInternalRoute = INTERNAL_ROUTES.some((p) => pathname.startsWith(p))
-  if (isInternalRoute) {
-    let response = NextResponse.next({ request })
-    try {
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            getAll() { return request.cookies.getAll() },
-            setAll(cookiesToSet) {
-              cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-              response = NextResponse.next({ request })
-              cookiesToSet.forEach(({ name, value, options }) =>
-                response.cookies.set(name, value, options)
-              )
-            },
-          },
-        }
-      )
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return NextResponse.redirect(new URL('/login', request.url))
-    } catch {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-    return response
+  // ── Host routing: admin.bralto.io = panel, www.bralto.io = public site ────
+  const decision = resolveHostRouting(request.headers.get('host'), pathname, search)
+  if (decision.action === 'redirect') return NextResponse.redirect(decision.url)
+
+  // ── Panel: /login is open, everything else needs session + permission ─────
+  if (isPanelPath(pathname)) {
+    return pathname === '/login' ? NextResponse.next() : guardPanel(request)
   }
 
-  // ── Locale redirect for root and non-prefixed public paths ────────────────
-  // If no locale prefix yet, inject the preferred one
-  const hasLocalePrefix = routing.locales.some(
-    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
-  )
-
-  // Routes that live outside the locale tree — skip locale redirect
-  if (
-    pathname.startsWith('/propuestas/') ||
-    pathname.startsWith('/Proposal-') ||
-    pathname.startsWith('/AO-Guidelines') ||
-    pathname.startsWith('/brand/') ||
-    pathname.startsWith('/Diagnostico-') ||
-    pathname.startsWith('/87-payment') ||
-    pathname.startsWith('/payment-info')
-  ) {
+  // ── Public routes outside the locale tree ────────────────────────────────
+  if (NON_LOCALE_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
+  // ── Locale redirect for root and non-prefixed public paths ───────────────
+  const hasLocalePrefix = routing.locales.some(
+    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+  )
   if (!hasLocalePrefix) {
-    const preferred = getPreferredLocale(request)
-    // Preserve query and hash
     const url = request.nextUrl.clone()
-    url.pathname = `/${preferred}${pathname}`
+    url.pathname = `/${getPreferredLocale(request)}${pathname}`
     return NextResponse.redirect(url)
   }
 
@@ -91,12 +114,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Internal authenticated routes
-    '/admin/:path*',
-    '/contratos/:path*',
-    '/clientes/:path*',
-    '/linkedin-pipeline/:path*',
-    // Public routes that need locale handling (exclude API, _next, static files)
+    // Everything except API, Next internals and static files
     '/((?!api|_next/static|_next/image|favicon|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff2?|ttf|otf|eot)).*)',
   ],
 }

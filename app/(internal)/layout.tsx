@@ -1,15 +1,17 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { InternalNav } from '@/components/internal/internal-nav'
+import { getCurrentSession } from '@/lib/panel-session'
+
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 export default async function InternalLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user, profile } = await getCurrentSession()
   if (!user) redirect('/login')
 
   return (
     <div className="min-h-screen bg-[#060607] text-white">
-      <InternalNav />
+      <InternalNav profile={profile} />
       <main className="pt-14 md:pt-0 md:ml-56 min-h-screen">{children}</main>
     </div>
   )

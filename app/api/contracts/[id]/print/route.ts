@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { requireApiPermission } from '@/lib/panel-session'
 import { loadTemplate, renderContractMarkdown } from '@/lib/contracts/render'
 import { marked } from 'marked'
 import type { ContractRow } from '@/types/contracts'
@@ -10,10 +11,8 @@ export async function GET(
   const { id } = await params
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return new Response('No autorizado', { status: 401 })
-  }
+  const { denied } = await requireApiPermission('can_view_contracts')
+  if (denied) return denied
 
   const { data: contract } = await supabase
     .from('contracts')

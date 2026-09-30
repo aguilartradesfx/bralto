@@ -30,16 +30,28 @@ Handlebars.registerHelper('formatTS', (iso: string | null | undefined) => {
 })
 
 function applyDerivedFlags(data: ContractData): ContractData {
-  const s = data.servicios
+  const s = data.servicios ?? ({} as ContractData['servicios'])
   return {
     ...data,
     servicios: {
       ...s,
       requiere_consumo_ia:
-        s.sistema_llamadas_ia || s.agente_whatsapp || s.agente_servicio_cliente || s.automatizaciones,
+        !!(s.sistema_llamadas_ia || s.agente_whatsapp || s.agente_servicio_cliente || s.automatizaciones),
       servicios_no_incluye_contenido:
         !s.produccion_contenido && !s.gestion_redes,
     },
+  }
+}
+
+// Fecha del cierre ("el día … del mes de …"): la de la firma del cliente si ya firmó; si no, hoy (hora de Costa Rica)
+function closingDate(firma: ContractData['firma'], now: Date) {
+  const source = firma?.cliente_timestamp ? new Date(firma.cliente_timestamp) : now
+  const part = (opts: Intl.DateTimeFormatOptions) =>
+    source.toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica', ...opts })
+  return {
+    dia: firma?.dia || part({ day: 'numeric' }),
+    mes: firma?.mes || part({ month: 'long' }),
+    anio: firma?.anio || part({ year: 'numeric' }),
   }
 }
 
@@ -47,8 +59,8 @@ export function loadTemplate(version: string): string {
   return readFileSync(join(process.cwd(), 'templates', 'contract', `${version}.md`), 'utf-8')
 }
 
-export function renderContractMarkdown(data: ContractData, templateString: string): string {
+export function renderContractMarkdown(data: ContractData, templateString: string, now = new Date()): string {
   const withFlags = applyDerivedFlags(data)
   const compiled = Handlebars.compile(templateString)
-  return compiled(withFlags)
+  return compiled({ ...withFlags, firma: { ...withFlags.firma, ...closingDate(withFlags.firma, now) } })
 }

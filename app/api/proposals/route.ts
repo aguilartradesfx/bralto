@@ -1,0 +1,79 @@
+import { NextResponse } from 'next/server'
+import { createServiceClient } from '@/lib/supabase/service'
+import { requireApiPermission } from '@/lib/panel-session'
+
+export async function GET() {
+  const { denied } = await requireApiPermission('can_submit_proposals')
+  if (denied) return denied
+
+  const service = createServiceClient()
+  const { data, error } = await service
+    .from('proposal_requests')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Attach submitter names from user_profiles
+  const submitterIds = [...new Set((data ?? []).map((p) => p.submitted_by).filter(Boolean))]
+  let profileMap: Record<string, string> = {}
+  if (submitterIds.length > 0) {
+    const { data: profiles } = await service
+      .from('user_profiles')
+      .select('id, full_name')
+      .in('id', submitterIds)
+    profiles?.forEach((p) => { profileMap[p.id] = p.full_name ?? 'Sin nombre' })
+  }
+
+  const result = (data ?? []).map((p) => ({
+    ...p,
+    submitted_by_name: p.submitted_by ? (profileMap[p.submitted_by] ?? 'Desconocido') : null,
+  }))
+
+  return NextResponse.json(result)
+}
+
+export async function POST(request: Request) {
+  const { user, denied } = await requireApiPermission('can_submit_proposals')
+  if (denied) return denied
+
+  const body = await request.json()
+  const {
+    client_name,
+    client_company,
+    client_email,
+    client_phone,
+    client_industry,
+    services,
+    notes,
+    budget_range,
+    timeline,
+    priority,
+  } = body
+
+  if (!client_name || !Array.isArray(services) || services.length === 0) {
+    return NextResponse.json({ error: 'Nombre del cliente y al menos un servicio son requeridos' }, { status: 400 })
+  }
+
+  const service = createServiceClient()
+  const { data, error } = await service
+    .from('proposal_requests')
+    .insert({
+      client_name,
+      client_company: client_company || null,
+      client_email: client_email || null,
+      client_phone: client_phone || null,
+      client_industry: client_industry || null,
+      services,
+      notes: notes || null,
+      budget_range: budget_range || 'no_definido',
+      timeline: timeline || 'flexible',
+      priority: priority || 'normal',
+      submitted_by: user.id,
+    })
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data, { status: 201 })
+}

@@ -3,22 +3,26 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FileText, Users, LogOut, Menu, X, Network, LayoutDashboard, ScrollText } from 'lucide-react'
+import { FileText, Users, LogOut, Menu, X, LayoutDashboard, ScrollText, ClipboardList, UserCog, type LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { hasPermission, requiredPermission } from '@/lib/panel-access'
+import type { UserProfile } from '@/types/user-profiles'
 import { useState } from 'react'
 
-const navItems = [
+const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/admin', label: 'Inicio', icon: LayoutDashboard },
   { href: '/contratos', label: 'Contratos', icon: FileText },
   { href: '/clientes', label: 'Clientes', icon: Users },
-  { href: '/linkedin-pipeline', label: 'LinkedIn Pipeline', icon: Network },
+  { href: '/solicitudes', label: 'Solicitudes', icon: ClipboardList },
   { href: '/propuestas', label: 'Propuestas', icon: ScrollText },
+  { href: '/usuarios', label: 'Usuarios', icon: UserCog },
 ]
 
-export function InternalNav() {
+export function InternalNav({ profile }: { profile: UserProfile | null }) {
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const visibleItems = NAV_ITEMS.filter((item) => hasPermission(profile, requiredPermission(item.href)))
 
   async function handleLogout() {
     const supabase = createClient()
@@ -41,8 +45,8 @@ export function InternalNav() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname.startsWith(href)
+        {visibleItems.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || pathname.startsWith(`${href}/`)
           return (
             <Link
               key={href}

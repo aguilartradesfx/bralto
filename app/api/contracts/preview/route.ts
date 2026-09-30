@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { loadTemplate, renderContractMarkdown } from '@/lib/contracts/render'
 import { marked } from 'marked'
 import type { ContractData } from '@/types/contracts'
+import { requireApiPermission } from '@/lib/panel-session'
 
 export async function POST(req: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { denied } = await requireApiPermission('can_view_contracts')
+  if (denied) return denied
 
   let body: { data: ContractData; template_version?: string }
   try {
