@@ -2,7 +2,7 @@ const LOGO_URL = 'https://bralto.io/logo-white.svg'
 const ORANGE = '#ff6700'
 const DARK = '#0a0a0a'
 
-function base(content: string): string {
+export function emailLayout(content: string): string {
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -46,7 +46,7 @@ export function emailContractSent({
 }): { subject: string; html: string } {
   return {
     subject: `Tu contrato de servicio está listo — ${empresa}`,
-    html: base(`
+    html: emailLayout(`
       <h1>Hola, ${clienteName} 👋</h1>
       <p>Hemos preparado el contrato de prestación de servicios para <b>${empresa}</b>. Podés revisarlo y firmarlo directamente desde el siguiente enlace:</p>
       <a href="${contractUrl}" class="btn">Revisar y firmar contrato →</a>
@@ -73,7 +73,7 @@ export function emailContractSigned({
 }): { subject: string; html: string } {
   return {
     subject: `¡Contrato firmado! Confirmación de ${empresa}`,
-    html: base(`
+    html: emailLayout(`
       <h1>¡Gracias, ${clienteName}!</h1>
       <p>Tu contrato de servicio con <b>Bralto</b> para <b>${empresa}</b> ha sido firmado exitosamente.</p>
       <div class="meta">
@@ -99,7 +99,7 @@ export function emailContractReminder({
 }): { subject: string; html: string } {
   return {
     subject: `Recordatorio: tu contrato con Bralto sigue pendiente`,
-    html: base(`
+    html: emailLayout(`
       <h1>Hola, ${clienteName}</h1>
       <p>Te recordamos que tu contrato de servicio para <b>${empresa}</b> sigue pendiente de firma.</p>
       <p>Solo te toma un par de minutos revisarlo y firmarlo:</p>

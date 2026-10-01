@@ -5,3 +5,4 @@ export function getResend() {
 }
 
 export const FROM = 'Bralto <contratos@send.bralto.io>'
+export const FROM_TASKS = 'Bralto <tareas@send.bralto.io>'
