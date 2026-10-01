@@ -67,6 +67,7 @@ function AddUserModal({ onClose, onCreated }: AddUserModalProps) {
     can_manage_clients: false,
     can_submit_proposals: true,
     can_view_proposals: false,
+    can_view_tasks: true,
   })
 
   function setPreset(preset: 'user' | 'admin') {
@@ -79,6 +80,7 @@ function AddUserModal({ onClose, onCreated }: AddUserModalProps) {
         can_manage_clients: false,
         can_submit_proposals: true,
         can_view_proposals: false,
+        can_view_tasks: true,
       })
     } else {
       setIsAdmin(true)

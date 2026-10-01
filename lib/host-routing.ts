@@ -9,7 +9,7 @@ export const PUBLIC_ORIGIN = 'https://www.bralto.io'
 const ADMIN_HOSTS = new Set(['admin.bralto.io'])
 const PUBLIC_HOSTS = new Set(['bralto.io', 'www.bralto.io'])
 
-const PANEL_PREFIXES = ['/admin', '/contratos', '/clientes', '/solicitudes', '/usuarios']
+const PANEL_PREFIXES = ['/admin', '/contratos', '/clientes', '/solicitudes', '/usuarios', '/tareas']
 // Sin subrutas: /propuestas/<slug> es la página pública de cada propuesta
 const PANEL_EXACT = ['/login', '/propuestas']
 

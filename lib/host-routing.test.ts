@@ -14,13 +14,13 @@ test('hostKind reconoce hosts con mayúsculas y puerto', () => {
 
 test('isPanelPath: secciones del panel y login', () => {
   for (const p of ['/admin', '/contratos', '/contratos/nuevo', '/contratos/abc/editar', '/clientes',
-    '/solicitudes', '/solicitudes/nueva', '/usuarios', '/login', '/propuestas']) {
+    '/solicitudes', '/solicitudes/nueva', '/usuarios', '/login', '/propuestas', '/tareas', '/tareas/hoy', '/tareas/nueva']) {
     assert.equal(isPanelPath(p), true, p)
   }
 })
 
 test('isPanelPath: rutas públicas y falsos prefijos', () => {
-  for (const p of ['/', '/es', '/es/precios', '/c/abc', '/propuestas/abc123', '/contratosx', '/loginx', '/admin-foo']) {
+  for (const p of ['/', '/es', '/es/precios', '/c/abc', '/propuestas/abc123', '/contratosx', '/loginx', '/admin-foo', '/tareasx']) {
     assert.equal(isPanelPath(p), false, p)
   }
 })
