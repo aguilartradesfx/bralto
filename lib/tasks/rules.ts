@@ -3,6 +3,8 @@
 export const TASK_STATUSES = ['pendiente', 'en_progreso', 'bloqueada', 'en_revision', 'hecha'] as const
 export type TaskStatus = (typeof TASK_STATUSES)[number]
 export const TASK_PRIORITIES = ['baja', 'normal', 'alta', 'urgente'] as const
+// Máximo de criterios por tarea (formulario, validación y guardado)
+export const MAX_CHECKLIST = 30
 export type TaskPriority = (typeof TASK_PRIORITIES)[number]
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {

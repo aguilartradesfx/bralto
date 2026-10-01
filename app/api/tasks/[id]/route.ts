@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { jsonError, readJson, requireTaskActor } from '@/lib/tasks/api'
 import { getTask, getTeam } from '@/lib/tasks/data'
-import { normalizeChecklist, TaskPatchSchema } from '@/lib/tasks/draft'
+import { mergeChecklist, normalizeChecklist, TaskPatchSchema } from '@/lib/tasks/draft'
 import { noticesForAssignment } from '@/lib/tasks/rules'
 import { sendTaskNotices } from '@/lib/tasks/notify'
 
@@ -29,7 +29,8 @@ export async function PATCH(request: Request, { params }: Params) {
   const changes: Record<string, unknown> = {}
   if (input.title !== undefined) changes.title = input.title
   if (input.description !== undefined) changes.description = input.description.trim()
-  if (input.checklist !== undefined) changes.checklist = normalizeChecklist(input.checklist)
+  // El formulario trae los "done" de cuando se abrió; mandan los vigentes
+  if (input.checklist !== undefined) changes.checklist = mergeChecklist(task.checklist, normalizeChecklist(input.checklist))
   if (input.priority !== undefined) changes.priority = input.priority
   if (input.assignee_id !== undefined) changes.assignee_id = input.assignee_id
   if (input.due_date !== undefined) changes.due_date = input.due_date

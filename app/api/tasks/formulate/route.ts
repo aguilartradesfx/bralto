@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { getCurrentSession, requireApiPermission } from '@/lib/panel-session'
-import { formulateTask, TaskDraftRefusedError } from '@/lib/tasks/formulate'
+import { formulateTask, TaskDraftRefusedError, TaskDraftUnavailableError } from '@/lib/tasks/formulate'
 
 export const maxDuration = 60
 
@@ -25,8 +24,8 @@ export async function POST(request: Request) {
     if (err instanceof TaskDraftRefusedError) {
       return NextResponse.json({ error: err.message }, { status: 422 })
     }
-    if (err instanceof Anthropic.APIError) {
-      console.error('[tasks/formulate]', err.status, err.message)
+    if (err instanceof TaskDraftUnavailableError) {
+      console.error('[tasks/formulate]', err.message)
       return NextResponse.json(
         { error: 'La IA no respondió. Probá de nuevo o escribí la tarea a mano.' },
         { status: 502 },

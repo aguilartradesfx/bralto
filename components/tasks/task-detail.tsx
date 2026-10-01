@@ -93,8 +93,9 @@ export function TaskDetail({ task, updates, isAdmin, canEditChecklist, allowed, 
   async function toggleItem(index: number, done: boolean) {
     const previous = checklist
     setChecklist((items) => items.map((item, i) => (i === index ? { ...item, done } : item)))
-    const ok = await call(`item-${index}`, `/api/tasks/${task.id}/checklist`, 'PATCH', { index, done })
-    if (!ok) setChecklist(previous)
+    const ok = await call(`item-${index}`, `/api/tasks/${task.id}/checklist`, 'PATCH', { index, text: checklist[index].text, done })
+    if (ok) router.refresh()
+    else setChecklist(previous)
   }
 
   async function move(to: TaskStatus) {
@@ -170,7 +171,7 @@ export function TaskDetail({ task, updates, isAdmin, canEditChecklist, allowed, 
                     <input
                       type="checkbox"
                       checked={item.done}
-                      disabled={!canEditChecklist || busy === `item-${i}`}
+                      disabled={!canEditChecklist || busy !== null}
                       onChange={(e) => toggleItem(i, e.target.checked)}
                       className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#5bb6ff]"
                     />
@@ -190,7 +191,7 @@ export function TaskDetail({ task, updates, isAdmin, canEditChecklist, allowed, 
               <button
                 key={to}
                 onClick={() => move(to)}
-                disabled={busy !== null}
+                disabled={busy !== null || (pendingTo !== null && to !== pendingTo)}
                 className={`flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-40 ${
                   to === PRIMARY[task.status]
                     ? 'bg-[#5bb6ff] text-black hover:bg-[#7cc5ff]'

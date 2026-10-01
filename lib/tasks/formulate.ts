@@ -23,18 +23,47 @@ Recibís una idea escrita a la carrera por el director y la convertís en una ta
 Escribí en español neutro, claro y sin relleno.`
 
 export class TaskDraftRefusedError extends Error {}
+export class TaskDraftUnavailableError extends Error {}
 
-export async function formulateTask(idea: string, client = new Anthropic()): Promise<TaskDraft> {
-  const response = await client.beta.messages.parse({
-    model: 'claude-opus-5-5',
-    max_tokens: 8000,
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    output_config: { effort: 'low', format: betaZodOutputFormat(TaskDraftSchema) },
-    system: SYSTEM,
-    messages: [{ role: 'user', content: idea }],
-  })
-  if (response.stop_reason === 'refusal') throw new TaskDraftRefusedError('La IA no pudo formular esta tarea.')
-  if (!response.parsed_output) throw new Error('La IA no devolvió un borrador válido.')
-  return normalizeDraft(response.parsed_output)
+function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
+}
+
+// Tope de 25 s y un reintento: el peor caso (~51 s) entra en los 60 s de la ruta en Vercel
+function createClient(): Anthropic {
+  return new Anthropic({ timeout: 25_000, maxRetries: 1 })
+}
+
+export async function formulateTask(idea: string, client?: Anthropic): Promise<TaskDraft> {
+  let response
+  try {
+    response = await (client ?? createClient()).beta.messages.create({
+      model: 'claude-opus-5-5',
+      max_tokens: 8000,
+      betas: ['server-side-fallback-2026-07-01'],
+      fallbacks: 'default',
+      output_config: { effort: 'low', format: betaZodOutputFormat(TaskDraftSchema) },
+      system: SYSTEM,
+      messages: [{ role: 'user', content: idea }],
+    })
+  } catch (err) {
+    // Red, timeout, 4xx/5xx o key faltante
+    if (err instanceof Anthropic.AnthropicError) throw new TaskDraftUnavailableError(err.message)
+    throw err
+  }
+
+  // El rechazo se revisa antes de leer la salida
+  if (response.stop_reason === 'refusal') {
+    throw new TaskDraftRefusedError('La IA no pudo formular esta tarea. Escribila a mano.')
+  }
+  const text = response.content.find((block) => block.type === 'text')?.text ?? ''
+  const parsed = TaskDraftSchema.safeParse(parseJson(text))
+  if (response.stop_reason !== 'end_turn' || !parsed.success) {
+    throw new TaskDraftUnavailableError(`Borrador incompleto (stop_reason: ${response.stop_reason})`)
+  }
+  return normalizeDraft(parsed.data)
 }

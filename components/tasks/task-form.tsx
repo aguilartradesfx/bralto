@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Plus, Sparkles, X } from 'lucide-react'
-import { PRIORITY_LABELS, TASK_PRIORITIES, type TaskPriority } from '@/lib/tasks/rules'
+import { MAX_CHECKLIST, PRIORITY_LABELS, TASK_PRIORITIES, type TaskPriority } from '@/lib/tasks/rules'
 import type { ChecklistItem } from '@/lib/tasks/draft'
 import type { TaskRow, TeamMember } from '@/lib/tasks/data'
 
@@ -129,6 +129,13 @@ export function TaskForm({ mode, team, initial }: Props) {
                 <input
                   value={item.text}
                   onChange={(e) => updateItem(i, e.target.value)}
+                  onKeyDown={(e) => {
+                    // Enter agrega otro criterio en vez de enviar el formulario
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (checklist.length < MAX_CHECKLIST) setChecklist((items) => [...items, { text: '', done: false }])
+                    }
+                  }}
                   className={INPUT}
                   aria-label={`Criterio ${i + 1}`}
                 />
@@ -143,6 +150,7 @@ export function TaskForm({ mode, team, initial }: Props) {
               </div>
             ))}
           </div>
+          {checklist.length < MAX_CHECKLIST && (
           <button
             type="button"
             onClick={() => setChecklist((items) => [...items, { text: '', done: false }])}
@@ -150,6 +158,7 @@ export function TaskForm({ mode, team, initial }: Props) {
           >
             <Plus size={13} /> Agregar criterio
           </button>
+          )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
