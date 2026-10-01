@@ -77,3 +77,25 @@ export function costaRicaDayRange(now: Date): { start: string; end: string } {
   const start = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) + CR_OFFSET_MS
   return { start: new Date(start).toISOString(), end: new Date(start + DAY_MS).toISOString() }
 }
+
+// Fecha calendario (YYYY-MM-DD) de Costa Rica
+export function costaRicaDate(now: Date): string {
+  return new Date(now.getTime() - CR_OFFSET_MS).toISOString().slice(0, 10)
+}
+
+const PRIORITY_RANK: Record<TaskPriority, number> = { urgente: 0, alta: 1, normal: 2, baja: 3 }
+
+// Orden dentro de una columna: prioridad, fecha límite más cercana (sin fecha al final), actividad reciente
+export function compareTasks(
+  a: { priority: TaskPriority; due_date: string | null; updated_at: string },
+  b: { priority: TaskPriority; due_date: string | null; updated_at: string },
+): number {
+  const byPriority = PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority]
+  if (byPriority !== 0) return byPriority
+  if (a.due_date !== b.due_date) {
+    if (!a.due_date) return 1
+    if (!b.due_date) return -1
+    return a.due_date < b.due_date ? -1 : 1
+  }
+  return b.updated_at.localeCompare(a.updated_at)
+}

@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  allowedTransitions, canViewTask, costaRicaDayRange, noticesForAssignment, noticesForTransition,
+  allowedTransitions, canViewTask, compareTasks, costaRicaDate, costaRicaDayRange, noticesForAssignment, noticesForTransition,
   transitionKind, type TaskRef, type TaskStatus,
 } from './rules.ts'
 
@@ -77,4 +77,23 @@ test('costaRicaDayRange: el día calendario de Costa Rica (UTC−6)', () => {
   assert.equal(costaRicaDayRange(new Date('2026-10-01T12:00:00Z')).start, '2026-10-01T06:00:00.000Z')
   // medianoche exacta en Costa Rica
   assert.equal(costaRicaDayRange(new Date('2026-10-01T06:00:00Z')).start, '2026-10-01T06:00:00.000Z')
+})
+
+test('costaRicaDate: fecha calendario de Costa Rica', () => {
+  assert.equal(costaRicaDate(new Date('2026-10-01T03:00:00Z')), '2026-09-30')
+  assert.equal(costaRicaDate(new Date('2026-10-01T12:00:00Z')), '2026-10-01')
+})
+
+test('compareTasks: prioridad, luego fecha límite (sin fecha al final), luego actividad reciente', () => {
+  const t = (id: string, priority: string, due_date: string | null, updated_at: string) =>
+    ({ id, priority, due_date, updated_at }) as Parameters<typeof compareTasks>[0]
+  const sorted = [
+    t('normal-sin-fecha', 'normal', null, '2026-10-01T10:00:00Z'),
+    t('urgente', 'urgente', null, '2026-09-01T10:00:00Z'),
+    t('normal-viernes', 'normal', '2026-10-09', '2026-09-01T10:00:00Z'),
+    t('normal-lunes', 'normal', '2026-10-05', '2026-09-01T10:00:00Z'),
+    t('baja', 'baja', '2026-10-02', '2026-10-01T10:00:00Z'),
+    t('normal-sin-fecha-vieja', 'normal', null, '2026-09-20T10:00:00Z'),
+  ].sort(compareTasks).map((x) => x.id)
+  assert.deepEqual(sorted, ['urgente', 'normal-lunes', 'normal-viernes', 'normal-sin-fecha', 'normal-sin-fecha-vieja', 'baja'])
 })
