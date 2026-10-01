@@ -648,5 +648,324 @@
     "finalDesc": "Sin compromiso. Explora todo lo que incluye y decide con calma.",
     "finalCtaPrimary": "Iniciar prueba gratuita",
     "finalCtaSecondary": "Volver al inicio"
+  },
+  "Home": {
+    "meta": {
+      "title": "Bralto — Sistemas automatizados con IA que venden",
+      "description": "Construimos sistemas automatizados con IA integrada que captan clientes, los atienden, les dan seguimiento y miden cada peso que usted invierte."
+    },
+    "nav": {
+      "label": "Principal",
+      "home": "Bralto, inicio",
+      "links": {
+        "sistema": "Cómo funciona",
+        "casos": "Casos",
+        "plataforma": "Plataforma",
+        "faq": "Preguntas"
+      },
+      "cta": "Agendar diagnóstico",
+      "theme": "Modo claro",
+      "menu": "Menú",
+      "close": "Cerrar menú",
+      "language": "Idioma"
+    },
+    "hero": {
+      "eyebrow": "Automatización · Inteligencia Artificial · Sistemas a la medida",
+      "titleLight": "Un sitio web ya no es suficiente.",
+      "titleBold": "Su negocio necesita un sistema.",
+      "lead": "Construimos sistemas automatizados con IA integrada que captan clientes, los atienden, les dan seguimiento y miden cada peso que usted invierte.",
+      "ctaPrimary": "Agendar diagnóstico",
+      "ctaSecondary": "Ver cómo se construye un sistema",
+      "system": {
+        "label": "Ejemplo de un sistema trabajando",
+        "title": "Su sistema",
+        "live": "En vivo",
+        "events": [
+          {
+            "title": "Lead nuevo",
+            "detail": "Anuncio Meta → formulario",
+            "time": "ahora"
+          },
+          {
+            "title": "Agente IA respondió",
+            "detail": "WhatsApp · calificado",
+            "time": "+4 s"
+          },
+          {
+            "title": "Cita agendada",
+            "detail": "CRM → recordatorio programado",
+            "time": "+2 min"
+          },
+          {
+            "title": "Venta registrada",
+            "detail": "Evento enviado por CAPI",
+            "time": "día 3"
+          }
+        ]
+      }
+    },
+    "compare": {
+      "eyebrow": "2027",
+      "titleLight": "¿Qué necesita un negocio",
+      "titleBold": "para vender en 2027?",
+      "colBefore": "Lo que tienen casi todos",
+      "colAfter": "Lo que necesita en 2027",
+      "rows": [
+        {
+          "before": "Una página web bonita",
+          "after": "Un sitio conectado a un sistema que capta, rastrea y convierte"
+        },
+        {
+          "before": "Un formulario que llega a un correo",
+          "after": "Captación de leads directo a un CRM, con seguimiento automático"
+        },
+        {
+          "before": "Responder WhatsApp cuando se puede",
+          "after": "Agentes de IA que responden en segundos, 24/7, en todos los canales"
+        },
+        {
+          "before": "Anuncios con el pixel básico",
+          "after": "Ads avanzados con API de Conversiones (CAPI) y datos reales de venta"
+        },
+        {
+          "before": "“Creo que los anuncios funcionan”",
+          "after": "Tracking de cada lead: de qué anuncio vino, qué hizo y si compró"
+        },
+        {
+          "before": "Excel y notas para dar seguimiento",
+          "after": "CRM nativo con pipeline, tareas y recordatorios automáticos"
+        },
+        {
+          "before": "No saber por qué la gente no compra",
+          "after": "Mapas de calor y grabaciones que muestran dónde se van"
+        },
+        {
+          "before": "Cotizar a mano, uno por uno",
+          "after": "Cotizadores y procesos automatizados que trabajan solos"
+        }
+      ],
+      "closingLight": "La diferencia no está en tener más herramientas.",
+      "closingBold": "Está en que todo hable entre sí."
+    },
+    "system": {
+      "eyebrow": "Cómo funciona",
+      "titleLight": "Su sitio web es solo la puerta.",
+      "titleBold": "Esto es lo que va detrás.",
+      "hubLabel": "La puerta",
+      "hubTitle": "Su sitio web",
+      "layers": [
+        {
+          "title": "Atraer",
+          "body": "Ads en Meta y Google con CAPI, píxeles y eventos configurados para que el algoritmo aprenda de ventas reales, no de clics."
+        },
+        {
+          "title": "Captar",
+          "body": "Sitio, landing pages, formularios y chats que convierten visitas en contactos, sin perder ninguno."
+        },
+        {
+          "title": "Atender",
+          "body": "Agentes de IA en WhatsApp, Instagram, web y correo que responden, califican y agendan al instante."
+        },
+        {
+          "title": "Dar seguimiento",
+          "body": "CRM conectado con automatizaciones: mensajes, recordatorios y tareas que salen solos en el momento correcto."
+        },
+        {
+          "title": "Medir",
+          "body": "Tracking del origen de cada lead, mapas de calor y reportes en tiempo real. Usted sabe exactamente qué funciona."
+        },
+        {
+          "title": "Optimizar",
+          "body": "Con datos reales, mejoramos anuncios, mensajes y procesos cada mes."
+        }
+      ],
+      "closingLight": "Eso es lo que construimos.",
+      "closingBold": "No páginas web: sistemas que venden."
+    },
+    "cases": {
+      "eyebrow": "Casos reales",
+      "titleLight": "Sistemas que ya están",
+      "titleBold": "funcionando.",
+      "before": "Antes",
+      "built": "Construimos",
+      "result": "Resultado",
+      "items": [
+        {
+          "name": "Quickhire Solutions",
+          "tag": "Staffing",
+          "before": "[Pendiente: el problema en una línea]",
+          "built": "Portal de dos lados + reclutador con IA",
+          "result": "[Dato real]"
+        },
+        {
+          "name": "Hidasol",
+          "tag": "Atención",
+          "before": "[Pendiente: el problema en una línea]",
+          "built": "Agente de IA en WhatsApp",
+          "result": "[Dato real]"
+        },
+        {
+          "name": "REVA",
+          "tag": "Retail",
+          "before": "[Pendiente]",
+          "built": "[Pendiente]",
+          "result": "[Dato real]"
+        },
+        {
+          "name": "Instituto Cosvic",
+          "tag": "Educación",
+          "before": "[Pendiente]",
+          "built": "[Pendiente]",
+          "result": "[Dato real]"
+        }
+      ]
+    },
+    "platform": {
+      "eyebrow": "Plataforma",
+      "titleLight": "Su sistema es a la medida.",
+      "titleBold": "La plataforma también es suya.",
+      "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones de WhatsApp, Instagram y correo, pipeline de ventas, automatizaciones, agenda, pagos y reportes. Una sola plataforma que reemplaza todas las herramientas que hoy paga por separado.",
+      "features": [
+        "CRM",
+        "Multicanal",
+        "Pipeline",
+        "Automatizaciones",
+        "Agenda",
+        "Pagos",
+        "Reportes",
+        "App móvil"
+      ],
+      "tools": [
+        {
+          "name": "HubSpot",
+          "price": "$800+/mes"
+        },
+        {
+          "name": "Mailchimp",
+          "price": "$350/mes"
+        },
+        {
+          "name": "ClickFunnels",
+          "price": "$297/mes"
+        },
+        {
+          "name": "Twilio / SMS",
+          "price": "$200+/mes"
+        },
+        {
+          "name": "Kajabi",
+          "price": "$149/mes"
+        },
+        {
+          "name": "ManyChat",
+          "price": "$145/mes"
+        },
+        {
+          "name": "Stripe + integraciones",
+          "price": "$120+/mes"
+        },
+        {
+          "name": "Typeform",
+          "price": "$59/mes"
+        },
+        {
+          "name": "Wix",
+          "price": "$39/mes"
+        },
+        {
+          "name": "Calendly",
+          "price": "$16/mes"
+        }
+      ],
+      "separately": "Por separado: $2,000+/mes",
+      "included": "Incluido en su sistema"
+    },
+    "offer": {
+      "eyebrow": "Inversión",
+      "titleLight": "Su sistema,",
+      "titleBold": "construido a la medida.",
+      "from": "Proyectos desde",
+      "price": "$3,500",
+      "currency": "USD",
+      "financing": "Financiamiento disponible",
+      "includes": [
+        "Diagnóstico",
+        "Diseño",
+        "Sitio web",
+        "CRM",
+        "Agentes de IA",
+        "Automatizaciones",
+        "Tracking",
+        "Ads con CAPI",
+        "Su plataforma"
+      ],
+      "cta": "Agendar diagnóstico",
+      "communityQuestion": "¿Prefiere aprender a construirlo usted mismo?",
+      "communityLink": "Conozca la comunidad"
+    },
+    "guarantee": {
+      "title": "Sin riesgo de su lado.",
+      "body": "Si en el primer mes después de activar el sistema no genera leads calificados que cubran su mensualidad, seguimos trabajando sin costo hasta lograrlo."
+    },
+    "testimonials": {
+      "eyebrow": "Clientes",
+      "titleLight": "En palabras de",
+      "titleBold": "nuestros clientes.",
+      "videoPlaceholder": "[Video testimonial real]",
+      "playLabel": "Reproducir video testimonial",
+      "quotes": [
+        {
+          "text": "“[Testimonio real, con nombre y negocio.]”",
+          "author": "[Nombre]",
+          "role": "[Cargo, Negocio]"
+        }
+      ]
+    },
+    "faq": {
+      "eyebrow": "Preguntas frecuentes",
+      "titleLight": "Lo que",
+      "titleBold": "necesita saber.",
+      "items": [
+        {
+          "q": "¿En qué se diferencia esto de una página web normal?",
+          "a": "Una página web solo muestra información. Un sistema capta al cliente, le responde, le da seguimiento y mide si compró. La página web es una pieza más del sistema."
+        },
+        {
+          "q": "¿Tengo que saber de tecnología para usarlo?",
+          "a": "No. Le entregamos todo funcionando y su equipo lo maneja desde una sola plataforma, también desde el celular. Le enseñamos a usarla."
+        },
+        {
+          "q": "¿La IA va a responder bien a mis clientes?",
+          "a": "El agente se entrena con la información de su negocio: servicios, precios, horarios y preguntas frecuentes. Cuando algo se sale de lo que sabe, pasa la conversación a una persona de su equipo."
+        },
+        {
+          "q": "¿Cuánto tarda en estar funcionando?",
+          "a": "Depende del alcance. Después del diagnóstico le damos un plazo exacto por escrito."
+        },
+        {
+          "q": "¿Qué pasa si ya tengo página web o CRM?",
+          "a": "Revisamos lo que ya tiene. Si sirve, lo conectamos al sistema; si no, migramos su información a la nueva plataforma."
+        },
+        {
+          "q": "¿Cuánto cuesta?",
+          "a": "Los proyectos empiezan desde $3,500 USD, con opción de financiamiento. El precio final depende del alcance y se define en el diagnóstico."
+        }
+      ]
+    },
+    "finalCta": {
+      "eyebrow": "Diagnóstico gratuito",
+      "titleLight": "Cada mes con una página web sola es",
+      "titleBold": "un mes de clientes perdidos.",
+      "lead": "En 30 minutos le mostramos cómo se vería el sistema de su negocio.",
+      "cta": "Agendar diagnóstico gratuito",
+      "note": "30 minutos · Sin compromiso · Sin costo"
+    },
+    "footer": {
+      "tagline": "Infraestructura digital para negocios",
+      "copyright": "© {year} Bralto",
+      "services": "Servicios",
+      "company": "Empresa"
+    },
+    "pending": "Pendiente · se oculta en producción"
   }
 }

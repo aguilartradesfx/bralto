@@ -648,5 +648,324 @@
     "finalDesc": "No commitment. Explore everything it includes and decide at your own pace.",
     "finalCtaPrimary": "Start free trial",
     "finalCtaSecondary": "Back to home"
+  },
+  "Home": {
+    "meta": {
+      "title": "Bralto — AI-powered automated systems that sell",
+      "description": "We build automated systems with built-in AI that attract customers, respond to them, follow up with them, and measure every dollar you invest."
+    },
+    "nav": {
+      "label": "Main",
+      "home": "Bralto, home",
+      "links": {
+        "sistema": "How it works",
+        "casos": "Case studies",
+        "plataforma": "Platform",
+        "faq": "FAQ"
+      },
+      "cta": "Book a diagnostic call",
+      "theme": "Light mode",
+      "menu": "Menu",
+      "close": "Close menu",
+      "language": "Language"
+    },
+    "hero": {
+      "eyebrow": "Automation · Artificial Intelligence · Custom-built systems",
+      "titleLight": "A website is no longer enough.",
+      "titleBold": "Your business needs a system.",
+      "lead": "We build automated systems with built-in AI that attract customers, respond to them, follow up with them, and measure every dollar you invest.",
+      "ctaPrimary": "Book a diagnostic call",
+      "ctaSecondary": "See how a system is built",
+      "system": {
+        "label": "Example of a system at work",
+        "title": "Your system",
+        "live": "Live",
+        "events": [
+          {
+            "title": "New lead",
+            "detail": "Meta ad → form",
+            "time": "now"
+          },
+          {
+            "title": "AI agent replied",
+            "detail": "WhatsApp · qualified",
+            "time": "+4 s"
+          },
+          {
+            "title": "Appointment booked",
+            "detail": "CRM → reminder scheduled",
+            "time": "+2 min"
+          },
+          {
+            "title": "Sale recorded",
+            "detail": "Event sent via CAPI",
+            "time": "day 3"
+          }
+        ]
+      }
+    },
+    "compare": {
+      "eyebrow": "2027",
+      "titleLight": "What does a business need",
+      "titleBold": "to sell in 2027?",
+      "colBefore": "What almost everyone has",
+      "colAfter": "What you need in 2027",
+      "rows": [
+        {
+          "before": "A nice-looking website",
+          "after": "A website connected to a system that captures, tracks, and converts"
+        },
+        {
+          "before": "A form that lands in an inbox",
+          "after": "Lead capture straight into a CRM, with automatic follow-up"
+        },
+        {
+          "before": "Answering WhatsApp when you can",
+          "after": "AI agents that reply in seconds, 24/7, on every channel"
+        },
+        {
+          "before": "Ads with the basic pixel",
+          "after": "Advanced ads with the Conversions API (CAPI) and real sales data"
+        },
+        {
+          "before": "“I think the ads are working”",
+          "after": "Tracking for every lead: which ad it came from, what it did, and whether it bought"
+        },
+        {
+          "before": "Spreadsheets and notes for follow-up",
+          "after": "A native CRM with a pipeline, tasks, and automatic reminders"
+        },
+        {
+          "before": "Not knowing why people don't buy",
+          "after": "Heatmaps and recordings that show where they drop off"
+        },
+        {
+          "before": "Quoting by hand, one at a time",
+          "after": "Quote builders and automated processes that run on their own"
+        }
+      ],
+      "closingLight": "The difference isn't having more tools.",
+      "closingBold": "It's everything talking to each other."
+    },
+    "system": {
+      "eyebrow": "How it works",
+      "titleLight": "Your website is just the door.",
+      "titleBold": "This is what goes behind it.",
+      "hubLabel": "The door",
+      "hubTitle": "Your website",
+      "layers": [
+        {
+          "title": "Attract",
+          "body": "Meta and Google ads with CAPI, pixels, and events set up so the algorithm learns from real sales, not clicks."
+        },
+        {
+          "title": "Capture",
+          "body": "Website, landing pages, forms, and chats that turn visits into contacts without losing a single one."
+        },
+        {
+          "title": "Respond",
+          "body": "AI agents on WhatsApp, Instagram, web, and email that reply, qualify, and book appointments instantly."
+        },
+        {
+          "title": "Follow up",
+          "body": "A CRM connected to automations: messages, reminders, and tasks that go out on their own at the right moment."
+        },
+        {
+          "title": "Measure",
+          "body": "Tracking of every lead's source, heatmaps, and real-time reports. You know exactly what works."
+        },
+        {
+          "title": "Optimize",
+          "body": "With real data, we improve ads, messages, and processes every month."
+        }
+      ],
+      "closingLight": "That's what we build.",
+      "closingBold": "Not websites: systems that sell."
+    },
+    "cases": {
+      "eyebrow": "Case studies",
+      "titleLight": "Systems that are already",
+      "titleBold": "working.",
+      "before": "Before",
+      "built": "What we built",
+      "result": "Result",
+      "items": [
+        {
+          "name": "Quickhire Solutions",
+          "tag": "Staffing",
+          "before": "[Pending: the problem in one line]",
+          "built": "Two-sided portal + AI recruiter",
+          "result": "[Real figure]"
+        },
+        {
+          "name": "Hidasol",
+          "tag": "Customer service",
+          "before": "[Pending: the problem in one line]",
+          "built": "WhatsApp AI agent",
+          "result": "[Real figure]"
+        },
+        {
+          "name": "REVA",
+          "tag": "Retail",
+          "before": "[Pending]",
+          "built": "[Pending]",
+          "result": "[Real figure]"
+        },
+        {
+          "name": "Instituto Cosvic",
+          "tag": "Education",
+          "before": "[Pending]",
+          "built": "[Pending]",
+          "result": "[Real figure]"
+        }
+      ]
+    },
+    "platform": {
+      "eyebrow": "Platform",
+      "titleLight": "Your system is custom-built.",
+      "titleBold": "The platform is yours too.",
+      "lead": "Everything we build lives on your own platform: CRM, WhatsApp, Instagram, and email conversations, sales pipeline, automations, scheduling, payments, and reports. One platform that replaces all the tools you pay for separately today.",
+      "features": [
+        "CRM",
+        "Omnichannel",
+        "Pipeline",
+        "Automations",
+        "Scheduling",
+        "Payments",
+        "Reports",
+        "Mobile app"
+      ],
+      "tools": [
+        {
+          "name": "HubSpot",
+          "price": "$800+/mo"
+        },
+        {
+          "name": "Mailchimp",
+          "price": "$350/mo"
+        },
+        {
+          "name": "ClickFunnels",
+          "price": "$297/mo"
+        },
+        {
+          "name": "Twilio / SMS",
+          "price": "$200+/mo"
+        },
+        {
+          "name": "Kajabi",
+          "price": "$149/mo"
+        },
+        {
+          "name": "ManyChat",
+          "price": "$145/mo"
+        },
+        {
+          "name": "Stripe + integrations",
+          "price": "$120+/mo"
+        },
+        {
+          "name": "Typeform",
+          "price": "$59/mo"
+        },
+        {
+          "name": "Wix",
+          "price": "$39/mo"
+        },
+        {
+          "name": "Calendly",
+          "price": "$16/mo"
+        }
+      ],
+      "separately": "Separately: $2,000+/mo",
+      "included": "Included in your system"
+    },
+    "offer": {
+      "eyebrow": "Investment",
+      "titleLight": "Your system,",
+      "titleBold": "custom-built.",
+      "from": "Projects from",
+      "price": "$3,500",
+      "currency": "USD",
+      "financing": "Financing available",
+      "includes": [
+        "Diagnosis",
+        "Design",
+        "Website",
+        "CRM",
+        "AI agents",
+        "Automations",
+        "Tracking",
+        "Ads with CAPI",
+        "Your platform"
+      ],
+      "cta": "Book a diagnostic call",
+      "communityQuestion": "Would you rather learn to build it yourself?",
+      "communityLink": "Explore the community"
+    },
+    "guarantee": {
+      "title": "No risk on your side.",
+      "body": "If, in the first month after the system goes live, it doesn't generate qualified leads that cover your monthly fee, we keep working at no cost until it does."
+    },
+    "testimonials": {
+      "eyebrow": "Clients",
+      "titleLight": "In the words of",
+      "titleBold": "our clients.",
+      "videoPlaceholder": "[Real video testimonial]",
+      "playLabel": "Play video testimonial",
+      "quotes": [
+        {
+          "text": "“[Real testimonial, with name and business.]”",
+          "author": "[Name]",
+          "role": "[Title, Business]"
+        }
+      ]
+    },
+    "faq": {
+      "eyebrow": "Frequently asked questions",
+      "titleLight": "What you",
+      "titleBold": "need to know.",
+      "items": [
+        {
+          "q": "How is this different from a regular website?",
+          "a": "A website only displays information. A system captures the customer, responds to them, follows up, and measures whether they bought. The website is just one piece of the system."
+        },
+        {
+          "q": "Do I need to know about technology to use it?",
+          "a": "No. We hand everything over up and running, and your team manages it from a single platform, including from their phones. We will teach you how to use it."
+        },
+        {
+          "q": "Will the AI respond well to my customers?",
+          "a": "The agent is trained on your business information: services, prices, hours, and frequently asked questions. When something falls outside what it knows, it hands the conversation to someone on your team."
+        },
+        {
+          "q": "How long does it take to be up and running?",
+          "a": "It depends on the scope. After the diagnosis, we give you an exact timeline in writing."
+        },
+        {
+          "q": "What if I already have a website or a CRM?",
+          "a": "We review what you already have. If it works, we connect it to the system; if not, we migrate your information to the new platform."
+        },
+        {
+          "q": "How much does it cost?",
+          "a": "Projects start at $3,500 USD, with financing available. The final price depends on the scope and is defined during the diagnosis."
+        }
+      ]
+    },
+    "finalCta": {
+      "eyebrow": "Free diagnostic call",
+      "titleLight": "Every month with just a website is",
+      "titleBold": "a month of lost customers.",
+      "lead": "In 30 minutes, we'll show you what your business's system would look like.",
+      "cta": "Book a free diagnostic call",
+      "note": "30 minutes · No commitment · Free of charge"
+    },
+    "footer": {
+      "tagline": "Digital infrastructure for businesses",
+      "copyright": "© {year} Bralto",
+      "services": "Services",
+      "company": "Company"
+    },
+    "pending": "Pending · hidden in production"
   }
 }
