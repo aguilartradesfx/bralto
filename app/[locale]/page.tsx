@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { HomePage } from '@/components/home/home-page'
 
 type Props = { params: Promise<{ locale: string }> }
@@ -7,6 +7,11 @@ type Props = { params: Promise<{ locale: string }> }
 const BASE_URL = 'https://bralto.io'
 
 const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
+
+// Prerenderizado estático: HTML desde el caché y metadata en el <head> para cualquier visitante
+export function generateStaticParams() {
+  return [{ locale: 'es' }, { locale: 'en' }]
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).locale)
@@ -35,5 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Home({ params }: Props) {
-  return <HomePage locale={toLocale((await params).locale)} />
+  const locale = toLocale((await params).locale)
+  setRequestLocale(locale)
+  return <HomePage locale={locale} />
 }

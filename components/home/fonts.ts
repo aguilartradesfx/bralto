@@ -7,8 +7,10 @@ export const sora = Sora({
   display: 'swap',
 })
 
+// Solo etiquetas chicas: sin preload, para no competir con Sora (la fuente del LCP)
 export const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jbmono',
   display: 'swap',
+  preload: false,
 })

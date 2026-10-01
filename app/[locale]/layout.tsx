@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
@@ -105,7 +105,11 @@ export default async function LocaleLayout({ children, params }: Props) {
     notFound()
   }
 
-  const messages = await getMessages()
+  setRequestLocale(locale)
+
+  // El home se renderiza en el servidor: sus textos (incluidos los placeholders
+  // pendientes) no necesitan viajar al cliente
+  const { Home: _serverOnly, ...messages } = await getMessages()
 
   return (
     <>
