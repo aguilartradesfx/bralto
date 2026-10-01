@@ -39,7 +39,7 @@ const NON_LOCALE_PREFIXES = [
   '/payment-info',
 ]
 
-const PERMISSION_COLUMNS = 'is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
+const PERMISSION_COLUMNS = 'is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals, can_view_tasks'
 
 // Session + section permission check for panel routes
 async function guardPanel(request: NextRequest): Promise<NextResponse> {

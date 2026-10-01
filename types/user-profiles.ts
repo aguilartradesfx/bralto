@@ -9,6 +9,7 @@ export interface UserProfile {
   can_manage_clients: boolean
   can_submit_proposals: boolean
   can_view_proposals: boolean
+  can_view_tasks: boolean
   created_at: string
   updated_at: string
   // Joined from auth.users
@@ -29,4 +30,5 @@ export const PERMISSION_LABELS: Record<keyof Omit<UserProfile, 'id' | 'full_name
   can_manage_clients:   'Administrar clientes',
   can_submit_proposals: 'Enviar solicitudes',
   can_view_proposals:   'Ver propuestas',
+  can_view_tasks:       'Ver tareas',
 }

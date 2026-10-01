@@ -6,6 +6,7 @@ export type PanelPermission =
   | 'can_view_clients'
   | 'can_submit_proposals'
   | 'can_view_proposals'
+  | 'can_view_tasks'
 
 // Permiso requerido por sección del panel. /admin (inicio) y /login solo requieren sesión.
 const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
@@ -14,6 +15,7 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
   ['/solicitudes', 'can_submit_proposals'],
   ['/propuestas', 'can_view_proposals'],
   ['/usuarios', 'is_admin'],
+  ['/tareas', 'can_view_tasks'],
 ]
 
 export function requiredPermission(pathname: string): PanelPermission | null {
