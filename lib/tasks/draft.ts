@@ -37,15 +37,22 @@ export function normalizeDraft(raw: TaskDraft): TaskDraft {
   }
 }
 
-export const TaskInputSchema = z.object({
+const taskFields = {
   title: z.string().trim().min(1, 'El título es obligatorio').max(200, 'El título es demasiado largo'),
-  description: z.string().max(10000, 'La descripción es demasiado larga').default(''),
-  checklist: z.array(z.union([z.string(), z.object({ text: z.string(), done: z.boolean().optional() })])).max(30).default([]),
+  description: z.string().max(10000, 'La descripción es demasiado larga'),
+  checklist: z.array(z.union([z.string(), z.object({ text: z.string(), done: z.boolean().optional() })])).max(30),
   priority: z.enum(TASK_PRIORITIES, { message: 'Prioridad inválida' }),
   assignee_id: z.uuid({ message: 'Responsable inválido' }).nullable(),
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida (AAAA-MM-DD)').nullable(),
+}
+
+export const TaskInputSchema = z.object({
+  ...taskFields,
+  description: taskFields.description.default(''),
+  checklist: taskFields.checklist.default([]),
 })
 
-export const TaskPatchSchema = TaskInputSchema.partial()
+// Sin defaults: en Zod 4 un default dentro de .partial() rellenaría campos que el PATCH no envió
+export const TaskPatchSchema = z.object(taskFields).partial()
 
 export type TaskInput = z.infer<typeof TaskInputSchema>

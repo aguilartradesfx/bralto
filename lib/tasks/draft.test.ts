@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { normalizeChecklist, normalizeDraft, TaskInputSchema } from './draft.ts'
+import { normalizeChecklist, normalizeDraft, TaskInputSchema, TaskPatchSchema } from './draft.ts'
 
 const VALID = {
   title: 'Diseñar 4 piezas para octubre',
@@ -46,4 +46,9 @@ test('TaskInputSchema: rechaza título vacío, fecha mal formada y prioridad inv
   assert.equal(TaskInputSchema.safeParse({ ...VALID, due_date: '09/10/2026' }).success, false)
   assert.equal(TaskInputSchema.safeParse({ ...VALID, priority: 'max' }).success, false)
   assert.equal(TaskInputSchema.safeParse({ ...VALID, assignee_id: 'ana' }).success, false)
+})
+
+test('TaskPatchSchema: un cambio parcial no rellena los demás campos', () => {
+  assert.deepEqual(TaskPatchSchema.parse({ priority: 'alta' }), { priority: 'alta' })
+  assert.deepEqual(TaskPatchSchema.parse({ assignee_id: null }), { assignee_id: null })
 })
