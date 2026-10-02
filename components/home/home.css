@@ -831,6 +831,11 @@ html:has(.hm) [data-cookie-accept] {
   gap: 12px;
 }
 
+/* Renglones parejos: sin una última línea de dos palabras */
+.hm-hero__row .hm-lead {
+  text-wrap: balance;
+}
+
 @media (min-width: 1024px) {
   .hm-hero__l1,
   .hm-hero__l2 {
