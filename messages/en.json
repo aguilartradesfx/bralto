@@ -652,7 +652,7 @@
   "Home": {
     "meta": {
       "title": "Bralto — AI-powered automated systems that sell",
-      "description": "We build custom systems that automate your entire operation: sales, customer service, administration, and everything that's done by hand today."
+      "description": "We build and integrate custom intelligent systems that automate your entire commercial operation."
     },
     "nav": {
       "label": "Main",
@@ -673,7 +673,7 @@
       "eyebrow": "Automation · Artificial Intelligence · Custom-built systems",
       "titleLight": "A website is no longer enough.",
       "titleBold": "Your business needs a system.",
-      "lead": "We build custom systems that automate your entire operation: sales, customer service, administration, and everything that's done by hand today. There are AI agents ready to work for you.",
+      "lead": "We build and integrate custom intelligent systems that automate your entire commercial operation.",
       "ctaPrimary": "Book a diagnostic call",
       "ctaSecondary": "See how a system is built",
       "system": {

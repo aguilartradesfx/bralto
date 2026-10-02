@@ -50,7 +50,7 @@ Reemplazar el home de `/es` y `/en` por el copy aprobado y un estilo liquid glas
 ## Copy abierto (no se cambia sin aprobación)
 
 - La garantía menciona "su mensualidad", pero la página no menciona ninguna mensualidad.
-- ~~"Cada peso que usted invierte"~~ Resuelto el 2026-10-02: Alejandro aprobó un subtítulo nuevo para el hero ("Construimos sistemas a la medida que automatizan toda su operación… Hay agentes de IA listos para trabajar por usted."), que se usa también en la meta description (solo la primera oración).
+- ~~"Cada peso que usted invierte"~~ Resuelto el 2026-10-02: el subtítulo del hero pasa a ser "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial." (definido por Alejandro). La meta description usa la misma frase.
 - URL de la comunidad (hoy `#`; el link se oculta hasta tenerla).
 - Respuestas de la FAQ marcadas como borrador en el HTML.
 - Title y meta description nuevos (propuestos en `messages/*.json`, `Home.meta`).
