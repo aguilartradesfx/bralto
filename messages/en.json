@@ -1033,6 +1033,23 @@
       "cta": "Book a diagnostic call",
       "note": "$97 USD · Deducted from the project if you hire us"
     },
+    "servicePage": {
+      "eyebrow": "Service",
+      "cta": "Book a diagnostic call",
+      "all": "View all services",
+      "featuresEyebrow": "What's included",
+      "featuresLight": "Everything included.",
+      "featuresBold": "No surprises.",
+      "processEyebrow": "How we work",
+      "processLight": "Simple and",
+      "processBold": "straightforward.",
+      "faqEyebrow": "FAQ",
+      "faqLight": "Everything you",
+      "faqBold": "want to know.",
+      "related": "Other services",
+      "example": "Example view",
+      "illustrative": "Illustrative figures"
+    },
     "footer": {
       "tagline": "Digital infrastructure for businesses",
       "copyright": "© {year} Bralto",

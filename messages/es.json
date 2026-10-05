@@ -1033,6 +1033,23 @@
       "cta": "Agendar diagnóstico",
       "note": "$97 USD · Se descuenta del proyecto si decide contratar"
     },
+    "servicePage": {
+      "eyebrow": "Servicio",
+      "cta": "Agendar diagnóstico",
+      "all": "Ver todos los servicios",
+      "featuresEyebrow": "Qué incluye",
+      "featuresLight": "Todo incluido.",
+      "featuresBold": "Sin sorpresas.",
+      "processEyebrow": "Cómo trabajamos",
+      "processLight": "Simple y",
+      "processBold": "sin vueltas.",
+      "faqEyebrow": "Preguntas frecuentes",
+      "faqLight": "Todo lo que",
+      "faqBold": "quería saber.",
+      "related": "Otros servicios",
+      "example": "Vista de ejemplo",
+      "illustrative": "Cifras ilustrativas"
+    },
     "footer": {
       "tagline": "Infraestructura digital para negocios",
       "copyright": "© {year} Bralto",

@@ -6,10 +6,8 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Arrow } from './icons'
 import type { Locale } from './primitives'
+import { serviceHref, type MegaGroup } from './services'
 import { ThemeToggle } from './theme-toggle'
-
-export type MegaItem = { key: string; label: string; desc: string }
-export type MegaGroup = { heading: string; items: MegaItem[] }
 
 export type NavLabels = {
   nav: string
@@ -34,22 +32,8 @@ export type NavLabels = {
 
 type Props = { locale: Locale; logo: ReactNode; groups: MegaGroup[]; labels: NavLabels }
 
-const SERVICE_PATHS: Record<string, string> = {
-  sitiosWeb: '/servicios/sitios-web',
-  produccionContenido: '/servicios/produccion-contenido',
-  campanas: '/servicios/campanas',
-  asesoria: '/servicios/asesoria',
-  automatizacion: '/servicios/automatizacion',
-  sistemasInternos: '/servicios/sistemas-internos',
-}
-const FUNNELLAB_URL = 'https://funnellabs.bralto.io'
-
 // Flujos donde el nav no debe distraer: sin links ni megamenú
 const FOCUS_PATHS = ['/agendar', '/confirmacion', '/listo']
-
-function serviceHref(locale: Locale, key: string) {
-  return key === 'funnelLab' ? FUNNELLAB_URL : `/${locale}${SERVICE_PATHS[key] ?? '/precios'}`
-}
 
 function LangSwitch({ locale, label, pathname }: { locale: Locale; label: string; pathname: string }) {
   const rest = pathname.replace(/^\/(es|en)(?=\/|$)/, '')
