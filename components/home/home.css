@@ -160,11 +160,6 @@ html:has(.hm[data-theme='light']) body {
   background-color: #e8e8e8;
 }
 
-/* Las capas atmosféricas globales (cian/ámbar) no van en el home monocromo */
-html:has(.hm) .atmo-ambient,
-html:has(.hm) .atmo-grid {
-  display: none;
-}
 
 /* Banner de cookies (global): dentro del home pierde el cian y queda monocromo */
 html:has(.hm) [data-cookie-icon] {
@@ -1086,6 +1081,70 @@ html:has(.hm) [data-cookie-accept] {
   border-radius: var(--r-xl);
 }
 
+/* Grupos (captar y vender / organizar y gestionar): etiqueta dentro de la placa */
+.hm-compare__group {
+  position: relative;
+}
+
+.hm-compare__group + .hm-compare__group {
+  margin-top: 8px;
+}
+
+.hm-compare__group + .hm-compare__group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 1px;
+  background: var(--rule-2);
+}
+
+.hm-compare__label {
+  position: relative;
+  margin: 0;
+  padding: 22px 22px 2px;
+  font: 500 10.5px/1.3 var(--font-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.hm-compare__label span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hm-compare__label span::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--rule-2);
+}
+
+@media (min-width: 900px) {
+  .hm-compare__label {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    padding: 16px 0 0;
+  }
+
+  .hm-compare__label span {
+    grid-column: 2;
+    padding-left: 48px;
+  }
+
+  .hm-compare__group + .hm-compare__group {
+    margin-top: 14px;
+  }
+
+  .hm-compare__group + .hm-compare__group::before {
+    left: calc(40% + 48px);
+    right: 40px;
+  }
+}
+
 .hm-compare__rows {
   position: relative;
   margin: 0;
@@ -1207,7 +1266,7 @@ html:has(.hm) [data-cookie-accept] {
     font-size: 16.5px;
   }
 
-  .hm-compare__row:last-child .hm-compare__after {
+  .hm-compare__group:last-child .hm-compare__row:last-child .hm-compare__after {
     padding-bottom: 30px;
   }
 }
@@ -1412,31 +1471,61 @@ html:has(.hm) [data-cookie-accept] {
 }
 
 /* ---------- Casos ---------- */
+.hm-cases__head {
+  display: grid;
+  gap: 24px;
+  align-items: end;
+}
+
 .hm-cases {
   display: grid;
   gap: 12px;
-  margin: clamp(52px, 6vw, 76px) 0 0;
+  margin: clamp(44px, 5vw, 64px) 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* Toda la fila es un link a la página del caso */
 .hm-case {
   display: grid;
-  gap: 22px;
-  padding: 26px 26px 24px;
+  gap: 18px;
+  padding: 12px 12px 18px;
   border-radius: var(--r-lg);
+  color: inherit;
+  transition: transform .4s var(--ease);
 }
 
-.hm-case__id h3 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -.02em;
+.hm-case:hover {
+  transform: translateY(-2px);
+}
+
+.hm-case__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--inset-fill);
+  box-shadow: inset 0 0 0 1px var(--inset-edge);
+}
+
+.hm-case__media img {
+  object-fit: cover;
+  transition: transform .8s var(--ease);
+}
+
+.hm-case:hover .hm-case__media img {
+  transform: scale(1.04);
+}
+
+.hm-case__body {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 0 8px;
 }
 
 .hm-case__tag {
-  display: inline-block;
-  margin-top: 10px;
+  justify-self: start;
   padding: 6px 10px;
   border-radius: var(--r-pill);
   box-shadow: inset 0 0 0 1px var(--rule-2);
@@ -1446,66 +1535,107 @@ html:has(.hm) [data-cookie-accept] {
   color: var(--ink-3);
 }
 
-.hm-case__facts {
-  display: grid;
-  gap: 8px 20px;
+.hm-case h3 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.hm-case p {
   margin: 0;
-}
-
-.hm-case__facts dt {
-  font: 500 10.5px/1.6 var(--font-mono);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.hm-case__facts dd {
-  margin: 0 0 6px;
+  max-width: 52ch;
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--ink-2);
 }
 
-.hm-case__result {
-  display: grid;
-  gap: 6px;
-  align-content: end;
-  padding-top: 18px;
-  border-top: 1px solid var(--rule);
-}
-
-.hm-case__result strong {
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 300;
-  letter-spacing: -.03em;
-}
-
-.hm-case__result > span {
-  font: 500 10.5px/1 var(--font-mono);
-  letter-spacing: .12em;
+.hm-case__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: var(--ink);
+}
+
+.hm-case:hover .hm-arrow {
+  transform: translateX(3px);
 }
 
 @media (min-width: 900px) {
+  .hm-cases__head {
+    grid-template-columns: 1fr auto;
+  }
+
   .hm-case {
-    grid-template-columns: 1.1fr 2fr 1fr;
-    align-items: start;
-    gap: 32px;
-    padding: 30px 32px;
+    grid-template-columns: 260px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 28px;
+    padding: 12px 32px 12px 12px;
   }
 
-  .hm-case__facts {
-    grid-template-columns: 112px 1fr;
+  .hm-case__media {
+    aspect-ratio: 16 / 10;
   }
 
-  .hm-case__result {
-    justify-items: end;
-    padding: 0 0 0 28px;
-    border-top: 0;
-    border-left: 1px solid var(--rule);
-    text-align: right;
+  .hm-case__body,
+  .hm-case__go {
+    padding: 0;
   }
+
+  /* /casos: filas grandes, con la imagen alternando de lado */
+  .hm-case--feature {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 40px;
+    padding: 14px 44px 14px 14px;
+  }
+
+  .hm-case--feature .hm-case__media {
+    grid-row: span 2;
+    aspect-ratio: 16 / 10;
+  }
+
+  .hm-case--feature .hm-case__body {
+    align-self: end;
+  }
+
+  .hm-case--feature .hm-case__go {
+    align-self: start;
+  }
+
+  .hm-case--feature h3 {
+    font-size: clamp(26px, 2.6vw, 34px);
+  }
+
+  .hm-cases--page li:nth-child(even) .hm-case--feature {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    padding: 14px 14px 14px 44px;
+  }
+
+  .hm-cases--page li:nth-child(even) .hm-case--feature .hm-case__media {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+.hm-cases--page {
+  gap: 16px;
+  margin-top: 0;
+}
+
+/* Encabezado de páginas interiores con el diseño nuevo (/casos) */
+.hm-hero--page {
+  padding-bottom: clamp(32px, 4vw, 56px);
+}
+
+.hm-page-title {
+  margin: 24px 0 20px;
+  font-size: clamp(40px, 5.6vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -.045em;
 }
 
 /* Placeholders visibles solo en dev/preview */

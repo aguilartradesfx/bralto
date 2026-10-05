@@ -716,38 +716,68 @@
       "titleBold": "para vender en 2027?",
       "colBefore": "Lo que tienen casi todos",
       "colAfter": "Lo que necesita en 2027",
-      "rows": [
+      "groups": [
         {
-          "before": "Una página web bonita",
-          "after": "Un sitio conectado a un sistema que capta, rastrea y convierte"
+          "label": "Captar y vender",
+          "rows": [
+            {
+              "before": "Una página web bonita",
+              "after": "Un sitio conectado a un sistema que capta, rastrea y convierte"
+            },
+            {
+              "before": "Un formulario que llega a un correo",
+              "after": "Captación de leads directo a un CRM, con seguimiento automático"
+            },
+            {
+              "before": "Responder WhatsApp cuando se puede",
+              "after": "Agentes de IA que responden en segundos, 24/7, en todos los canales"
+            },
+            {
+              "before": "Anuncios con el pixel básico",
+              "after": "Ads avanzados con API de Conversiones (CAPI) y datos reales de venta"
+            },
+            {
+              "before": "“Creo que los anuncios funcionan”",
+              "after": "Tracking de cada lead: de qué anuncio vino, qué hizo y si compró"
+            },
+            {
+              "before": "Excel y notas para dar seguimiento",
+              "after": "CRM nativo con pipeline, tareas y recordatorios automáticos"
+            },
+            {
+              "before": "No saber por qué la gente no compra",
+              "after": "Mapas de calor y grabaciones que muestran dónde se van"
+            },
+            {
+              "before": "Cotizar a mano, uno por uno",
+              "after": "Cotizadores y procesos automatizados que trabajan solos"
+            }
+          ]
         },
         {
-          "before": "Un formulario que llega a un correo",
-          "after": "Captación de leads directo a un CRM, con seguimiento automático"
-        },
-        {
-          "before": "Responder WhatsApp cuando se puede",
-          "after": "Agentes de IA que responden en segundos, 24/7, en todos los canales"
-        },
-        {
-          "before": "Anuncios con el pixel básico",
-          "after": "Ads avanzados con API de Conversiones (CAPI) y datos reales de venta"
-        },
-        {
-          "before": "“Creo que los anuncios funcionan”",
-          "after": "Tracking de cada lead: de qué anuncio vino, qué hizo y si compró"
-        },
-        {
-          "before": "Excel y notas para dar seguimiento",
-          "after": "CRM nativo con pipeline, tareas y recordatorios automáticos"
-        },
-        {
-          "before": "No saber por qué la gente no compra",
-          "after": "Mapas de calor y grabaciones que muestran dónde se van"
-        },
-        {
-          "before": "Cotizar a mano, uno por uno",
-          "after": "Cotizadores y procesos automatizados que trabajan solos"
+          "label": "Organizar y gestionar",
+          "rows": [
+            {
+              "before": "Procesos internos en Excel, papel y chats",
+              "after": "Paneles internos a la medida para organizar y gestionar toda la operación"
+            },
+            {
+              "before": "Cada quien con su archivo y su manera de trabajar",
+              "after": "Accesos por rol: cada persona ve y hace solo lo que le corresponde"
+            },
+            {
+              "before": "Tareas y aprobaciones que dependen de que alguien se acuerde",
+              "after": "Tareas, aprobaciones y documentos que avanzan solos con automatizaciones"
+            },
+            {
+              "before": "Clientes que escriben para preguntar cómo va lo suyo",
+              "after": "Un portal con usuario donde sus clientes ven el estado de lo suyo"
+            },
+            {
+              "before": "Reportes armados a mano a fin de mes",
+              "after": "Reportes de ventas y operación que se actualizan solos, en un solo panel"
+            }
+          ]
         }
       ],
       "closingLight": "La diferencia no está en tener más herramientas.",
@@ -773,58 +803,35 @@
           "body": "Agentes de IA en WhatsApp, Instagram, web y correo que responden, califican y agendan al instante."
         },
         {
-          "title": "Dar seguimiento",
-          "body": "CRM conectado con automatizaciones: mensajes, recordatorios y tareas que salen solos en el momento correcto."
+          "title": "Gestionar clientes",
+          "body": "CRM con el historial de cada cliente, su pipeline y un seguimiento que sale solo en el momento correcto."
         },
         {
-          "title": "Medir",
-          "body": "Tracking del origen de cada lead, mapas de calor y reportes en tiempo real. Usted sabe exactamente qué funciona."
+          "title": "Automatizar su operación",
+          "body": "Los procesos internos que hoy se hacen a mano: cotizaciones, aprobaciones, documentos y tareas del equipo."
         },
         {
-          "title": "Optimizar",
-          "body": "Con datos reales, mejoramos anuncios, mensajes y procesos cada mes."
+          "title": "Accesos a la medida",
+          "body": "Portales y logins con funciones específicas para sus clientes, su equipo o sus socios."
         }
       ],
       "closingLight": "Eso es lo que construimos.",
-      "closingBold": "No páginas web: sistemas que venden."
+      "closingBold": "No páginas web: sistemas que hacen funcionar su negocio."
     },
     "cases": {
       "eyebrow": "Casos reales",
       "titleLight": "Sistemas que ya están",
       "titleBold": "funcionando.",
-      "before": "Antes",
-      "built": "Construimos",
-      "result": "Resultado",
-      "items": [
-        {
-          "name": "Quickhire Solutions",
-          "tag": "Staffing",
-          "before": "[Pendiente: el problema en una línea]",
-          "built": "Portal de dos lados + reclutador con IA",
-          "result": "[Dato real]"
-        },
-        {
-          "name": "Hidasol",
-          "tag": "Atención",
-          "before": "[Pendiente: el problema en una línea]",
-          "built": "Agente de IA en WhatsApp",
-          "result": "[Dato real]"
-        },
-        {
-          "name": "REVA",
-          "tag": "Retail",
-          "before": "[Pendiente]",
-          "built": "[Pendiente]",
-          "result": "[Dato real]"
-        },
-        {
-          "name": "Instituto Cosvic",
-          "tag": "Educación",
-          "before": "[Pendiente]",
-          "built": "[Pendiente]",
-          "result": "[Dato real]"
-        }
-      ]
+      "view": "Ver caso",
+      "all": "Ver todos los casos"
+    },
+    "casesPage": {
+      "metaTitle": "Casos reales — Bralto",
+      "metaDescription": "Proyectos de Bralto funcionando: sitios web, agentes de IA, automatizaciones y sistemas a la medida para restaurantes, inmobiliarias, turismo y comercio.",
+      "eyebrow": "Casos reales",
+      "titleLight": "Sistemas que ya están",
+      "titleBold": "funcionando.",
+      "lead": "Elija un proyecto para ver qué construimos y cómo funciona."
     },
     "platform": {
       "eyebrow": "Plataforma",

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
+import Link from 'next/link'
 import type { Locale } from './primitives'
 import { ThemeToggle } from './theme-toggle'
 
@@ -11,9 +12,11 @@ type Props = {
   logo: ReactNode
   links: NavLink[]
   labels: { nav: string; home: string; cta: string; theme: string; menu: string; close: string; language: string }
+  // Ruta equivalente en el otro idioma ('' en el home, '/casos' en la página de casos)
+  languagePath?: string
 }
 
-function LangSwitch({ locale, label }: { locale: Locale; label: string }) {
+function LangSwitch({ locale, label, path }: { locale: Locale; label: string; path: string }) {
   return (
     <span className="hm-lang" role="group" aria-label={label}>
       {(['es', 'en'] as const).map((l) =>
@@ -22,7 +25,7 @@ function LangSwitch({ locale, label }: { locale: Locale; label: string }) {
             {l.toUpperCase()}
           </span>
         ) : (
-          <a key={l} href={`/${l}`} hrefLang={l} lang={l}>
+          <a key={l} href={`/${l}${path}`} hrefLang={l} lang={l}>
             {l.toUpperCase()}
           </a>
         ),
@@ -31,7 +34,7 @@ function LangSwitch({ locale, label }: { locale: Locale; label: string }) {
   )
 }
 
-export function HomeNav({ locale, logo, links, labels }: Props) {
+export function HomeNav({ locale, logo, links, labels, languagePath = '' }: Props) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -58,14 +61,14 @@ export function HomeNav({ locale, logo, links, labels }: Props) {
         <ul className="hm-nav__links">
           {links.map((l) => (
             <li key={l.href}>
-              <a className="hm-nav__link" href={l.href}>
+              <Link className="hm-nav__link" href={l.href}>
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
         <div className="hm-nav__right">
-          <LangSwitch locale={locale} label={labels.language} />
+          <LangSwitch locale={locale} label={labels.language} path={languagePath} />
           <ThemeToggle label={labels.theme} />
           <span className="hm-nav__cta">{cta}</span>
           <button
@@ -85,14 +88,14 @@ export function HomeNav({ locale, logo, links, labels }: Props) {
         <ul className="hm-menu__links">
           {links.map((l) => (
             <li key={l.href}>
-              <a href={l.href} onClick={() => setOpen(false)}>
+              <Link href={l.href} onClick={() => setOpen(false)}>
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
         <div className="hm-menu__foot">
-          <LangSwitch locale={locale} label={labels.language} />
+          <LangSwitch locale={locale} label={labels.language} path={languagePath} />
           {cta}
         </div>
       </div>

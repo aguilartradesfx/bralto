@@ -5,7 +5,8 @@ type Layer = { title: string; body: string }
 
 // Geometría del anillo (viewBox 1180 × 640): el sitio al centro y las 6 capas sobre una
 // elipse ancha (aprovecha el ancho de pantalla y entra completa en alto), en sentido
-// horario desde arriba a la izquierda. Optimizar vuelve a Atraer.
+// horario desde arriba a la izquierda: primero lo que da hacia afuera (atraer, captar,
+// atender) y después lo que va detrás de la puerta (clientes, operación, accesos).
 const CX = 590
 const CY = 320
 const RX = 440

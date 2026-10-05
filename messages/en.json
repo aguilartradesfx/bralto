@@ -716,38 +716,68 @@
       "titleBold": "to sell in 2027?",
       "colBefore": "What almost everyone has",
       "colAfter": "What you need in 2027",
-      "rows": [
+      "groups": [
         {
-          "before": "A nice-looking website",
-          "after": "A website connected to a system that captures, tracks, and converts"
+          "label": "Attract and sell",
+          "rows": [
+            {
+              "before": "A nice-looking website",
+              "after": "A website connected to a system that captures, tracks, and converts"
+            },
+            {
+              "before": "A form that lands in an inbox",
+              "after": "Lead capture straight into a CRM, with automatic follow-up"
+            },
+            {
+              "before": "Answering WhatsApp when you can",
+              "after": "AI agents that reply in seconds, 24/7, on every channel"
+            },
+            {
+              "before": "Ads with the basic pixel",
+              "after": "Advanced ads with the Conversions API (CAPI) and real sales data"
+            },
+            {
+              "before": "“I think the ads are working”",
+              "after": "Tracking for every lead: which ad it came from, what it did, and whether it bought"
+            },
+            {
+              "before": "Spreadsheets and notes for follow-up",
+              "after": "A native CRM with a pipeline, tasks, and automatic reminders"
+            },
+            {
+              "before": "Not knowing why people don't buy",
+              "after": "Heatmaps and recordings that show where they drop off"
+            },
+            {
+              "before": "Quoting by hand, one at a time",
+              "after": "Quote builders and automated processes that run on their own"
+            }
+          ]
         },
         {
-          "before": "A form that lands in an inbox",
-          "after": "Lead capture straight into a CRM, with automatic follow-up"
-        },
-        {
-          "before": "Answering WhatsApp when you can",
-          "after": "AI agents that reply in seconds, 24/7, on every channel"
-        },
-        {
-          "before": "Ads with the basic pixel",
-          "after": "Advanced ads with the Conversions API (CAPI) and real sales data"
-        },
-        {
-          "before": "“I think the ads are working”",
-          "after": "Tracking for every lead: which ad it came from, what it did, and whether it bought"
-        },
-        {
-          "before": "Spreadsheets and notes for follow-up",
-          "after": "A native CRM with a pipeline, tasks, and automatic reminders"
-        },
-        {
-          "before": "Not knowing why people don't buy",
-          "after": "Heatmaps and recordings that show where they drop off"
-        },
-        {
-          "before": "Quoting by hand, one at a time",
-          "after": "Quote builders and automated processes that run on their own"
+          "label": "Organize and manage",
+          "rows": [
+            {
+              "before": "Internal processes in spreadsheets, paper, and chats",
+              "after": "Custom internal dashboards to organize and manage the entire operation"
+            },
+            {
+              "before": "Everyone with their own file and their own way of working",
+              "after": "Role-based access: each person sees and does only what they are responsible for"
+            },
+            {
+              "before": "Tasks and approvals that depend on someone remembering",
+              "after": "Tasks, approvals, and documents that move forward on their own with automations"
+            },
+            {
+              "before": "Clients who message you to ask for updates",
+              "after": "A portal with login where your clients check their own status"
+            },
+            {
+              "before": "Reports put together by hand at the end of the month",
+              "after": "Sales and operations reports that update themselves, in a single dashboard"
+            }
+          ]
         }
       ],
       "closingLight": "The difference isn't having more tools.",
@@ -773,58 +803,35 @@
           "body": "AI agents on WhatsApp, Instagram, web, and email that reply, qualify, and book appointments instantly."
         },
         {
-          "title": "Follow up",
-          "body": "A CRM connected to automations: messages, reminders, and tasks that go out on their own at the right moment."
+          "title": "Manage clients",
+          "body": "A CRM with each client's history, their pipeline, and follow-up that goes out on its own at the right moment."
         },
         {
-          "title": "Measure",
-          "body": "Tracking of every lead's source, heatmaps, and real-time reports. You know exactly what works."
+          "title": "Automate your operation",
+          "body": "The internal processes done by hand today: quotes, approvals, documents, and team tasks."
         },
         {
-          "title": "Optimize",
-          "body": "With real data, we improve ads, messages, and processes every month."
+          "title": "Custom access",
+          "body": "Portals and logins with specific features for your clients, your team, or your partners."
         }
       ],
       "closingLight": "That's what we build.",
-      "closingBold": "Not websites: systems that sell."
+      "closingBold": "Not websites: systems that run your business."
     },
     "cases": {
       "eyebrow": "Case studies",
       "titleLight": "Systems that are already",
       "titleBold": "working.",
-      "before": "Before",
-      "built": "What we built",
-      "result": "Result",
-      "items": [
-        {
-          "name": "Quickhire Solutions",
-          "tag": "Staffing",
-          "before": "[Pending: the problem in one line]",
-          "built": "Two-sided portal + AI recruiter",
-          "result": "[Real figure]"
-        },
-        {
-          "name": "Hidasol",
-          "tag": "Customer service",
-          "before": "[Pending: the problem in one line]",
-          "built": "WhatsApp AI agent",
-          "result": "[Real figure]"
-        },
-        {
-          "name": "REVA",
-          "tag": "Retail",
-          "before": "[Pending]",
-          "built": "[Pending]",
-          "result": "[Real figure]"
-        },
-        {
-          "name": "Instituto Cosvic",
-          "tag": "Education",
-          "before": "[Pending]",
-          "built": "[Pending]",
-          "result": "[Real figure]"
-        }
-      ]
+      "view": "View case",
+      "all": "View all case studies"
+    },
+    "casesPage": {
+      "metaTitle": "Case studies — Bralto",
+      "metaDescription": "Bralto projects at work: websites, AI agents, automations, and custom systems for restaurants, real estate, tourism, and retail.",
+      "eyebrow": "Case studies",
+      "titleLight": "Systems that are already",
+      "titleBold": "working.",
+      "lead": "Choose a project to see what we built and how it works."
     },
     "platform": {
       "eyebrow": "Platform",

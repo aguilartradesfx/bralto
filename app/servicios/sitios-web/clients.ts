@@ -8,12 +8,18 @@ export interface ClientProject {
   coverImage: string
   images: string[]
   url?: string
+  // Rubro y descripción corta en inglés (home y página de casos en /en)
+  en?: { industry: string; tagline: string }
 }
 
 export const clients: ClientProject[] = [
   {
     id: 'nanku',
     name: 'Nanku',
+    en: {
+      industry: 'Restaurant & reservations',
+      tagline: 'A complete reservation platform, a 24/7 AI agent, and monthly video production.',
+    },
     industry: 'Restaurante & Reservas',
     tagline: 'Plataforma completa de reservas, agente de IA 24/7 y producción audiovisual mensual.',
     url: 'https://www.restaurantenanku.net/',
@@ -41,6 +47,10 @@ export const clients: ClientProject[] = [
   {
     id: 'ecoviva',
     name: 'Ecoviva',
+    en: {
+      industry: 'Real estate',
+      tagline: 'A high-impact digital presence with an AI agent that advises visitors and books property tours in real time.',
+    },
     industry: 'Inmobiliaria',
     tagline: 'Presencia digital de alto impacto con agente de IA que asesora y agenda visitas en tiempo real.',
     url: 'https://www.ecovivadesarrollos.com/',
@@ -68,6 +78,10 @@ export const clients: ClientProject[] = [
   {
     id: 'travelcore',
     name: 'TravelCore',
+    en: {
+      industry: 'Tourism & travel',
+      tagline: 'A 4-in-1 portal with a tour booking engine, automated flows, and routes by client type.',
+    },
     industry: 'Turismo & Viajes',
     tagline: 'Portal 4 en 1 con motor de agenda para tours, flujos automatizados y rutas por tipo de cliente.',
     url: 'https://www.mytravelcore.com/',
@@ -95,6 +109,10 @@ export const clients: ClientProject[] = [
   {
     id: 'ao',
     name: 'AO Liquidation Warehouse',
+    en: {
+      industry: 'Wholesale',
+      tagline: "Website and digital system for Costa Rica's leading liquidation distributor.",
+    },
     industry: 'Comercio Mayorista',
     tagline: 'Sitio web y sistema digital para el principal distribuidor de liquidaciones de Costa Rica.',
     url: 'https://www.aoliquidationwarehouse.com/',
