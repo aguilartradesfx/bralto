@@ -121,9 +121,6 @@ export default function RootLayout({
       <body>
         {/* Google Tag Manager (noscript) */}
         <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTGZ86BC" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} />
-        {/* Atmospheric background — fixed, renders once, behind all content */}
-        <div aria-hidden="true" className="atmo-ambient" />
-        <div aria-hidden="true" className="atmo-grid" />
         {/* Partículas con scroll: una sola vez para todo el sitio público */}
         <ParticlesBackground />
         {/* All content above background layers */}

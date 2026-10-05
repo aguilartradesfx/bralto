@@ -351,7 +351,7 @@ function SectionDivider() {
 
 export function AboutPage() {
   return (
-    <div className="bg-[#060607] min-h-screen">
+    <div className="min-h-screen">
       <HeroSection />
       <SectionDivider />
       <OriginSection />

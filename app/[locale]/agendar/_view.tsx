@@ -469,7 +469,7 @@ export default function AgendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060607]">
+    <div className="min-h-screen">
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(91,182,255,0.04),transparent)]" />
 
       {/* Top bar */}

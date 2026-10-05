@@ -189,7 +189,7 @@ export default function AutomatizacionPage() {
   const c = CONTENT[locale as 'es' | 'en'] ?? CONTENT.es
 
   return (
-    <div className="min-h-screen bg-[#060607] text-white antialiased">
+    <div className="min-h-screen text-white antialiased">
 
       {/* HERO */}
       <section className="grid-bg relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center">
@@ -260,7 +260,7 @@ export default function AutomatizacionPage() {
       </section>
 
       {/* FEATURES */}
-      <section className="py-28 bg-[#060607]" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <section className="py-28" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div className="mb-16">
             <motion.p initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28 mb-4">{c.featLabel}</motion.p>

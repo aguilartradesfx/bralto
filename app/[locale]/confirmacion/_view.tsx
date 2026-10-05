@@ -112,7 +112,7 @@ export default function ConfirmacionView({
   const Icon = ok ? CheckCircle : AlertCircle
 
   return (
-    <div className="min-h-screen bg-[#060607] flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(91,182,255,0.05),transparent)] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-md">

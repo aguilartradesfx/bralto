@@ -41,7 +41,7 @@ export default function PreciosPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-[#060607] text-white antialiased">
+    <div className="min-h-screen text-white antialiased">
       <Navbar />
 
       {/* HERO */}

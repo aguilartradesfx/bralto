@@ -12,7 +12,7 @@ export default async function ListoPage({ searchParams }: Props) {
   const contractUrl = c ? `/c/${c}` : null
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-20 bg-[#060607]">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(52,211,153,0.04),transparent)]" />
 
       <div className="relative z-10 max-w-md w-full text-center">

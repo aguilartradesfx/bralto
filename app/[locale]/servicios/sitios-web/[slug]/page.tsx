@@ -21,7 +21,7 @@ export default async function ClientPage({ params }: { params: Promise<{ locale:
   const extraImages = client.images.slice(2)
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white antialiased">
+    <div className="min-h-screen text-white antialiased">
 
       {/* HERO */}
       <section className="relative min-h-[65vh] flex flex-col justify-end overflow-hidden">
