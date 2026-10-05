@@ -2,8 +2,6 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Globe, BarChart3, MessageSquare, Zap, Cpu, LayoutDashboard, TrendingUp } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
 
 const SERVICE_ICONS = [Globe, BarChart3, MessageSquare, Cpu, LayoutDashboard, Zap, TrendingUp]
 const SERVICE_SLUGS = [
@@ -42,7 +40,6 @@ export default function PreciosPage() {
 
   return (
     <div className="min-h-screen text-white antialiased">
-      <Navbar />
 
       {/* HERO */}
       <section className="grid-bg relative pt-40 pb-28 overflow-hidden">
@@ -158,7 +155,6 @@ export default function PreciosPage() {
         </div>
       </section>
 
-      <Footer />
     </div>
   )
 }

@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Check, ArrowRight } from 'lucide-react'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
-import { GlassCalendar } from '@/components/ui/glass-calendar'
 import { useLocale } from 'next-intl'
+import { GlassCalendar } from '@/components/ui/glass-calendar'
+import { Arrow, Check } from '@/components/home/icons'
+import { cn } from '@/lib/utils'
+import './agendar.css'
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
@@ -72,6 +72,7 @@ const CONTENT = {
     firstName: 'Nombre',
     lastName: 'Apellido',
     phone: 'Teléfono',
+    countryCode: 'Código de país',
     email: 'Correo electrónico',
     step2Heading: 'Un poco sobre su negocio',
     step2Sub: 'Esto nos ayuda a preparar la llamada para que sea lo más útil posible.',
@@ -139,6 +140,7 @@ const CONTENT = {
     firstName: 'First name',
     lastName: 'Last name',
     phone: 'Phone',
+    countryCode: 'Country code',
     email: 'Email address',
     step2Heading: 'A bit about your business',
     step2Sub: 'This helps us prepare so the call is as useful as possible.',
@@ -213,22 +215,8 @@ interface FormData {
 
 function OptionCard({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full text-left rounded-xl border px-4 py-3 text-sm transition-all duration-150 flex items-center gap-3 ${
-        selected
-          ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-white'
-          : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
-      }`}
-    >
-      <span
-        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all ${
-          selected ? 'border-[#5bb6ff] bg-[#5bb6ff]' : 'border-white/[0.2] bg-transparent'
-        }`}
-      >
-        {selected && <Check size={9} className="text-white" strokeWidth={3} />}
-      </span>
+    <button type="button" onClick={onClick} aria-pressed={selected} className={cn('bk-option', selected && 'is-selected')}>
+      <span className="bk-option__dot" aria-hidden="true" />
       {label}
     </button>
   )
@@ -236,39 +224,18 @@ function OptionCard({ label, selected, onClick }: { label: string; selected: boo
 
 function StepIndicator({ step, labels }: { step: number; labels: string[] }) {
   return (
-    <div className="flex items-center gap-0 mb-10">
+    <ol className="bk-steps">
       {labels.map((label, i) => (
-        <div key={i} className="flex items-center">
-          <div className="flex flex-col items-center gap-1">
-            <div
-              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
-                i < step
-                  ? 'bg-[#5bb6ff] text-white'
-                  : i === step
-                  ? 'border-2 border-[#5bb6ff] text-[#5bb6ff] bg-transparent'
-                  : 'border border-white/[0.1] text-white/20 bg-transparent'
-              }`}
-            >
-              {i < step ? <Check size={12} strokeWidth={3} /> : i + 1}
-            </div>
-            <span
-              className={`text-[10px] font-medium whitespace-nowrap hidden sm:block ${
-                i === step ? 'text-white/60' : 'text-white/20'
-              }`}
-            >
-              {label}
-            </span>
-          </div>
-          {i < labels.length - 1 && (
-            <div
-              className={`h-px w-12 sm:w-20 mx-1 mb-4 transition-all duration-500 ${
-                i < step ? 'bg-[#5bb6ff]/40' : 'bg-white/[0.07]'
-              }`}
-            />
-          )}
-        </div>
+        <li
+          key={label}
+          className={cn('bk-step', i < step && 'is-done', i === step && 'is-current')}
+          aria-current={i === step ? 'step' : undefined}
+        >
+          <span className="bk-step__mark">{i < step ? <Check /> : i + 1}</span>
+          <span className="bk-step__label">{label}</span>
+        </li>
       ))}
-    </div>
+    </ol>
   )
 }
 
@@ -469,96 +436,60 @@ export default function AgendarPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(91,182,255,0.04),transparent)]" />
-
-      {/* Top bar */}
-      <header className="relative z-10 border-b border-white/[0.05] bg-[#060607]/60 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <a href={`/${locale}`} className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Bralto" width={80} height={24} className="h-6 w-auto object-contain" />
-          </a>
-          <a href={`/${locale}`} className="flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors">
-            <ChevronLeft size={13} />
-            {c.backToSite}
-          </a>
-        </div>
-      </header>
-
-      {/* Main */}
-      <main className="relative z-10 mx-auto max-w-3xl px-6 py-12">
-        {/* Hero */}
-        <div className="mb-10 text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff]">
-            {c.eyebrow}
-          </p>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">
-            {c.headline}
-          </h1>
-          <p className="text-sm text-white/35">{c.subline}</p>
-        </div>
+    <main className="bk" data-focus-page>
+      <div className="hm-wrap bk__wrap">
+        <header className="bk__head">
+          <p className="hm-eyebrow">{c.eyebrow}</p>
+          <h1 className="bk__title">{c.headline}</h1>
+          <p className="bk__sub">{c.subline}</p>
+        </header>
 
         {notice && (
-          <div className="mb-8 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white/60">
+          <p className="bk-notice" role="status">
             {notice}
-          </div>
+          </p>
         )}
 
-        {/* Step indicator */}
-        <div className="flex justify-center">
-          <StepIndicator step={step} labels={c.stepLabels} />
-        </div>
+        <StepIndicator step={step} labels={c.stepLabels} />
 
-        {/* Countdown banner */}
+        {/* Horario retenido mientras completa los datos */}
         {step > 0 && lockExpiresAt !== null && (
-          <div
-            className={`mb-6 flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-colors duration-300 ${
-              countdown < 60
-                ? 'border-red-500/25 bg-red-500/5 text-red-400'
-                : 'border-[#5bb6ff]/20 bg-[#5bb6ff]/5 text-[#5bb6ff]/80'
-            }`}
-          >
+          <div className={cn('bk-hold', countdown < 60 && 'is-ending')}>
             <span>{c.slotLocked}</span>
-            <span className="font-mono font-semibold tabular-nums">
+            <span className="bk-hold__time">
               {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}
             </span>
           </div>
         )}
 
-        {/* ── Step 0: Date & time ─────────────────────────── */}
-        {step === 0 && (
-          <div>
-            <h2 className="mb-5 text-lg font-semibold text-white">{c.step0Heading}</h2>
+        <section className="bk-panel hm-glass hm-glass--thick" aria-labelledby="bk-step-title">
+          {/* ── Paso 0: fecha y hora ── */}
+          {step === 0 && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step0Heading}
+              </h2>
 
-            <GlassCalendar
-              selectedDate={form.selectedDate}
-              onDateSelect={(date) => {
-                update('selectedDate', date)
-                update('selectedTime', null)
-              }}
-              selectableDates={availableDays}
-              className="max-w-full"
-            />
+              <GlassCalendar
+                locale={locale === 'en' ? 'en' : 'es'}
+                selectedDate={form.selectedDate}
+                onDateSelect={(date) => {
+                  update('selectedDate', date)
+                  update('selectedTime', null)
+                }}
+                selectableDates={availableDays}
+              />
 
-            <AnimatePresence>
               {form.selectedDate && (
-                <motion.div
-                  key="time-slots"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.22, ease: 'easeOut' }}
-                  className="mt-6"
-                >
-                  <h2 className="mb-4 text-base font-semibold text-white">
+                <div key={form.selectedDate.toDateString()} className="bk-slots-wrap">
+                  <h3 className="bk-h3">
                     {c.slotsFor} —{' '}
-                    <span className="text-[#5bb6ff]">
-                      {c.DAYS[form.selectedDate.getDay()]}{' '}
-                      {form.selectedDate.getDate()}{' '}
+                    <span>
+                      {c.DAYS[form.selectedDate.getDay()]} {form.selectedDate.getDate()}{' '}
                       {c.MONTHS[form.selectedDate.getMonth()]}
                     </span>
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  </h3>
+                  <div className="bk-slots">
                     {TIME_SLOTS.map(({ id, label }) => {
                       const selected = form.selectedTime === id
                       const key = slotKey(form.selectedDate!, id)
@@ -569,187 +500,191 @@ export default function AgendarPage() {
                       return (
                         <button
                           key={id}
+                          type="button"
                           disabled={booked}
+                          aria-pressed={selected}
                           onClick={() => !booked && update('selectedTime', id)}
-                          className={`relative rounded-xl border py-3.5 text-sm font-semibold transition-all duration-150 ${
-                            booked
-                              ? 'border-white/[0.04] bg-white/[0.01] text-white/20 cursor-not-allowed'
-                              : selected
-                              ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-white'
-                              : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
-                          }`}
+                          className={cn('bk-slot', selected && 'is-selected')}
                         >
                           {label}
-                          {booked && (
-                            <span className="block text-[9px] font-normal text-white/20 mt-0.5">
-                              {c.unavailable}
-                            </span>
-                          )}
+                          {booked && <small>{c.unavailable}</small>}
                         </button>
                       )
                     })}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </div>
-        )}
+            </>
+          )}
 
-        {/* ── Step 1: Contact info ─────────────────────────── */}
-        {step === 1 && (
-          <div>
-            <h2 className="mb-6 text-lg font-semibold text-white">{c.step1Heading}</h2>
+          {/* ── Paso 1: datos de contacto ── */}
+          {step === 1 && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step1Heading}
+              </h2>
 
-            <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-white/40">
-                    {c.firstName} <span className="text-[#5bb6ff]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.nombre}
-                    onChange={(e) => update('nombre', e.target.value)}
-                    placeholder="Alex"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-white/40">
-                    {c.lastName} <span className="text-[#5bb6ff]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.apellido}
-                    onChange={(e) => update('apellido', e.target.value)}
-                    placeholder="Johnson"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/40">
-                  {c.phone} <span className="text-[#5bb6ff]">*</span>
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    value={form.countryCode}
-                    onChange={(e) => update('countryCode', e.target.value)}
-                    className="rounded-xl border border-white/[0.08] bg-[#111] px-3 py-3 text-sm text-white/70 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 shrink-0"
-                  >
-                    {COUNTRY_CODES.map(({ code, label }) => (
-                      <option key={code} value={code}>{label}</option>
-                    ))}
-                  </select>
-                  <input
-                    type="tel"
-                    value={form.telefono}
-                    onChange={(e) => update('telefono', e.target.value)}
-                    placeholder="555 000 0000"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/40">
-                  {c.email} <span className="text-[#5bb6ff]">*</span>
-                </label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => update('email', e.target.value)}
-                  placeholder="alex@company.com"
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 2: Your business ────────────────────────── */}
-        {step === 2 && (
-          <div>
-            <h2 className="mb-2 text-lg font-semibold text-white">{c.step2Heading}</h2>
-            <p className="mb-8 text-sm text-white/35">{c.step2Sub}</p>
-
-            <div className="flex flex-col gap-8">
-              {c.questions.map((q) => (
-                <div key={q.id}>
-                  <p className="mb-3 text-sm font-semibold text-white/80">
-                    {q.question}
-                    <span className="ml-1 text-[#5bb6ff]">*</span>
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {q.options.map((opt) => (
-                      <OptionCard
-                        key={opt}
-                        label={opt}
-                        selected={form.answers[q.id] === opt}
-                        onClick={() => setAnswer(q.id, opt)}
-                      />
-                    ))}
+              <div className="bk-fields">
+                <div className="bk-row">
+                  <div className="bk-field">
+                    <label htmlFor="bk-first">
+                      {c.firstName}
+                      <span className="bk-req" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="bk-first"
+                      className="bk-input"
+                      type="text"
+                      autoComplete="given-name"
+                      required
+                      value={form.nombre}
+                      onChange={(e) => update('nombre', e.target.value)}
+                      placeholder="Alex"
+                    />
+                  </div>
+                  <div className="bk-field">
+                    <label htmlFor="bk-last">
+                      {c.lastName}
+                      <span className="bk-req" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="bk-last"
+                      className="bk-input"
+                      type="text"
+                      autoComplete="family-name"
+                      required
+                      value={form.apellido}
+                      onChange={(e) => update('apellido', e.target.value)}
+                      placeholder="Johnson"
+                    />
                   </div>
                 </div>
+
+                <div className="bk-field">
+                  <label htmlFor="bk-phone">
+                    {c.phone}
+                    <span className="bk-req" aria-hidden="true">*</span>
+                  </label>
+                  <div className="bk-phone">
+                    <select
+                      className="bk-input"
+                      aria-label={c.countryCode}
+                      value={form.countryCode}
+                      onChange={(e) => update('countryCode', e.target.value)}
+                    >
+                      {COUNTRY_CODES.map(({ code, label }) => (
+                        <option key={code} value={code}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      id="bk-phone"
+                      className="bk-input"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      required
+                      value={form.telefono}
+                      onChange={(e) => update('telefono', e.target.value)}
+                      placeholder="555 000 0000"
+                    />
+                  </div>
+                </div>
+
+                <div className="bk-field">
+                  <label htmlFor="bk-email">
+                    {c.email}
+                    <span className="bk-req" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    id="bk-email"
+                    className="bk-input"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={form.email}
+                    onChange={(e) => update('email', e.target.value)}
+                    placeholder="alex@company.com"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Paso 2: su negocio y resumen del cobro ── */}
+          {step === 2 && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step2Heading}
+              </h2>
+              <p className="bk-lead">{c.step2Sub}</p>
+
+              <div className="bk-questions">
+                {c.questions.map((q) => (
+                  <div key={q.id} className="bk-q" role="group" aria-labelledby={`bk-q-${q.id}`}>
+                    <p id={`bk-q-${q.id}`}>
+                      {q.question}
+                      <span className="bk-req" aria-hidden="true">*</span>
+                    </p>
+                    <div className="bk-options">
+                      {q.options.map((opt) => (
+                        <OptionCard
+                          key={opt}
+                          label={opt}
+                          selected={form.answers[q.id] === opt}
+                          onClick={() => setAnswer(q.id, opt)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bk-summary">
+                <div className="bk-summary__row">
+                  <p>{c.summaryTitle}</p>
+                  <p className="bk-summary__price">{c.summaryPrice}</p>
+                </div>
+                <p className="bk-summary__note">{c.summaryNote}</p>
+              </div>
+            </>
+          )}
+
+          {errors.length > 0 && (
+            <div className="bk-errors" role="alert">
+              {errors.map((e) => (
+                <p key={e}>{e}</p>
               ))}
             </div>
-
-            <div className="mt-10 rounded-xl border border-[#5bb6ff]/20 bg-[#5bb6ff]/5 px-5 py-4">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="text-sm font-semibold text-white">{c.summaryTitle}</p>
-                <p className="font-mono text-sm font-semibold text-white">{c.summaryPrice}</p>
-              </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-white/45">{c.summaryNote}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Errors */}
-        {errors.length > 0 && (
-          <div className="mt-6 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
-            {errors.map((e) => (
-              <p key={e} className="text-xs text-red-400">• {e}</p>
-            ))}
-          </div>
-        )}
-
-        {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between">
-          {step > 0 ? (
-            <button
-              onClick={back}
-              className="flex items-center gap-2 rounded-xl border border-white/[0.08] px-5 py-3 text-sm font-medium text-white/40 hover:border-white/20 hover:text-white/70 transition-all duration-150"
-            >
-              <ChevronLeft size={15} />
-              {c.back}
-            </button>
-          ) : (
-            <div />
           )}
 
-          {step < 2 ? (
-            <button
-              onClick={next}
-              className="flex items-center gap-2 rounded-xl bg-[#ffa845] px-6 py-3 text-sm font-semibold text-black hover:bg-[#f59e0b] transition-colors duration-150"
-            >
-              {c.next}
-              <ChevronRight size={15} />
-            </button>
-          ) : (
-            <button
-              onClick={submit}
-              disabled={submitting}
-              className="flex items-center gap-2 rounded-xl bg-[#5bb6ff] px-6 py-3 text-sm font-semibold text-white hover:bg-[#7cc5ff] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {submitting ? c.submitting : c.submit}
-              {!submitting && <ArrowRight size={15} />}
-            </button>
-          )}
-        </div>
+          <div className="bk-nav">
+            {step > 0 ? (
+              <button type="button" onClick={back} className="hm-btn hm-btn--glass hm-glass">
+                <Arrow />
+                {c.back}
+              </button>
+            ) : (
+              <span />
+            )}
 
-        <p className="mt-8 text-center text-xs text-white/20">{c.footer}</p>
-      </main>
-    </div>
+            {step < 2 ? (
+              <button type="button" onClick={next} className="hm-btn hm-btn--solid">
+                {c.next}
+                <Arrow />
+              </button>
+            ) : (
+              <button type="button" onClick={submit} disabled={submitting} className="hm-btn hm-btn--solid">
+                {submitting ? c.submitting : c.submit}
+                {!submitting && <Arrow />}
+              </button>
+            )}
+          </div>
+        </section>
+
+        <p className="bk-foot">{c.footer}</p>
+      </div>
+    </main>
   )
 }

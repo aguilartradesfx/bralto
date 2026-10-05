@@ -712,7 +712,8 @@ html:has(.hm) [data-cookie-accept] {
   }
 }
 
-@media (min-width: 1024px) {
+/* Los links completos entran desde ~1200 px; debajo, el menú */
+@media (min-width: 1200px) {
   .hm-nav__links {
     display: flex;
     gap: 2px;
@@ -726,6 +727,278 @@ html:has(.hm) [data-cookie-accept] {
   .hm-menu {
     display: none;
   }
+}
+
+.hm-nav__wrap {
+  position: relative;
+}
+
+.hm-nav__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hm-nav__trigger[aria-expanded='true'],
+.hm-nav__link[aria-current='page'] {
+  color: var(--ink);
+}
+
+.hm-nav__trigger[aria-expanded='true'] {
+  background: var(--hover);
+}
+
+.hm-nav__chev {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  opacity: .7;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .35s var(--ease);
+}
+
+.hm-nav__trigger[aria-expanded='true'] .hm-nav__chev,
+.hm-menu__services[open] .hm-nav__chev {
+  transform: translateY(1px) rotate(225deg);
+}
+
+/* Megamenú de servicios */
+.hm-mega {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 300px);
+  gap: 8px 24px;
+  padding: 22px;
+  border-radius: var(--r-lg);
+}
+
+.hm-mega[hidden] {
+  display: none;
+}
+
+.hm-mega__group ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hm-mega__heading {
+  margin: 0 0 10px;
+  padding: 0 12px;
+  font: 500 10.5px/1.3 var(--font-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.hm-mega__item {
+  display: grid;
+  gap: 3px;
+  padding: 11px 12px;
+  border-radius: var(--r-sm);
+  transition: background-color .25s;
+}
+
+.hm-mega__item:hover {
+  background: var(--hover);
+}
+
+.hm-mega__label {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+
+/* La página de servicio actual lleva la señal */
+.hm-mega__item[aria-current='page'] .hm-mega__label::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+
+.hm-mega__desc {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.hm-mega__cta {
+  grid-row: span 2;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 20px;
+  border-radius: var(--r-md);
+}
+
+.hm-mega__cta .hm-btn {
+  justify-self: start;
+}
+
+.hm-mega__eyebrow,
+.hm-mega__note {
+  margin: 0;
+  font: 500 10.5px/1.5 var(--font-mono);
+  letter-spacing: .1em;
+  color: var(--ink-3);
+}
+
+.hm-mega__eyebrow {
+  text-transform: uppercase;
+}
+
+.hm-mega__title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.hm-mega__text {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.hm-mega__note {
+  letter-spacing: .02em;
+}
+
+.hm-mega__foot {
+  grid-column: 1 / 3;
+  padding: 12px 12px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.hm-mega__foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 11.5px/1 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition: color .25s;
+}
+
+.hm-mega__foot a:hover {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hm-mega.is-open {
+    animation: hm-mega-in .45s var(--ease-liquid) both;
+  }
+}
+
+@keyframes hm-mega-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(.985);
+  }
+}
+
+@media (max-width: 1199px) {
+  .hm-mega {
+    display: none !important;
+  }
+}
+
+/* Modo enfocado (/agendar, /confirmacion, /listo): logo, tema y volver */
+.hm-nav__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  font: 500 11.5px/1 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink-2);
+  transition: color .25s;
+}
+
+@media (max-width: 420px) {
+  .hm-nav__back {
+    gap: 7px;
+    padding: 0 12px;
+    font-size: 10.5px;
+    letter-spacing: .04em;
+  }
+}
+
+.hm-nav__back:hover {
+  color: var(--ink);
+}
+
+.hm-nav__back .hm-arrow {
+  transform: rotate(180deg);
+}
+
+.hm:has([data-focus-page]) .hm-footer {
+  display: none;
+}
+
+/* Menú móvil: servicios desplegables */
+.hm-menu__services {
+  box-shadow: 0 1px 0 var(--rule);
+}
+
+.hm-menu__services summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 21px;
+  font-weight: 300;
+  letter-spacing: -.02em;
+}
+
+.hm-menu__services summary::-webkit-details-marker {
+  display: none;
+}
+
+.hm-menu__group {
+  padding: 0 14px 10px;
+}
+
+.hm-menu__group .hm-mega__heading {
+  margin: 0;
+  padding: 10px 0 4px;
+}
+
+.hm-menu__group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hm-menu__group a {
+  display: block;
+  padding: 9px 0;
+  font-size: 15px;
+  color: var(--ink-2);
 }
 
 /* ---------- Toggle de tema: pieza negra brillante ---------- */

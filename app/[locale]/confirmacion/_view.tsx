@@ -1,4 +1,5 @@
-import { AlertCircle, CheckCircle } from 'lucide-react'
+import { Arrow } from '@/components/home/icons'
+import { StatusCard } from '@/components/home/status-card'
 
 export type ConfirmationState = 'none' | 'confirmed' | 'already' | 'conflict' | 'unpaid' | 'invalid' | 'error'
 
@@ -109,48 +110,34 @@ export default function ConfirmacionView({
   const t = COPY[locale]
   const c = t[state]
   const ok = state === 'none' || state === 'confirmed' || state === 'already'
-  const Icon = ok ? CheckCircle : AlertCircle
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(91,182,255,0.05),transparent)] pointer-events-none" />
-
-      <div className="relative z-10 flex flex-col items-center text-center max-w-md">
-        <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-[#5bb6ff]/25 bg-[#5bb6ff]/10">
-          <Icon size={40} className="text-[#5bb6ff]" />
-        </div>
-
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff] mb-4">{c.eyebrow}</p>
-
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">{c.title}</h1>
-
-        {when && ok && (
-          <p className="mb-4 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white/80">
-            {when} <span className="text-white/40">{t.tz}</span>
-          </p>
-        )}
-
-        <p className="text-base text-white/40 leading-relaxed mb-3">{c.body}</p>
-        {ok && <p className="text-sm text-white/25">{t.spam}</p>}
-        {c.note && <p className="mt-6 text-sm text-white/40">{c.note}</p>}
-
-        <div className="mt-10 flex flex-col items-center gap-4">
+    <StatusCard
+      tone={ok ? 'ok' : 'notice'}
+      eyebrow={c.eyebrow}
+      title={c.title}
+      actions={
+        <>
           {c.retry && (
-            <a
-              href={`/${locale}/agendar`}
-              className="rounded-xl bg-[#5bb6ff] px-6 py-3 text-sm font-semibold text-white hover:bg-[#7cc5ff] transition-colors"
-            >
+            <a href={`/${locale}/agendar`} className="hm-btn hm-btn--solid">
               {t.retry}
+              <Arrow />
             </a>
           )}
-          <a
-            href={`/${locale}`}
-            className="text-sm text-white/40 underline underline-offset-4 hover:text-white/60 transition-colors"
-          >
+          <a href={`/${locale}`} className="hm-btn hm-btn--glass hm-glass">
             {t.home}
           </a>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    >
+      {when && ok && (
+        <p className="st-when">
+          {when} <span>{t.tz}</span>
+        </p>
+      )}
+      <p>{c.body}</p>
+      {ok && <p className="st__hint">{t.spam}</p>}
+      {c.note && <p>{c.note}</p>}
+    </StatusCard>
   )
 }

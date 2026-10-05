@@ -11,8 +11,6 @@ import {
   MessageSquare,
 } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
 import { StartTrialButton } from '@/components/start-trial-button'
 
 const NEON = '#ff6d28' // naranja neón de marca (mismo que PlatformSection)
@@ -55,7 +53,6 @@ export default function PlataformaPage() {
 
   return (
     <div className="min-h-screen text-white antialiased">
-      <Navbar />
 
       {/* ── HERO ── */}
       <section className="grid-bg relative overflow-hidden pt-40 pb-28">
@@ -278,7 +275,6 @@ export default function PlataformaPage() {
         </div>
       </section>
 
-      <Footer />
     </div>
   )
 }

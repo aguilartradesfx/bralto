@@ -10,12 +10,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/agendar', en: '/agendar' },
     titles: {
-      es: 'Agendar una Llamada con Bralto',
-      en: 'Book a Call with Bralto',
+      es: 'Agendar diagnóstico',
+      en: 'Book a diagnostic call',
     },
     descriptions: {
-      es: 'Conversemos sobre cómo automatizar tu operación con CRM, IA y sistemas integrados. Diagnóstico de 30 minutos con el equipo.',
-      en: "Let's talk about automating your operation with CRM, AI, and integrated systems. 30-minute diagnostic session with our team.",
+      es: 'Diagnóstico de 30 minutos con el equipo de Bralto para revisar su operación y definir qué automatizar. $97 USD que se descuentan del proyecto si decide contratar.',
+      en: 'A 30-minute diagnostic call with the Bralto team to review your operation and decide what to automate. $97 USD, deducted from the project if you hire us.',
     },
   })
 }

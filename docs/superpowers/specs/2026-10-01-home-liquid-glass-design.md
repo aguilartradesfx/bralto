@@ -66,3 +66,11 @@ Aprobado por Alejandro en el chat ("Todo bien" a la propuesta).
 - **Modo prueba:** un pago de prueba no crea la cita en el calendario real ni escribe en Supabase, y usa claves de Redis separadas.
 - **Textos:** todo lo que en el sitio decía que la llamada era gratis pasa a reflejar el pago.
 - **Para producción:** claves live de la cuenta nueva, endpoint de webhook en esa cuenta y recrear ahí el precio del plan de $87 (`/plataforma`), que hoy vive en la cuenta anterior.
+
+## Rediseño del sitio completo — 2026-10-05
+
+Pedido de Alejandro: todo el sitio con el sistema del home (grises, liquid glass, naranja de marca), sin los azules, con un solo nav y megamenú.
+
+- **Decisiones:** todo el texto en usted (mismo contenido, cambia el trato); `/precios` sin montos (servicios a la medida + CTA al diagnóstico); tema claro/oscuro en todas las páginas.
+- **Base común:** la estructura del home (`SiteShell`: fuentes, tema, fondo, nav, footer) pasa al layout de `[locale]`. Nav único: Servicios (megamenú) · Cómo funciona · Casos · Plataforma · Sobre nosotros, más idioma, tema y CTA. En `/agendar` y `/confirmacion` el nav va en modo enfocado (sin links ni footer) para no distraer del flujo.
+- **Fases:** (1) base común; (2) `/agendar`, confirmación y `/listo`; (3) plantilla de servicios + la sección visual propia de cada uno; (4) páginas de cada caso, plataforma, precios y sobre nosotros; (5) limpieza de componentes viejos y verificación (Lighthouse, móvil, ambos temas).

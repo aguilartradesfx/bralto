@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { clients } from '@/app/servicios/sitios-web/clients'
 import { CaseRow } from '@/components/home/case-row'
 import { FinalCta } from '@/components/home/final-cta'
-import { SiteShell } from '@/components/home/shell'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -45,33 +44,31 @@ export default async function CasosPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'Home' })
 
   return (
-    <SiteShell locale={locale} page="cases">
-      <main>
-        <section className="hm-hero hm-hero--page" aria-labelledby="hm-cases-page-title">
-          <div className="hm-wrap">
-            <p className="hm-eyebrow hm-in">{t('casesPage.eyebrow')}</p>
-            <h1 id="hm-cases-page-title" className="hm-page-title">
-              <span className="hm-hero__l1">{t('casesPage.titleLight')}</span>{' '}
-              <span className="hm-hero__l2">{t('casesPage.titleBold')}</span>
-            </h1>
-            <p className="hm-lead hm-in">{t('casesPage.lead')}</p>
-          </div>
-        </section>
+    <main>
+      <section className="hm-hero hm-hero--page" aria-labelledby="hm-cases-page-title">
+        <div className="hm-wrap">
+          <p className="hm-eyebrow hm-in">{t('casesPage.eyebrow')}</p>
+          <h1 id="hm-cases-page-title" className="hm-page-title">
+            <span className="hm-hero__l1">{t('casesPage.titleLight')}</span>{' '}
+            <span className="hm-hero__l2">{t('casesPage.titleBold')}</span>
+          </h1>
+          <p className="hm-lead hm-in">{t('casesPage.lead')}</p>
+        </div>
+      </section>
 
-        <section className="hm-section hm-section--tight hm-section--joined" aria-label={t('casesPage.eyebrow')}>
-          <div className="hm-wrap">
-            <ul className="hm-cases hm-cases--page">
-              {clients.map((client, i) => (
-                <li key={client.id}>
-                  <CaseRow client={client} locale={locale} viewLabel={t('cases.view')} size="feature" priority={i === 0} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      <section className="hm-section hm-section--tight hm-section--joined" aria-label={t('casesPage.eyebrow')}>
+        <div className="hm-wrap">
+          <ul className="hm-cases hm-cases--page">
+            {clients.map((client, i) => (
+              <li key={client.id}>
+                <CaseRow client={client} locale={locale} viewLabel={t('cases.view')} size="feature" priority={i === 0} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-        <FinalCta locale={locale} />
-      </main>
-    </SiteShell>
+      <FinalCta locale={locale} />
+    </main>
   )
 }

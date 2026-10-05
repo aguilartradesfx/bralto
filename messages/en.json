@@ -661,9 +661,65 @@
         "sistema": "How it works",
         "casos": "Case studies",
         "plataforma": "Platform",
-        "faq": "FAQ"
+        "about": "About"
+      },
+      "services": "Services",
+      "groups": [
+        {
+          "heading": "Digital presence",
+          "items": [
+            {
+              "key": "sitiosWeb",
+              "label": "Professional websites",
+              "desc": "Design, SEO, and fast delivery"
+            },
+            {
+              "key": "produccionContenido",
+              "label": "Content production",
+              "desc": "Videos, stories, and strategy"
+            },
+            {
+              "key": "campanas",
+              "label": "Ad campaigns",
+              "desc": "Ads on Meta, Google, and more"
+            },
+            {
+              "key": "asesoria",
+              "label": "Marketing consulting",
+              "desc": "Strategy and positioning"
+            }
+          ]
+        },
+        {
+          "heading": "Automation & AI",
+          "items": [
+            {
+              "key": "automatizacion",
+              "label": "Process automation",
+              "desc": "Flows, AI agents, and workflows"
+            },
+            {
+              "key": "sistemasInternos",
+              "label": "Custom internal systems",
+              "desc": "CRMs, dashboards, and portals"
+            },
+            {
+              "key": "funnelLab",
+              "label": "FunnelLab",
+              "desc": "Simulate your funnel before you invest"
+            }
+          ]
+        }
+      ],
+      "mega": {
+        "eyebrow": "30-minute diagnostic call",
+        "title": "Where to start?",
+        "text": "In 30 minutes we understand your business and tell you what makes sense right now.",
+        "note": "$97 USD · Deducted from the project if you hire us",
+        "all": "View all services"
       },
       "cta": "Book a diagnostic call",
+      "back": "Back to site",
       "theme": "Light mode",
       "menu": "Menu",
       "close": "Close menu",

@@ -1,12 +1,4 @@
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
-
+// Nav y footer vienen del layout de [locale] (SiteShell)
 export default function ServiciosLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      {children}
-      <Footer />
-    </>
-  )
+  return children
 }

@@ -661,9 +661,65 @@
         "sistema": "Cómo funciona",
         "casos": "Casos",
         "plataforma": "Plataforma",
-        "faq": "Preguntas"
+        "about": "Sobre nosotros"
+      },
+      "services": "Servicios",
+      "groups": [
+        {
+          "heading": "Presencia digital",
+          "items": [
+            {
+              "key": "sitiosWeb",
+              "label": "Sitios web profesionales",
+              "desc": "Diseño, SEO y entrega rápida"
+            },
+            {
+              "key": "produccionContenido",
+              "label": "Producción de contenido",
+              "desc": "Videos, stories y estrategia"
+            },
+            {
+              "key": "campanas",
+              "label": "Campañas publicitarias",
+              "desc": "Ads en Meta, Google y más"
+            },
+            {
+              "key": "asesoria",
+              "label": "Asesoría de marketing",
+              "desc": "Estrategia y posicionamiento"
+            }
+          ]
+        },
+        {
+          "heading": "Automatización e IA",
+          "items": [
+            {
+              "key": "automatizacion",
+              "label": "Automatización de procesos",
+              "desc": "Flujos, agentes de IA y workflows"
+            },
+            {
+              "key": "sistemasInternos",
+              "label": "Sistemas internos a medida",
+              "desc": "CRMs, paneles y portales"
+            },
+            {
+              "key": "funnelLab",
+              "label": "FunnelLab",
+              "desc": "Simule su embudo antes de invertir"
+            }
+          ]
+        }
+      ],
+      "mega": {
+        "eyebrow": "Diagnóstico de 30 minutos",
+        "title": "¿Por dónde empezar?",
+        "text": "En 30 minutos entendemos su negocio y le decimos qué tiene sentido hoy.",
+        "note": "$97 USD · Se descuenta del proyecto si decide contratar",
+        "all": "Ver todos los servicios"
       },
       "cta": "Agendar diagnóstico",
+      "back": "Volver al sitio",
       "theme": "Modo claro",
       "menu": "Menú",
       "close": "Cerrar menú",

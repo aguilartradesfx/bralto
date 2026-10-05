@@ -1,22 +1,58 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { Arrow } from './icons'
 import type { Locale } from './primitives'
 import { ThemeToggle } from './theme-toggle'
 
-type NavLink = { href: string; label: string }
+export type MegaItem = { key: string; label: string; desc: string }
+export type MegaGroup = { heading: string; items: MegaItem[] }
 
-type Props = {
-  locale: Locale
-  logo: ReactNode
-  links: NavLink[]
-  labels: { nav: string; home: string; cta: string; theme: string; menu: string; close: string; language: string }
-  // Ruta equivalente en el otro idioma ('' en el home, '/casos' en la página de casos)
-  languagePath?: string
+export type NavLabels = {
+  nav: string
+  home: string
+  sistema: string
+  casos: string
+  plataforma: string
+  about: string
+  services: string
+  cta: string
+  back: string
+  theme: string
+  menu: string
+  close: string
+  language: string
+  megaEyebrow: string
+  megaTitle: string
+  megaText: string
+  megaNote: string
+  megaAll: string
 }
 
-function LangSwitch({ locale, label, path }: { locale: Locale; label: string; path: string }) {
+type Props = { locale: Locale; logo: ReactNode; groups: MegaGroup[]; labels: NavLabels }
+
+const SERVICE_PATHS: Record<string, string> = {
+  sitiosWeb: '/servicios/sitios-web',
+  produccionContenido: '/servicios/produccion-contenido',
+  campanas: '/servicios/campanas',
+  asesoria: '/servicios/asesoria',
+  automatizacion: '/servicios/automatizacion',
+  sistemasInternos: '/servicios/sistemas-internos',
+}
+const FUNNELLAB_URL = 'https://funnellabs.bralto.io'
+
+// Flujos donde el nav no debe distraer: sin links ni megamenú
+const FOCUS_PATHS = ['/agendar', '/confirmacion', '/listo']
+
+function serviceHref(locale: Locale, key: string) {
+  return key === 'funnelLab' ? FUNNELLAB_URL : `/${locale}${SERVICE_PATHS[key] ?? '/precios'}`
+}
+
+function LangSwitch({ locale, label, pathname }: { locale: Locale; label: string; pathname: string }) {
+  const rest = pathname.replace(/^\/(es|en)(?=\/|$)/, '')
   return (
     <span className="hm-lang" role="group" aria-label={label}>
       {(['es', 'en'] as const).map((l) =>
@@ -25,7 +61,7 @@ function LangSwitch({ locale, label, path }: { locale: Locale; label: string; pa
             {l.toUpperCase()}
           </span>
         ) : (
-          <a key={l} href={`/${l}${path}`} hrefLang={l} lang={l}>
+          <a key={l} href={`/${l}${rest}`} hrefLang={l} lang={l}>
             {l.toUpperCase()}
           </a>
         ),
@@ -34,68 +70,217 @@ function LangSwitch({ locale, label, path }: { locale: Locale; label: string; pa
   )
 }
 
-export function HomeNav({ locale, logo, links, labels, languagePath = '' }: Props) {
-  const [open, setOpen] = useState(false)
+export function HomeNav({ locale, logo, groups, labels }: Props) {
+  const pathname = usePathname() || `/${locale}`
+  const onHome = pathname === `/${locale}` || pathname === `/${locale}/`
+  const focus = FOCUS_PATHS.some((p) => pathname.startsWith(`/${locale}${p}`))
+  const home = onHome ? '' : `/${locale}`
+
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [megaOpen, setMegaOpen] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const megaRef = useRef<HTMLDivElement>(null)
+
+  const links = [
+    { href: `${home}#como-funciona`, label: labels.sistema },
+    { href: `/${locale}/casos`, label: labels.casos },
+    { href: `/${locale}/plataforma`, label: labels.plataforma },
+    { href: `/${locale}/sobre-nosotros`, label: labels.about },
+  ]
+
+  // Al navegar se cierra todo
+  useEffect(() => {
+    setMenuOpen(false)
+    setMegaOpen(false)
+  }, [pathname])
 
   useEffect(() => {
-    if (!open) return
+    if (!menuOpen && !megaOpen) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        setMegaOpen(false)
+      }
+    }
+    const onPointer = (e: PointerEvent) => {
+      if (megaOpen && megaRef.current && !megaRef.current.contains(e.target as Node)) setMegaOpen(false)
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open])
+    window.addEventListener('pointerdown', onPointer)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pointerdown', onPointer)
+    }
+  }, [menuOpen, megaOpen])
+
+  const openMega = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setMegaOpen(true)
+  }
+  const closeMegaSoon = () => {
+    closeTimer.current = setTimeout(() => setMegaOpen(false), 160)
+  }
 
   const cta = (
-    <a href={`/${locale}/agendar`} className="hm-btn hm-btn--solid hm-btn--sm">
+    <Link href={`/${locale}/agendar`} className="hm-btn hm-btn--solid hm-btn--sm">
       {labels.cta}
-    </a>
+    </Link>
   )
+
+  if (focus) {
+    return (
+      <header className="hm-nav">
+        <nav className="hm-nav__bar hm-glass" aria-label={labels.nav}>
+          <Link href={`/${locale}`} className="hm-nav__logo" aria-label={labels.home}>
+            {logo}
+          </Link>
+          <div className="hm-nav__right">
+            <ThemeToggle label={labels.theme} />
+            <Link href={`/${locale}`} className="hm-nav__back">
+              <Arrow />
+              {labels.back}
+            </Link>
+          </div>
+        </nav>
+      </header>
+    )
+  }
 
   return (
     <header className="hm-nav">
-      <nav className="hm-nav__bar hm-glass" aria-label={labels.nav}>
-        <a href={`/${locale}`} className="hm-nav__logo" aria-label={labels.home}>
-          {logo}
-        </a>
-        <ul className="hm-nav__links">
-          {links.map((l) => (
-            <li key={l.href}>
-              <Link className="hm-nav__link" href={l.href}>
-                {l.label}
-              </Link>
+      <div ref={megaRef} className="hm-nav__wrap" onMouseLeave={closeMegaSoon}>
+        <nav className="hm-nav__bar hm-glass" aria-label={labels.nav}>
+          <Link href={`/${locale}`} className="hm-nav__logo" aria-label={labels.home}>
+            {logo}
+          </Link>
+          <ul className="hm-nav__links">
+            <li>
+              <button
+                type="button"
+                className="hm-nav__link hm-nav__trigger"
+                aria-expanded={megaOpen}
+                aria-controls="hm-mega"
+                onMouseEnter={openMega}
+                onClick={() => setMegaOpen((o) => !o)}
+              >
+                {labels.services}
+                <span className="hm-nav__chev" aria-hidden="true" />
+              </button>
             </li>
-          ))}
-        </ul>
-        <div className="hm-nav__right">
-          <LangSwitch locale={locale} label={labels.language} path={languagePath} />
-          <ThemeToggle label={labels.theme} />
-          <span className="hm-nav__cta">{cta}</span>
-          <button
-            type="button"
-            className="hm-nav__menu"
-            aria-expanded={open}
-            aria-controls="hm-menu"
-            onClick={() => setOpen((o) => !o)}
-          >
-            <span className="hm-nav__burger" aria-hidden="true" />
-            {open ? labels.close : labels.menu}
-          </button>
-        </div>
-      </nav>
+            {links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  className="hm-nav__link"
+                  href={l.href}
+                  aria-current={pathname === l.href ? 'page' : undefined}
+                  onMouseEnter={closeMegaSoon}
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="hm-nav__right">
+            <LangSwitch locale={locale} label={labels.language} pathname={pathname} />
+            <ThemeToggle label={labels.theme} />
+            <span className="hm-nav__cta">{cta}</span>
+            <button
+              type="button"
+              className="hm-nav__menu"
+              aria-expanded={menuOpen}
+              aria-controls="hm-menu"
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span className="hm-nav__burger" aria-hidden="true" />
+              {menuOpen ? labels.close : labels.menu}
+            </button>
+          </div>
+        </nav>
 
-      <div id="hm-menu" className="hm-menu hm-glass" hidden={!open}>
+        {/* Megamenú de servicios (escritorio) */}
+        <div
+          id="hm-mega"
+          className={cn('hm-mega hm-glass hm-glass--thick', megaOpen && 'is-open')}
+          onMouseEnter={openMega}
+          hidden={!megaOpen}
+        >
+          {groups.map((group) => (
+            <div key={group.heading} className="hm-mega__group">
+              <p className="hm-mega__heading">{group.heading}</p>
+              <ul>
+                {group.items.map((item) => {
+                  const href = serviceHref(locale, item.key)
+                  const external = item.key === 'funnelLab'
+                  return (
+                    <li key={item.key}>
+                      <a
+                        className="hm-mega__item"
+                        href={href}
+                        aria-current={pathname === href ? 'page' : undefined}
+                        {...(external ? { target: '_blank', rel: 'noopener' } : {})}
+                      >
+                        <span className="hm-mega__label">
+                          {item.label}
+                          {external && <span aria-hidden="true"> ↗</span>}
+                        </span>
+                        <span className="hm-mega__desc">{item.desc}</span>
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+          <div className="hm-mega__cta hm-inset">
+            <p className="hm-mega__eyebrow">{labels.megaEyebrow}</p>
+            <p className="hm-mega__title">{labels.megaTitle}</p>
+            <p className="hm-mega__text">{labels.megaText}</p>
+            {cta}
+            <p className="hm-mega__note">{labels.megaNote}</p>
+          </div>
+          <div className="hm-mega__foot">
+            <Link href={`/${locale}/precios`}>
+              {labels.megaAll}
+              <Arrow />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Menú móvil */}
+      <div id="hm-menu" className="hm-menu hm-glass" hidden={!menuOpen}>
+        <details className="hm-menu__services">
+          <summary>
+            {labels.services}
+            <span className="hm-nav__chev" aria-hidden="true" />
+          </summary>
+          {groups.map((group) => (
+            <div key={group.heading} className="hm-menu__group">
+              <p className="hm-mega__heading">{group.heading}</p>
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item.key}>
+                    <a href={serviceHref(locale, item.key)} {...(item.key === 'funnelLab' ? { target: '_blank', rel: 'noopener' } : {})}>
+                      {item.label}
+                      {item.key === 'funnelLab' && <span aria-hidden="true"> ↗</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </details>
         <ul className="hm-menu__links">
           {links.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} onClick={() => setOpen(false)}>
+              <Link href={l.href} onClick={() => setMenuOpen(false)}>
                 {l.label}
               </Link>
             </li>
           ))}
         </ul>
         <div className="hm-menu__foot">
-          <LangSwitch locale={locale} label={labels.language} path={languagePath} />
+          <LangSwitch locale={locale} label={labels.language} pathname={pathname} />
           {cta}
         </div>
       </div>

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { finalizeDiagnosticCheckout } from '@/lib/diagnostic/server'
 import { parseSlotKey } from '@/lib/ghl/bookings'
 import ConfirmacionView, { type ConfirmationState } from './_view'
@@ -5,6 +6,12 @@ import ConfirmacionView, { type ConfirmationState } from './_view'
 type Props = {
   params: Promise<{ locale: string }>
   searchParams: Promise<{ session_id?: string }>
+}
+
+// Página transaccional: fuera del índice
+export async function generateMetadata({ params }: Pick<Props, 'params'>): Promise<Metadata> {
+  const locale = (await params).locale === 'en' ? 'en' : 'es'
+  return { title: locale === 'en' ? 'Confirmation' : 'Confirmación', robots: { index: false, follow: false } }
 }
 
 // Stripe vuelve aquí con ?session_id=… después del pago: se verifica el cobro y se
