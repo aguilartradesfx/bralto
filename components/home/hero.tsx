@@ -63,6 +63,7 @@ export async function Hero({ locale }: { locale: Locale }) {
               </li>
             ))}
           </ol>
+          <p className="hm-console__note">{t('system.note')}</p>
         </figure>
       </div>
     </section>

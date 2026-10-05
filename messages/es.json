@@ -677,29 +677,35 @@
       "ctaPrimary": "Agendar diagnóstico",
       "ctaSecondary": "Ver cómo se construye un sistema",
       "system": {
-        "label": "Ejemplo de un sistema trabajando",
-        "title": "Su sistema",
+        "label": "Caso de ejemplo de un sistema trabajando",
+        "title": "Caso de ejemplo",
         "live": "En vivo",
+        "note": "Ejemplo básico de un negocio que automatiza sus procesos. Con inteligencia artificial, el alcance es prácticamente ilimitado.",
         "events": [
           {
-            "title": "Lead nuevo",
-            "detail": "Anuncio Meta → formulario",
+            "title": "Solicitud desde su sitio",
+            "detail": "Formulario → CRM",
             "time": "ahora"
           },
           {
-            "title": "Agente IA respondió",
-            "detail": "WhatsApp · calificado",
+            "title": "Agente de IA respondió",
+            "detail": "WhatsApp · dudas resueltas",
             "time": "+4 s"
           },
           {
-            "title": "Cita agendada",
-            "detail": "CRM → recordatorio programado",
-            "time": "+2 min"
+            "title": "Cotización enviada",
+            "detail": "Generada con sus precios",
+            "time": "+1 min"
           },
           {
-            "title": "Venta registrada",
-            "detail": "Evento enviado por CAPI",
-            "time": "día 3"
+            "title": "Tarea para su equipo",
+            "detail": "Con responsable y fecha",
+            "time": "+5 min"
+          },
+          {
+            "title": "Cliente entra a su portal",
+            "detail": "Ve el estado de su pedido",
+            "time": "día 2"
           }
         ]
       }
@@ -822,8 +828,8 @@
     },
     "platform": {
       "eyebrow": "Plataforma",
-      "titleLight": "Su sistema es a la medida.",
-      "titleBold": "La plataforma también es suya.",
+      "titleLight": "Todas estas herramientas",
+      "titleBold": "están incluidas.",
       "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones de WhatsApp, Instagram y correo, pipeline de ventas, automatizaciones, agenda, pagos y reportes. Una sola plataforma que reemplaza todas las herramientas que hoy paga por separado.",
       "features": [
         "CRM",

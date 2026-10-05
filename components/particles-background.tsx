@@ -1,11 +1,17 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
+import { isPrivateSurface } from '@/lib/host-routing'
 
-// Fondo de partículas con scroll (fondo-particulas-handoff.md), con el comportamiento de
-// la implementación de referencia. Adaptaciones del home: monocromo según el tema
-// (blanco en oscuro; en claro, negro y algo más opaco, como indica el handoff) y un solo
-// frame quieto con prefers-reduced-motion (regla del home: todo lo animado se apaga).
+// Fondo de partículas con scroll (fondo-particulas-handoff.md): comportamiento de la
+// implementación de referencia, montado una sola vez en el layout raíz.
+// Mejoras aplicadas (aprobadas): nitidez en retina, velocidad igual a 60 y 120 Hz,
+// sin saltos por el resize de la barra del navegador en móvil y 30 cuadros/s en
+// pantallas táctiles (el vidrio del home se recalcula con cada cuadro).
+// Adaptaciones: monocromo según el tema del home (en claro, negro y algo más opaco,
+// como indica el handoff), un frame quieto con prefers-reduced-motion y apagado en
+// superficies privadas (panel y firma de contratos), igual que GTM.
 
 interface Particle {
   x: number
@@ -32,8 +38,11 @@ interface TravelLine {
   strokeWidth: number
 }
 
+const FRAME_60 = 1000 / 60
+
 export function ParticlesBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pathname = usePathname()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -41,9 +50,16 @@ export function ParticlesBackground() {
     const ctxRaw = canvas.getContext('2d')
     if (!ctxRaw) return
     const ctx: CanvasRenderingContext2D = ctxRaw
-    const root = canvas.closest<HTMLElement>('.hm')
+    if (isPrivateSurface(window.location.hostname, pathname)) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      return
+    }
 
-    const ink = () => (root?.dataset.theme === 'light' ? { rgb: '0,0,0', gain: 1.6 } : { rgb: '255,255,255', gain: 1 })
+    // Tinta según el tema del home (las demás páginas son oscuras)
+    const ink = () =>
+      document.querySelector<HTMLElement>('.hm')?.dataset.theme === 'light'
+        ? { rgb: '0,0,0', gain: 1.6 }
+        : { rgb: '255,255,255', gain: 1 }
     const alpha = (value: number, gain: number) => Math.min(1, value * gain).toFixed(3)
 
     let animId = 0
@@ -53,8 +69,11 @@ export function ParticlesBackground() {
     const setSize = () => {
       W = window.innerWidth
       H = window.innerHeight
-      canvas.width = W
-      canvas.height = H
+      // Retina: el canvas se dibuja a la densidad real de la pantalla (tope 2x por rendimiento)
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = Math.round(W * dpr)
+      canvas.height = Math.round(H * dpr)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     setSize()
 
@@ -97,29 +116,40 @@ export function ParticlesBackground() {
       }
     }
 
-    function drawParticle(p: Particle, rgb: string, gain: number) {
+    function drawParticle(p: Particle, opacity: number, rgb: string, gain: number) {
       ctx.beginPath()
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(${rgb},${alpha(p.opacity, gain)})`
+      ctx.fillStyle = `rgba(${rgb},${alpha(opacity, gain)})`
       ctx.fill()
     }
 
-    function tick() {
+    // Las velocidades de la referencia están en px por cuadro a 60 Hz: se escalan por el
+    // tiempo real entre cuadros (dt = 1 a 60 Hz, 0.5 a 120 Hz, 2 a 30 cuadros/s)
+    const touch = window.matchMedia('(pointer: coarse)').matches
+    const minFrameMs = touch ? 1000 / 30 : 0
+    let last = performance.now()
+
+    function tick(now: number) {
+      animId = requestAnimationFrame(tick)
+      if (now - last < minFrameMs - 1) return
+      const dt = Math.min((now - last) / FRAME_60, 4) // tope por si la pestaña estuvo en pausa
+      last = now
+
       ctx.clearRect(0, 0, W, H)
       const { rgb, gain } = ink()
 
       targetScrollY = window.scrollY
-      smoothScrollY += (targetScrollY - smoothScrollY) * LERP
+      smoothScrollY += (targetScrollY - smoothScrollY) * (1 - Math.pow(1 - LERP, dt))
       const scrollDelta = smoothScrollY - prevSmoothScrollY
       prevSmoothScrollY = smoothScrollY
 
-      if (lines.length < MAX_LINES && Math.random() < 0.004) {
+      if (lines.length < MAX_LINES && Math.random() < 1 - Math.pow(1 - 0.004, dt)) {
         lines.push(makeLine())
       }
 
       for (const p of particles) {
-        p.x += p.vx
-        p.y += p.vy
+        p.x += p.vx * dt
+        p.y += p.vy * dt
         p.y -= scrollDelta
 
         if (p.x < 0) p.x = W
@@ -128,9 +158,9 @@ export function ParticlesBackground() {
         if (p.y > H + 20) p.y = -20
 
         if (p.opacity < p.opacityTarget) {
-          p.opacity = Math.min(p.opacity + p.opacitySpeed, p.opacityTarget)
+          p.opacity = Math.min(p.opacity + p.opacitySpeed * dt, p.opacityTarget)
         } else {
-          p.opacity = Math.max(p.opacity - p.opacitySpeed, 0)
+          p.opacity = Math.max(p.opacity - p.opacitySpeed * dt, 0)
           if (p.opacity === 0) {
             p.opacityTarget = Math.random() * 0.2 + 0.04
             p.vx += (Math.random() - 0.5) * 0.06
@@ -140,7 +170,7 @@ export function ParticlesBackground() {
           }
         }
 
-        drawParticle(p, rgb, gain)
+        drawParticle(p, p.opacity, rgb, gain)
       }
 
       for (let i = lines.length - 1; i >= 0; i--) {
@@ -148,19 +178,19 @@ export function ParticlesBackground() {
         l.y -= scrollDelta
 
         if (l.phase === 'fadein') {
-          l.opacity += 0.0015
+          l.opacity += 0.0015 * dt
           if (l.opacity >= l.maxOpacity) {
             l.opacity = l.maxOpacity
             l.phase = 'travel'
           }
         } else if (l.phase === 'travel') {
-          const step = l.speed
+          const step = l.speed * dt
           l.x += Math.cos(l.angle) * step
           l.y += Math.sin(l.angle) * step
           l.traveled += step
           if (l.traveled >= l.travelMax) l.phase = 'fadeout'
         } else {
-          l.opacity -= 0.0015
+          l.opacity -= 0.0015 * dt
           if (l.opacity <= 0) {
             lines.splice(i, 1)
             continue
@@ -182,8 +212,6 @@ export function ParticlesBackground() {
         ctx.lineWidth = l.strokeWidth
         ctx.stroke()
       }
-
-      animId = requestAnimationFrame(tick)
     }
 
     // Movimiento reducido: un solo frame quieto, que se redibuja si cambia el tema o el tamaño
@@ -191,25 +219,31 @@ export function ParticlesBackground() {
     const drawStatic = () => {
       ctx.clearRect(0, 0, W, H)
       const { rgb, gain } = ink()
-      for (const p of particles) drawParticle({ ...p, opacity: p.opacityTarget * 0.7 }, rgb, gain)
+      for (const p of particles) drawParticle(p, p.opacityTarget * 0.7, rgb, gain)
     }
     let themeObserver: MutationObserver | null = null
 
     if (reduced) {
       drawStatic()
-      if (root) {
+      const home = document.querySelector<HTMLElement>('.hm')
+      if (home) {
         themeObserver = new MutationObserver(drawStatic)
-        themeObserver.observe(root, { attributes: true, attributeFilter: ['data-theme'] })
+        themeObserver.observe(home, { attributes: true, attributeFilter: ['data-theme'] })
       }
     } else {
-      tick()
+      animId = requestAnimationFrame(tick)
     }
 
     const onResize = () => {
+      // En móvil la barra de direcciones cambia solo el alto al hacer scroll: ahí no se
+      // recolocan las partículas (se vería como un salto)
+      const widthChanged = window.innerWidth !== W
       setSize()
-      for (const p of particles) {
-        p.x = Math.random() * W
-        p.y = Math.random() * H
+      if (widthChanged) {
+        for (const p of particles) {
+          p.x = Math.random() * W
+          p.y = Math.random() * H
+        }
       }
       if (reduced) drawStatic()
     }
@@ -220,7 +254,14 @@ export function ParticlesBackground() {
       window.removeEventListener('resize', onResize)
       themeObserver?.disconnect()
     }
-  }, [])
+  }, [pathname])
 
-  return <canvas ref={canvasRef} className="hm-particles" aria-hidden="true" />
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="fixed inset-0 h-full w-full pointer-events-none"
+      style={{ zIndex: 0 }}
+    />
+  )
 }
