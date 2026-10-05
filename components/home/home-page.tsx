@@ -14,6 +14,7 @@ import { HomeNav } from './home-nav'
 import { BraltoLogo } from './logo'
 import { Guarantee, Offer } from './offer'
 import { Platform } from './platform'
+import { ParticlesBackground } from './particles'
 import { Ambient, type Locale } from './primitives'
 import { Specular } from './specular'
 import { Testimonials } from './testimonials'
@@ -35,6 +36,7 @@ export async function HomePage({ locale }: { locale: Locale }) {
       {/* Fija el tema antes del primer pintado (sin flash); debe ser el primer hijo */}
       <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       <Ambient />
+      <ParticlesBackground />
       <HomeNav
         locale={locale}
         logo={<BraltoLogo />}
