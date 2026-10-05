@@ -44,7 +44,7 @@ const CONTENT = {
     headline: 'Anuncios que',
     headlineItalic: 'convierten.',
     sub: 'Gestionamos tus campañas en Meta y Google de principio a fin — desde la estrategia hasta la optimización diaria.',
-    cta: 'Agendar llamada gratis',
+    cta: 'Agendar diagnóstico',
     stats: [['Meta + Google', 'Plataformas'], ['2×/semana', 'Optimización'], ['Semanal', 'Reporte']] as [string, string][],
     dash: {
       header: 'Campaña activa — Mes 2',
@@ -75,7 +75,7 @@ const CONTENT = {
     ctaHeadline: 'Hablemos de',
     ctaItalic: 'tus campañas.',
     ctaSub: '30 minutos para entender tus objetivos y proponerte una estrategia concreta. Sin compromiso.',
-    ctaBtn: 'Agendar llamada gratis',
+    ctaBtn: 'Agendar diagnóstico',
     ctaBack: 'Ver todos los servicios',
     features: [
       { n: '01', t: 'Campañas en Meta Ads', d: 'Configuración, creativos, segmentación de audiencias y A/B testing. Gestionamos todo desde la cuenta de anuncios hasta la optimización continua.' },
@@ -102,7 +102,7 @@ const CONTENT = {
     headline: 'Ads that',
     headlineItalic: 'actually convert.',
     sub: 'We run your Meta and Google campaigns end to end — from strategy to daily optimization.',
-    cta: 'Book a free call',
+    cta: 'Book a diagnostic call',
     stats: [['Meta + Google', 'Platforms'], ['2×/week', 'Optimization'], ['Weekly', 'Reporting']] as [string, string][],
     dash: {
       header: 'Active campaign — Month 2',
@@ -133,7 +133,7 @@ const CONTENT = {
     ctaHeadline: "Let's talk about",
     ctaItalic: 'your campaigns.',
     ctaSub: '30 minutes to understand your goals and put together a concrete strategy. No commitment.',
-    ctaBtn: 'Book a free call',
+    ctaBtn: 'Book a diagnostic call',
     ctaBack: 'See all services',
     features: [
       { n: '01', t: 'Meta Ads campaigns', d: 'Setup, creatives, audience targeting, and A/B testing. We handle everything from the ad account to ongoing optimization.' },

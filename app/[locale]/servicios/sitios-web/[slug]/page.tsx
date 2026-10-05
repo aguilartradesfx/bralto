@@ -243,7 +243,7 @@ export default async function ClientPage({ params }: { params: Promise<{ locale:
               href={`/${locale}/agendar`}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#5bb6ff] hover:bg-[#7cc5ff] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(91,182,255,0.12)]"
             >
-              Agendar llamada gratis
+              Agendar diagnóstico
               <ArrowUpRight size={15} />
             </Link>
             <Link

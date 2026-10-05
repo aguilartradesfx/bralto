@@ -3,6 +3,7 @@ import { verifyStripeSignature, StripeSignatureError, type StripeEvent } from '@
 import { createServiceClient } from '@/lib/supabase/service'
 import { handleGhlSaasCheckout } from '@/lib/stripe/handlers/ghl-saas'
 import { handleBraltoEssentialsCheckout } from '@/lib/stripe/handlers/bralto-essentials'
+import { finalizeDiagnosticCheckout } from '@/lib/diagnostic/server'
 
 // Stripe needs the raw body to verify signatures — disable any body parsing.
 export const runtime = 'nodejs'
@@ -72,6 +73,10 @@ export async function POST(req: Request) {
             await handleBraltoEssentialsCheckout(session)
           } else if (productKind === 'ghl_saas') {
             await handleGhlSaasCheckout(session)
+          } else if (productKind === 'diagnostic') {
+            // Idempotente: si la página de éxito ya confirmó, no repite nada
+            const result = await finalizeDiagnosticCheckout(session.id)
+            console.log(`[stripe webhook] diagnostic ${session.id}: ${result.status}`)
           } else {
             // No handler registered for this product_kind — log and move on.
             console.log(

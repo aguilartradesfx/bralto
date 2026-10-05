@@ -54,3 +54,15 @@ Reemplazar el home de `/es` y `/en` por el copy aprobado y un estilo liquid glas
 - URL de la comunidad (hoy `#`; el link se oculta hasta tenerla).
 - Respuestas de la FAQ marcadas como borrador en el HTML.
 - Title y meta description nuevos (propuestos en `messages/*.json`, `Home.meta`).
+
+## Diagnóstico pagado ($97) — 2026-10-05
+
+Aprobado por Alejandro en el chat ("Todo bien" a la propuesta).
+
+- **Cuenta:** Stripe "Alejandro Aguilar" (`STRIPE_SECRET_KEY`). Claves de prueba en desarrollo y preview; las live las carga Alejandro en Vercel (Production).
+- **Flujo:** el visitante elige horario (retención en Redis) → datos → preguntas → paga $97 USD en Stripe Checkout (el horario queda retenido ~31 min, lo mismo que dura la sesión de pago) → confirmación.
+- **Confirmación idempotente** desde la página de éxito (`/confirmacion?session_id=…`) y desde el webhook (`checkout.session.completed`, `product_kind = diagnostic`). Lo que llegue primero confirma; el otro no repite nada.
+- **Términos** (palabras de Alejandro): si contrata el servicio, los $97 se descuentan del proyecto; si no, no son reembolsables. Sin plazo y sin promesa de reprogramación o reembolso por cancelación (no definidos).
+- **Modo prueba:** un pago de prueba no crea la cita en el calendario real ni escribe en Supabase, y usa claves de Redis separadas.
+- **Textos:** todo lo que en el sitio decía que la llamada era gratis pasa a reflejar el pago.
+- **Para producción:** claves live de la cuenta nueva, endpoint de webhook en esa cuenta y recrear ahí el precio del plan de $87 (`/plataforma`), que hoy vive en la cuenta anterior.

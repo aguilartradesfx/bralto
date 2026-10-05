@@ -24,9 +24,9 @@
     "ctaTitle": "30 minutes,",
     "ctaTitle2": "no strings attached.",
     "ctaDesc": "We'll understand your business and tell you what makes sense for you right now.",
-    "ctaBtn": "Book for free",
+    "ctaBtn": "Book a diagnostic",
     "seeAll": "See all services →",
-    "bookFree": "Book a free call →",
+    "bookFree": "Book a diagnostic call →",
     "bookCall": "Book a call",
     "seeServices": "View pricing"
   },
@@ -570,7 +570,7 @@
     "close": {
       "headline": "Let's build the system",
       "headlineItalic": "your business needs.",
-      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. Thirty minutes. No commitment. No cost.",
+      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. Thirty minutes. No commitment.",
       "signature": "— Alejandro Aguilar, Founder",
       "cta": "Book a call with me"
     }
@@ -595,7 +595,7 @@
     "ctaHeadline": "Let's talk",
     "ctaHeadlineItalic": "no pressure.",
     "ctaDesc": "30 minutes to understand your business and figure out what makes sense for you today.",
-    "ctaBtn": "Book a free call",
+    "ctaBtn": "Book a diagnostic call",
     "ctaBack": "Back to home",
     "home": "Home"
   },
@@ -955,16 +955,20 @@
         {
           "q": "How much does it cost?",
           "a": "Projects start at $3,500 USD, with financing available. The final price depends on the scope and is defined during the diagnosis."
+        },
+        {
+          "q": "Does the diagnostic call have a cost?",
+          "a": "Yes: $97 USD. If you hire us, that amount is deducted from the project; if not, it is non-refundable."
         }
       ]
     },
     "finalCta": {
-      "eyebrow": "Free diagnostic call",
+      "eyebrow": "30-minute diagnostic call",
       "titleLight": "Every month with just a website is",
       "titleBold": "a month of lost customers.",
       "lead": "In 30 minutes, we'll show you what your business's system would look like.",
-      "cta": "Book a free diagnostic call",
-      "note": "30 minutes · No commitment · Free of charge"
+      "cta": "Book a diagnostic call",
+      "note": "$97 USD · Deducted from the project if you hire us"
     },
     "footer": {
       "tagline": "Digital infrastructure for businesses",

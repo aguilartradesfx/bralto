@@ -24,9 +24,9 @@
     "ctaTitle": "30 minutos,",
     "ctaTitle2": "sin compromiso.",
     "ctaDesc": "Entendemos tu negocio y te decimos qué tiene sentido para vos hoy.",
-    "ctaBtn": "Agendar gratis",
+    "ctaBtn": "Agendar diagnóstico",
     "seeAll": "Ver todos los servicios →",
-    "bookFree": "Agendá una llamada gratis →",
+    "bookFree": "Agendá tu diagnóstico →",
     "bookCall": "Agendar llamada",
     "seeServices": "Ver servicios"
   },
@@ -570,7 +570,7 @@
     "close": {
       "headline": "Construyamos el sistema",
       "headlineItalic": "que su negocio necesita.",
-      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso. Sin costo.",
+      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso.",
       "signature": "— Alejandro Aguilar, Fundador",
       "cta": "Agendar llamada conmigo"
     }
@@ -595,7 +595,7 @@
     "ctaHeadline": "Hablemos",
     "ctaHeadlineItalic": "sin compromiso.",
     "ctaDesc": "30 minutos para entender tu negocio y proponerte qué tiene sentido para vos hoy.",
-    "ctaBtn": "Agendar llamada gratis",
+    "ctaBtn": "Agendar diagnóstico",
     "ctaBack": "Volver al inicio",
     "home": "Inicio"
   },
@@ -955,16 +955,20 @@
         {
           "q": "¿Cuánto cuesta?",
           "a": "Los proyectos empiezan desde $3,500 USD, con opción de financiamiento. El precio final depende del alcance y se define en el diagnóstico."
+        },
+        {
+          "q": "¿El diagnóstico tiene costo?",
+          "a": "Sí: $97 USD. Si contrata el servicio, ese monto se descuenta del proyecto; si no, no es reembolsable."
         }
       ]
     },
     "finalCta": {
-      "eyebrow": "Diagnóstico gratuito",
+      "eyebrow": "Diagnóstico de 30 minutos",
       "titleLight": "Cada mes con una página web sola es",
       "titleBold": "un mes de clientes perdidos.",
       "lead": "En 30 minutos le mostramos cómo se vería el sistema de su negocio.",
-      "cta": "Agendar diagnóstico gratuito",
-      "note": "30 minutos · Sin compromiso · Sin costo"
+      "cta": "Agendar diagnóstico",
+      "note": "$97 USD · Se descuenta del proyecto si decide contratar"
     },
     "footer": {
       "tagline": "Infraestructura digital para negocios",

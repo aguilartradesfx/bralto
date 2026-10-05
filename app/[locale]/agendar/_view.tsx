@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -61,9 +60,9 @@ const COUNTRY_CODES = [
 const CONTENT = {
   es: {
     backToSite: 'Volver al sitio',
-    eyebrow: 'Llamada Estratégica Gratuita',
-    headline: 'Agende su llamada con el equipo.',
-    subline: '30 minutos · Sin costo · Sin compromiso',
+    eyebrow: 'Diagnóstico de 30 minutos',
+    headline: 'Agende su diagnóstico con el equipo.',
+    subline: '30 minutos · $97 USD · Se descuenta del proyecto si decide contratar',
     stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio'],
     slotLocked: 'Horario reservado temporalmente',
     step0Heading: 'Seleccione una fecha',
@@ -78,9 +77,13 @@ const CONTENT = {
     step2Sub: 'Esto nos ayuda a preparar la llamada para que sea lo más útil posible.',
     back: 'Volver',
     next: 'Continuar',
-    submitting: 'Agendando…',
-    submit: 'Agendar llamada',
-    footer: '30 minutos · Sin costo · Puede cancelar en cualquier momento',
+    submitting: 'Abriendo el pago…',
+    submit: 'Pagar $97 y agendar',
+    footer: 'Pago seguro con Stripe. Si contrata el servicio, los $97 se descuentan del proyecto; si no, no son reembolsables.',
+    summaryTitle: 'Diagnóstico de 30 minutos',
+    summaryPrice: '$97 USD',
+    summaryNote: 'Si contrata el servicio, este monto se descuenta del proyecto; si no, no es reembolsable.',
+    paymentCancelled: 'El pago no se completó y no se hizo ningún cobro. Su horario sigue reservado unos minutos por si quiere intentarlo de nuevo.',
     errDate: 'Seleccione una fecha.',
     errTime: 'Seleccione un horario.',
     errFirstName: 'Ingrese su nombre.',
@@ -124,9 +127,9 @@ const CONTENT = {
   },
   en: {
     backToSite: 'Back to site',
-    eyebrow: 'Free Strategy Call',
-    headline: 'Book your call with our team.',
-    subline: '30 minutes · No cost · No commitment',
+    eyebrow: '30-minute diagnostic call',
+    headline: 'Book your diagnostic call with our team.',
+    subline: '30 minutes · $97 USD · Deducted from the project if you hire us',
     stepLabels: ['Date & time', 'Your info', 'Your business'],
     slotLocked: 'Time slot temporarily reserved',
     step0Heading: 'Select a date',
@@ -141,9 +144,13 @@ const CONTENT = {
     step2Sub: 'This helps us prepare so the call is as useful as possible.',
     back: 'Back',
     next: 'Continue',
-    submitting: 'Booking…',
-    submit: 'Book call',
-    footer: '30 minutes · No cost · Cancel anytime',
+    submitting: 'Opening checkout…',
+    submit: 'Pay $97 and book',
+    footer: 'Secure payment with Stripe. If you hire us, the $97 is deducted from the project; if not, it is non-refundable.',
+    summaryTitle: '30-minute diagnostic call',
+    summaryPrice: '$97 USD',
+    summaryNote: 'If you hire us, this amount is deducted from the project; if not, it is non-refundable.',
+    paymentCancelled: "The payment wasn't completed and you were not charged. Your time slot stays reserved for a few minutes in case you want to try again.",
     errDate: 'Please select a date.',
     errTime: 'Please select a time slot.',
     errFirstName: 'Please enter your first name.',
@@ -186,6 +193,8 @@ const CONTENT = {
     ],
   },
 }
+
+const SESSION_KEY = 'bralto-agendar-session'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -267,7 +276,6 @@ function StepIndicator({ step, labels }: { step: number; labels: string[] }) {
 
 export default function AgendarPage() {
   const locale = useLocale()
-  const router = useRouter()
   const c = CONTENT[locale as 'es' | 'en'] ?? CONTENT.es
 
   const availableDays = getAvailableDays()
@@ -281,9 +289,27 @@ export default function AgendarPage() {
   // (GHL down) → don't restrict, show all curated slots as before.
   const [ghlAvailable, setGhlAvailable] = useState<Set<string> | null>(null)
 
-  const [sessionId] = useState<string>(() =>
-    typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36),
-  )
+  // Se guarda en sessionStorage: si cancela el pago y vuelve, el horario retenido sigue siendo suyo
+  const [sessionId] = useState<string>(() => {
+    if (typeof window === 'undefined') return ''
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY)
+      if (saved) return saved
+    } catch {}
+    const id =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`
+    try {
+      sessionStorage.setItem(SESSION_KEY, id)
+    } catch {}
+    return id
+  })
+  const [notice, setNotice] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('pago') === 'cancelado') setNotice(c.paymentCancelled)
+  }, [c.paymentCancelled])
 
   const [lockExpiresAt, setLockExpiresAt] = useState<number | null>(null)
   const [countdown, setCountdown] = useState(0)
@@ -413,11 +439,10 @@ export default function AgendarPage() {
 
     const key = slotKey(form.selectedDate!, form.selectedTime!)
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch('/api/diagnostic/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'confirm',
           slot: key,
           sessionId,
           nombre: form.nombre,
@@ -426,22 +451,21 @@ export default function AgendarPage() {
           telefono: form.telefono,
           email: form.email,
           answers: form.answers,
+          locale,
         }),
       })
+      const data = (await res.json().catch(() => ({}))) as { url?: string }
       if (res.status === 409) {
-        const data = await res.json()
-        setErrors([data.error ?? c.errConflict])
+        setErrors([c.errConflict])
         setSubmitting(false)
         return
       }
-      if (!res.ok) throw new Error()
+      if (!res.ok || !data.url) throw new Error()
+      window.location.assign(data.url)
     } catch {
       setErrors([c.errGeneric])
       setSubmitting(false)
-      return
     }
-
-    router.push(`/${locale}/confirmacion`)
   }
 
   return (
@@ -473,6 +497,12 @@ export default function AgendarPage() {
           </h1>
           <p className="text-sm text-white/35">{c.subline}</p>
         </div>
+
+        {notice && (
+          <div className="mb-8 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white/60">
+            {notice}
+          </div>
+        )}
 
         {/* Step indicator */}
         <div className="flex justify-center">
@@ -663,6 +693,14 @@ export default function AgendarPage() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-10 rounded-xl border border-[#5bb6ff]/20 bg-[#5bb6ff]/5 px-5 py-4">
+              <div className="flex items-baseline justify-between gap-4">
+                <p className="text-sm font-semibold text-white">{c.summaryTitle}</p>
+                <p className="font-mono text-sm font-semibold text-white">{c.summaryPrice}</p>
+              </div>
+              <p className="mt-1.5 text-xs leading-relaxed text-white/45">{c.summaryNote}</p>
             </div>
           </div>
         )}

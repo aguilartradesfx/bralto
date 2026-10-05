@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       en: 'Book a Call with Bralto',
     },
     descriptions: {
-      es: 'Conversemos sobre cómo automatizar tu operación con CRM, IA y sistemas integrados. Llamada gratuita de descubrimiento.',
-      en: "Let's talk about automating your operation with CRM, AI, and integrated systems. Free discovery call.",
+      es: 'Conversemos sobre cómo automatizar tu operación con CRM, IA y sistemas integrados. Diagnóstico de 30 minutos con el equipo.',
+      en: "Let's talk about automating your operation with CRM, AI, and integrated systems. 30-minute diagnostic session with our team.",
     },
   })
 }
