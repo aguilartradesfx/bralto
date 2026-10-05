@@ -15,6 +15,16 @@ type StripeCheckoutSession = {
   url: string
 }
 
+type StripePriceList = { data: { id: string }[] }
+
+// The plan's price is looked up by key in the current Stripe mode (test or live)
+async function resolvePriceId(lookupKey: string): Promise<string | null> {
+  const prices = await stripeApi<StripePriceList>('/prices', {
+    query: { 'lookup_keys[]': lookupKey, active: 'true', limit: '1' },
+  })
+  return prices.data[0]?.id ?? null
+}
+
 function resolveOrigin(req: Request): string {
   const origin = req.headers.get('origin')
   if (origin) return origin.replace(/\/$/, '')
@@ -40,15 +50,29 @@ export async function POST(req: Request) {
   const locale = body.locale === 'en' ? 'en' : 'es'
   const origin = resolveOrigin(req)
 
+  let priceId: string | null
+  try {
+    priceId = await resolvePriceId(plan.lookupKey)
+  } catch (err) {
+    console.error('[stripe checkout] price lookup failed:', err)
+    return NextResponse.json({ error: 'Could not create checkout session' }, { status: 502 })
+  }
+  if (!priceId) {
+    console.error(`[stripe checkout] no active price with lookup key "${plan.lookupKey}"`)
+    return NextResponse.json({ error: 'Plan is not configured' }, { status: 500 })
+  }
+
   // Stripe form-encoding (x-www-form-urlencoded) uses [bracket] notation for
   // nested objects — see serializeStripeForm in lib/stripe/server.ts.
   const params: Record<string, unknown> = {
     mode: 'subscription',
-    'line_items[0][price]': plan.priceId,
+    'line_items[0][price]': priceId,
     'line_items[0][quantity]': 1,
     success_url: `${origin}/87-payment?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/${locale}/precios`,
     allow_promotion_codes: true,
+    // Siempre en dólares: sin conversión a la moneda local del visitante
+    'adaptive_pricing[enabled]': 'false',
     'phone_number_collection[enabled]': true,
     payment_method_collection: 'always',
     'metadata[product_kind]': plan.productKind,

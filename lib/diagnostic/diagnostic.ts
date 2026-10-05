@@ -94,6 +94,8 @@ export function buildDiagnosticCheckout(
     'line_items[0][price_data][unit_amount]': DIAGNOSTIC_PRICE_CENTS,
     'line_items[0][price_data][product_data][name]': product.name,
     'line_items[0][price_data][product_data][description]': product.description,
+    // Siempre en dólares (decisión de Alejandro): sin conversión a la moneda local
+    'adaptive_pricing[enabled]': 'false',
     customer_email: req.email,
     client_reference_id: req.slot,
     locale: req.locale,

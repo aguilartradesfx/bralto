@@ -31,7 +31,7 @@ export function Footer() {
       label: t('sections.start.label'),
       links: [
         { title: t('sections.start.links.agendar'), href: `/${locale}/agendar` },
-        { title: t('sections.start.links.empezar'), href: 'https://buy.stripe.com/7sY7sK4ZBcuE61487P5EY0t' },
+        { title: t('sections.start.links.empezar'), href: `/${locale}/plataforma` },
       ],
     },
     {
@@ -44,7 +44,7 @@ export function Footer() {
   ]
 
   return (
-    <footer className="relative w-full border-t border-white/[0.05] bg-[#060607] px-6 py-12 lg:py-16">
+    <footer className="relative w-full border-t border-white/[0.05] px-6 py-12 lg:py-16">
       {/* Glow line */}
       <div className="absolute inset-x-0 top-0 mx-auto h-px w-1/3 -translate-y-1/2 rounded-full bg-white/[0.08] blur-sm" />
 

@@ -53,6 +53,8 @@ test('la sesión de Stripe cobra $97 USD una sola vez y vuelve al sitio en el id
   assert.equal(p['line_items[0][price_data][currency]'], 'usd')
   assert.equal(p['line_items[0][price_data][unit_amount]'], 9700)
   assert.equal(p['line_items[0][quantity]'], 1)
+  // Siempre en dólares: sin la conversión automática a la moneda local del visitante
+  assert.equal(p['adaptive_pricing[enabled]'], 'false')
   assert.equal(p.success_url, 'https://bralto.io/en/confirmacion?session_id={CHECKOUT_SESSION_ID}')
   assert.equal(p.cancel_url, 'https://bralto.io/en/agendar?pago=cancelado')
   assert.equal(p.locale, 'en')
