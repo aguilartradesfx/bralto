@@ -4,9 +4,10 @@ import { getTranslations } from 'next-intl/server'
 import { Arrow, Check } from '@/components/home/icons'
 import { SectionHead, type Locale } from '@/components/home/primitives'
 import '@/components/home/pages.css'
+// Retrato del cierre: WebP 1080×1440 (54 KB, antes un PNG de 3.5 MB)
+import closePhoto from './alejandro-aguilar.webp'
 
 const PHOTO_1 = 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69ffbef9728556272106b8ac.jpg'
-const PHOTO_2 = 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69ffc4a9a7b9e0385a428428.jpg'
 
 const ALT = {
   es: { founder: 'Alejandro Aguilar, fundador de Bralto', portrait: 'Alejandro Aguilar' },
@@ -96,7 +97,7 @@ export default async function SobreNosotrosView({ locale }: { locale: Locale }) 
             <p className="ab-close__note">{cta('note')}</p>
           </div>
           <figure className="ab-photo ab-photo--small hm-glass hm-rv">
-            <Image src={PHOTO_2} alt={ALT[locale].portrait} width={480} height={560} sizes="(min-width: 1000px) 440px, 100vw" />
+            <Image src={closePhoto} alt={ALT[locale].portrait} placeholder="blur" sizes="(min-width: 1000px) 440px, 100vw" />
           </figure>
         </div>
       </section>

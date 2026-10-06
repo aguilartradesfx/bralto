@@ -10,8 +10,12 @@ import { Platform } from './platform'
 import type { Locale } from './primitives'
 import { Testimonials } from './testimonials'
 
+// Testimonios en video: ocultos también en dev/preview hasta tener los videos reales.
+// Para mostrarlos de nuevo, cambiar a true (el componente queda intacto).
+const SHOW_TESTIMONIALS = false
+
 export async function HomePage({ locale }: { locale: Locale }) {
-  // Testimonios y el link a la comunidad tienen datos pendientes: solo en dev/preview
+  // El link a la comunidad tiene datos pendientes: solo en dev/preview
   const pending = showPending(process.env)
 
   return (
@@ -23,7 +27,7 @@ export async function HomePage({ locale }: { locale: Locale }) {
       <Platform locale={locale} />
       <Offer locale={locale} showCommunity={pending} />
       <Guarantee locale={locale} />
-      {pending && <Testimonials locale={locale} />}
+      {SHOW_TESTIMONIALS && pending && <Testimonials locale={locale} />}
       <Faq locale={locale} />
       <FinalCta locale={locale} />
     </main>
