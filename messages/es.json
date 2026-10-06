@@ -576,78 +576,125 @@
     }
   },
   "PreciosPage": {
-    "badge": "Bralto",
-    "badgeSub": "Servicios y precios",
+    "eyebrow": "Servicios",
     "headline": "Todo lo que",
     "headlineItalic": "hacemos.",
-    "desc": "Precios de referencia para que tengas una idea. El definitivo siempre depende del alcance — lo cerramos juntos en la llamada.",
+    "desc": "Cada servicio se cotiza a la medida: el precio depende del alcance y lo definimos juntos en el diagnóstico.",
+    "custom": "A la medida",
+    "free": "Gratis",
     "services": {
-      "sitiosWeb": { "name": "Sitios web profesionales", "from": "Desde $997", "period": "pago único", "desc": "Diseño a medida, SEO incluido y entrega rápida. Tu presencia online lista para convertir." },
-      "produccionContenido": { "name": "Producción de contenido", "from": "Desde $650", "period": "por mes", "desc": "Videos, stories y estrategia editorial mensual. Producimos y publicamos por vos." },
-      "campanas": { "name": "Campañas publicitarias", "from": "A convenir", "period": "fee de gestión mensual", "desc": "Gestión de Meta Ads y Google Ads de punta a punta, con optimización y reporte semanal." },
-      "automatizacion": { "name": "Automatización de procesos", "from": "Desde $1,450", "period": "pago único", "desc": "Workflows, agentes de IA e integraciones que hacen correr tu operación sola." },
-      "sistemasInternos": { "name": "Sistemas internos a medida", "from": "Desde $1,997", "period": "según alcance", "desc": "CRMs, dashboards, portales internos y herramientas construidas para tu operación." },
-      "asesoria": { "name": "Asesoría de marketing", "from": "A convenir", "period": "según formato", "desc": "Estrategia, posicionamiento y roadmap de 90 días para crecer con intención." },
-      "funnelLab": { "name": "FunnelLab", "from": "Gratis", "period": "para empezar", "desc": "Simulá tu embudo de ventas completo, identificá cuellos de botella y elegí la estrategia más rentable antes de invertir." }
+      "sitiosWeb": {
+        "name": "Sitios web profesionales",
+        "desc": "Diseño a medida, SEO incluido y entrega rápida. Su presencia online lista para convertir."
+      },
+      "produccionContenido": {
+        "name": "Producción de contenido",
+        "desc": "Videos, stories y estrategia editorial mensual. Producimos y publicamos por usted."
+      },
+      "campanas": {
+        "name": "Campañas publicitarias",
+        "desc": "Gestión de Meta Ads y Google Ads de punta a punta, con optimización y reporte semanal."
+      },
+      "automatizacion": {
+        "name": "Automatización de procesos",
+        "desc": "Workflows, agentes de IA e integraciones que hacen correr su operación sola."
+      },
+      "sistemasInternos": {
+        "name": "Sistemas internos a medida",
+        "desc": "CRMs, dashboards, portales internos y herramientas construidas para su operación."
+      },
+      "asesoria": {
+        "name": "Asesoría de marketing",
+        "desc": "Estrategia, posicionamiento y roadmap de 90 días para crecer con intención."
+      },
+      "funnelLab": {
+        "name": "FunnelLab",
+        "desc": "Simule su embudo de ventas completo, identifique cuellos de botella y elija la estrategia más rentable antes de invertir."
+      }
     },
     "viewDetails": "Ver detalles",
-    "ctaLabel": "¿No sabés por dónde empezar?",
-    "ctaHeadline": "Hablemos",
-    "ctaHeadlineItalic": "sin compromiso.",
-    "ctaDesc": "30 minutos para entender tu negocio y proponerte qué tiene sentido para vos hoy.",
-    "ctaBtn": "Agendar diagnóstico",
-    "ctaBack": "Volver al inicio",
-    "home": "Inicio"
+    "ctaLight": "¿No sabe por dónde empezar?",
+    "ctaBold": "Hablemos."
   },
   "PlataformaPage": {
-    "home": "Inicio",
     "badge": "La plataforma",
     "badgeSub": "$87/mes · 14 días gratis",
-    "headline": "Todo tu negocio,",
+    "headline": "Todo su negocio,",
     "headlineItalic": "en una sola plataforma.",
     "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar por $87 al mes. Esto es todo lo que incluye.",
     "priceLabel": "Desde",
     "price": "$87",
     "period": "/mes",
-    "priceNote": "Hoy pagas $0 · 14 días gratis · Cancela cuando quieras",
+    "priceNote": "Hoy paga $0 · 14 días gratis · Cancele cuando quiera",
     "ctaPrimary": "Iniciar prueba gratuita",
-    "ctaSecondary": "Volver al inicio",
+    "ctaSecondary": "Agendar diagnóstico",
+    "redirecting": "Abriendo el pago…",
+    "error": "No se pudo abrir el pago. Inténtelo de nuevo.",
     "includesLabel": "Qué incluye",
-    "includesHeadline": "Todo lo que necesitas para operar",
-    "includesHeadlineItalic": "sin saltar entre herramientas.",
+    "includesLight": "Todo lo que necesita para operar",
+    "includesBold": "sin saltar entre herramientas.",
     "includesDesc": "Tres áreas, una sola plataforma. Sin plugins, sin integraciones frágiles y sin costos escondidos.",
     "replacesLabel": "Lo que reemplaza",
-    "replacesHeadline": "Una plataforma en vez de diez suscripciones",
-    "replacesDesc": "Todo lo que hoy pagas por separado, en un solo precio.",
-    "toolHeader": "Herramienta",
-    "costHeader": "Costo mensual",
-    "withoutLabel": "Por separado pagarías",
-    "withLabel": "Con Bralto",
-    "allToolsNote": "Todas las herramientas. Un solo precio. Sin sorpresas.",
+    "replacesLight": "Una plataforma",
+    "replacesBold": "en vez de diez suscripciones.",
+    "replacesDesc": "Todo lo que hoy paga por separado, en un solo precio.",
+    "withLabel": "Con Bralto: $87/mes",
     "detailsLabel": "Detalles del plan",
-    "detailsHeadline": "Cómo funciona",
+    "detailsLight": "Así funciona",
+    "detailsBold": "el plan.",
     "details": [
-      { "title": "14 días gratis", "desc": "Prueba la plataforma completa. El cobro empieza solo si decides quedarte." },
-      { "title": "$87 al mes", "desc": "Un precio fijo por todo. Sin cargos por usuario ni sorpresas a fin de mes." },
-      { "title": "Sin permanencia", "desc": "Mes a mes. Cancela cuando quieras desde tu propia cuenta." },
-      { "title": "App móvil incluida", "desc": "Gestiona conversaciones, pagos y agenda desde tu teléfono." },
-      { "title": "Soporte real", "desc": "Te ayudamos a configurar todo y respondemos cuando lo necesitas." },
-      { "title": "Tus datos son tuyos", "desc": "Exporta tus contactos y tu información cuando quieras. Sin candados." }
+      {
+        "title": "14 días gratis",
+        "desc": "Pruebe la plataforma completa. El cobro empieza solo si decide quedarse."
+      },
+      {
+        "title": "$87 al mes",
+        "desc": "Un precio fijo por todo. Sin cargos por usuario ni sorpresas a fin de mes."
+      },
+      {
+        "title": "Sin permanencia",
+        "desc": "Mes a mes. Cancele cuando quiera desde su propia cuenta."
+      },
+      {
+        "title": "App móvil incluida",
+        "desc": "Gestione conversaciones, pagos y agenda desde su teléfono."
+      },
+      {
+        "title": "Soporte real",
+        "desc": "Le ayudamos a configurar todo y respondemos cuando lo necesita."
+      },
+      {
+        "title": "Sus datos son suyos",
+        "desc": "Exporte sus contactos y su información cuando quiera. Sin candados."
+      }
     ],
     "faqLabel": "Preguntas frecuentes",
-    "faqHeadline": "Antes de empezar",
+    "faqLight": "Antes de",
+    "faqBold": "empezar.",
     "faq": [
-      { "q": "¿Qué pasa después de los 14 días?", "a": "Si decides continuar, se activa el cobro de $87/mes. Si no, no se te cobra nada." },
-      { "q": "¿Puedo cancelar cuando quiera?", "a": "Sí. No hay permanencia ni penalización: cancelas mes a mes desde tu cuenta." },
-      { "q": "¿La plataforma viene con la implementación?", "a": "Sí. Cuando trabajamos tu sistema automatizado, la plataforma va incluida. También puedes contratarla sola." },
-      { "q": "¿Reemplaza de verdad mis otras herramientas?", "a": "Sí. CRM, sitio web, agenda, email/SMS, funnels y multicanal viven en un solo lugar, así dejas de pagar y coordinar varias suscripciones." }
+      {
+        "q": "¿Qué pasa después de los 14 días?",
+        "a": "Si decide continuar, se activa el cobro de $87/mes. Si no, no se le cobra nada."
+      },
+      {
+        "q": "¿Puedo cancelar cuando quiera?",
+        "a": "Sí. No hay permanencia ni penalización: cancela mes a mes desde su cuenta."
+      },
+      {
+        "q": "¿La plataforma viene con la implementación?",
+        "a": "Sí. Cuando trabajamos su sistema automatizado, la plataforma va incluida. También puede contratarla sola."
+      },
+      {
+        "q": "¿Reemplaza de verdad mis otras herramientas?",
+        "a": "Sí. CRM, sitio web, agenda, email/SMS, funnels y multicanal viven en un solo lugar, así deja de pagar y coordinar varias suscripciones."
+      }
     ],
-    "finalLabel": "Empieza hoy",
-    "finalHeadline": "Prueba la plataforma",
+    "finalLabel": "Empiece hoy",
+    "finalHeadline": "Pruebe la plataforma",
     "finalHeadlineItalic": "14 días gratis.",
-    "finalDesc": "Sin compromiso. Explora todo lo que incluye y decide con calma.",
+    "finalDesc": "Sin compromiso. Explore todo lo que incluye y decida con calma.",
     "finalCtaPrimary": "Iniciar prueba gratuita",
-    "finalCtaSecondary": "Volver al inicio"
+    "finalCtaSecondary": "Agendar diagnóstico"
   },
   "Home": {
     "meta": {

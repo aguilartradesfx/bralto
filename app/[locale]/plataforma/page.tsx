@@ -1,16 +1,23 @@
 import type { Metadata } from 'next'
+import { setRequestLocale } from 'next-intl/server'
 import { buildPageMetadata } from '@/lib/seo'
-import PlataformaPage from './_view'
+import PlataformaView from './_view'
 
-type Props = { params: Promise<{ locale: 'es' | 'en' }> }
+type Props = { params: Promise<{ locale: string }> }
+
+const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
+
+export function generateStaticParams() {
+  return [{ locale: 'es' }, { locale: 'en' }]
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params
+  const locale = toLocale((await params).locale)
   return buildPageMetadata({
     locale,
     pathByLocale: { es: '/plataforma', en: '/plataforma' },
     titles: {
-      es: 'La Plataforma Bralto — Todo tu negocio por $87/mes',
+      es: 'La Plataforma Bralto — Todo su negocio por $87/mes',
       en: 'The Bralto Platform — Your whole business for $87/mo',
     },
     descriptions: {
@@ -20,6 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-export default function Page() {
-  return <PlataformaPage />
+export default async function Page({ params }: Props) {
+  const locale = toLocale((await params).locale)
+  setRequestLocale(locale)
+  return <PlataformaView locale={locale} />
 }
