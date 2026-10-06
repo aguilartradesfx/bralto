@@ -74,3 +74,14 @@ Pedido de Alejandro: todo el sitio con el sistema del home (grises, liquid glass
 - **Decisiones:** todo el texto en usted (mismo contenido, cambia el trato); `/precios` sin montos (servicios a la medida + CTA al diagnóstico); tema claro/oscuro en todas las páginas.
 - **Base común:** la estructura del home (`SiteShell`: fuentes, tema, fondo, nav, footer) pasa al layout de `[locale]`. Nav único: Servicios (megamenú) · Cómo funciona · Casos · Plataforma · Sobre nosotros, más idioma, tema y CTA. En `/agendar` y `/confirmacion` el nav va en modo enfocado (sin links ni footer) para no distraer del flujo.
 - **Fases:** (1) base común; (2) `/agendar`, confirmación y `/listo`; (3) plantilla de servicios + la sección visual propia de cada uno; (4) páginas de cada caso, plataforma, precios y sobre nosotros; (5) limpieza de componentes viejos y verificación (Lighthouse, móvil, ambos temas).
+
+### Estado — 2026-10-05
+
+Las cinco fases están hechas en la rama (preview listo).
+
+- **Plantilla de servicios** (`components/home/service.tsx` + `service.css`): hero con ficha de tres datos, la pieza única del servicio, "Qué incluye" en una sola hoja de vidrio, "Cómo trabajamos" numerado (es una secuencia), preguntas (`FaqBlock`), otros servicios (del megamenú) y el cierre del diagnóstico con el titular de cada servicio. Las piezas únicas son monocromas y el naranja marca solo la señal: semana actual, campaña activa, estación del flujo encendida, lead nuevo, checks.
+- **Honestidad del copy:** las cifras de ejemplo dicen "Reporte de ejemplo · Cifras ilustrativas" (antes "Resultados reales") y el panel interno dice "Vista de ejemplo"; el recibo de /plataforma usa el total real del home ($2,000+/mes; antes decía $6,000+); se quitó "desde $1,997" de sistemas internos y el "2024" de un anuncio de ejemplo; se borraron testimonios de ejemplo que no se usaban.
+- **Páginas interiores** (`components/home/pages.css`): /plataforma (plan de $87 con prueba de 14 días), /precios sin montos agrupado como el megamenú, /sobre-nosotros y cada caso (historia y entregables también en inglés, galería, más casos).
+- **Seguridad:** `/api/bookings` ya no tiene la acción pública `confirm` (permitía agendar sin pagar); la cita solo se confirma después del pago.
+- **Rendimiento:** todas las páginas de marketing son estáticas; ningún mensaje viaja al navegador; sin framer-motion en las páginas nuevas. Lighthouse móvil (build local): rendimiento 85–91, accesibilidad 100, buenas prácticas 100.
+- **Pendiente de decidir:** `funnel-lab-section` y `funnel-viz-section` (únicos componentes viejos que quedan); traducción al inglés aprobada; meta de /asesoria habla de "infraestructura digital y automatización" aunque la página es de marketing.
