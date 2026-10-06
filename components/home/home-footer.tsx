@@ -1,20 +1,12 @@
 import { getTranslations } from 'next-intl/server'
 import { BraltoLogo } from './logo'
 import type { Locale } from './primitives'
-
-const SERVICES = [
-  ['sitiosWeb', 'sitios-web'],
-  ['produccionContenido', 'produccion-contenido'],
-  ['campanas', 'campanas'],
-  ['asesoria', 'asesoria'],
-  ['automatizacion', 'automatizacion'],
-  ['sistemasInternos', 'sistemas-internos'],
-] as const
+import { SERVICE_PATHS, type MegaGroup } from './services'
 
 export async function HomeFooter({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'Home' })
-  // Las etiquetas de servicios y "Sobre nosotros" son las mismas del nav del resto del sitio
-  const nav = await getTranslations({ locale, namespace: 'Navbar' })
+  // Mismas etiquetas que el megamenú; FunnelLab es externo y se queda en el nav
+  const services = (t.raw('nav.groups') as MegaGroup[]).flatMap((g) => g.items).filter((item) => SERVICE_PATHS[item.key])
 
   return (
     <footer className="hm-footer">
@@ -28,9 +20,9 @@ export async function HomeFooter({ locale }: { locale: Locale }) {
         <nav className="hm-footer__col" aria-labelledby="hm-footer-services">
           <h2 id="hm-footer-services">{t('footer.services')}</h2>
           <ul>
-            {SERVICES.map(([key, slug]) => (
-              <li key={slug}>
-                <a href={`/${locale}/servicios/${slug}`}>{nav(`items.${key}.label`)}</a>
+            {services.map((item) => (
+              <li key={item.key}>
+                <a href={`/${locale}${SERVICE_PATHS[item.key]}`}>{item.label}</a>
               </li>
             ))}
           </ul>
@@ -40,7 +32,13 @@ export async function HomeFooter({ locale }: { locale: Locale }) {
           <h2 id="hm-footer-company">{t('footer.company')}</h2>
           <ul>
             <li>
-              <a href={`/${locale}/sobre-nosotros`}>{nav('navLinks.sobreNosotros')}</a>
+              <a href={`/${locale}/casos`}>{t('nav.links.casos')}</a>
+            </li>
+            <li>
+              <a href={`/${locale}/plataforma`}>{t('nav.links.plataforma')}</a>
+            </li>
+            <li>
+              <a href={`/${locale}/sobre-nosotros`}>{t('nav.links.about')}</a>
             </li>
             <li>
               <a href={`/${locale}/agendar`}>{t('nav.cta')}</a>
