@@ -413,35 +413,19 @@
           "rows": [
             {
               "before": "Una página web bonita",
-              "after": "Un sitio conectado a un sistema que capta, rastrea y convierte"
-            },
-            {
-              "before": "Un formulario que llega a un correo",
-              "after": "Captación de leads directo a un CRM, con seguimiento automático"
+              "after": "Un sitio que vende"
             },
             {
               "before": "Responder WhatsApp cuando se puede",
-              "after": "Agentes de IA que responden en segundos, 24/7, en todos los canales"
+              "after": "IA que responde en segundos, 24/7"
             },
             {
-              "before": "Anuncios con el pixel básico",
-              "after": "Ads avanzados con API de Conversiones (CAPI) y datos reales de venta"
+              "before": "Seguimiento en Excel",
+              "after": "Un CRM que da seguimiento solo"
             },
             {
               "before": "“Creo que los anuncios funcionan”",
-              "after": "Tracking de cada lead: de qué anuncio vino, qué hizo y si compró"
-            },
-            {
-              "before": "Excel y notas para dar seguimiento",
-              "after": "CRM nativo con pipeline, tareas y recordatorios automáticos"
-            },
-            {
-              "before": "No saber por qué la gente no compra",
-              "after": "Mapas de calor y grabaciones que muestran dónde se van"
-            },
-            {
-              "before": "Cotizar a mano, uno por uno",
-              "after": "Cotizadores y procesos automatizados que trabajan solos"
+              "after": "Cada venta, rastreada hasta su anuncio"
             }
           ]
         },
@@ -449,24 +433,16 @@
           "label": "Organizar y gestionar",
           "rows": [
             {
-              "before": "Procesos internos en Excel, papel y chats",
-              "after": "Paneles internos a la medida para organizar y gestionar toda la operación"
+              "before": "Procesos en Excel, papel y chats",
+              "after": "Paneles a la medida de su operación"
             },
             {
-              "before": "Cada quien con su archivo y su manera de trabajar",
-              "after": "Accesos por rol: cada persona ve y hace solo lo que le corresponde"
+              "before": "Tareas que dependen de la memoria",
+              "after": "Tareas y aprobaciones que avanzan solas"
             },
             {
-              "before": "Tareas y aprobaciones que dependen de que alguien se acuerde",
-              "after": "Tareas, aprobaciones y documentos que avanzan solos con automatizaciones"
-            },
-            {
-              "before": "Clientes que escriben para preguntar cómo va lo suyo",
-              "after": "Un portal con usuario donde sus clientes ven el estado de lo suyo"
-            },
-            {
-              "before": "Reportes armados a mano a fin de mes",
-              "after": "Reportes de ventas y operación que se actualizan solos, en un solo panel"
+              "before": "Reportes a mano a fin de mes",
+              "after": "Reportes que se actualizan solos"
             }
           ]
         }

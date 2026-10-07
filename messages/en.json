@@ -413,35 +413,19 @@
           "rows": [
             {
               "before": "A nice-looking website",
-              "after": "A website connected to a system that captures, tracks, and converts"
-            },
-            {
-              "before": "A form that lands in an inbox",
-              "after": "Lead capture straight into a CRM, with automatic follow-up"
+              "after": "A website that sells"
             },
             {
               "before": "Answering WhatsApp when you can",
-              "after": "AI agents that reply in seconds, 24/7, on every channel"
+              "after": "AI that replies in seconds, 24/7"
             },
             {
-              "before": "Ads with the basic pixel",
-              "after": "Advanced ads with the Conversions API (CAPI) and real sales data"
+              "before": "Follow-up in spreadsheets",
+              "after": "A CRM that follows up on its own"
             },
             {
               "before": "“I think the ads are working”",
-              "after": "Tracking for every lead: which ad it came from, what it did, and whether it bought"
-            },
-            {
-              "before": "Spreadsheets and notes for follow-up",
-              "after": "A native CRM with a pipeline, tasks, and automatic reminders"
-            },
-            {
-              "before": "Not knowing why people don't buy",
-              "after": "Heatmaps and recordings that show where they drop off"
-            },
-            {
-              "before": "Quoting by hand, one at a time",
-              "after": "Quote builders and automated processes that run on their own"
+              "after": "Every sale traced back to its ad"
             }
           ]
         },
@@ -449,24 +433,16 @@
           "label": "Organize and manage",
           "rows": [
             {
-              "before": "Internal processes in spreadsheets, paper, and chats",
-              "after": "Custom internal dashboards to organize and manage the entire operation"
+              "before": "Processes in spreadsheets, paper, and chats",
+              "after": "Dashboards built around your operation"
             },
             {
-              "before": "Everyone with their own file and their own way of working",
-              "after": "Role-based access: each person sees and does only what they are responsible for"
+              "before": "Tasks that rely on memory",
+              "after": "Tasks and approvals that move on their own"
             },
             {
-              "before": "Tasks and approvals that depend on someone remembering",
-              "after": "Tasks, approvals, and documents that move forward on their own with automations"
-            },
-            {
-              "before": "Clients who message you to ask for updates",
-              "after": "A portal with login where your clients check their own status"
-            },
-            {
-              "before": "Reports put together by hand at the end of the month",
-              "after": "Sales and operations reports that update themselves, in a single dashboard"
+              "before": "Month-end reports built by hand",
+              "after": "Reports that update themselves"
             }
           ]
         }
