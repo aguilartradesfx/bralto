@@ -2,7 +2,6 @@ import { NextResponse, after } from 'next/server'
 import { verifyStripeSignature, StripeSignatureError, type StripeEvent } from '@/lib/stripe/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { handleGhlSaasCheckout } from '@/lib/stripe/handlers/ghl-saas'
-import { handleBraltoEssentialsCheckout } from '@/lib/stripe/handlers/bralto-essentials'
 import { finalizeDiagnosticCheckout } from '@/lib/diagnostic/server'
 
 // Stripe needs the raw body to verify signatures — disable any body parsing.
@@ -69,9 +68,8 @@ export async function POST(req: Request) {
       switch (event.type) {
         case 'checkout.session.completed': {
           const session = event.data.object as CheckoutSession
-          if (productKind === 'bralto_essentials') {
-            await handleBraltoEssentialsCheckout(session)
-          } else if (productKind === 'ghl_saas') {
+          // (El plan Essentials de $87 se eliminó el 2026-10-07)
+          if (productKind === 'ghl_saas') {
             await handleGhlSaasCheckout(session)
           } else if (productKind === 'diagnostic') {
             // Idempotente: si la página de éxito ya confirmó, no repite nada

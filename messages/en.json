@@ -27,10 +27,6 @@
     "unitLabel": "people"
   },
   "PlatformSection": {
-    "label": "Your operations hub",
-    "headline": "Everything we build",
-    "headlineItalic": "runs on your own platform.",
-    "desc": "When we deliver your automated system, we also hand over total control. Manage everything from one place.",
     "tabs": {
       "organizacion": {
         "label": "Organization",
@@ -65,17 +61,7 @@
           "Mobile app included"
         ]
       }
-    },
-    "replacesHeadline": "What Bralto replaces",
-    "replacesDesc": "Everything you're paying for separately, in one platform.",
-    "toolHeader": "Tool",
-    "costHeader": "Monthly cost",
-    "withoutLabel": "Without Bralto you'd pay",
-    "withLabel": "With Bralto",
-    "allToolsNote": "All the tools. One price. No surprises.",
-    "platformIncluded": "Platform comes included with every implementation. Also available standalone.",
-    "cta": "Start Free Trial",
-    "ctaNote": "Pay $0 today — Try it before you pay"
+    }
   },
   "FunnelLabSection": {
     "badge1": "New",
@@ -206,18 +192,11 @@
   },
   "PlataformaPage": {
     "badge": "The platform",
-    "badgeSub": "$87/mo · 14 days free",
+    "badgeSub": "Included with every system",
     "headline": "Your whole business,",
     "headlineItalic": "in one platform.",
-    "desc": "CRM, websites, funnels, scheduling, payments, and multichannel marketing — all in one place for $87 a month. Here's everything it includes.",
-    "priceLabel": "From",
-    "price": "$87",
-    "period": "/mo",
-    "priceNote": "Pay $0 today · 14 days free · Cancel anytime",
-    "ctaPrimary": "Start free trial",
-    "ctaSecondary": "Book a diagnostic call",
-    "redirecting": "Opening checkout…",
-    "error": "We couldn't open checkout. Please try again.",
+    "desc": "CRM, websites, funnels, scheduling, payments, and multichannel marketing — all in one place. It comes included with every system we build.",
+    "cta": "Book a diagnostic call",
     "includesLabel": "What's included",
     "includesLight": "Everything you need to run your business",
     "includesBold": "without juggling tools.",
@@ -225,64 +204,20 @@
     "replacesLabel": "What it replaces",
     "replacesLight": "One platform",
     "replacesBold": "instead of ten subscriptions.",
-    "replacesDesc": "Everything you pay for separately today, for a single price.",
-    "withLabel": "With Bralto: $87/mo",
-    "detailsLabel": "Plan details",
-    "detailsLight": "How the plan",
-    "detailsBold": "works.",
-    "details": [
-      {
-        "title": "14 days free",
-        "desc": "Try the full platform. You're only charged if you decide to stay."
-      },
-      {
-        "title": "$87 a month",
-        "desc": "One flat price for everything. No per-user fees or end-of-month surprises."
-      },
-      {
-        "title": "No lock-in",
-        "desc": "Month to month. Cancel anytime from your own account."
-      },
-      {
-        "title": "Mobile app included",
-        "desc": "Manage conversations, payments, and your calendar from your phone."
-      },
-      {
-        "title": "Real support",
-        "desc": "We help you set everything up and answer whenever you need us."
-      },
-      {
-        "title": "Your data is yours",
-        "desc": "Export your contacts and information whenever you want. No lock-in."
-      }
-    ],
+    "replacesDesc": "Everything you pay for separately today, included in your system.",
     "faqLabel": "FAQ",
     "faqLight": "Before you",
     "faqBold": "start.",
     "faq": [
       {
-        "q": "What happens after the 14 days?",
-        "a": "If you decide to continue, the $87/mo charge kicks in. If not, you're not charged anything."
-      },
-      {
-        "q": "Can I cancel anytime?",
-        "a": "Yes. No lock-in and no penalties: you cancel month to month from your account."
-      },
-      {
         "q": "Does the platform come with the implementation?",
-        "a": "Yes. When we build your automated system, the platform is included. You can also get it on its own."
+        "a": "Yes. When we build your automated system, the platform is included."
       },
       {
         "q": "Does it really replace my other tools?",
         "a": "Yes. CRM, website, scheduling, email/SMS, funnels, and multichannel all live in one place, so you stop paying for and juggling multiple subscriptions."
       }
-    ],
-    "finalLabel": "Start today",
-    "finalHeadline": "Try the platform",
-    "finalHeadlineItalic": "free for 14 days.",
-    "finalDesc": "No commitment. Explore everything it includes and decide at your own pace.",
-    "finalCtaPrimary": "Start free trial",
-    "finalCtaSecondary": "Book a diagnostic call"
+    ]
   },
   "Home": {
     "meta": {

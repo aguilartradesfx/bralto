@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/plataforma', en: '/plataforma' },
     titles: {
-      es: 'La Plataforma Bralto — Todo su negocio por $87/mes',
-      en: 'The Bralto Platform — Your whole business for $87/mo',
+      es: 'La Plataforma Bralto — Todo su negocio en una sola plataforma',
+      en: 'The Bralto Platform — Your whole business in one platform',
     },
     descriptions: {
-      es: 'CRM, sitios web, funnels, agenda, pagos y marketing multicanal en una sola plataforma por $87/mes. Reemplaza más de 10 herramientas. 14 días gratis.',
-      en: 'CRM, websites, funnels, scheduling, payments and multichannel marketing in one platform for $87/mo. Replaces 10+ tools. 14 days free.',
+      es: 'CRM, sitios web, funnels, agenda, pagos y marketing multicanal en una sola plataforma, incluida en cada sistema que construimos. Reemplaza más de 10 herramientas.',
+      en: 'CRM, websites, funnels, scheduling, payments and multichannel marketing in one platform, included with every system we build. Replaces 10+ tools.',
     },
   })
 }

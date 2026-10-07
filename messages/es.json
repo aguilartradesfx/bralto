@@ -27,10 +27,6 @@
     "unitLabel": "personas"
   },
   "PlatformSection": {
-    "label": "Su centro de operaciones",
-    "headline": "Todo lo que construimos",
-    "headlineItalic": "corre sobre su propia plataforma.",
-    "desc": "Cuando le entregamos su sistema automatizado, también le entregamos el control total. Desde un solo lugar usted gestiona todo.",
     "tabs": {
       "organizacion": {
         "label": "Organización",
@@ -65,17 +61,7 @@
           "App móvil incluida"
         ]
       }
-    },
-    "replacesHeadline": "Lo que Bralto reemplaza",
-    "replacesDesc": "Todo lo que pagas por separado, en una sola plataforma.",
-    "toolHeader": "Herramienta",
-    "costHeader": "Costo mensual",
-    "withoutLabel": "Sin Bralto pagarías",
-    "withLabel": "Con Bralto",
-    "allToolsNote": "Todas las herramientas. Un solo precio. Sin sorpresas.",
-    "platformIncluded": "La plataforma viene incluida con cada implementación. También está disponible de forma independiente.",
-    "cta": "Iniciar Prueba Gratuita",
-    "ctaNote": "Hoy paga $0 — Pruebe el sistema antes de pagarlo"
+    }
   },
   "FunnelLabSection": {
     "badge1": "Nuevo",
@@ -206,18 +192,11 @@
   },
   "PlataformaPage": {
     "badge": "La plataforma",
-    "badgeSub": "$87/mes · 14 días gratis",
+    "badgeSub": "Incluida en cada sistema",
     "headline": "Todo su negocio,",
     "headlineItalic": "en una sola plataforma.",
-    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar por $87 al mes. Esto es todo lo que incluye.",
-    "priceLabel": "Desde",
-    "price": "$87",
-    "period": "/mes",
-    "priceNote": "Hoy paga $0 · 14 días gratis · Cancele cuando quiera",
-    "ctaPrimary": "Iniciar prueba gratuita",
-    "ctaSecondary": "Agendar diagnóstico",
-    "redirecting": "Abriendo el pago…",
-    "error": "No se pudo abrir el pago. Inténtelo de nuevo.",
+    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar. Viene incluida en cada sistema que construimos.",
+    "cta": "Agendar diagnóstico",
     "includesLabel": "Qué incluye",
     "includesLight": "Todo lo que necesita para operar",
     "includesBold": "sin saltar entre herramientas.",
@@ -225,64 +204,20 @@
     "replacesLabel": "Lo que reemplaza",
     "replacesLight": "Una plataforma",
     "replacesBold": "en vez de diez suscripciones.",
-    "replacesDesc": "Todo lo que hoy paga por separado, en un solo precio.",
-    "withLabel": "Con Bralto: $87/mes",
-    "detailsLabel": "Detalles del plan",
-    "detailsLight": "Así funciona",
-    "detailsBold": "el plan.",
-    "details": [
-      {
-        "title": "14 días gratis",
-        "desc": "Pruebe la plataforma completa. El cobro empieza solo si decide quedarse."
-      },
-      {
-        "title": "$87 al mes",
-        "desc": "Un precio fijo por todo. Sin cargos por usuario ni sorpresas a fin de mes."
-      },
-      {
-        "title": "Sin permanencia",
-        "desc": "Mes a mes. Cancele cuando quiera desde su propia cuenta."
-      },
-      {
-        "title": "App móvil incluida",
-        "desc": "Gestione conversaciones, pagos y agenda desde su teléfono."
-      },
-      {
-        "title": "Soporte real",
-        "desc": "Le ayudamos a configurar todo y respondemos cuando lo necesita."
-      },
-      {
-        "title": "Sus datos son suyos",
-        "desc": "Exporte sus contactos y su información cuando quiera. Sin candados."
-      }
-    ],
+    "replacesDesc": "Todo lo que hoy paga por separado, incluido en su sistema.",
     "faqLabel": "Preguntas frecuentes",
     "faqLight": "Antes de",
     "faqBold": "empezar.",
     "faq": [
       {
-        "q": "¿Qué pasa después de los 14 días?",
-        "a": "Si decide continuar, se activa el cobro de $87/mes. Si no, no se le cobra nada."
-      },
-      {
-        "q": "¿Puedo cancelar cuando quiera?",
-        "a": "Sí. No hay permanencia ni penalización: cancela mes a mes desde su cuenta."
-      },
-      {
         "q": "¿La plataforma viene con la implementación?",
-        "a": "Sí. Cuando trabajamos su sistema automatizado, la plataforma va incluida. También puede contratarla sola."
+        "a": "Sí. Cuando trabajamos su sistema automatizado, la plataforma va incluida."
       },
       {
         "q": "¿Reemplaza de verdad mis otras herramientas?",
         "a": "Sí. CRM, sitio web, agenda, email/SMS, funnels y multicanal viven en un solo lugar, así deja de pagar y coordinar varias suscripciones."
       }
-    ],
-    "finalLabel": "Empiece hoy",
-    "finalHeadline": "Pruebe la plataforma",
-    "finalHeadlineItalic": "14 días gratis.",
-    "finalDesc": "Sin compromiso. Explore todo lo que incluye y decida con calma.",
-    "finalCtaPrimary": "Iniciar prueba gratuita",
-    "finalCtaSecondary": "Agendar diagnóstico"
+    ]
   },
   "Home": {
     "meta": {

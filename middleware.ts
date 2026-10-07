@@ -35,7 +35,6 @@ const NON_LOCALE_PREFIXES = [
   '/AO-Guidelines',
   '/brand/',
   '/Diagnostico-',
-  '/87-payment',
   '/payment-info',
 ]
 
