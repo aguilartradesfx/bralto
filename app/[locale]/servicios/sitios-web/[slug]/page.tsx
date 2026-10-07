@@ -1,263 +1,171 @@
-import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import type { Metadata } from 'next'
 import Image from 'next/image'
-import { ArrowLeft, ArrowUpRight, Check } from 'lucide-react'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { clients } from '@/app/servicios/sitios-web/clients'
+import { cn } from '@/lib/utils'
+import { buildPageMetadata } from '@/lib/seo'
+import { CaseRow } from '@/components/home/case-row'
+import { FinalCta } from '@/components/home/final-cta'
+import { Arrow, Check } from '@/components/home/icons'
+import '@/components/home/pages.css'
 
-export function generateStaticParams() {
-  return ['es', 'en'].flatMap(locale =>
-    clients.map(c => ({ locale, slug: c.id }))
-  )
+type Props = { params: Promise<{ locale: string; slug: string }> }
+
+const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
+
+const COPY = {
+  es: {
+    back: 'Casos',
+    live: 'Ver sitio en vivo',
+    project: 'El proyecto',
+    built: 'Lo que construimos',
+    gallery: 'Galería',
+    view: 'vista',
+    more: 'Más casos',
+    ctaLight: 'Su proyecto,',
+    ctaBold: 'el próximo.',
+  },
+  en: {
+    back: 'Case studies',
+    live: 'Visit the live site',
+    project: 'The project',
+    built: 'What we built',
+    gallery: 'Gallery',
+    view: 'view',
+    more: 'More case studies',
+    ctaLight: 'Your project,',
+    ctaBold: 'could be next.',
+  },
 }
 
-export default async function ClientPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
-  const { locale, slug } = await params
-  const client = clients.find(c => c.id === slug)
+export function generateStaticParams() {
+  return ['es', 'en'].flatMap((locale) => clients.map((c) => ({ locale, slug: c.id })))
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale: raw, slug } = await params
+  const locale = toLocale(raw)
+  const client = clients.find((c) => c.id === slug)
+  if (!client) return {}
+  const path = `/servicios/sitios-web/${client.id}`
+  return buildPageMetadata({
+    locale,
+    pathByLocale: { es: path, en: path },
+    titles: { es: `${client.name} — ${client.industry}`, en: `${client.name} — ${client.en?.industry ?? client.industry}` },
+    descriptions: { es: client.tagline, en: client.en?.tagline ?? client.tagline },
+    ogImage: client.coverImage,
+  })
+}
+
+// Un caso real: historia, lo que construimos, galería y más casos
+export default async function CasePage({ params }: Props) {
+  const { locale: raw, slug } = await params
+  const locale = toLocale(raw)
+  setRequestLocale(locale)
+  const client = clients.find((c) => c.id === slug)
   if (!client) notFound()
 
-  const mid = Math.ceil(client.deliverables.length / 2)
-  const firstHalf  = client.deliverables.slice(0, mid)
-  const secondHalf = client.deliverables.slice(mid)
-  const extraImages = client.images.slice(2)
+  const c = COPY[locale]
+  const t = await getTranslations({ locale, namespace: 'Home.cases' })
+  const en = locale === 'en' ? client.en : undefined
+  const industry = en?.industry ?? client.industry
+  const tagline = en?.tagline ?? client.tagline
+  const story = en?.story ?? client.story
+  const deliverables = en?.deliverables ?? client.deliverables
+  // La portada ya va arriba: la galería no la repite
+  const gallery = client.images.filter((img) => img !== client.coverImage)
+  const others = clients.filter((o) => o.id !== client.id)
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white antialiased">
-
-      {/* HERO */}
-      <section className="relative min-h-[65vh] flex flex-col justify-end overflow-hidden">
-
-        <div className="absolute inset-0">
-          <Image
-            src={client.coverImage}
-            alt={client.name}
-            fill
-            className="object-cover object-center"
-            sizes="100vw"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-[#080808]/55" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/30 to-transparent" />
-
-        <Link
-          href={`/${locale}/servicios/sitios-web`}
-          className="absolute top-8 left-6 md:left-12 z-10 inline-flex items-center gap-2 text-white/40 hover:text-white/80 transition-colors text-sm"
-        >
-          <ArrowLeft size={13} />
-          Sitios web
-        </Link>
-
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 md:px-12 pb-20 pt-32">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5bb6ff] mb-5">
-            {client.industry}
-          </p>
-          <h1
-            className="font-bold tracking-tight leading-[0.88] text-white mb-6"
-            style={{ fontSize: 'clamp(3.5rem, 9vw, 9rem)' }}
-          >
-            {client.name}
+    <main>
+      <section className="hm-hero hm-hero--page" aria-labelledby="cs-title">
+        <div className="hm-wrap">
+          <Link href={`/${locale}/casos`} className="cs-back">
+            <Arrow />
+            {c.back}
+          </Link>
+          <p className="hm-eyebrow hm-in">{industry}</p>
+          <h1 id="cs-title" className="hm-page-title">
+            <span className="hm-hero__l2">{client.name}</span>
           </h1>
-          <p className="text-base md:text-lg text-white/50 max-w-xl leading-relaxed mb-8">
-            {client.tagline}
-          </p>
-          {client.url && (
-            <a
-              href={client.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#5bb6ff] hover:text-[#fb923c] transition-colors"
-            >
-              Ver sitio en vivo
-              <ArrowUpRight size={15} />
-            </a>
-          )}
-        </div>
-      </section>
-
-      {/* SECTION 1 */}
-      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-
-            <div className="px-6 md:px-12 py-20 lg:py-28 flex flex-col justify-center" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#5bb6ff] mb-8">El proyecto</p>
-              <p className="text-base text-white/55 leading-relaxed mb-10 max-w-lg">
-                {client.story}
-              </p>
-              <ul className="space-y-4">
-                {firstHalf.map(d => (
-                  <li key={d} className="flex items-start gap-3 text-sm text-white/60 leading-relaxed">
-                    <Check size={13} className="text-[#5bb6ff] shrink-0 mt-0.5" />
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {client.images[0] && (
-              <div className="relative overflow-hidden" style={{ minHeight: '480px' }}>
-                <Image
-                  src={client.images[0]}
-                  alt={`${client.name} — vista 1`}
-                  fill
-                  className="object-contain p-8 md:p-12"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
+          <div className="cs-hero__row">
+            <p className="hm-lead hm-in">{tagline}</p>
+            {client.url && (
+              <a href={client.url} target="_blank" rel="noopener noreferrer" className="hm-btn hm-btn--glass hm-glass">
+                {c.live}
+                <Arrow />
+              </a>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* SECTION 2 */}
-      {client.images[1] && secondHalf.length > 0 && (
-        <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#060607' }}>
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2">
-
-              <div className="relative overflow-hidden order-2 lg:order-1" style={{ minHeight: '480px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-                <Image
-                  src={client.images[1]}
-                  alt={`${client.name} — vista 2`}
-                  fill
-                  className="object-contain p-8 md:p-12"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-
-              <div className="order-1 lg:order-2 px-6 md:px-12 py-20 lg:py-28 flex flex-col justify-center">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#5bb6ff] mb-8">Lo que construimos</p>
-                <ul className="space-y-4">
-                  {secondHalf.map(d => (
-                    <li key={d} className="flex items-start gap-3 text-sm text-white/60 leading-relaxed">
-                      <Check size={13} className="text-[#5bb6ff] shrink-0 mt-0.5" />
-                      {d}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <figure className="cs-cover hm-glass hm-glass--thick">
+            <div className="cs-cover__img">
+              <Image src={client.coverImage} alt="" fill priority sizes="(min-width: 1200px) 1160px, 100vw" />
             </div>
+          </figure>
+        </div>
+      </section>
+
+      <section className="hm-section" aria-labelledby="cs-project-title">
+        <div className="hm-wrap cs-story">
+          <div>
+            <h2 id="cs-project-title" className="hm-eyebrow">
+              {c.project}
+            </h2>
+            <p className="cs-story__text">{story}</p>
           </div>
-        </section>
-      )}
-
-      {/* EXTRA IMAGES */}
-      {extraImages.length > 0 && (
-        <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          {extraImages.map((img, i) => {
-            const deliverable = client.deliverables[i % client.deliverables.length]
-            const borderBottom = i < extraImages.length - 1
-              ? '1px solid rgba(255,255,255,0.06)'
-              : undefined
-
-            if (i % 2 === 0) {
-              return (
-                <div key={img} style={{ borderBottom }}>
-                  <div className="max-w-7xl mx-auto">
-                    <div className="relative w-full h-[56vw] lg:h-[68vh]">
-                      <Image
-                        src={img}
-                        alt={`${client.name} — vista ${i + 3}`}
-                        fill
-                        className="object-contain p-4 lg:p-8"
-                        sizes="(max-width: 1280px) 100vw, 1280px"
-                      />
-                    </div>
-                    <div
-                      className="px-6 md:px-12 py-10 text-center"
-                      style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-                    >
-                      <p className="font-mono text-[10px] text-[#5bb6ff]/50 tracking-[0.3em] uppercase mb-5">
-                        {String(i + 3).padStart(2, '0')}
-                      </p>
-                      <p className="text-xl md:text-2xl font-semibold text-white/65 leading-snug max-w-2xl mx-auto">
-                        {deliverable}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )
-            }
-
-            const imageLeft = Math.floor(i / 2) % 2 === 0
-            return (
-              <div key={img} style={{ borderBottom }}>
-                <div className="max-w-7xl mx-auto">
-                  <div className="grid grid-cols-1 lg:grid-cols-2">
-                    <div
-                      className={`relative overflow-hidden h-[56vw] lg:h-[580px] ${imageLeft ? 'order-1' : 'order-1 lg:order-2'}`}
-                      style={imageLeft
-                        ? { borderRight: '1px solid rgba(255,255,255,0.06)' }
-                        : { borderLeft: '1px solid rgba(255,255,255,0.06)' }
-                      }
-                    >
-                      <Image
-                        src={img}
-                        alt={`${client.name} — vista ${i + 3}`}
-                        fill
-                        className="object-contain p-4 lg:p-6"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
-                    </div>
-                    <div
-                      className={`flex flex-col justify-center px-8 md:px-12 py-16 lg:py-20 ${imageLeft ? 'order-2' : 'order-2 lg:order-1'}`}
-                    >
-                      <p className="font-mono text-[10px] text-[#5bb6ff]/50 tracking-[0.3em] uppercase mb-6">
-                        {String(i + 3).padStart(2, '0')}
-                      </p>
-                      <p
-                        className="font-bold text-white leading-tight mb-6"
-                        style={{ fontSize: 'clamp(1.4rem, 2.5vw, 2rem)' }}
-                      >
-                        {deliverable}
-                      </p>
-                      <div className="w-10 h-px" style={{ background: 'rgba(91,182,255,0.12)' }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </section>
-      )}
-
-      {/* CTA FINAL */}
-      <section
-        className="py-28 text-center"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#060607' }}
-      >
-        <div className="max-w-2xl mx-auto px-6 md:px-12">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#5bb6ff] mb-6">¿Querés algo así?</p>
-          <h2
-            className="font-bold tracking-tight leading-[0.92] text-white mb-8"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}
-          >
-            Tu proyecto,<br />
-            <span style={{ color: 'rgba(255,255,255,0.2)' }}>el próximo.</span>
-          </h2>
-          <p className="text-sm text-white/40 leading-relaxed mb-12 max-w-sm mx-auto">
-            Construimos sitios que trabajan solos. Conversemos 30 minutos y te mostramos cómo.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href={`/${locale}/agendar`}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#5bb6ff] hover:bg-[#7cc5ff] text-white font-semibold text-sm transition-all hover:shadow-[0_0_40px_rgba(91,182,255,0.12)]"
-            >
-              Agendar llamada gratis
-              <ArrowUpRight size={15} />
-            </Link>
-            <Link
-              href={`/${locale}/servicios/sitios-web`}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white/45 hover:text-white transition-all"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
-            >
-              <ArrowLeft size={15} />
-              Ver más proyectos
-            </Link>
+          <div className="cs-built hm-glass hm-glass--thick hm-rv">
+            <h3 className="pg-tag">{c.built}</h3>
+            <ul>
+              {deliverables.map((d) => (
+                <li key={d}>
+                  <Check />
+                  {d}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-    </div>
+      {gallery.length > 0 && (
+        <section className="hm-section hm-section--tight" aria-label={c.gallery}>
+          <div className="hm-wrap">
+            <ul className="cs-gallery">
+              {gallery.map((img, i) => (
+                <li key={img} className={cn('cs-shot hm-glass hm-rv', i % 3 === 0 && 'cs-shot--wide')}>
+                  <div className="cs-shot__img">
+                    <Image
+                      src={img}
+                      alt={`${client.name} — ${c.view} ${i + 1}`}
+                      fill
+                      sizes={i % 3 === 0 ? '(min-width: 1200px) 1160px, 100vw' : '(min-width: 900px) 580px, 100vw'}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      <section className="hm-section" aria-labelledby="cs-more-title">
+        <div className="hm-wrap">
+          <h2 id="cs-more-title" className="hm-eyebrow">
+            {c.more}
+          </h2>
+          <ul className="hm-cases">
+            {others.map((other) => (
+              <li key={other.id}>
+                <CaseRow client={other} locale={locale} viewLabel={t('view')} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <FinalCta locale={locale} title={{ light: c.ctaLight, bold: c.ctaBold }} />
+    </main>
   )
 }

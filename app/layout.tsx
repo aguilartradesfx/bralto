@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 import { CookieConsent } from '@/components/cookie-consent'
+import { ParticlesBackground } from '@/components/particles-background'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 import { PRIVATE_SURFACE_JS } from '@/lib/host-routing'
 
@@ -120,9 +121,8 @@ export default function RootLayout({
       <body>
         {/* Google Tag Manager (noscript) */}
         <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTGZ86BC" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} />
-        {/* Atmospheric background — fixed, renders once, behind all content */}
-        <div aria-hidden="true" className="atmo-ambient" />
-        <div aria-hidden="true" className="atmo-grid" />
+        {/* Partículas con scroll: una sola vez para todo el sitio público */}
+        <ParticlesBackground />
         {/* All content above background layers */}
         <div style={{ position: 'relative', zIndex: 1 }}>
           {children}

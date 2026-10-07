@@ -1,25 +1,34 @@
 import type { Metadata } from 'next'
+import { setRequestLocale } from 'next-intl/server'
 import { buildPageMetadata } from '@/lib/seo'
-import PreciosPage from './_view'
+import PreciosView from './_view'
 
-type Props = { params: Promise<{ locale: 'es' | 'en' }> }
+type Props = { params: Promise<{ locale: string }> }
+
+const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
+
+export function generateStaticParams() {
+  return [{ locale: 'es' }, { locale: 'en' }]
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params
+  const locale = toLocale((await params).locale)
   return buildPageMetadata({
     locale,
     pathByLocale: { es: '/precios', en: '/precios' },
     titles: {
-      es: 'Precios — Plataforma e Implementación Integral',
-      en: 'Pricing — Platform and Full-Service Implementation',
+      es: 'Servicios — Sitios web, automatización con IA y sistemas a la medida',
+      en: 'Services — Websites, AI automation, and custom systems',
     },
     descriptions: {
-      es: 'Plataforma desde $87/mes o implementación integral desde $849. CRM, automatización, IA y más en un solo sistema.',
-      en: 'Platform starting at $87/mo or full-service implementation from $849. CRM, automation, AI, and more in a single system.',
+      es: 'Sitios web, contenido, campañas, automatización con IA y sistemas internos. Cada proyecto se cotiza a la medida después de un diagnóstico de 30 minutos.',
+      en: 'Websites, content, ad campaigns, AI automation, and internal systems. Every project is custom-quoted after a 30-minute diagnostic call.',
     },
   })
 }
 
-export default function Page() {
-  return <PreciosPage />
+export default async function Page({ params }: Props) {
+  const locale = toLocale((await params).locale)
+  setRequestLocale(locale)
+  return <PreciosView locale={locale} />
 }

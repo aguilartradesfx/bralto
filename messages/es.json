@@ -1,178 +1,4 @@
 {
-  "Navbar": {
-    "services": "Servicios",
-    "navLinks": {
-      "inicio": "Inicio",
-      "comoFunciona": "Cómo funciona",
-      "sobreNosotros": "Sobre nosotros",
-      "casosReales": "Casos reales",
-      "plataforma": "Plataforma"
-    },
-    "presenciaHeading": "Presencia digital",
-    "automacionHeading": "Automatización e IA",
-    "items": {
-      "sitiosWeb": { "label": "Sitios web profesionales", "desc": "Diseño, SEO y entrega rápida" },
-      "produccionContenido": { "label": "Producción de contenido", "desc": "Videos, stories y estrategia" },
-      "campanas": { "label": "Campañas publicitarias", "desc": "Ads en Meta, Google y más" },
-      "asesoria": { "label": "Asesoría de marketing", "desc": "Estrategia y posicionamiento" },
-      "automatizacion": { "label": "Automatización de procesos", "desc": "Flujos, agentes y workflows" },
-      "sistemasInternos": { "label": "Sistemas internos a medida", "desc": "CRMs, dashboards y herramientas" },
-      "funnelLab": { "label": "FunnelLab", "desc": "Simulá tu funnel antes de invertir" }
-    },
-    "navigationHeading": "Navegación",
-    "ctaHeading": "¿Por dónde empezar?",
-    "ctaTitle": "30 minutos,",
-    "ctaTitle2": "sin compromiso.",
-    "ctaDesc": "Entendemos tu negocio y te decimos qué tiene sentido para vos hoy.",
-    "ctaBtn": "Agendar gratis",
-    "seeAll": "Ver todos los servicios →",
-    "bookFree": "Agendá una llamada gratis →",
-    "bookCall": "Agendar llamada",
-    "seeServices": "Ver servicios"
-  },
-  "Hero": {
-    "eyebrow": "Infraestructura de operaciones",
-    "actionWords": ["ventas", "seguimientos", "reservas", "respuestas", "citas", "procesos"],
-    "headline": "Automatizamos sus",
-    "subtitles": [
-      "para que su negocio nunca pare.",
-      "sin perder una sola oportunidad.",
-      "mientras usted duerme.",
-      "las 24 horas del día.",
-      "con cero intervención humana.",
-      "sin depender de su equipo."
-    ],
-    "statusActive": "Sistema activo",
-    "statusCustomers": "51 clientes",
-    "cta1": "Agendar una llamada",
-    "cta2": "Ver cómo funciona"
-  },
-  "HowItWorks": {
-    "label": "Cómo funciona",
-    "problem": "Hoy, cada proceso que depende de una persona es un riesgo.",
-    "headline": "Así es como",
-    "headlineItalic": "lo cambiamos.",
-    "sub": "Cuatro pasos. De la primera llamada a su sistema funcionando solo.",
-    "stepLabel": "Paso",
-    "steps": [
-      {
-        "title": "Diagnóstico",
-        "body": "Analizamos su negocio: cómo llegan los clientes, quién los atiende, dónde se pierden oportunidades y qué procesos dependen de personas."
-      },
-      {
-        "title": "Diseño",
-        "body": "Diseñamos el sistema a la medida: canales a conectar, cómo opera el agente de IA y cómo gestiona su equipo el día a día."
-      },
-      {
-        "title": "Construcción",
-        "body": "Desarrollamos todo: sitio web, agente de IA, integraciones y flujos. Un solo sistema conectado y funcionando."
-      },
-      {
-        "title": "Entrega + Plataforma",
-        "body": "Entregamos todo funcionando en menos de 72 horas sobre su propia plataforma. Control total desde un solo lugar."
-      }
-    ],
-    "includesPlatform": "Incluye Plataforma Bralto",
-    "stats": [
-      { "value": "< 72 hrs", "label": "De diagnóstico a sistema funcionando" },
-      { "value": "100%", "label": "Personalizado a su operación" },
-      { "value": "24/7", "label": "Su sistema nunca para" }
-    ]
-  },
-  "RobotSection": {
-    "label": "Casos de uso",
-    "headline": "Cada industria.",
-    "headlineItalic": "Una solución a medida.",
-    "problemLabel": "El problema",
-    "builtLabel": "Lo que construimos",
-    "bookCall": "Agendar llamada",
-    "cases": [
-      {
-        "industry": "Agencia de Viajes",
-        "label": "Turismo & Reservas",
-        "problem": "Perdían leads porque respondían tarde o fuera de horario. Los clientes consultaban de noche y amanecían con la competencia.",
-        "deliverables": [
-          "Sitio web con motor de reservas en línea",
-          "Sistema de agendamiento de llamadas con el equipo de ventas",
-          "Plataforma de administración de tours con interfaz propia",
-          "Automatización de seguimiento post-reserva"
-        ],
-        "result": "Triplicaron las consultas convertidas en el primer mes.",
-        "automation": ["Respuesta inmediata 24/7", "Cotizador automático", "Agenda con asesor"],
-        "stats": [{ "value": "3×", "label": "Conversiones" }, { "value": "<2 min", "label": "Tiempo de respuesta" }]
-      },
-      {
-        "industry": "Imprenta",
-        "label": "Producción & Pedidos",
-        "problem": "El equipo pasaba horas cotizando trabajos manualmente por WhatsApp. Cada cotización requería ir y venir con el cliente para definir especificaciones.",
-        "deliverables": [
-          "Cotizador automático por material, tamaño y acabado",
-          "Sistema de seguimiento de pedidos en tiempo real",
-          "Notificaciones automáticas de estado de producción",
-          "Panel de gestión de clientes y pedidos recurrentes"
-        ],
-        "result": "Redujeron el tiempo de cotización de 2 horas a menos de 4 minutos.",
-        "automation": ["Cotizador inteligente", "Estado de pedidos", "Notificaciones automáticas"],
-        "stats": [{ "value": "96%", "label": "Menos tiempo" }, { "value": "0", "label": "Errores" }]
-      },
-      {
-        "industry": "Restaurante",
-        "label": "Reservas & Fidelización",
-        "problem": "Las reservas llegaban dispersas por WhatsApp, teléfono e Instagram. Sin seguimiento, los no-shows eran moneda corriente y las mesas se perdían.",
-        "deliverables": [
-          "Agente de reservas multicanal (WhatsApp, Instagram, web)",
-          "Confirmaciones y recordatorios automáticos de reserva",
-          "Reactivación automática de clientes inactivos con ofertas",
-          "Panel de gestión de mesas y disponibilidad en tiempo real"
-        ],
-        "result": "Eliminaron los no-shows y llenaron el 95% de las mesas cada noche.",
-        "automation": ["Reservas multicanal", "Recordatorios de cita", "Reactivación de clientes"],
-        "stats": [{ "value": "100%", "label": "Sin no-shows" }, { "value": "2.4×", "label": "Más reservas" }]
-      },
-      {
-        "industry": "Clínica Dental",
-        "label": "Salud & Citas Médicas",
-        "problem": "La recepcionista no daba abasto con llamadas y mensajes para agendar, reagendar y confirmar citas. Horas perdidas en tareas repetitivas.",
-        "deliverables": [
-          "Agente de agendamiento 24/7 por WhatsApp",
-          "Recordatorios automáticos de cita y pre-consulta",
-          "Seguimiento post-consulta y limpieza semestral",
-          "Panel de historial y gestión de pacientes"
-        ],
-        "result": "El equipo de recepción recuperó 3 horas diarias para la experiencia del paciente.",
-        "automation": ["Agendamiento 24/7", "Recordatorios de cita", "Seguimiento post-consulta"],
-        "stats": [{ "value": "68%", "label": "Menos llamadas" }, { "value": "4.9★", "label": "Satisfacción" }]
-      },
-      {
-        "industry": "Veterinaria",
-        "label": "Salud Animal & Control",
-        "problem": "Los dueños de mascotas olvidaban las vacunas y controles anuales. La clínica perdía ingresos recurrentes sin una forma de recordarles proactivamente.",
-        "deliverables": [
-          "Recordatorios personalizados por nombre de mascota y vacuna",
-          "Agendamiento express desde WhatsApp sin llamar",
-          "Historial digital de cada mascota y sus tratamientos",
-          "Alertas automáticas de próximos controles anuales"
-        ],
-        "result": "Aumentaron las visitas de control un 40% en los primeros 60 días.",
-        "automation": ["Recordatorios por mascota", "Agendamiento express", "Historial digital"],
-        "stats": [{ "value": "+40%", "label": "Más visitas" }, { "value": "60 días", "label": "Para verlo" }]
-      },
-      {
-        "industry": "Agencia de Autos",
-        "label": "Ventas & Seguimiento",
-        "problem": "Los vendedores perdían el hilo con decenas de prospectos simultáneos. Sin seguimiento consistente, los leads fríos se perdían antes de madurar.",
-        "deliverables": [
-          "CRM automático con seguimiento por etapa de compra",
-          "Reactivación de leads inactivos con mensajes personalizados",
-          "Recordatorios automáticos de test drive y citas de cierre",
-          "Pipeline de ventas visible en tiempo real para todo el equipo"
-        ],
-        "result": "Cerraron 30% más ventas sin contratar un solo vendedor adicional.",
-        "automation": ["CRM automático", "Seguimiento por etapa", "Reactivación de leads"],
-        "stats": [{ "value": "+30%", "label": "Más ventas" }, { "value": "0", "label": "Prospectos perdidos" }]
-      }
-    ]
-  },
   "FunnelVizSection": {
     "label": "Estrategia",
     "headline": "Cómo se ve un",
@@ -201,10 +27,6 @@
     "unitLabel": "personas"
   },
   "PlatformSection": {
-    "label": "Su centro de operaciones",
-    "headline": "Todo lo que construimos",
-    "headlineItalic": "corre sobre su propia plataforma.",
-    "desc": "Cuando le entregamos su sistema automatizado, también le entregamos el control total. Desde un solo lugar usted gestiona todo.",
     "tabs": {
       "organizacion": {
         "label": "Organización",
@@ -239,153 +61,7 @@
           "App móvil incluida"
         ]
       }
-    },
-    "replacesHeadline": "Lo que Bralto reemplaza",
-    "replacesDesc": "Todo lo que pagas por separado, en una sola plataforma.",
-    "toolHeader": "Herramienta",
-    "costHeader": "Costo mensual",
-    "withoutLabel": "Sin Bralto pagarías",
-    "withLabel": "Con Bralto",
-    "allToolsNote": "Todas las herramientas. Un solo precio. Sin sorpresas.",
-    "platformIncluded": "La plataforma viene incluida con cada implementación. También está disponible de forma independiente.",
-    "cta": "Iniciar Prueba Gratuita",
-    "ctaNote": "Hoy paga $0 — Pruebe el sistema antes de pagarlo"
-  },
-  "GuaranteeSection": {
-    "headline": "Sin riesgo.",
-    "headlineItalic": "Sin letra pequeña.",
-    "guarantees": [
-      {
-        "title": "Garantía de resultados",
-        "body": "Si en el primer mes después de la activación no hay leads calificados que cubran el costo de la mensualidad, seguimos trabajando gratis hasta lograrlo."
-      },
-      {
-        "title": "Entrega garantizada",
-        "body": "Cada implementación se entrega funcionando en menos de 72 horas. Si no cumplimos, no paga."
-      }
-    ]
-  },
-  "PricingSection": {
-    "label": "Modelos de Inversión",
-    "headline": "Dos caminos.",
-    "headlineItalic": "Un mismo objetivo.",
-    "desc": "Que su negocio opere mejor, sin depender de más personas.",
-    "foundation": {
-      "tier": "PLATAFORMA",
-      "sub": "Self-serve",
-      "price": "$87",
-      "period": "/ mes",
-      "name": "Plataforma Bralto",
-      "trialNote": "Hoy paga $0 — Pruebe antes de pagar.",
-      "desc": "Para quienes quieren centralizar su operación por su cuenta. Una sola plataforma que reemplaza más de 10 herramientas.",
-      "features": [
-        "CRM y embudos de venta",
-        "Sitio web y landing pages",
-        "Calendario y agendamiento",
-        "Email y SMS marketing",
-        "Automatizaciones de flujo",
-        "Gestión multicanal (WhatsApp, IG, Email)",
-        "App móvil incluida",
-        "Reportes en tiempo real"
-      ],
-      "cta": "Iniciar Prueba Gratuita"
-    },
-    "prime": {
-      "tier": "CUSTOM BUILD",
-      "sub": "Implementación",
-      "from": "Desde",
-      "price": "$849",
-      "name": "Servicio Integral",
-      "priceNote": "El precio final depende del alcance de su proyecto.",
-      "desc": "Analizamos su negocio, diseñamos la solución, y le entregamos todo funcionando. La plataforma Bralto viene incluida.",
-      "features": [
-        "Todo lo de la Plataforma Bralto",
-        "Diagnóstico completo de su operación",
-        "Diseño de solución a la medida",
-        "Desarrollo de sitio web",
-        "Agentes de IA configurados",
-        "Integraciones con sus herramientas",
-        "Interfaces de gestión internas",
-        "Entrega en menos de 72 horas",
-        "Soporte post-implementación"
-      ],
-      "cta": "Agendar Llamada Estratégica"
-    },
-    "bottomNote": "¿No está seguro cuál es la mejor opción?",
-    "bottomLink": "Agendemos una llamada",
-    "bottomNote2": "y le ayudamos a decidir — sin compromiso."
-  },
-  "TestimonialsSection": {
-    "label": "Testimonios",
-    "headline": "Lo que dicen",
-    "headlineItalic": "nuestros clientes"
-  },
-  "TestimonialsData": {
-    "items": [
-      {
-        "quote": "Antes perdíamos reservas todos los fines de semana. Ahora el agente las toma a las 2am sin problema. El restaurante está siempre lleno.",
-        "name": "Carlos Méndez",
-        "position": "Propietario",
-        "company": "Restaurante La Hacienda",
-        "industry": "Restaurante"
-      },
-      {
-        "quote": "El seguimiento automático nos cambió la vida. Los leads que antes se enfriaban ahora cierran solos. Triplicamos conversiones.",
-        "name": "María González",
-        "position": "Directora",
-        "company": "Clínica Bienestar",
-        "industry": "Salud"
-      },
-      {
-        "quote": "Teníamos más de 1,000 productos y responder cotizaciones nos tomaba horas. El agente lo hace en segundos, con todos los detalles correctos.",
-        "name": "Roberto Sánchez",
-        "position": "Gerente Comercial",
-        "company": "Imprenta Pronto",
-        "industry": "Imprenta"
-      },
-      {
-        "quote": "La plataforma reemplazó cinco herramientas que usábamos. Ahora todo está en un solo lugar y el equipo trabaja mucho más rápido.",
-        "name": "Ana Martínez",
-        "position": "CEO",
-        "company": "Inmobiliaria Central",
-        "industry": "Inmobiliaria"
-      },
-      {
-        "quote": "Nuestros huéspedes reciben atención inmediata a cualquier hora. Las reseñas mejoraron y las ocupaciones también.",
-        "name": "Fernando Torres",
-        "position": "Director",
-        "company": "Hotel Vista Real",
-        "industry": "Hotelería"
-      },
-      {
-        "quote": "Bralto no llegó con una solución genérica. Entendieron cómo operamos y construyeron algo que realmente funciona para nosotros.",
-        "name": "Laura Vega",
-        "position": "Fundadora",
-        "company": "Agencia Viajes Sol",
-        "industry": "Turismo"
-      },
-      {
-        "quote": "El ROI fue claro desde el primer mes. Cada peso invertido en automatización multiplicó las ventas.",
-        "name": "Diego Romero",
-        "position": "Socio Fundador",
-        "company": "Centro Financiero MX",
-        "industry": "Finanzas"
-      },
-      {
-        "quote": "Antes el equipo de ventas se quejaba de dar seguimiento. Ahora el sistema lo hace solo y ellos solo cierran. Mucho menos estrés.",
-        "name": "Valentina Cruz",
-        "position": "Directora Comercial",
-        "company": "Concesionaria AutoPrime",
-        "industry": "Automotriz"
-      },
-      {
-        "quote": "Implementaron el sistema en 72 horas como prometieron. Desde el día 1 empezamos a ver resultados concretos.",
-        "name": "Marcos Jiménez",
-        "position": "Rector",
-        "company": "Instituto Educativo Visión",
-        "industry": "Educación"
-      }
-    ]
+    }
   },
   "FunnelLabSection": {
     "badge1": "Nuevo",
@@ -405,108 +81,6 @@
     "stages": ["Visitas", "Leads", "Prospectos", "Clientes"],
     "roiLabel": "ROI proyectado",
     "cpaLabel": "Costo por cliente"
-  },
-  "FounderSection": {
-    "label": "Sobre el fundador",
-    "headline": "Hola, soy",
-    "headlineItalic": "Alejandro Aguilar.",
-    "role": "Fundador, Bralto",
-    "body1": "Fundé Bralto porque vi el mismo problema en demasiados negocios: buenos productos, buenos equipos, pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde.",
-    "body2": "Bralto nació para resolver eso. Hoy combinamos una plataforma todo en uno con implementaciones hechas a medida — para que restaurantes, clínicas, inmobiliarias, hoteles y docenas de industrias más puedan operar con la eficiencia de una empresa grande, sin el costo de serlo.",
-    "yearsValue": "8+",
-    "yearsDesc": "Años diseñando sistemas de adquisición automatizados"
-  },
-  "FaqSection": {
-    "label": "Preguntas frecuentes",
-    "headline": "Todo lo que",
-    "headlineItalic": "necesita saber",
-    "faqs": [
-      {
-        "q": "¿Qué tipo de negocios atienden?",
-        "a": "Cualquier negocio que tenga procesos que dependan de personas: restaurantes, clínicas, imprentas, hoteles, inmobiliarias, agencias de viaje, asesores financieros, y más. Si hay un proceso manual, probablemente lo podemos automatizar."
-      },
-      {
-        "q": "¿Qué incluye el servicio integral?",
-        "a": "Todo lo que su negocio necesite: sitio web, agentes de IA, automatizaciones, integraciones con sus herramientas actuales, interfaces de gestión interna, y la plataforma Bralto para que controle todo desde un solo lugar."
-      },
-      {
-        "q": "¿Cuánto cuesta?",
-        "a": "Depende del alcance. Puede ir desde $800 por una implementación simple hasta proyectos más complejos. Agendá una llamada y le damos un presupuesto exacto después de entender su operación."
-      },
-      {
-        "q": "¿Cuánto tiempo toma la implementación?",
-        "a": "Implementaciones simples se entregan en menos de 72 horas. Proyectos más complejos pueden tomar 1-2 semanas. Siempre le damos un timeline claro antes de empezar."
-      },
-      {
-        "q": "¿Qué es la plataforma Bralto?",
-        "a": "Es el centro de operaciones donde corre todo lo que construimos. Desde ahí usted gestiona conversaciones, contactos, calendario, pagos, correos, y más. Viene incluida con cada implementación, o puede contratarla de forma independiente por $87/mes."
-      },
-      {
-        "q": "¿Qué pasa si no funciona?",
-        "a": "Si en el primer mes no hay resultados que cubran su inversión, seguimos trabajando gratis hasta lograrlo. Sin riesgo."
-      }
-    ]
-  },
-  "FinalCta": {
-    "label": "¿Listo para automatizar?",
-    "phrases": [
-      "Tu competencia posiblemente está considerando algo como esto.",
-      "En este juego, gana el que se mueve primero.",
-      "Mientras lees esto, alguien más ya está automatizando.",
-      "El que automatiza primero, captura el mercado.",
-      "Cada día sin automatizar es una ventaja que le regalas a tu competencia."
-    ],
-    "desc": "Una conversación de 30 minutos puede cambiar cómo opera tu negocio para siempre.",
-    "cta": "Agendar Llamada Estratégica",
-    "ctaNote": "30 minutos. Sin compromiso. Sin costo.",
-    "stats": [
-      { "value": "9+", "label": "Industrias atendidas" },
-      { "value": "72h", "label": "Tiempo de implementación" },
-      { "value": "24/7", "label": "Operación sin parar" }
-    ]
-  },
-  "Footer": {
-    "tagline": "Infraestructura digital para que su negocio opere sin depender de personas.",
-    "copyright": "Todos los derechos reservados.",
-    "sections": {
-      "navigation": {
-        "label": "Navegación",
-        "links": {
-          "inicio": "Inicio",
-          "comoFunciona": "Cómo funciona",
-          "sobreNosotros": "Sobre nosotros",
-          "plataforma": "Plataforma",
-          "casosReales": "Casos reales"
-        }
-      },
-      "legal": {
-        "label": "Legal",
-        "links": {
-          "privacidad": "Política de Privacidad",
-          "terminos": "Términos de Servicio"
-        }
-      },
-      "start": {
-        "label": "Empezar",
-        "links": {
-          "agendar": "Agendar Llamada",
-          "empezar": "Empezar Ahora"
-        }
-      },
-      "social": {
-        "label": "Redes Sociales"
-      }
-    }
-  },
-  "LogoCloud": {
-    "heading": "Nichos con los que funciona",
-    "niches": [
-      "Restaurantes", "Hoteles", "Clínicas", "Inmobiliarias", "Gimnasios",
-      "Abogados", "Academias", "Farmacias", "Talleres", "Aseguradoras",
-      "Salones de Belleza", "Contadores", "Agencias de Viaje", "Tiendas Online",
-      "Concesionarios", "Asesores Financieros", "Dentistas", "Imprentas",
-      "Veterinarias", "Centros Médicos"
-    ]
   },
   "AboutPage": {
     "meta": {
@@ -570,83 +144,464 @@
     "close": {
       "headline": "Construyamos el sistema",
       "headlineItalic": "que su negocio necesita.",
-      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso. Sin costo.",
+      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso.",
       "signature": "— Alejandro Aguilar, Fundador",
       "cta": "Agendar llamada conmigo"
     }
   },
   "PreciosPage": {
-    "badge": "Bralto",
-    "badgeSub": "Servicios y precios",
+    "eyebrow": "Servicios",
     "headline": "Todo lo que",
     "headlineItalic": "hacemos.",
-    "desc": "Precios de referencia para que tengas una idea. El definitivo siempre depende del alcance — lo cerramos juntos en la llamada.",
+    "desc": "Cada servicio se cotiza a la medida: el precio depende del alcance y lo definimos juntos en el diagnóstico.",
+    "custom": "A la medida",
+    "free": "Gratis",
     "services": {
-      "sitiosWeb": { "name": "Sitios web profesionales", "from": "Desde $997", "period": "pago único", "desc": "Diseño a medida, SEO incluido y entrega rápida. Tu presencia online lista para convertir." },
-      "produccionContenido": { "name": "Producción de contenido", "from": "Desde $650", "period": "por mes", "desc": "Videos, stories y estrategia editorial mensual. Producimos y publicamos por vos." },
-      "campanas": { "name": "Campañas publicitarias", "from": "A convenir", "period": "fee de gestión mensual", "desc": "Gestión de Meta Ads y Google Ads de punta a punta, con optimización y reporte semanal." },
-      "automatizacion": { "name": "Automatización de procesos", "from": "Desde $1,450", "period": "pago único", "desc": "Workflows, agentes de IA e integraciones que hacen correr tu operación sola." },
-      "sistemasInternos": { "name": "Sistemas internos a medida", "from": "Desde $1,997", "period": "según alcance", "desc": "CRMs, dashboards, portales internos y herramientas construidas para tu operación." },
-      "asesoria": { "name": "Asesoría de marketing", "from": "A convenir", "period": "según formato", "desc": "Estrategia, posicionamiento y roadmap de 90 días para crecer con intención." },
-      "funnelLab": { "name": "FunnelLab", "from": "Gratis", "period": "para empezar", "desc": "Simulá tu embudo de ventas completo, identificá cuellos de botella y elegí la estrategia más rentable antes de invertir." }
+      "sitiosWeb": {
+        "name": "Sitios web profesionales",
+        "desc": "Diseño a medida, SEO incluido y entrega rápida. Su presencia online lista para convertir."
+      },
+      "produccionContenido": {
+        "name": "Producción de contenido",
+        "desc": "Videos, stories y estrategia editorial mensual. Producimos y publicamos por usted."
+      },
+      "campanas": {
+        "name": "Campañas publicitarias",
+        "desc": "Gestión de Meta Ads y Google Ads de punta a punta, con optimización y reporte semanal."
+      },
+      "automatizacion": {
+        "name": "Automatización de procesos",
+        "desc": "Workflows, agentes de IA e integraciones que hacen correr su operación sola."
+      },
+      "sistemasInternos": {
+        "name": "Sistemas internos a medida",
+        "desc": "CRMs, dashboards, portales internos y herramientas construidas para su operación."
+      },
+      "asesoria": {
+        "name": "Asesoría de marketing",
+        "desc": "Estrategia, posicionamiento y roadmap de 90 días para crecer con intención."
+      },
+      "funnelLab": {
+        "name": "FunnelLab",
+        "desc": "Simule su embudo de ventas completo, identifique cuellos de botella y elija la estrategia más rentable antes de invertir."
+      }
     },
     "viewDetails": "Ver detalles",
-    "ctaLabel": "¿No sabés por dónde empezar?",
-    "ctaHeadline": "Hablemos",
-    "ctaHeadlineItalic": "sin compromiso.",
-    "ctaDesc": "30 minutos para entender tu negocio y proponerte qué tiene sentido para vos hoy.",
-    "ctaBtn": "Agendar llamada gratis",
-    "ctaBack": "Volver al inicio",
-    "home": "Inicio"
+    "ctaLight": "¿No sabe por dónde empezar?",
+    "ctaBold": "Hablemos."
   },
   "PlataformaPage": {
-    "home": "Inicio",
     "badge": "La plataforma",
-    "badgeSub": "$87/mes · 14 días gratis",
-    "headline": "Todo tu negocio,",
+    "badgeSub": "Incluida en cada sistema",
+    "headline": "Todo su negocio,",
     "headlineItalic": "en una sola plataforma.",
-    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar por $87 al mes. Esto es todo lo que incluye.",
-    "priceLabel": "Desde",
-    "price": "$87",
-    "period": "/mes",
-    "priceNote": "Hoy pagas $0 · 14 días gratis · Cancela cuando quieras",
-    "ctaPrimary": "Iniciar prueba gratuita",
-    "ctaSecondary": "Volver al inicio",
+    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar. Viene incluida en cada sistema que construimos.",
+    "cta": "Agendar diagnóstico",
     "includesLabel": "Qué incluye",
-    "includesHeadline": "Todo lo que necesitas para operar",
-    "includesHeadlineItalic": "sin saltar entre herramientas.",
+    "includesLight": "Todo lo que necesita para operar",
+    "includesBold": "sin saltar entre herramientas.",
     "includesDesc": "Tres áreas, una sola plataforma. Sin plugins, sin integraciones frágiles y sin costos escondidos.",
     "replacesLabel": "Lo que reemplaza",
-    "replacesHeadline": "Una plataforma en vez de diez suscripciones",
-    "replacesDesc": "Todo lo que hoy pagas por separado, en un solo precio.",
-    "toolHeader": "Herramienta",
-    "costHeader": "Costo mensual",
-    "withoutLabel": "Por separado pagarías",
-    "withLabel": "Con Bralto",
-    "allToolsNote": "Todas las herramientas. Un solo precio. Sin sorpresas.",
-    "detailsLabel": "Detalles del plan",
-    "detailsHeadline": "Cómo funciona",
-    "details": [
-      { "title": "14 días gratis", "desc": "Prueba la plataforma completa. El cobro empieza solo si decides quedarte." },
-      { "title": "$87 al mes", "desc": "Un precio fijo por todo. Sin cargos por usuario ni sorpresas a fin de mes." },
-      { "title": "Sin permanencia", "desc": "Mes a mes. Cancela cuando quieras desde tu propia cuenta." },
-      { "title": "App móvil incluida", "desc": "Gestiona conversaciones, pagos y agenda desde tu teléfono." },
-      { "title": "Soporte real", "desc": "Te ayudamos a configurar todo y respondemos cuando lo necesitas." },
-      { "title": "Tus datos son tuyos", "desc": "Exporta tus contactos y tu información cuando quieras. Sin candados." }
-    ],
+    "replacesLight": "Una plataforma",
+    "replacesBold": "en vez de diez suscripciones.",
+    "replacesDesc": "Todo lo que hoy paga por separado, incluido en su sistema.",
     "faqLabel": "Preguntas frecuentes",
-    "faqHeadline": "Antes de empezar",
+    "faqLight": "Antes de",
+    "faqBold": "empezar.",
     "faq": [
-      { "q": "¿Qué pasa después de los 14 días?", "a": "Si decides continuar, se activa el cobro de $87/mes. Si no, no se te cobra nada." },
-      { "q": "¿Puedo cancelar cuando quiera?", "a": "Sí. No hay permanencia ni penalización: cancelas mes a mes desde tu cuenta." },
-      { "q": "¿La plataforma viene con la implementación?", "a": "Sí. Cuando trabajamos tu sistema automatizado, la plataforma va incluida. También puedes contratarla sola." },
-      { "q": "¿Reemplaza de verdad mis otras herramientas?", "a": "Sí. CRM, sitio web, agenda, email/SMS, funnels y multicanal viven en un solo lugar, así dejas de pagar y coordinar varias suscripciones." }
-    ],
-    "finalLabel": "Empieza hoy",
-    "finalHeadline": "Prueba la plataforma",
-    "finalHeadlineItalic": "14 días gratis.",
-    "finalDesc": "Sin compromiso. Explora todo lo que incluye y decide con calma.",
-    "finalCtaPrimary": "Iniciar prueba gratuita",
-    "finalCtaSecondary": "Volver al inicio"
+      {
+        "q": "¿La plataforma viene con la implementación?",
+        "a": "Sí. Cuando trabajamos su sistema automatizado, la plataforma va incluida."
+      },
+      {
+        "q": "¿Reemplaza de verdad mis otras herramientas?",
+        "a": "Sí. CRM, sitio web, agenda, email/SMS, funnels y multicanal viven en un solo lugar, así deja de pagar y coordinar varias suscripciones."
+      }
+    ]
+  },
+  "Home": {
+    "meta": {
+      "title": "Bralto — Sistemas automatizados con IA que venden",
+      "description": "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial."
+    },
+    "nav": {
+      "label": "Principal",
+      "home": "Bralto, inicio",
+      "links": {
+        "sistema": "Cómo funciona",
+        "casos": "Casos",
+        "plataforma": "Plataforma",
+        "about": "Sobre nosotros"
+      },
+      "services": "Servicios",
+      "groups": [
+        {
+          "heading": "Presencia digital",
+          "items": [
+            {
+              "key": "sitiosWeb",
+              "label": "Sitios web profesionales",
+              "desc": "Diseño, SEO y entrega rápida"
+            },
+            {
+              "key": "produccionContenido",
+              "label": "Producción de contenido",
+              "desc": "Videos, stories y estrategia"
+            },
+            {
+              "key": "campanas",
+              "label": "Campañas publicitarias",
+              "desc": "Ads en Meta, Google y más"
+            },
+            {
+              "key": "asesoria",
+              "label": "Asesoría de marketing",
+              "desc": "Estrategia y posicionamiento"
+            }
+          ]
+        },
+        {
+          "heading": "Automatización e IA",
+          "items": [
+            {
+              "key": "automatizacion",
+              "label": "Automatización de procesos",
+              "desc": "Flujos, agentes de IA y workflows"
+            },
+            {
+              "key": "sistemasInternos",
+              "label": "Sistemas internos a medida",
+              "desc": "CRMs, paneles y portales"
+            },
+            {
+              "key": "funnelLab",
+              "label": "FunnelLab",
+              "desc": "Simule su embudo antes de invertir"
+            }
+          ]
+        }
+      ],
+      "mega": {
+        "eyebrow": "Diagnóstico de 30 minutos",
+        "title": "¿Por dónde empezar?",
+        "text": "En 30 minutos entendemos su negocio y le decimos qué tiene sentido hoy.",
+        "note": "$97 USD · Se descuenta del proyecto si decide contratar",
+        "all": "Ver todos los servicios"
+      },
+      "cta": "Agendar diagnóstico",
+      "back": "Volver al sitio",
+      "theme": "Modo claro",
+      "menu": "Menú",
+      "close": "Cerrar menú",
+      "language": "Idioma"
+    },
+    "hero": {
+      "eyebrow": "Automatización · Inteligencia Artificial · Sistemas a la medida",
+      "titleLight": "Un sitio web ya no es suficiente.",
+      "titleBold": "Su negocio necesita un sistema.",
+      "lead": "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial.",
+      "ctaPrimary": "Agendar diagnóstico",
+      "ctaSecondary": "Ver cómo se construye un sistema",
+      "system": {
+        "label": "Caso de ejemplo de un sistema trabajando",
+        "title": "Caso de ejemplo",
+        "live": "En vivo",
+        "note": "Ejemplo básico de un negocio que automatiza sus procesos. Con inteligencia artificial, el alcance es prácticamente ilimitado.",
+        "events": [
+          {
+            "title": "Solicitud desde su sitio",
+            "detail": "Formulario → CRM",
+            "time": "ahora"
+          },
+          {
+            "title": "Agente de IA respondió",
+            "detail": "WhatsApp · dudas resueltas",
+            "time": "+4 s"
+          },
+          {
+            "title": "Cotización enviada",
+            "detail": "Generada con sus precios",
+            "time": "+1 min"
+          },
+          {
+            "title": "Tarea para su equipo",
+            "detail": "Con responsable y fecha",
+            "time": "+5 min"
+          },
+          {
+            "title": "Cliente entra a su portal",
+            "detail": "Ve el estado de su pedido",
+            "time": "día 2"
+          }
+        ]
+      }
+    },
+    "compare": {
+      "eyebrow": "2027",
+      "titleLight": "¿Qué necesita un negocio",
+      "titleBold": "para vender en 2027?",
+      "colBefore": "Lo que tienen casi todos",
+      "colAfter": "Lo que necesita en 2027",
+      "groups": [
+        {
+          "label": "Captar y vender",
+          "rows": [
+            {
+              "before": "Una página web bonita",
+              "after": "Un sitio que vende"
+            },
+            {
+              "before": "Responder WhatsApp cuando se puede",
+              "after": "IA que responde en segundos, 24/7"
+            },
+            {
+              "before": "Seguimiento en Excel",
+              "after": "Un CRM que da seguimiento solo"
+            },
+            {
+              "before": "“Creo que los anuncios funcionan”",
+              "after": "Cada venta, rastreada hasta su anuncio"
+            }
+          ]
+        },
+        {
+          "label": "Organizar y gestionar",
+          "rows": [
+            {
+              "before": "Procesos en Excel, papel y chats",
+              "after": "Paneles a la medida de su operación"
+            },
+            {
+              "before": "Tareas que dependen de la memoria",
+              "after": "Tareas y aprobaciones que avanzan solas"
+            },
+            {
+              "before": "Reportes a mano a fin de mes",
+              "after": "Reportes que se actualizan solos"
+            }
+          ]
+        }
+      ],
+      "closingLight": "La diferencia no está en tener más herramientas.",
+      "closingBold": "Está en que todo hable entre sí."
+    },
+    "system": {
+      "eyebrow": "Cómo funciona",
+      "titleLight": "Su sitio web es solo la puerta.",
+      "titleBold": "Esto es lo que va detrás.",
+      "hubLabel": "La puerta",
+      "hubTitle": "Su sitio web",
+      "layers": [
+        {
+          "title": "Atraer",
+          "body": "Ads en Meta y Google con CAPI, píxeles y eventos configurados para que el algoritmo aprenda de ventas reales, no de clics."
+        },
+        {
+          "title": "Captar",
+          "body": "Sitio, landing pages, formularios y chats que convierten visitas en contactos, sin perder ninguno."
+        },
+        {
+          "title": "Atender",
+          "body": "Agentes de IA en WhatsApp, Instagram, web y correo que responden, califican y agendan al instante."
+        },
+        {
+          "title": "Gestionar clientes",
+          "body": "CRM con el historial de cada cliente, su pipeline y un seguimiento que sale solo en el momento correcto."
+        },
+        {
+          "title": "Automatizar su operación",
+          "body": "Los procesos internos que hoy se hacen a mano: cotizaciones, aprobaciones, documentos y tareas del equipo."
+        },
+        {
+          "title": "Accesos a la medida",
+          "body": "Portales y logins con funciones específicas para sus clientes, su equipo o sus socios."
+        }
+      ],
+      "closingLight": "Eso es lo que construimos.",
+      "closingBold": "No páginas web: sistemas que hacen funcionar su negocio."
+    },
+    "cases": {
+      "eyebrow": "Casos reales",
+      "titleLight": "Sistemas que ya están",
+      "titleBold": "funcionando.",
+      "view": "Ver caso",
+      "all": "Ver todos los casos"
+    },
+    "casesPage": {
+      "metaTitle": "Casos reales — Bralto",
+      "metaDescription": "Proyectos de Bralto funcionando: sitios web, agentes de IA, automatizaciones y sistemas a la medida para restaurantes, inmobiliarias, turismo y comercio.",
+      "eyebrow": "Casos reales",
+      "titleLight": "Sistemas que ya están",
+      "titleBold": "funcionando.",
+      "lead": "Elija un proyecto para ver qué construimos y cómo funciona."
+    },
+    "platform": {
+      "eyebrow": "Plataforma",
+      "titleLight": "Todas estas herramientas",
+      "titleBold": "están incluidas.",
+      "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones de WhatsApp, Instagram y correo, pipeline de ventas, automatizaciones, agenda, pagos y reportes. Una sola plataforma que reemplaza todas las herramientas que hoy paga por separado.",
+      "features": [
+        "CRM",
+        "Multicanal",
+        "Pipeline",
+        "Automatizaciones",
+        "Agenda",
+        "Pagos",
+        "Reportes",
+        "App móvil"
+      ],
+      "tools": [
+        {
+          "name": "HubSpot",
+          "price": "$800+/mes"
+        },
+        {
+          "name": "Mailchimp",
+          "price": "$350/mes"
+        },
+        {
+          "name": "ClickFunnels",
+          "price": "$297/mes"
+        },
+        {
+          "name": "Twilio / SMS",
+          "price": "$200+/mes"
+        },
+        {
+          "name": "Kajabi",
+          "price": "$149/mes"
+        },
+        {
+          "name": "ManyChat",
+          "price": "$145/mes"
+        },
+        {
+          "name": "Stripe + integraciones",
+          "price": "$120+/mes"
+        },
+        {
+          "name": "Typeform",
+          "price": "$59/mes"
+        },
+        {
+          "name": "Wix",
+          "price": "$39/mes"
+        },
+        {
+          "name": "Calendly",
+          "price": "$16/mes"
+        }
+      ],
+      "separately": "Por separado: $2,000+/mes",
+      "included": "Incluido en su sistema"
+    },
+    "offer": {
+      "eyebrow": "Inversión",
+      "titleLight": "Su sistema,",
+      "titleBold": "construido a la medida.",
+      "from": "Proyectos desde",
+      "price": "$3,500",
+      "currency": "USD",
+      "financing": "Financiamiento disponible",
+      "includes": [
+        "Diagnóstico",
+        "Diseño",
+        "Sitio web",
+        "CRM",
+        "Agentes de IA",
+        "Automatizaciones",
+        "Tracking",
+        "Ads con CAPI",
+        "Su plataforma"
+      ],
+      "cta": "Agendar diagnóstico",
+      "communityQuestion": "¿Prefiere aprender a construirlo usted mismo?",
+      "communityLink": "Conozca la comunidad"
+    },
+    "guarantee": {
+      "title": "Sin riesgo de su lado.",
+      "body": "Si en el primer mes después de activar el sistema no genera leads calificados que cubran su mensualidad, seguimos trabajando sin costo hasta lograrlo."
+    },
+    "testimonials": {
+      "eyebrow": "Clientes",
+      "titleLight": "En palabras de",
+      "titleBold": "nuestros clientes.",
+      "videoPlaceholder": "[Video testimonial real]",
+      "playLabel": "Reproducir video testimonial",
+      "quotes": [
+        {
+          "text": "“[Testimonio real, con nombre y negocio.]”",
+          "author": "[Nombre]",
+          "role": "[Cargo, Negocio]"
+        }
+      ]
+    },
+    "faq": {
+      "eyebrow": "Preguntas frecuentes",
+      "titleLight": "Lo que",
+      "titleBold": "necesita saber.",
+      "items": [
+        {
+          "q": "¿En qué se diferencia esto de una página web normal?",
+          "a": "Una página web solo muestra información. Un sistema capta al cliente, le responde, le da seguimiento y mide si compró. La página web es una pieza más del sistema."
+        },
+        {
+          "q": "¿Tengo que saber de tecnología para usarlo?",
+          "a": "No. Le entregamos todo funcionando y su equipo lo maneja desde una sola plataforma, también desde el celular. Le enseñamos a usarla."
+        },
+        {
+          "q": "¿La IA va a responder bien a mis clientes?",
+          "a": "El agente se entrena con la información de su negocio: servicios, precios, horarios y preguntas frecuentes. Cuando algo se sale de lo que sabe, pasa la conversación a una persona de su equipo."
+        },
+        {
+          "q": "¿Cuánto tarda en estar funcionando?",
+          "a": "Depende del alcance. Después del diagnóstico le damos un plazo exacto por escrito."
+        },
+        {
+          "q": "¿Qué pasa si ya tengo página web o CRM?",
+          "a": "Revisamos lo que ya tiene. Si sirve, lo conectamos al sistema; si no, migramos su información a la nueva plataforma."
+        },
+        {
+          "q": "¿Cuánto cuesta?",
+          "a": "Los proyectos empiezan desde $3,500 USD, con opción de financiamiento. El precio final depende del alcance y se define en el diagnóstico."
+        },
+        {
+          "q": "¿El diagnóstico tiene costo?",
+          "a": "Sí: $97 USD. Si contrata el servicio, ese monto se descuenta del proyecto; si no, no es reembolsable."
+        }
+      ]
+    },
+    "finalCta": {
+      "eyebrow": "Diagnóstico de 30 minutos",
+      "titleLight": "Cada mes con una página web sola es",
+      "titleBold": "un mes de clientes perdidos.",
+      "lead": "En 30 minutos le mostramos cómo se vería el sistema de su negocio.",
+      "cta": "Agendar diagnóstico",
+      "note": "$97 USD · Se descuenta del proyecto si decide contratar"
+    },
+    "servicePage": {
+      "eyebrow": "Servicio",
+      "cta": "Agendar diagnóstico",
+      "all": "Ver todos los servicios",
+      "featuresEyebrow": "Qué incluye",
+      "featuresLight": "Todo incluido.",
+      "featuresBold": "Sin sorpresas.",
+      "processEyebrow": "Cómo trabajamos",
+      "processLight": "Simple y",
+      "processBold": "sin vueltas.",
+      "faqEyebrow": "Preguntas frecuentes",
+      "faqLight": "Todo lo que",
+      "faqBold": "quería saber.",
+      "related": "Otros servicios",
+      "example": "Vista de ejemplo",
+      "illustrative": "Cifras ilustrativas"
+    },
+    "footer": {
+      "tagline": "Infraestructura digital para negocios",
+      "copyright": "© {year} Bralto",
+      "services": "Servicios",
+      "company": "Empresa"
+    },
+    "pending": "Pendiente · se oculta en producción"
   }
 }

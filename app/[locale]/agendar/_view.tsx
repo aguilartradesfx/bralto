@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Check, ArrowRight } from 'lucide-react'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
-import { GlassCalendar } from '@/components/ui/glass-calendar'
 import { useLocale } from 'next-intl'
+import { GlassCalendar } from '@/components/ui/glass-calendar'
+import { Arrow, Check } from '@/components/home/icons'
+import { PaymentForm, type PaymentLabels } from '@/components/payments/payment-form'
+import type { ClientCheckout } from '@/lib/payments/types'
+import { cn } from '@/lib/utils'
+import './agendar.css'
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
@@ -61,10 +62,10 @@ const COUNTRY_CODES = [
 const CONTENT = {
   es: {
     backToSite: 'Volver al sitio',
-    eyebrow: 'Llamada Estratégica Gratuita',
-    headline: 'Agende su llamada con el equipo.',
-    subline: '30 minutos · Sin costo · Sin compromiso',
-    stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio'],
+    eyebrow: 'Diagnóstico de 30 minutos',
+    headline: 'Agende su diagnóstico con el equipo.',
+    subline: '30 minutos · $97 USD · Se descuenta del proyecto si decide contratar',
+    stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio', 'Pago'],
     slotLocked: 'Horario reservado temporalmente',
     step0Heading: 'Seleccione una fecha',
     slotsFor: 'Horarios disponibles',
@@ -73,14 +74,36 @@ const CONTENT = {
     firstName: 'Nombre',
     lastName: 'Apellido',
     phone: 'Teléfono',
+    countryCode: 'Código de país',
     email: 'Correo electrónico',
     step2Heading: 'Un poco sobre su negocio',
     step2Sub: 'Esto nos ayuda a preparar la llamada para que sea lo más útil posible.',
     back: 'Volver',
     next: 'Continuar',
-    submitting: 'Agendando…',
-    submit: 'Agendar llamada',
-    footer: '30 minutos · Sin costo · Puede cancelar en cualquier momento',
+    submitting: 'Preparando el pago…',
+    submit: 'Continuar al pago',
+    footer: 'Pago seguro con Tilopay. Si contrata el servicio, los $97 se descuentan del proyecto; si no, no son reembolsables.',
+    step3Heading: 'Pago seguro',
+    step3Sub: 'Diagnóstico de 30 minutos · $97 USD',
+    pay: {
+      cardNumber: 'Número de tarjeta',
+      cardExpiry: 'Vencimiento',
+      cardExpiryPlaceholder: 'MM/AA',
+      cardCvv: 'CVV',
+      pay: 'Pagar $97 USD',
+      paying: 'Procesando el pago…',
+      loading: 'Preparando el formulario de pago…',
+      back: 'Volver',
+      testMode: 'Modo de pruebas: este pago no cobra dinero real.',
+      blocked: (actual, expected) =>
+        `El cobro está bloqueado: la pasarela está en modo ${actual === 'TEST' ? 'pruebas' : 'producción'} y este sitio espera ${expected === 'TEST' ? 'pruebas' : 'producción'}.`,
+      loadError: 'No se pudo abrir el pago. Vuelva a intentarlo en unos minutos.',
+      secureNote: 'Los datos de su tarjeta van directo a Tilopay: no pasan por nuestros servidores.',
+    } satisfies PaymentLabels,
+    summaryTitle: 'Diagnóstico de 30 minutos',
+    summaryPrice: '$97 USD',
+    summaryNote: 'Si contrata el servicio, este monto se descuenta del proyecto; si no, no es reembolsable.',
+    paymentCancelled: 'El pago no se completó y no se hizo ningún cobro. Su horario sigue reservado unos minutos por si quiere intentarlo de nuevo.',
     errDate: 'Seleccione una fecha.',
     errTime: 'Seleccione un horario.',
     errFirstName: 'Ingrese su nombre.',
@@ -124,10 +147,10 @@ const CONTENT = {
   },
   en: {
     backToSite: 'Back to site',
-    eyebrow: 'Free Strategy Call',
-    headline: 'Book your call with our team.',
-    subline: '30 minutes · No cost · No commitment',
-    stepLabels: ['Date & time', 'Your info', 'Your business'],
+    eyebrow: '30-minute diagnostic call',
+    headline: 'Book your diagnostic call with our team.',
+    subline: '30 minutes · $97 USD · Deducted from the project if you hire us',
+    stepLabels: ['Date & time', 'Your info', 'Your business', 'Payment'],
     slotLocked: 'Time slot temporarily reserved',
     step0Heading: 'Select a date',
     slotsFor: 'Available times',
@@ -136,14 +159,36 @@ const CONTENT = {
     firstName: 'First name',
     lastName: 'Last name',
     phone: 'Phone',
+    countryCode: 'Country code',
     email: 'Email address',
     step2Heading: 'A bit about your business',
     step2Sub: 'This helps us prepare so the call is as useful as possible.',
     back: 'Back',
     next: 'Continue',
-    submitting: 'Booking…',
-    submit: 'Book call',
-    footer: '30 minutes · No cost · Cancel anytime',
+    submitting: 'Preparing payment…',
+    submit: 'Continue to payment',
+    footer: 'Secure payment with Tilopay. If you hire us, the $97 is deducted from the project; if not, it is non-refundable.',
+    step3Heading: 'Secure payment',
+    step3Sub: '30-minute diagnostic call · $97 USD',
+    pay: {
+      cardNumber: 'Card number',
+      cardExpiry: 'Expiration',
+      cardExpiryPlaceholder: 'MM/YY',
+      cardCvv: 'CVV',
+      pay: 'Pay $97 USD',
+      paying: 'Processing payment…',
+      loading: 'Loading the payment form…',
+      back: 'Back',
+      testMode: 'Test mode: this payment does not charge real money.',
+      blocked: (actual, expected) =>
+        `Payments are blocked: the gateway is in ${actual === 'TEST' ? 'test' : 'live'} mode and this site expects ${expected === 'TEST' ? 'test' : 'live'} mode.`,
+      loadError: "We couldn't open the payment form. Please try again in a few minutes.",
+      secureNote: 'Your card details go straight to Tilopay and never touch our servers.',
+    } satisfies PaymentLabels,
+    summaryTitle: '30-minute diagnostic call',
+    summaryPrice: '$97 USD',
+    summaryNote: 'If you hire us, this amount is deducted from the project; if not, it is non-refundable.',
+    paymentCancelled: "The payment wasn't completed and you were not charged. Your time slot stays reserved for a few minutes in case you want to try again.",
     errDate: 'Please select a date.',
     errTime: 'Please select a time slot.',
     errFirstName: 'Please enter your first name.',
@@ -187,6 +232,8 @@ const CONTENT = {
   },
 }
 
+const SESSION_KEY = 'bralto-agendar-session'
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormData {
@@ -204,22 +251,8 @@ interface FormData {
 
 function OptionCard({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full text-left rounded-xl border px-4 py-3 text-sm transition-all duration-150 flex items-center gap-3 ${
-        selected
-          ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-white'
-          : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
-      }`}
-    >
-      <span
-        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all ${
-          selected ? 'border-[#5bb6ff] bg-[#5bb6ff]' : 'border-white/[0.2] bg-transparent'
-        }`}
-      >
-        {selected && <Check size={9} className="text-white" strokeWidth={3} />}
-      </span>
+    <button type="button" onClick={onClick} aria-pressed={selected} className={cn('bk-option', selected && 'is-selected')}>
+      <span className="bk-option__dot" aria-hidden="true" />
       {label}
     </button>
   )
@@ -227,39 +260,18 @@ function OptionCard({ label, selected, onClick }: { label: string; selected: boo
 
 function StepIndicator({ step, labels }: { step: number; labels: string[] }) {
   return (
-    <div className="flex items-center gap-0 mb-10">
+    <ol className="bk-steps">
       {labels.map((label, i) => (
-        <div key={i} className="flex items-center">
-          <div className="flex flex-col items-center gap-1">
-            <div
-              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
-                i < step
-                  ? 'bg-[#5bb6ff] text-white'
-                  : i === step
-                  ? 'border-2 border-[#5bb6ff] text-[#5bb6ff] bg-transparent'
-                  : 'border border-white/[0.1] text-white/20 bg-transparent'
-              }`}
-            >
-              {i < step ? <Check size={12} strokeWidth={3} /> : i + 1}
-            </div>
-            <span
-              className={`text-[10px] font-medium whitespace-nowrap hidden sm:block ${
-                i === step ? 'text-white/60' : 'text-white/20'
-              }`}
-            >
-              {label}
-            </span>
-          </div>
-          {i < labels.length - 1 && (
-            <div
-              className={`h-px w-12 sm:w-20 mx-1 mb-4 transition-all duration-500 ${
-                i < step ? 'bg-[#5bb6ff]/40' : 'bg-white/[0.07]'
-              }`}
-            />
-          )}
-        </div>
+        <li
+          key={label}
+          className={cn('bk-step', i < step && 'is-done', i === step && 'is-current')}
+          aria-current={i === step ? 'step' : undefined}
+        >
+          <span className="bk-step__mark">{i < step ? <Check /> : i + 1}</span>
+          <span className="bk-step__label">{label}</span>
+        </li>
       ))}
-    </div>
+    </ol>
   )
 }
 
@@ -267,13 +279,14 @@ function StepIndicator({ step, labels }: { step: number; labels: string[] }) {
 
 export default function AgendarPage() {
   const locale = useLocale()
-  const router = useRouter()
   const c = CONTENT[locale as 'es' | 'en'] ?? CONTENT.es
 
   const availableDays = getAvailableDays()
 
   const [step, setStep] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  // Lo que devuelve el servidor para el formulario de la pasarela (token del SDK, nunca credenciales)
+  const [checkout, setCheckout] = useState<ClientCheckout | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
   const [lockedSlots, setLockedSlots] = useState<Set<string>>(new Set())
@@ -281,15 +294,33 @@ export default function AgendarPage() {
   // (GHL down) → don't restrict, show all curated slots as before.
   const [ghlAvailable, setGhlAvailable] = useState<Set<string> | null>(null)
 
-  const [sessionId] = useState<string>(() =>
-    typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36),
-  )
+  // Se guarda en sessionStorage: si cancela el pago y vuelve, el horario retenido sigue siendo suyo
+  const [sessionId] = useState<string>(() => {
+    if (typeof window === 'undefined') return ''
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY)
+      if (saved) return saved
+    } catch {}
+    const id =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`
+    try {
+      sessionStorage.setItem(SESSION_KEY, id)
+    } catch {}
+    return id
+  })
+  const [notice, setNotice] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('pago') === 'cancelado') setNotice(c.paymentCancelled)
+  }, [c.paymentCancelled])
 
   const [lockExpiresAt, setLockExpiresAt] = useState<number | null>(null)
   const [countdown, setCountdown] = useState(0)
 
   function refreshSlots() {
-    fetch('/api/bookings')
+    fetch(`/api/bookings?session=${encodeURIComponent(sessionId)}`)
       .then((r) => r.json())
       .then((data) => {
         setBookedSlots(new Set(data.booked ?? []))
@@ -309,6 +340,7 @@ export default function AgendarPage() {
       if (remaining === 0) {
         clearInterval(interval)
         setLockExpiresAt(null)
+        setCheckout(null)
         setErrors([c.errLockExpired])
         setStep(0)
         setForm((f) => ({ ...f, selectedDate: null, selectedTime: null }))
@@ -413,11 +445,10 @@ export default function AgendarPage() {
 
     const key = slotKey(form.selectedDate!, form.selectedTime!)
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch('/api/diagnostic/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'confirm',
           slot: key,
           sessionId,
           nombre: form.nombre,
@@ -426,109 +457,86 @@ export default function AgendarPage() {
           telefono: form.telefono,
           email: form.email,
           answers: form.answers,
+          locale,
         }),
       })
+      const data = (await res.json().catch(() => ({}))) as { checkout?: ClientCheckout; holdExpiresAt?: number }
       if (res.status === 409) {
-        const data = await res.json()
-        setErrors([data.error ?? c.errConflict])
+        setErrors([c.errConflict])
         setSubmitting(false)
         return
       }
-      if (!res.ok) throw new Error()
+      if (!res.ok || !data.checkout) throw new Error()
+      setCheckout(data.checkout)
+      // El horario queda retenido mientras paga
+      if (data.holdExpiresAt) {
+        setLockExpiresAt(data.holdExpiresAt)
+        setCountdown(Math.floor((data.holdExpiresAt - Date.now()) / 1000))
+      }
+      setSubmitting(false)
+      setStep(3)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch {
       setErrors([c.errGeneric])
       setSubmitting(false)
-      return
     }
-
-    router.push(`/${locale}/confirmacion`)
   }
 
   return (
-    <div className="min-h-screen bg-[#060607]">
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(91,182,255,0.04),transparent)]" />
+    <main className="bk" data-focus-page>
+      <div className="hm-wrap bk__wrap">
+        <header className="bk__head">
+          <p className="hm-eyebrow">{c.eyebrow}</p>
+          <h1 className="bk__title">{c.headline}</h1>
+          <p className="bk__sub">{c.subline}</p>
+        </header>
 
-      {/* Top bar */}
-      <header className="relative z-10 border-b border-white/[0.05] bg-[#060607]/60 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <a href={`/${locale}`} className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Bralto" width={80} height={24} className="h-6 w-auto object-contain" />
-          </a>
-          <a href={`/${locale}`} className="flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors">
-            <ChevronLeft size={13} />
-            {c.backToSite}
-          </a>
-        </div>
-      </header>
-
-      {/* Main */}
-      <main className="relative z-10 mx-auto max-w-3xl px-6 py-12">
-        {/* Hero */}
-        <div className="mb-10 text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff]">
-            {c.eyebrow}
+        {notice && (
+          <p className="bk-notice" role="status">
+            {notice}
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">
-            {c.headline}
-          </h1>
-          <p className="text-sm text-white/35">{c.subline}</p>
-        </div>
+        )}
 
-        {/* Step indicator */}
-        <div className="flex justify-center">
-          <StepIndicator step={step} labels={c.stepLabels} />
-        </div>
+        <StepIndicator step={step} labels={c.stepLabels} />
 
-        {/* Countdown banner */}
+        {/* Horario retenido mientras completa los datos */}
         {step > 0 && lockExpiresAt !== null && (
-          <div
-            className={`mb-6 flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-colors duration-300 ${
-              countdown < 60
-                ? 'border-red-500/25 bg-red-500/5 text-red-400'
-                : 'border-[#5bb6ff]/20 bg-[#5bb6ff]/5 text-[#5bb6ff]/80'
-            }`}
-          >
+          <div className={cn('bk-hold', countdown < 60 && 'is-ending')}>
             <span>{c.slotLocked}</span>
-            <span className="font-mono font-semibold tabular-nums">
+            <span className="bk-hold__time">
               {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}
             </span>
           </div>
         )}
 
-        {/* ── Step 0: Date & time ─────────────────────────── */}
-        {step === 0 && (
-          <div>
-            <h2 className="mb-5 text-lg font-semibold text-white">{c.step0Heading}</h2>
+        <section className="bk-panel hm-glass hm-glass--thick" aria-labelledby="bk-step-title">
+          {/* ── Paso 0: fecha y hora ── */}
+          {step === 0 && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step0Heading}
+              </h2>
 
-            <GlassCalendar
-              selectedDate={form.selectedDate}
-              onDateSelect={(date) => {
-                update('selectedDate', date)
-                update('selectedTime', null)
-              }}
-              selectableDates={availableDays}
-              className="max-w-full"
-            />
+              <GlassCalendar
+                locale={locale === 'en' ? 'en' : 'es'}
+                selectedDate={form.selectedDate}
+                onDateSelect={(date) => {
+                  update('selectedDate', date)
+                  update('selectedTime', null)
+                }}
+                selectableDates={availableDays}
+              />
 
-            <AnimatePresence>
               {form.selectedDate && (
-                <motion.div
-                  key="time-slots"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.22, ease: 'easeOut' }}
-                  className="mt-6"
-                >
-                  <h2 className="mb-4 text-base font-semibold text-white">
+                <div key={form.selectedDate.toDateString()} className="bk-slots-wrap">
+                  <h3 className="bk-h3">
                     {c.slotsFor} —{' '}
-                    <span className="text-[#5bb6ff]">
-                      {c.DAYS[form.selectedDate.getDay()]}{' '}
-                      {form.selectedDate.getDate()}{' '}
+                    <span>
+                      {c.DAYS[form.selectedDate.getDay()]} {form.selectedDate.getDate()}{' '}
                       {c.MONTHS[form.selectedDate.getMonth()]}
                     </span>
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  </h3>
+                  <div className="bk-slots">
                     {TIME_SLOTS.map(({ id, label }) => {
                       const selected = form.selectedTime === id
                       const key = slotKey(form.selectedDate!, id)
@@ -539,179 +547,213 @@ export default function AgendarPage() {
                       return (
                         <button
                           key={id}
+                          type="button"
                           disabled={booked}
+                          aria-pressed={selected}
                           onClick={() => !booked && update('selectedTime', id)}
-                          className={`relative rounded-xl border py-3.5 text-sm font-semibold transition-all duration-150 ${
-                            booked
-                              ? 'border-white/[0.04] bg-white/[0.01] text-white/20 cursor-not-allowed'
-                              : selected
-                              ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-white'
-                              : 'border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.14] hover:text-white/70'
-                          }`}
+                          className={cn('bk-slot', selected && 'is-selected')}
                         >
                           {label}
-                          {booked && (
-                            <span className="block text-[9px] font-normal text-white/20 mt-0.5">
-                              {c.unavailable}
-                            </span>
-                          )}
+                          {booked && <small>{c.unavailable}</small>}
                         </button>
                       )
                     })}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </div>
-        )}
+            </>
+          )}
 
-        {/* ── Step 1: Contact info ─────────────────────────── */}
-        {step === 1 && (
-          <div>
-            <h2 className="mb-6 text-lg font-semibold text-white">{c.step1Heading}</h2>
+          {/* ── Paso 1: datos de contacto ── */}
+          {step === 1 && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step1Heading}
+              </h2>
 
-            <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-white/40">
-                    {c.firstName} <span className="text-[#5bb6ff]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.nombre}
-                    onChange={(e) => update('nombre', e.target.value)}
-                    placeholder="Alex"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-white/40">
-                    {c.lastName} <span className="text-[#5bb6ff]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.apellido}
-                    onChange={(e) => update('apellido', e.target.value)}
-                    placeholder="Johnson"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/40">
-                  {c.phone} <span className="text-[#5bb6ff]">*</span>
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    value={form.countryCode}
-                    onChange={(e) => update('countryCode', e.target.value)}
-                    className="rounded-xl border border-white/[0.08] bg-[#111] px-3 py-3 text-sm text-white/70 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 shrink-0"
-                  >
-                    {COUNTRY_CODES.map(({ code, label }) => (
-                      <option key={code} value={code}>{label}</option>
-                    ))}
-                  </select>
-                  <input
-                    type="tel"
-                    value={form.telefono}
-                    onChange={(e) => update('telefono', e.target.value)}
-                    placeholder="555 000 0000"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/40">
-                  {c.email} <span className="text-[#5bb6ff]">*</span>
-                </label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => update('email', e.target.value)}
-                  placeholder="alex@company.com"
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-all duration-150 focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/5"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 2: Your business ────────────────────────── */}
-        {step === 2 && (
-          <div>
-            <h2 className="mb-2 text-lg font-semibold text-white">{c.step2Heading}</h2>
-            <p className="mb-8 text-sm text-white/35">{c.step2Sub}</p>
-
-            <div className="flex flex-col gap-8">
-              {c.questions.map((q) => (
-                <div key={q.id}>
-                  <p className="mb-3 text-sm font-semibold text-white/80">
-                    {q.question}
-                    <span className="ml-1 text-[#5bb6ff]">*</span>
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {q.options.map((opt) => (
-                      <OptionCard
-                        key={opt}
-                        label={opt}
-                        selected={form.answers[q.id] === opt}
-                        onClick={() => setAnswer(q.id, opt)}
-                      />
-                    ))}
+              <div className="bk-fields">
+                <div className="bk-row">
+                  <div className="bk-field">
+                    <label htmlFor="bk-first">
+                      {c.firstName}
+                      <span className="bk-req" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="bk-first"
+                      className="bk-input"
+                      type="text"
+                      autoComplete="given-name"
+                      required
+                      value={form.nombre}
+                      onChange={(e) => update('nombre', e.target.value)}
+                      placeholder="Alex"
+                    />
+                  </div>
+                  <div className="bk-field">
+                    <label htmlFor="bk-last">
+                      {c.lastName}
+                      <span className="bk-req" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="bk-last"
+                      className="bk-input"
+                      type="text"
+                      autoComplete="family-name"
+                      required
+                      value={form.apellido}
+                      onChange={(e) => update('apellido', e.target.value)}
+                      placeholder="Johnson"
+                    />
                   </div>
                 </div>
+
+                <div className="bk-field">
+                  <label htmlFor="bk-phone">
+                    {c.phone}
+                    <span className="bk-req" aria-hidden="true">*</span>
+                  </label>
+                  <div className="bk-phone">
+                    <select
+                      className="bk-input"
+                      aria-label={c.countryCode}
+                      value={form.countryCode}
+                      onChange={(e) => update('countryCode', e.target.value)}
+                    >
+                      {COUNTRY_CODES.map(({ code, label }) => (
+                        <option key={code} value={code}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      id="bk-phone"
+                      className="bk-input"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      required
+                      value={form.telefono}
+                      onChange={(e) => update('telefono', e.target.value)}
+                      placeholder="555 000 0000"
+                    />
+                  </div>
+                </div>
+
+                <div className="bk-field">
+                  <label htmlFor="bk-email">
+                    {c.email}
+                    <span className="bk-req" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    id="bk-email"
+                    className="bk-input"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={form.email}
+                    onChange={(e) => update('email', e.target.value)}
+                    placeholder="alex@company.com"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Paso 2: su negocio y resumen del cobro ── */}
+          {step === 2 && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step2Heading}
+              </h2>
+              <p className="bk-lead">{c.step2Sub}</p>
+
+              <div className="bk-questions">
+                {c.questions.map((q) => (
+                  <div key={q.id} className="bk-q" role="group" aria-labelledby={`bk-q-${q.id}`}>
+                    <p id={`bk-q-${q.id}`}>
+                      {q.question}
+                      <span className="bk-req" aria-hidden="true">*</span>
+                    </p>
+                    <div className="bk-options">
+                      {q.options.map((opt) => (
+                        <OptionCard
+                          key={opt}
+                          label={opt}
+                          selected={form.answers[q.id] === opt}
+                          onClick={() => setAnswer(q.id, opt)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bk-summary">
+                <div className="bk-summary__row">
+                  <p>{c.summaryTitle}</p>
+                  <p className="bk-summary__price">{c.summaryPrice}</p>
+                </div>
+                <p className="bk-summary__note">{c.summaryNote}</p>
+              </div>
+            </>
+          )}
+
+          {/* ── Paso 3: pago (formulario de la pasarela activa) ── */}
+          {step === 3 && checkout && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step3Heading}
+              </h2>
+              <p className="bk-lead">{c.step3Sub}</p>
+              <PaymentForm
+                checkout={checkout}
+                labels={c.pay}
+                onBack={() => {
+                  setCheckout(null)
+                  setErrors([])
+                  setStep(2)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+              />
+            </>
+          )}
+
+          {step < 3 && errors.length > 0 && (
+            <div className="bk-errors" role="alert">
+              {errors.map((e) => (
+                <p key={e}>{e}</p>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Errors */}
-        {errors.length > 0 && (
-          <div className="mt-6 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
-            {errors.map((e) => (
-              <p key={e} className="text-xs text-red-400">• {e}</p>
-            ))}
-          </div>
-        )}
-
-        {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between">
-          {step > 0 ? (
-            <button
-              onClick={back}
-              className="flex items-center gap-2 rounded-xl border border-white/[0.08] px-5 py-3 text-sm font-medium text-white/40 hover:border-white/20 hover:text-white/70 transition-all duration-150"
-            >
-              <ChevronLeft size={15} />
-              {c.back}
-            </button>
-          ) : (
-            <div />
           )}
 
-          {step < 2 ? (
-            <button
-              onClick={next}
-              className="flex items-center gap-2 rounded-xl bg-[#ffa845] px-6 py-3 text-sm font-semibold text-black hover:bg-[#f59e0b] transition-colors duration-150"
-            >
-              {c.next}
-              <ChevronRight size={15} />
-            </button>
-          ) : (
-            <button
-              onClick={submit}
-              disabled={submitting}
-              className="flex items-center gap-2 rounded-xl bg-[#5bb6ff] px-6 py-3 text-sm font-semibold text-white hover:bg-[#7cc5ff] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {submitting ? c.submitting : c.submit}
-              {!submitting && <ArrowRight size={15} />}
-            </button>
-          )}
-        </div>
+          {step < 3 && (
+            <div className="bk-nav">
+              {step > 0 ? (
+                <button type="button" onClick={back} className="hm-btn hm-btn--glass hm-glass">
+                  <Arrow />
+                  {c.back}
+                </button>
+              ) : (
+                <span />
+              )}
 
-        <p className="mt-8 text-center text-xs text-white/20">{c.footer}</p>
-      </main>
-    </div>
+              {step < 2 ? (
+                <button type="button" onClick={next} className="hm-btn hm-btn--solid">
+                  {c.next}
+                  <Arrow />
+                </button>
+              ) : (
+                <button type="button" onClick={submit} disabled={submitting} className="hm-btn hm-btn--solid">
+                  {submitting ? c.submitting : c.submit}
+                  {!submitting && <Arrow />}
+                </button>
+              )}
+            </div>
+          )}
+        </section>
+
+        <p className="bk-foot">{c.footer}</p>
+      </div>
+    </main>
   )
 }

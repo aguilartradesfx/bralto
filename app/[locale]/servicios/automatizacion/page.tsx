@@ -1,11 +1,18 @@
 import type { Metadata } from 'next'
+import { setRequestLocale } from 'next-intl/server'
 import { buildPageMetadata } from '@/lib/seo'
-import AutomatizacionPage from './_view'
+import AutomatizacionView from './_view'
 
-type Props = { params: Promise<{ locale: 'es' | 'en' }> }
+type Props = { params: Promise<{ locale: string }> }
+
+const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
+
+export function generateStaticParams() {
+  return [{ locale: 'es' }, { locale: 'en' }]
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params
+  const locale = toLocale((await params).locale)
   return buildPageMetadata({
     locale,
     pathByLocale: { es: '/servicios/automatizacion', en: '/servicios/automatizacion' },
@@ -20,6 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-export default function Page() {
-  return <AutomatizacionPage />
+export default async function Page({ params }: Props) {
+  const locale = toLocale((await params).locale)
+  setRequestLocale(locale)
+  return <AutomatizacionView locale={locale} />
 }

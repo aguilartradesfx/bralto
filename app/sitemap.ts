@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { clients } from '@/app/servicios/sitios-web/clients'
 
 const BASE_URL = 'https://bralto.io'
 const LOCALES = ['es', 'en'] as const
@@ -20,6 +21,8 @@ const ROUTES: Route[] = [
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/campanas' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/sistemas-internos' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/asesoria' },
+  { priority: 0.8,  changeFrequency: 'monthly', path: '/casos' },
+  ...clients.map((c): Route => ({ priority: 0.7, changeFrequency: 'monthly', path: `/servicios/sitios-web/${c.id}` })),
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {

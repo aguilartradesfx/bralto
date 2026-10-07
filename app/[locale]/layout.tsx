@@ -1,7 +1,8 @@
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { SiteShell } from '@/components/home/shell'
 import type { Metadata } from 'next'
 
 type Locale = 'es' | 'en'
@@ -105,13 +106,16 @@ export default async function LocaleLayout({ children, params }: Props) {
     notFound()
   }
 
-  const messages = await getMessages()
+  setRequestLocale(locale)
 
   return (
     <>
       <HtmlLang locale={locale} />
-      <NextIntlClientProvider messages={messages}>
-        {children}
+      {/* Las páginas se renderizan en el servidor y los componentes de cliente reciben sus
+          textos por props: al navegador solo viaja el idioma, ningún mensaje */}
+      <NextIntlClientProvider messages={null}>
+        {/* Nav, footer, tema y fondo del diseño nuevo en todas las páginas públicas */}
+        <SiteShell locale={locale === 'en' ? 'en' : 'es'}>{children}</SiteShell>
       </NextIntlClientProvider>
     </>
   )

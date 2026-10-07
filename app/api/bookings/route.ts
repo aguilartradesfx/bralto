@@ -1,5 +1,6 @@
 import { NextResponse, after } from 'next/server'
-import { createBookingInGhl, getGhlAvailableSlotKeys } from '@/lib/ghl/bookings'
+import { reconcilePendingOrders } from '@/lib/diagnostic/server'
+import { getGhlAvailableSlotKeys } from '@/lib/ghl/bookings'
 
 // Redis key for permanently confirmed bookings
 const KEY = 'bralto:booked_slots'
@@ -16,8 +17,16 @@ function getRedis() {
 
 // ── GET: return booked (permanent) + locked (temporary) slots ────────────────
 
-export async function GET() {
+export async function GET(req: Request) {
   const redis = getRedis()
+  // Los horarios que retiene esta misma sesión no cuentan como ocupados (reintento tras un rechazo)
+  const session = new URL(req.url).searchParams.get('session')
+
+  // Conciliación de pagos aprovechando el tráfico de /agendar (además del cron): unas pocas
+  // órdenes pendientes por visita, después de responder
+  after(() =>
+    reconcilePendingOrders({ limit: 3 }).catch((err) => console.error('[bookings] conciliación falló:', err)),
+  )
 
   // Real availability from GHL, so the site hides curated slots already taken/
   // blocked in GHL. Independent of Redis and non-fatal: on any failure we return
@@ -37,14 +46,18 @@ export async function GET() {
       redis.keys('bralto:lock:*') as Promise<string[]>,
       ghlPromise,
     ])
-    const locked = lockKeys.map((k: string) => k.replace('bralto:lock:', ''))
+    const owners: (string | null)[] =
+      session && lockKeys.length ? await redis.mget(...lockKeys) : lockKeys.map(() => null)
+    const locked = lockKeys
+      .filter((_: string, i: number) => !session || owners[i] !== session)
+      .map((k: string) => k.replace('bralto:lock:', ''))
     return NextResponse.json({ booked: booked ?? [], locked, ghlAvailable })
   } catch {
     return NextResponse.json({ booked: [], locked: [], ghlAvailable: await ghlPromise })
   }
 }
 
-// ── POST: lock | unlock | confirm ────────────────────────────────────────────
+// ── POST: lock | unlock ──────────────────────────────────────────────────────
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -115,86 +128,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true })
   }
 
-  // ── confirm: make slot permanent and save to Supabase ─────────────────────
-  if (action === 'confirm') {
-    const redis = getRedis()
-
-    if (redis) {
-      try {
-        const lockKey = `bralto:lock:${slot}`
-
-        // Verify the session still owns the lock (not expired)
-        if (sessionId) {
-          const owner = await redis.get(lockKey)
-          if (owner !== null && owner !== sessionId) {
-            return NextResponse.json(
-              { error: 'El bloqueo del horario expiró. Por favor regrese y seleccione otro.' },
-              { status: 409 },
-            )
-          }
-        }
-
-        // Attempt permanent booking
-        const added = await redis.sadd(KEY, slot)
-        if (added === 0) {
-          // Already booked by someone else
-          return NextResponse.json(
-            { error: 'Este horario ya fue confirmado. Por favor regrese y elija otro.' },
-            { status: 409 },
-          )
-        }
-
-        // Release temporary lock
-        await redis.del(lockKey)
-      } catch { /* continue to Supabase regardless */ }
-    }
-
-    // Persist booking details to Supabase
-    // Required table: bookings (slot_key, nombre, apellido, telefono, email, answers, created_at)
-    const supabaseUrl = process.env.SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_ANON_KEY
-    if (supabaseUrl && supabaseKey) {
-      try {
-        const { nombre, apellido, countryCode, telefono, email, answers } = body
-        await fetch(`${supabaseUrl}/rest/v1/bookings`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${supabaseKey}`,
-            apikey: supabaseKey,
-            Prefer: 'return=minimal',
-          },
-          body: JSON.stringify({
-            slot_key: slot,
-            nombre,
-            apellido,
-            telefono: `${countryCode ?? ''}${telefono ?? ''}`,
-            email,
-            answers,
-          }),
-        })
-      } catch { /* Supabase save is non-critical — booking is already locked in Redis */ }
-    }
-
-    // Push the booking into GHL (contact + appointment + tag) after responding.
-    const { nombre, apellido, countryCode, telefono, email, answers } = body
-    after(async () => {
-      try {
-        await createBookingInGhl({
-          slotKey: slot,
-          firstName: nombre ?? '',
-          lastName: apellido ?? '',
-          phone: `${countryCode ?? ''}${telefono ?? ''}`,
-          email: email ?? '',
-          answers,
-        })
-      } catch (err) {
-        console.error('[bookings → ghl] failed:', err)
-      }
-    })
-
-    return NextResponse.json({ success: true })
-  }
-
+  // Ya no hay "confirm" público: la cita solo se confirma después del pago de $97,
+  // en el servidor (lib/diagnostic: retorno de Stripe y webhook)
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 }

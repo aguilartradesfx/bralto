@@ -91,7 +91,7 @@ export function ServiceJsonLd({
     availableChannel: {
       '@type': 'ServiceChannel',
       serviceUrl: 'https://bralto.io/agendar',
-      serviceType: 'Free strategy call',
+      serviceType: 'Diagnostic session',
     },
   }
 

@@ -38,3 +38,6 @@ yarn-error.log*
 scripts/social/out/
 # Placeholders de demo (los reales van con nombre propio)
 scripts/social/assets/_*
+
+# Worktrees locales de Claude Code
+.claude/worktrees/
