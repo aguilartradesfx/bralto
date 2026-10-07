@@ -66,8 +66,12 @@ function toMoney(amount: unknown, currency: unknown): Money | null {
 }
 
 function toEnvironment(value: unknown): PaymentEnvironment {
-  // "Production" es producción; "Test" (o cualquier otra cosa) no lo es
-  return typeof value === 'string' && /^prod/i.test(value) ? 'PROD' : 'TEST'
+  // En pruebas la cuenta real devuelve "Test"; para producción la documentación muestra
+  // "Production", pero con la cuenta real todavía no se ha visto. Solo un valor de pruebas
+  // cuenta como TEST: un pago real no puede quedarse sin agendar porque llegue con otro nombre
+  // o vacío. Un pago de pruebas tampoco se cuela: con la cuenta en pruebas, producción
+  // bloquea el cobro desde Init().
+  return typeof value === 'string' && /test|sandbox|prueba/i.test(value) ? 'TEST' : 'PROD'
 }
 
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

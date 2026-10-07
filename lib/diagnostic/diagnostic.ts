@@ -2,7 +2,8 @@ import { z } from 'zod'
 import type { Money, PaymentEnvironment, PaymentStatus } from '../payments/types'
 
 // Diagnóstico de 30 minutos: $97 USD. Si contrata el servicio, se descuenta del
-// proyecto; si no, no se reembolsa (términos de Alejandro, 2026-10-05).
+// proyecto; si no, no se reembolsa (términos de Alejandro, 2026-10-05). Desde 2026-10-07
+// los textos visibles solo mencionan el descuento, a pedido de Alejandro.
 // En unidades enteras de la moneda (lo que espera Tilopay): 97, no 9700.
 export const DIAGNOSTIC_PRICE: Money = { amount: 97, currency: 'USD' }
 // Solo para el flujo de Stripe (desconectado), que sí usa céntimos
@@ -12,8 +13,8 @@ export const DIAGNOSTIC_PRICE_CENTS = 9700
 export const CHECKOUT_TTL_SECONDS = 31 * 60
 
 const TERMS = {
-  es: 'Pago único de $97 USD por el diagnóstico de 30 minutos. Si contrata el servicio, este monto se descuenta del proyecto; si no, no es reembolsable.',
-  en: 'One-time payment of $97 USD for the 30-minute diagnostic session. If you hire us, this amount is deducted from the project; if not, it is non-refundable.',
+  es: 'Pago único de $97 USD por el diagnóstico de 30 minutos. Si decide avanzar con el proyecto, le descontamos los $97 completos.',
+  en: 'One-time payment of $97 USD for the 30-minute diagnostic session. If you move forward with the project, we credit the full $97 toward it.',
 } as const
 
 export const DIAGNOSTIC_PRODUCT = {
