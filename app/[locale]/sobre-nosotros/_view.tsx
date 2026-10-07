@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { Arrow, Check } from '@/components/home/icons'
 import { SectionHead, type Locale } from '@/components/home/primitives'
 import '@/components/home/pages.css'
-// Retrato del cierre: WebP 1080×1440 (54 KB, antes un PNG de 3.5 MB)
+// Retrato del cierre: WebP 1080×1440 (53 KB, el original es un JPG de 1.2 MB)
 import closePhoto from './alejandro-aguilar.webp'
 
 const PHOTO_1 = 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69ffbef9728556272106b8ac.jpg'
