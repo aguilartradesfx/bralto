@@ -75,6 +75,20 @@ test('consult aprobado: lee la clave response, el monto (cadena) y el ambiente',
   assert.equal(prod.state === 'approved' && prod.environment, 'PROD')
 })
 
+test('consult: solo un ambiente de pruebas cuenta como TEST; cualquier otro valor es un pago real', () => {
+  // En pruebas la cuenta real devuelve "Test"; producción ("Production" según la documentación)
+  // aún no se ha visto con la cuenta real, y un pago real no puede quedarse sin agendar porque
+  // llegue con otro nombre
+  for (const environment of ['Production', 'PROD', 'Live', '', undefined]) {
+    const s = parseConsult(approved({ environment }), order.orderNumber)
+    assert.equal(s.state === 'approved' && s.environment, 'PROD', `environment: ${environment}`)
+  }
+  for (const environment of ['Test', 'TEST', 'Sandbox', 'Pruebas']) {
+    const s = parseConsult(approved({ environment }), order.orderNumber)
+    assert.equal(s.state === 'approved' && s.environment, 'TEST', `environment: ${environment}`)
+  }
+})
+
 test('consult real: el orderNumber vuelve con el prefijo del comercio y sigue siendo la misma orden', () => {
   // Respuesta real de la cuenta en modo de pruebas (2026-10-07), sin datos personales
   const real = {
