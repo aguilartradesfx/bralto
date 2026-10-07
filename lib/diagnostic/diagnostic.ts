@@ -1,7 +1,11 @@
 import { z } from 'zod'
+import type { Money, PaymentEnvironment, PaymentStatus } from '../payments/types'
 
 // Diagnóstico de 30 minutos: $97 USD. Si contrata el servicio, se descuenta del
 // proyecto; si no, no se reembolsa (términos de Alejandro, 2026-10-05).
+// En unidades enteras de la moneda (lo que espera Tilopay): 97, no 9700.
+export const DIAGNOSTIC_PRICE: Money = { amount: 97, currency: 'USD' }
+// Solo para el flujo de Stripe (desconectado), que sí usa céntimos
 export const DIAGNOSTIC_PRICE_CENTS = 9700
 // Stripe exige que una sesión de Checkout dure 30 minutos o más; el horario queda
 // retenido ese mismo tiempo mientras la persona paga.
@@ -12,7 +16,7 @@ const TERMS = {
   en: 'One-time payment of $97 USD for the 30-minute diagnostic session. If you hire us, this amount is deducted from the project; if not, it is non-refundable.',
 } as const
 
-const PRODUCT = {
+export const DIAGNOSTIC_PRODUCT = {
   es: { name: 'Diagnóstico Bralto · 30 minutos', description: 'Sesión de diagnóstico con el equipo de Bralto.' },
   en: { name: 'Bralto diagnostic · 30 minutes', description: 'Diagnostic session with the Bralto team.' },
 } as const
@@ -75,7 +79,7 @@ export function buildDiagnosticCheckout(
   req: DiagnosticRequest,
   opts: { origin: string; nowSeconds: number },
 ): Record<string, string | number> {
-  const product = PRODUCT[req.locale]
+  const product = DIAGNOSTIC_PRODUCT[req.locale]
   const metadata: Record<string, string> = {
     product_kind: 'diagnostic',
     slot: req.slot,
@@ -200,4 +204,117 @@ export async function finalizeDiagnostic(checkoutSessionId: string, deps: Finali
   }
 
   return { status: 'confirmed', booking, live }
+}
+
+// ── Órdenes de la pasarela (Tilopay) ───────────────────────────────────────────
+// La orden se guarda antes de cobrar; la confirman la página de retorno, el webhook y el
+// barrido de conciliación, siempre contra el API de la pasarela (nunca con el payload).
+
+/** Orden pendiente guardada en Redis antes de abrir el pago */
+export type StoredOrder = {
+  orderNumber: string
+  kind: 'diagnostic'
+  provider: string
+  money: Money
+  booking: DiagnosticBooking
+  sessionId: string
+  createdAt: number
+  status: 'pending' | 'paid' | 'failed' | 'mismatch' | 'expired'
+}
+
+export type OrderDeps = Omit<FinalizeDeps, 'getSession'> & {
+  getOrder: (orderNumber: string) => Promise<StoredOrder | null>
+  getStatus: (orderNumber: string) => Promise<PaymentStatus>
+  /** Modo que espera este despliegue: un pago en otro modo no agenda */
+  expected: PaymentEnvironment
+  markOrder: (orderNumber: string, status: 'paid' | 'failed' | 'mismatch') => Promise<void>
+}
+
+export type OrderResult =
+  | { status: 'confirmed' | 'already' | 'conflict'; booking: DiagnosticBooking; live: boolean }
+  | { status: 'unpaid' | 'invalid' | 'mismatch' | 'error' }
+
+const cents = (m: Money) => Math.round(m.amount * 100)
+
+export async function finalizeOrder(orderNumber: string, deps: OrderDeps): Promise<OrderResult> {
+  const log = deps.log ?? (() => {})
+  const order = await deps.getOrder(orderNumber)
+  if (!order || order.kind !== 'diagnostic') return { status: 'invalid' }
+
+  const status = await deps.getStatus(orderNumber)
+  if (status.state === 'unknown') return { status: 'error' }
+  if (status.state === 'not_found') return { status: 'unpaid' }
+  if (status.state === 'declined') {
+    await deps.markOrder(orderNumber, 'failed')
+    return { status: 'unpaid' }
+  }
+
+  if (status.environment !== deps.expected) {
+    log(`[diagnostic] PAGO EN MODO ${status.environment} con el sitio esperando ${deps.expected}: orden ${orderNumber} sin agendar`)
+    await deps.markOrder(orderNumber, 'mismatch')
+    return { status: 'mismatch' }
+  }
+  if (cents(status.money) !== cents(order.money) || status.money.currency !== order.money.currency) {
+    log(
+      `[diagnostic] MONTO DISTINTO en ${orderNumber}: pagó ${status.money.amount} ${status.money.currency}, la orden era ${order.money.amount} ${order.money.currency}`,
+    )
+    await deps.markOrder(orderNumber, 'mismatch')
+    return { status: 'mismatch' }
+  }
+
+  const live = status.environment === 'PROD'
+  const booking = order.booking
+  const k = keys(live, orderNumber)
+  if (!(await deps.claim(k.claim))) return { status: 'already', booking, live }
+
+  const booked = await deps.bookSlot(k.booked, booking.slot)
+  await deps.releaseLock(booking.slot)
+  await deps.markOrder(orderNumber, 'paid')
+
+  if (live) {
+    try {
+      await deps.saveBooking(booking)
+    } catch (err) {
+      log(`[diagnostic] no se guardó la reserva ${orderNumber}`, err)
+    }
+  }
+
+  if (!booked) {
+    log(`[diagnostic] CONFLICTO: pago ${orderNumber} recibido pero el horario ${booking.slot} ya estaba ocupado (${booking.email})`)
+    return { status: 'conflict', booking, live }
+  }
+
+  if (live) {
+    try {
+      await deps.pushToCalendar(booking)
+    } catch (err) {
+      log(`[diagnostic] no se creó la cita en el calendario para ${orderNumber}`, err)
+    }
+  }
+
+  return { status: 'confirmed', booking, live }
+}
+
+// Crockford base32: sin I, L, O ni U para que se pueda dictar sin confusiones
+const ORDER_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+
+/** Número de orden único para siempre: BRD-AAMMDD-XXXXXXXX (8 caracteres aleatorios) */
+export function newOrderNumber(at: Date, random: Uint8Array): string {
+  const yy = String(at.getUTCFullYear()).slice(2)
+  const mm = String(at.getUTCMonth() + 1).padStart(2, '0')
+  const dd = String(at.getUTCDate()).padStart(2, '0')
+  const tail = Array.from(random.slice(0, 8), (b) => ORDER_ALPHABET[b % 32]).join('')
+  return `BRD-${yy}${mm}${dd}-${tail}`
+}
+
+/** Una orden sin pago se da por abandonada a las 2 horas */
+export const ORDER_EXPIRE_MS = 2 * 3_600_000
+const ORDER_GIVE_UP_MS = 48 * 3_600_000
+
+/** Qué hace el barrido con una orden pendiente después de confirmarla contra el API */
+export function reconcileAction(result: OrderResult, order: StoredOrder, now: number): 'done' | 'keep' | 'expire' {
+  const age = now - order.createdAt
+  if (result.status === 'unpaid') return age > ORDER_EXPIRE_MS ? 'expire' : 'keep'
+  if (result.status === 'error') return age > ORDER_GIVE_UP_MS ? 'expire' : 'keep'
+  return 'done'
 }

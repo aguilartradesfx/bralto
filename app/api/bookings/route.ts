@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
+import { reconcilePendingOrders } from '@/lib/diagnostic/server'
 import { getGhlAvailableSlotKeys } from '@/lib/ghl/bookings'
 
 // Redis key for permanently confirmed bookings
@@ -16,8 +17,16 @@ function getRedis() {
 
 // ── GET: return booked (permanent) + locked (temporary) slots ────────────────
 
-export async function GET() {
+export async function GET(req: Request) {
   const redis = getRedis()
+  // Los horarios que retiene esta misma sesión no cuentan como ocupados (reintento tras un rechazo)
+  const session = new URL(req.url).searchParams.get('session')
+
+  // Conciliación de pagos aprovechando el tráfico de /agendar (además del cron): unas pocas
+  // órdenes pendientes por visita, después de responder
+  after(() =>
+    reconcilePendingOrders({ limit: 3 }).catch((err) => console.error('[bookings] conciliación falló:', err)),
+  )
 
   // Real availability from GHL, so the site hides curated slots already taken/
   // blocked in GHL. Independent of Redis and non-fatal: on any failure we return
@@ -37,7 +46,11 @@ export async function GET() {
       redis.keys('bralto:lock:*') as Promise<string[]>,
       ghlPromise,
     ])
-    const locked = lockKeys.map((k: string) => k.replace('bralto:lock:', ''))
+    const owners: (string | null)[] =
+      session && lockKeys.length ? await redis.mget(...lockKeys) : lockKeys.map(() => null)
+    const locked = lockKeys
+      .filter((_: string, i: number) => !session || owners[i] !== session)
+      .map((k: string) => k.replace('bralto:lock:', ''))
     return NextResponse.json({ booked: booked ?? [], locked, ghlAvailable })
   } catch {
     return NextResponse.json({ booked: [], locked: [], ghlAvailable: await ghlPromise })

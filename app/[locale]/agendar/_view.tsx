@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useLocale } from 'next-intl'
 import { GlassCalendar } from '@/components/ui/glass-calendar'
 import { Arrow, Check } from '@/components/home/icons'
+import { PaymentForm, type PaymentLabels } from '@/components/payments/payment-form'
+import type { ClientCheckout } from '@/lib/payments/types'
 import { cn } from '@/lib/utils'
 import './agendar.css'
 
@@ -63,7 +65,7 @@ const CONTENT = {
     eyebrow: 'Diagnóstico de 30 minutos',
     headline: 'Agende su diagnóstico con el equipo.',
     subline: '30 minutos · $97 USD · Se descuenta del proyecto si decide contratar',
-    stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio'],
+    stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio', 'Pago'],
     slotLocked: 'Horario reservado temporalmente',
     step0Heading: 'Seleccione una fecha',
     slotsFor: 'Horarios disponibles',
@@ -78,9 +80,26 @@ const CONTENT = {
     step2Sub: 'Esto nos ayuda a preparar la llamada para que sea lo más útil posible.',
     back: 'Volver',
     next: 'Continuar',
-    submitting: 'Abriendo el pago…',
-    submit: 'Pagar $97 y agendar',
-    footer: 'Pago seguro con Stripe. Si contrata el servicio, los $97 se descuentan del proyecto; si no, no son reembolsables.',
+    submitting: 'Preparando el pago…',
+    submit: 'Continuar al pago',
+    footer: 'Pago seguro con Tilopay. Si contrata el servicio, los $97 se descuentan del proyecto; si no, no son reembolsables.',
+    step3Heading: 'Pago seguro',
+    step3Sub: 'Diagnóstico de 30 minutos · $97 USD',
+    pay: {
+      cardNumber: 'Número de tarjeta',
+      cardExpiry: 'Vencimiento',
+      cardExpiryPlaceholder: 'MM/AA',
+      cardCvv: 'CVV',
+      pay: 'Pagar $97 USD',
+      paying: 'Procesando el pago…',
+      loading: 'Preparando el formulario de pago…',
+      back: 'Volver',
+      testMode: 'Modo de pruebas: este pago no cobra dinero real.',
+      blocked: (actual, expected) =>
+        `El cobro está bloqueado: la pasarela está en modo ${actual === 'TEST' ? 'pruebas' : 'producción'} y este sitio espera ${expected === 'TEST' ? 'pruebas' : 'producción'}.`,
+      loadError: 'No se pudo abrir el pago. Vuelva a intentarlo en unos minutos.',
+      secureNote: 'Los datos de su tarjeta van directo a Tilopay: no pasan por nuestros servidores.',
+    } satisfies PaymentLabels,
     summaryTitle: 'Diagnóstico de 30 minutos',
     summaryPrice: '$97 USD',
     summaryNote: 'Si contrata el servicio, este monto se descuenta del proyecto; si no, no es reembolsable.',
@@ -131,7 +150,7 @@ const CONTENT = {
     eyebrow: '30-minute diagnostic call',
     headline: 'Book your diagnostic call with our team.',
     subline: '30 minutes · $97 USD · Deducted from the project if you hire us',
-    stepLabels: ['Date & time', 'Your info', 'Your business'],
+    stepLabels: ['Date & time', 'Your info', 'Your business', 'Payment'],
     slotLocked: 'Time slot temporarily reserved',
     step0Heading: 'Select a date',
     slotsFor: 'Available times',
@@ -146,9 +165,26 @@ const CONTENT = {
     step2Sub: 'This helps us prepare so the call is as useful as possible.',
     back: 'Back',
     next: 'Continue',
-    submitting: 'Opening checkout…',
-    submit: 'Pay $97 and book',
-    footer: 'Secure payment with Stripe. If you hire us, the $97 is deducted from the project; if not, it is non-refundable.',
+    submitting: 'Preparing payment…',
+    submit: 'Continue to payment',
+    footer: 'Secure payment with Tilopay. If you hire us, the $97 is deducted from the project; if not, it is non-refundable.',
+    step3Heading: 'Secure payment',
+    step3Sub: '30-minute diagnostic call · $97 USD',
+    pay: {
+      cardNumber: 'Card number',
+      cardExpiry: 'Expiration',
+      cardExpiryPlaceholder: 'MM/YY',
+      cardCvv: 'CVV',
+      pay: 'Pay $97 USD',
+      paying: 'Processing payment…',
+      loading: 'Loading the payment form…',
+      back: 'Back',
+      testMode: 'Test mode: this payment does not charge real money.',
+      blocked: (actual, expected) =>
+        `Payments are blocked: the gateway is in ${actual === 'TEST' ? 'test' : 'live'} mode and this site expects ${expected === 'TEST' ? 'test' : 'live'} mode.`,
+      loadError: "We couldn't open the payment form. Please try again in a few minutes.",
+      secureNote: 'Your card details go straight to Tilopay and never touch our servers.',
+    } satisfies PaymentLabels,
     summaryTitle: '30-minute diagnostic call',
     summaryPrice: '$97 USD',
     summaryNote: 'If you hire us, this amount is deducted from the project; if not, it is non-refundable.',
@@ -249,6 +285,8 @@ export default function AgendarPage() {
 
   const [step, setStep] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  // Lo que devuelve el servidor para el formulario de la pasarela (token del SDK, nunca credenciales)
+  const [checkout, setCheckout] = useState<ClientCheckout | null>(null)
   const [errors, setErrors] = useState<string[]>([])
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
   const [lockedSlots, setLockedSlots] = useState<Set<string>>(new Set())
@@ -282,7 +320,7 @@ export default function AgendarPage() {
   const [countdown, setCountdown] = useState(0)
 
   function refreshSlots() {
-    fetch('/api/bookings')
+    fetch(`/api/bookings?session=${encodeURIComponent(sessionId)}`)
       .then((r) => r.json())
       .then((data) => {
         setBookedSlots(new Set(data.booked ?? []))
@@ -302,6 +340,7 @@ export default function AgendarPage() {
       if (remaining === 0) {
         clearInterval(interval)
         setLockExpiresAt(null)
+        setCheckout(null)
         setErrors([c.errLockExpired])
         setStep(0)
         setForm((f) => ({ ...f, selectedDate: null, selectedTime: null }))
@@ -421,14 +460,22 @@ export default function AgendarPage() {
           locale,
         }),
       })
-      const data = (await res.json().catch(() => ({}))) as { url?: string }
+      const data = (await res.json().catch(() => ({}))) as { checkout?: ClientCheckout; holdExpiresAt?: number }
       if (res.status === 409) {
         setErrors([c.errConflict])
         setSubmitting(false)
         return
       }
-      if (!res.ok || !data.url) throw new Error()
-      window.location.assign(data.url)
+      if (!res.ok || !data.checkout) throw new Error()
+      setCheckout(data.checkout)
+      // El horario queda retenido mientras paga
+      if (data.holdExpiresAt) {
+        setLockExpiresAt(data.holdExpiresAt)
+        setCountdown(Math.floor((data.holdExpiresAt - Date.now()) / 1000))
+      }
+      setSubmitting(false)
+      setStep(3)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch {
       setErrors([c.errGeneric])
       setSubmitting(false)
@@ -651,7 +698,27 @@ export default function AgendarPage() {
             </>
           )}
 
-          {errors.length > 0 && (
+          {/* ── Paso 3: pago (formulario de la pasarela activa) ── */}
+          {step === 3 && checkout && (
+            <>
+              <h2 id="bk-step-title" className="bk-h2">
+                {c.step3Heading}
+              </h2>
+              <p className="bk-lead">{c.step3Sub}</p>
+              <PaymentForm
+                checkout={checkout}
+                labels={c.pay}
+                onBack={() => {
+                  setCheckout(null)
+                  setErrors([])
+                  setStep(2)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+              />
+            </>
+          )}
+
+          {step < 3 && errors.length > 0 && (
             <div className="bk-errors" role="alert">
               {errors.map((e) => (
                 <p key={e}>{e}</p>
@@ -659,28 +726,30 @@ export default function AgendarPage() {
             </div>
           )}
 
-          <div className="bk-nav">
-            {step > 0 ? (
-              <button type="button" onClick={back} className="hm-btn hm-btn--glass hm-glass">
-                <Arrow />
-                {c.back}
-              </button>
-            ) : (
-              <span />
-            )}
+          {step < 3 && (
+            <div className="bk-nav">
+              {step > 0 ? (
+                <button type="button" onClick={back} className="hm-btn hm-btn--glass hm-glass">
+                  <Arrow />
+                  {c.back}
+                </button>
+              ) : (
+                <span />
+              )}
 
-            {step < 2 ? (
-              <button type="button" onClick={next} className="hm-btn hm-btn--solid">
-                {c.next}
-                <Arrow />
-              </button>
-            ) : (
-              <button type="button" onClick={submit} disabled={submitting} className="hm-btn hm-btn--solid">
-                {submitting ? c.submitting : c.submit}
-                {!submitting && <Arrow />}
-              </button>
-            )}
-          </div>
+              {step < 2 ? (
+                <button type="button" onClick={next} className="hm-btn hm-btn--solid">
+                  {c.next}
+                  <Arrow />
+                </button>
+              ) : (
+                <button type="button" onClick={submit} disabled={submitting} className="hm-btn hm-btn--solid">
+                  {submitting ? c.submitting : c.submit}
+                  {!submitting && <Arrow />}
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         <p className="bk-foot">{c.footer}</p>

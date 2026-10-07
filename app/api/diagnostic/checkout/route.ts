@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { buildDiagnosticCheckout, parseDiagnosticRequest } from '@/lib/diagnostic/diagnostic'
-import { createCheckoutSession, holdSlotForCheckout } from '@/lib/diagnostic/server'
-import { StripeApiError, StripeConfigError } from '@/lib/stripe/server'
+import { parseDiagnosticRequest } from '@/lib/diagnostic/diagnostic'
+import { holdSlotForCheckout, startDiagnosticCheckout } from '@/lib/diagnostic/server'
+import { TilopayConfigError } from '@/lib/payments/tilopay'
 
-// Diagnóstico de $97: retiene el horario mientras dura el pago y crea la sesión de
-// Stripe Checkout. La cita se confirma después del pago (página de éxito o webhook).
+// Diagnóstico de $97: retiene el horario mientras dura el pago, guarda la orden y devuelve
+// lo que el navegador necesita para el formulario de la pasarela (token del SDK, nunca
+// credenciales). La cita se confirma después, contra el API (retorno, webhook o barrido).
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
@@ -13,7 +14,7 @@ function resolveOrigin(req: Request): string {
   if (origin) return origin.replace(/\/$/, '')
   const envOrigin = process.env.NEXT_PUBLIC_SITE_URL
   if (envOrigin) return envOrigin.replace(/\/$/, '')
-  return 'https://bralto.io'
+  return 'https://www.bralto.io'
 }
 
 export async function POST(req: Request) {
@@ -35,22 +36,13 @@ export async function POST(req: Request) {
   }
 
   try {
-    const params = buildDiagnosticCheckout(parsed.data, {
-      origin: resolveOrigin(req),
-      nowSeconds: Math.floor(Date.now() / 1000),
-    })
-    const session = await createCheckoutSession(params)
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json(await startDiagnosticCheckout(parsed.data, resolveOrigin(req)))
   } catch (err) {
-    if (err instanceof StripeConfigError) {
+    if (err instanceof TilopayConfigError) {
       console.error('[diagnostic checkout] config error:', err.message)
       return NextResponse.json({ error: 'not_configured' }, { status: 500 })
     }
-    if (err instanceof StripeApiError) {
-      console.error('[diagnostic checkout] stripe error:', err.message, err.body)
-      return NextResponse.json({ error: 'stripe' }, { status: 502 })
-    }
-    console.error('[diagnostic checkout] unexpected error:', err)
-    return NextResponse.json({ error: 'unexpected' }, { status: 500 })
+    console.error('[diagnostic checkout] no se pudo abrir el pago:', err)
+    return NextResponse.json({ error: 'gateway' }, { status: 502 })
   }
 }
