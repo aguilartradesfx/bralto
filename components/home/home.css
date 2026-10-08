@@ -1060,8 +1060,14 @@ html[data-consent-open] .hm {
   transform: rotate(180deg);
 }
 
-.hm:has([data-focus-page]) .hm-footer {
+/* En las páginas enfocadas el pie queda en una línea: preferencias de cookies y pausa de animaciones */
+.hm:has([data-focus-page]) .hm-footer :is(.hm-footer__col, .hm-footer__brand > :not(.hm-footer__policies)) {
   display: none;
+}
+
+.hm:has([data-focus-page]) .hm-footer__grid {
+  grid-template-columns: 1fr;
+  padding-top: 20px;
 }
 
 /* Menú móvil: servicios desplegables */
@@ -2741,6 +2747,11 @@ html[data-consent-open] .hm {
   0%, 67.6% { transform: none; }
   69% { transform: scale(.975); }
   73%, 100% { transform: none; }
+}
+
+/* "Pausar animaciones" (pie): frena lo que se mueve solo; las apariciones con el scroll no se tocan */
+html[data-motion='paused'] :is(.hm-orb, .hm-station__node i, .hm-station__lit, .hm-station__mover, .hm-station__dot, .hm-station__tile, .sv-flow__step, .sv-flow__step .sv-tag) {
+  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: no-preference) {

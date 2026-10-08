@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { ConsentPreferencesButton } from './consent-banner'
 import { BraltoLogo } from './logo'
+import { MotionToggle } from './motion-toggle'
 import type { Locale } from './primitives'
 import { SERVICE_PATHS, type MegaGroup } from './services'
 
@@ -29,6 +30,9 @@ export async function HomeFooter({ locale, showLegal }: { locale: Locale; showLe
             )}
             <li>
               <ConsentPreferencesButton label={t('footer.cookies')} />
+            </li>
+            <li>
+              <MotionToggle pauseLabel={t('footer.pauseMotion')} resumeLabel={t('footer.resumeMotion')} />
             </li>
           </ul>
         </div>

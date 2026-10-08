@@ -590,7 +590,9 @@
       "company": "Empresa",
       "privacy": "Privacidad",
       "terms": "Términos",
-      "cookies": "Preferencias de cookies"
+      "cookies": "Preferencias de cookies",
+      "pauseMotion": "Pausar animaciones",
+      "resumeMotion": "Reanudar animaciones"
     },
     "consent": {
       "title": "Cookies",

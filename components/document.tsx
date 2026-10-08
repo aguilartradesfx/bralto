@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { ParticlesBackground } from '@/components/particles-background'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 import { tagManagerBootScript } from '@/lib/consent'
+import { motionBootScript } from '@/lib/home/motion'
 import { PRIVATE_SURFACE_JS } from '@/lib/host-routing'
 import { scrollRestorationScript } from '@/lib/scroll-restoration'
 
@@ -21,6 +22,8 @@ export function Document({ lang, fonts, children }: { lang: 'es' | 'en'; fonts?:
         />
         {/* Cada carga arranca arriba; la URL (query y #ancla) queda intacta */}
         <script dangerouslySetInnerHTML={{ __html: scrollRestorationScript }} />
+        {/* Animaciones pausadas desde el pie: se aplica antes del primer pintado */}
+        <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
         <OrganizationJsonLd />
         <WebSiteJsonLd />
       </head>

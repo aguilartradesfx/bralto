@@ -214,25 +214,37 @@ export function ParticlesBackground() {
       }
     }
 
-    // Movimiento reducido: un solo frame quieto, que se redibuja si cambia el tema o el tamaño
+    // Movimiento reducido o animaciones pausadas desde el pie (data-motion en <html>): un solo
+    // frame quieto, que se redibuja si cambia el tema o el tamaño
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const still = () => reduced || document.documentElement.dataset.motion === 'paused'
     const drawStatic = () => {
       ctx.clearRect(0, 0, W, H)
       const { rgb, gain } = ink()
       for (const p of particles) drawParticle(p, p.opacityTarget * 0.7, rgb, gain)
     }
     let themeObserver: MutationObserver | null = null
-
-    if (reduced) {
-      drawStatic()
-      const home = document.querySelector<HTMLElement>('.hm')
-      if (home) {
-        themeObserver = new MutationObserver(drawStatic)
-        themeObserver.observe(home, { attributes: true, attributeFilter: ['data-theme'] })
-      }
-    } else {
-      animId = requestAnimationFrame(tick)
+    const home = document.querySelector<HTMLElement>('.hm')
+    if (home) {
+      themeObserver = new MutationObserver(() => {
+        if (still()) drawStatic()
+      })
+      themeObserver.observe(home, { attributes: true, attributeFilter: ['data-theme'] })
     }
+
+    if (still()) drawStatic()
+    else animId = requestAnimationFrame(tick)
+
+    const motionObserver = new MutationObserver(() => {
+      cancelAnimationFrame(animId)
+      if (still()) {
+        drawStatic()
+      } else {
+        last = performance.now()
+        animId = requestAnimationFrame(tick)
+      }
+    })
+    motionObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-motion'] })
 
     const onResize = () => {
       // En móvil la barra de direcciones cambia solo el alto al hacer scroll: ahí no se
@@ -245,7 +257,7 @@ export function ParticlesBackground() {
           p.y = Math.random() * H
         }
       }
-      if (reduced) drawStatic()
+      if (still()) drawStatic()
     }
     window.addEventListener('resize', onResize)
 
@@ -253,6 +265,7 @@ export function ParticlesBackground() {
       cancelAnimationFrame(animId)
       window.removeEventListener('resize', onResize)
       themeObserver?.disconnect()
+      motionObserver.disconnect()
     }
   }, [pathname])
 
