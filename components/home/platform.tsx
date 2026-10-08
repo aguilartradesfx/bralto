@@ -4,16 +4,21 @@ import { SectionHead, type Locale } from './primitives'
 
 type Tool = { name: string; price: string }
 
+// Los más caros, con su precio; el resto va en una línea (diez renglones con línea pesaban de más).
+// En los mensajes, las herramientas van de la más cara a la más barata.
+const FEATURED = 5
+
 // Lo que hoy se paga por separado, como un recibo: cada precio se tacha al pasar.
 // included: el renglón final (en /plataforma muestra el precio del plan)
 export async function Receipt({ locale, included }: { locale: Locale; included?: string }) {
   const t = await getTranslations({ locale, namespace: 'Home.platform' })
   const tools = t.raw('tools') as Tool[]
+  const rest = new Intl.ListFormat(locale, { type: 'conjunction' }).format(tools.slice(FEATURED).map((tool) => tool.name))
 
   return (
     <div className="hm-receipt hm-glass hm-glass--thick hm-rv">
       <ul className="hm-receipt__list">
-        {tools.map((tool) => (
+        {tools.slice(0, FEATURED).map((tool) => (
           <li key={tool.name} className="hm-receipt__row">
             <span>{tool.name}</span>
             <span className="hm-receipt__leader" aria-hidden="true" />
@@ -21,6 +26,11 @@ export async function Receipt({ locale, included }: { locale: Locale; included?:
           </li>
         ))}
       </ul>
+      {tools.length > FEATURED && (
+        <p className="hm-receipt__rest">
+          {t('also')}: {rest}
+        </p>
+      )}
       <div className="hm-receipt__tear" aria-hidden="true" />
       <div className="hm-receipt__total">
         <s className="hm-receipt__old hm-strike">{t('separately')}</s>

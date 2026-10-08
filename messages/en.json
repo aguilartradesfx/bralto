@@ -430,7 +430,7 @@
     "platform": {
       "titleLight": "All of these tools",
       "titleBold": "are included.",
-      "lead": "Everything we build lives on your own platform: CRM, WhatsApp, Instagram, and email conversations, sales pipeline, automations, scheduling, payments, and reports. One platform that replaces all the tools you pay for separately today.",
+      "lead": "Everything we build lives on your own platform: CRM, conversations, pipeline, automations, scheduling, payments, and reports. It replaces the tools you pay for separately today.",
       "features": [
         "CRM",
         "Omnichannel",
@@ -484,7 +484,8 @@
         }
       ],
       "separately": "Separately: $2,000+/mo",
-      "included": "Included in your system"
+      "included": "Included in your system",
+      "also": "Plus"
     },
     "offer": {
       "eyebrow": "Investment",

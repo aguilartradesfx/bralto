@@ -1519,16 +1519,6 @@ html[data-consent-open] .hm {
   padding: 18px 22px;
 }
 
-.hm-compare__row + .hm-compare__row::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 22px;
-  right: 22px;
-  height: 1px;
-  background: var(--rule);
-}
-
 .hm-compare__before {
   margin: 0;
   font-size: 14px;
@@ -1583,11 +1573,6 @@ html[data-consent-open] .hm {
   .hm-compare__row {
     align-items: center;
     padding: 0;
-  }
-
-  .hm-compare__row + .hm-compare__row::before {
-    left: calc(40% + 48px);
-    right: 40px;
   }
 
   .hm-compare__before {
@@ -2062,6 +2047,13 @@ html[data-consent-open] .hm {
   font: 500 13px/1 var(--font-mono);
   color: var(--ink-3);
   white-space: nowrap;
+}
+
+.hm-receipt__rest {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
 }
 
 .hm-receipt__tear {

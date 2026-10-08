@@ -430,7 +430,7 @@
     "platform": {
       "titleLight": "Todas estas herramientas",
       "titleBold": "están incluidas.",
-      "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones de WhatsApp, Instagram y correo, pipeline de ventas, automatizaciones, agenda, pagos y reportes. Una sola plataforma que reemplaza todas las herramientas que hoy paga por separado.",
+      "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones, pipeline, automatizaciones, agenda, pagos y reportes. Reemplaza las herramientas que hoy paga por separado.",
       "features": [
         "CRM",
         "Multicanal",
@@ -484,7 +484,8 @@
         }
       ],
       "separately": "Por separado: $2,000+/mes",
-      "included": "Incluido en su sistema"
+      "included": "Incluido en su sistema",
+      "also": "Y también"
     },
     "offer": {
       "eyebrow": "Inversión",
