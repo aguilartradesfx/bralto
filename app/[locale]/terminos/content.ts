@@ -10,7 +10,7 @@ export const TERMS: LegalDoc = {
   sections: [
     {
       heading: 'Quiénes somos',
-      body: ['Bralto es [razón social], con [cédula jurídica o física], domicilio en [dirección]. Contacto: [correo de contacto].'],
+      body: ['Bralto es [razón social], con [cédula jurídica o física], domicilio en [dirección]. Contacto: cs@bralto.io.'],
     },
     {
       heading: 'Uso del sitio',

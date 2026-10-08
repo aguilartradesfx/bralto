@@ -57,7 +57,7 @@ export default async function ListoPage({ params, searchParams }: Props) {
     >
       <p>{t.body}</p>
       <p className="st__hint">
-        {t.questions} <a href="mailto:hola@bralto.io">{t.write}</a>
+        {t.questions} <a href="mailto:cs@bralto.io">{t.write}</a>
       </p>
     </StatusCard>
   )

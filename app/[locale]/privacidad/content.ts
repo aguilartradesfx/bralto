@@ -12,7 +12,7 @@ export const PRIVACY: LegalDoc = {
       heading: 'Quién es responsable de sus datos',
       body: [
         'El responsable es [razón social de Bralto], con [cédula jurídica o física], domicilio en [dirección en Costa Rica].',
-        'Para cualquier consulta sobre privacidad puede escribirnos a [correo de privacidad, por ejemplo hola@bralto.io].',
+        'Para cualquier consulta sobre privacidad puede escribirnos a cs@bralto.io.',
       ],
     },
     {

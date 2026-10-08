@@ -146,7 +146,7 @@ export default function PaymentInfoPage() {
         </section>
 
         <p className="pi-help">
-          ¿Dudas sobre el pago? Escríbanos a <a href="mailto:hola@bralto.io">hola@bralto.io</a>.
+          ¿Dudas sobre el pago? Escríbanos a <a href="mailto:cs@bralto.io">cs@bralto.io</a>.
         </p>
       </div>
     </main>
