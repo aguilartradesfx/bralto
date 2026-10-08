@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { clients } from '@/app/servicios/sitios-web/clients'
+import { SITE_URL } from '@/lib/seo'
 
-const BASE_URL = 'https://bralto.io'
 const LOCALES = ['es', 'en'] as const
 
 type Route = {
@@ -15,6 +15,7 @@ const ROUTES: Route[] = [
   { priority: 0.9,  changeFrequency: 'monthly', path: '/precios' },
   { priority: 0.9,  changeFrequency: 'monthly', path: '/agendar' },
   { priority: 0.8,  changeFrequency: 'monthly', path: '/sobre-nosotros' },
+  { priority: 0.8,  changeFrequency: 'monthly', path: '/plataforma' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/sitios-web' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/automatizacion' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/produccion-contenido' },
@@ -32,15 +33,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const locale of LOCALES) {
     for (const route of ROUTES) {
       entries.push({
-        url: `${BASE_URL}/${locale}${route.path}`,
+        url: `${SITE_URL}/${locale}${route.path}`,
         lastModified: now,
         changeFrequency: route.changeFrequency,
         priority: route.priority,
         alternates: {
           languages: {
-            es: `${BASE_URL}/es${route.path}`,
-            en: `${BASE_URL}/en${route.path}`,
-            'x-default': `${BASE_URL}/es${route.path}`,
+            es: `${SITE_URL}/es${route.path}`,
+            en: `${SITE_URL}/en${route.path}`,
+            'x-default': `${SITE_URL}/es${route.path}`,
           },
         },
       })

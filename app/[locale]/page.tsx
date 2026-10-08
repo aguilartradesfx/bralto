@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { HomePage } from '@/components/home/home-page'
+import { SITE_URL } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
-
-const BASE_URL = 'https://bralto.io'
 
 const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
 
@@ -23,13 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: {
-      canonical: `${BASE_URL}/${locale}`,
-      languages: { es: `${BASE_URL}/es`, en: `${BASE_URL}/en`, 'x-default': `${BASE_URL}/es` },
+      canonical: `${SITE_URL}/${locale}`,
+      languages: { es: `${SITE_URL}/es`, en: `${SITE_URL}/en`, 'x-default': `${SITE_URL}/es` },
     },
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}/${locale}`,
+      url: `${SITE_URL}/${locale}`,
       siteName: 'Bralto',
       type: 'website',
       locale: locale === 'es' ? 'es_LA' : 'en_US',

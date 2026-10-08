@@ -111,6 +111,9 @@ export async function middleware(request: NextRequest) {
     return pathname === '/login' ? NextResponse.next() : guardPanel(request)
   }
 
+  // ── robots.txt y sitemap.xml van en la raíz: sin esto se mandaban a /en/… y daban 404
+  if (pathname === '/robots.txt' || pathname === '/sitemap.xml') return NextResponse.next()
+
   // ── Public routes outside the locale tree ────────────────────────────────
   if (NON_LOCALE_PREFIXES.some((p) => pathname.startsWith(p))) {
     return markConsentRegion(request, NextResponse.next())

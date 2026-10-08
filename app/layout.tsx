@@ -1,36 +1,9 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
-import { ParticlesBackground } from '@/components/particles-background'
-import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
-import { tagManagerBootScript } from '@/lib/consent'
-import { PRIVATE_SURFACE_JS } from '@/lib/host-routing'
-import { scrollRestorationScript } from '@/lib/scroll-restoration'
-
-const GTM_ID = 'GTM-KTGZ86BC'
-
-const geist = Geist({
-  subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
-})
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
-  display: 'swap',
-})
+import { SITE_URL } from '@/lib/seo'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://bralto.io'),
+  metadataBase: new URL(SITE_URL),
   icons: {
     icon: '/Favicon.png',
     shortcut: '/Favicon.png',
@@ -62,13 +35,13 @@ export const metadata: Metadata = {
     'agencia digital Costa Rica',
     'Bralto',
   ],
-  authors: [{ name: 'Bralto', url: 'https://bralto.io' }],
+  authors: [{ name: 'Bralto', url: SITE_URL }],
   creator: 'Bralto',
   publisher: 'Bralto',
   openGraph: {
     type: 'website',
     locale: 'es_LA',
-    url: 'https://bralto.io',
+    url: SITE_URL,
     siteName: 'Bralto',
     title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
     description:
@@ -100,36 +73,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: 'https://bralto.io',
-  },
   manifest: '/manifest.json',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html suppressHydrationWarning className={`dark ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}>
-      <head>
-        {/* GTM según el consentimiento de cookies (lib/consent.ts); nunca en el panel ni en la firma de contratos */}
-        <script
-          dangerouslySetInnerHTML={{ __html: tagManagerBootScript({ gtmId: GTM_ID, privateSurfaceJs: PRIVATE_SURFACE_JS }) }}
-        />
-        {/* Cada carga arranca arriba; la URL (query y #ancla) queda intacta */}
-        <script dangerouslySetInnerHTML={{ __html: scrollRestorationScript }} />
-        <OrganizationJsonLd />
-        <WebSiteJsonLd />
-      </head>
-      <body>
-        {/* Sin el iframe noscript de GTM: sin JavaScript no hay banner para aceptar ni rechazar */}
-        {/* Partículas con scroll: una sola vez para todo el sitio público */}
-        <ParticlesBackground />
-        {/* All content above background layers; el banner de cookies vive en SiteShell */}
-        <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
-      </body>
-    </html>
-  )
+// Cada sección pone su <html> con su idioma (components/document.tsx); aquí solo pasan los hijos.
+// El 404 de la raíz (app/not-found.tsx) también arma el suyo.
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return children
 }

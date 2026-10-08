@@ -2,7 +2,9 @@ import { NextIntlClientProvider } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { Document } from '@/components/document'
 import { SiteShell } from '@/components/home/shell'
+import { SITE_URL } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 type Locale = 'es' | 'en'
@@ -50,8 +52,6 @@ const KEYWORDS: Record<Locale, string[]> = {
   ],
 }
 
-const BASE_URL = 'https://bralto.io'
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const l = (locale === 'en' ? 'en' : 'es') as Locale
@@ -73,18 +73,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     description: descriptions[l],
     keywords: KEYWORDS[l],
-    alternates: {
-      canonical: `${BASE_URL}/${l}`,
-      languages: {
-        es: `${BASE_URL}/es`,
-        en: `${BASE_URL}/en`,
-        'x-default': `${BASE_URL}/es`,
-      },
-    },
     openGraph: {
       title: titles[l],
       description: descriptions[l],
-      url: `${BASE_URL}/${l}`,
+      url: `${SITE_URL}/${l}`,
       siteName: 'Bralto',
       type: 'website',
       locale: l === 'es' ? 'es_LA' : 'en_US',
@@ -112,27 +104,16 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   setRequestLocale(locale)
 
+  const lang = locale === 'en' ? 'en' : 'es'
+
   return (
-    <>
-      <HtmlLang locale={locale} />
+    <Document lang={lang}>
       {/* Las páginas se renderizan en el servidor y los componentes de cliente reciben sus
           textos por props: al navegador solo viaja el idioma, ningún mensaje */}
       <NextIntlClientProvider messages={null}>
         {/* Nav, footer, tema y fondo del diseño nuevo en todas las páginas públicas */}
-        <SiteShell locale={locale === 'en' ? 'en' : 'es'}>{children}</SiteShell>
+        <SiteShell locale={lang}>{children}</SiteShell>
       </NextIntlClientProvider>
-    </>
-  )
-}
-
-// Sets document.documentElement.lang on the client so search engines
-// and screen readers see the right language attribute.
-function HtmlLang({ locale }: { locale: string }) {
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `document.documentElement.lang="${locale}"`,
-      }}
-    />
+    </Document>
   )
 }

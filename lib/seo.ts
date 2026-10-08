@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 
-const BASE_URL = 'https://bralto.io'
+// Dominio que sirve el sitio: bralto.io (sin www) responde 307 hacia aquí, así que los
+// canonical, el sitemap y los datos estructurados usan este
+export const SITE_URL = 'https://www.bralto.io'
 
 type Locale = 'es' | 'en'
 
@@ -18,13 +20,13 @@ type BuildPageMetadataInput = {
 export function buildPageMetadata(input: BuildPageMetadataInput): Metadata {
   const { locale, pathByLocale, titles, descriptions, keywords, ogImage = '/og-image.jpg' } = input
 
-  const canonical = `${BASE_URL}/${locale}${pathByLocale[locale]}`
+  const canonical = `${SITE_URL}/${locale}${pathByLocale[locale]}`
   const alternates = {
     canonical,
     languages: {
-      es: `${BASE_URL}/es${pathByLocale.es}`,
-      en: `${BASE_URL}/en${pathByLocale.en}`,
-      'x-default': `${BASE_URL}/es${pathByLocale.es}`,
+      es: `${SITE_URL}/es${pathByLocale.es}`,
+      en: `${SITE_URL}/en${pathByLocale.en}`,
+      'x-default': `${SITE_URL}/es${pathByLocale.es}`,
     },
   }
 

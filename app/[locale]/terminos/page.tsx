@@ -5,10 +5,9 @@ import { LegalPage } from '@/components/home/legal-page'
 import { showPending } from '@/lib/home/pending'
 import { LEGAL_REVIEWED, legalPagesVisible } from '@/lib/legal'
 import { TERMS } from './content'
+import { SITE_URL } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
-
-const BASE_URL = 'https://bralto.io'
 
 const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
 
@@ -22,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: LEGAL_REVIEWED ? TERMS.title : `${TERMS.title} (borrador)`,
     // Borrador: fuera de los buscadores hasta la revisión legal
     robots: LEGAL_REVIEWED ? undefined : { index: false, follow: false },
-    alternates: { canonical: `${BASE_URL}/${locale}/terminos` },
+    alternates: { canonical: `${SITE_URL}/${locale}/terminos` },
   }
 }
 

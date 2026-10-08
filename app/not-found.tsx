@@ -1,4 +1,4 @@
-import { HtmlLang } from '@/components/home/html-lang'
+import { Document } from '@/components/document'
 import { NotFoundCard } from '@/components/home/not-found-card'
 import { SiteShell } from '@/components/home/shell'
 
@@ -8,15 +8,13 @@ import { SiteShell } from '@/components/home/shell'
 // Next también lo arma dentro de cada página (es el respaldo de notFound()), así que no puede
 // fijar el idioma de la petición: con setRequestLocale('es'), /en/agendar salía en español.
 // No hace falta: SiteShell pide sus textos con el idioma explícito y nada aquí usa next-intl
-// en el cliente.
+// en el cliente. Como el layout raíz solo pasa los hijos, arma su propio <html>.
 export default function NotFound() {
   return (
-    <>
-      <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.lang="es"' }} />
-      <HtmlLang lang="es" />
+    <Document lang="es">
       <SiteShell locale="es">
         <NotFoundCard />
       </SiteShell>
-    </>
+    </Document>
   )
 }

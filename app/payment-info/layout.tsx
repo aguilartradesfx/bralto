@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { NextIntlClientProvider } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
+import { Document } from '@/components/document'
 import { SiteShell } from '@/components/home/shell'
 
 export const metadata: Metadata = {
@@ -16,11 +17,10 @@ export const metadata: Metadata = {
 export default function PaymentInfoLayout({ children }: { children: ReactNode }) {
   setRequestLocale('es')
   return (
-    <>
-      <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.lang="es"' }} />
+    <Document lang="es">
       <NextIntlClientProvider locale="es" messages={null}>
         <SiteShell locale="es">{children}</SiteShell>
       </NextIntlClientProvider>
-    </>
+    </Document>
   )
 }

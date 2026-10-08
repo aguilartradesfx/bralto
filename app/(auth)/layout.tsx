@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Document } from '@/components/document'
 
 export const metadata: Metadata = {
   title: 'Ingresar',
@@ -6,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return <Document lang="es">{children}</Document>
 }
