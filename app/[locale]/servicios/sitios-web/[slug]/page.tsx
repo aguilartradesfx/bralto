@@ -22,7 +22,6 @@ const COPY = {
     project: 'El proyecto',
     built: 'Lo que construimos',
     gallery: 'Galería',
-    view: 'vista',
     more: 'Más casos',
     ctaLight: 'Su proyecto,',
     ctaBold: 'el próximo.',
@@ -33,7 +32,6 @@ const COPY = {
     project: 'The project',
     built: 'What we built',
     gallery: 'Gallery',
-    view: 'view',
     more: 'More case studies',
     ctaLight: 'Your project,',
     ctaBold: 'could be next.',
@@ -74,6 +72,8 @@ export default async function CasePage({ params }: Props) {
   const tagline = en?.tagline ?? client.tagline
   const story = en?.story ?? client.story
   const deliverables = en?.deliverables ?? client.deliverables
+  const coverAlt = en?.coverAlt ?? client.coverAlt
+  const imageAlts = en?.imageAlts ?? client.imageAlts
   // La portada ya va arriba: la galería no la repite
   const gallery = client.images.filter((img) => img !== client.coverImage)
   const others = clients.filter((o) => o.id !== client.id)
@@ -101,7 +101,7 @@ export default async function CasePage({ params }: Props) {
           </div>
           <figure className="cs-cover hm-glass hm-glass--thick">
             <div className="cs-cover__img">
-              <Image src={client.coverImage} alt="" fill priority sizes="(min-width: 1200px) 1160px, 100vw" />
+              <Image src={client.coverImage} alt={coverAlt} fill priority sizes="(min-width: 1200px) 1160px, 100vw" />
             </div>
           </figure>
         </div>
@@ -138,7 +138,7 @@ export default async function CasePage({ params }: Props) {
                   <div className="cs-shot__img">
                     <Image
                       src={img}
-                      alt={`${client.name}, ${c.view} ${i + 1}`}
+                      alt={imageAlts[client.images.indexOf(img)]}
                       fill
                       sizes={i % 3 === 0 ? '(min-width: 1200px) 1160px, 100vw' : '(min-width: 900px) 580px, 100vw'}
                     />
