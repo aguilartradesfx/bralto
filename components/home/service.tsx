@@ -86,8 +86,9 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
         </div>
       </section>
 
+      {/* Pasos en lista al lado del título: la única fila de tarjetas de la página es "Qué incluye" */}
       <section className="hm-section" aria-labelledby="sv-process-title">
-        <div className="hm-wrap">
+        <div className="hm-wrap sv-process">
           <SectionHead
             id="sv-process-title"
             eyebrow={t('processEyebrow')}
@@ -100,8 +101,10 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
                 <span className="sv-step__n" aria-hidden="true">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
+                <div>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                </div>
               </li>
             ))}
           </ol>
@@ -139,7 +142,7 @@ async function RelatedServices({ locale, current, label }: { locale: Locale; cur
         <ul className="sv-related__list">
           {related.map((item) => (
             <li key={item.key}>
-              <Link href={serviceHref(locale, item.key)} className="sv-related__card hm-glass hm-rv">
+              <Link href={serviceHref(locale, item.key)} className="sv-related__row hm-rv">
                 <span className="sv-related__label">{item.label}</span>
                 <span className="sv-related__desc">{item.desc}</span>
                 <Arrow />

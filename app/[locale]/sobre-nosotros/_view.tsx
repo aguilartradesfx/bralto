@@ -5,13 +5,13 @@ import { Arrow, Check } from '@/components/home/icons'
 import { SectionHead, type Locale } from '@/components/home/primitives'
 import '@/components/home/pages.css'
 // Retrato del cierre: WebP 1080×1440 (53 KB, el original es un JPG de 1.2 MB)
-import closePhoto from './alejandro-aguilar.webp'
+import signaturePhoto from './alejandro-aguilar-firma.webp'
 
 const PHOTO_1 = 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69ffbef9728556272106b8ac.jpg'
 
 const ALT = {
-  es: { founder: 'Alejandro Aguilar, fundador de Bralto', portrait: 'Alejandro Aguilar' },
-  en: { founder: 'Alejandro Aguilar, founder of Bralto', portrait: 'Alejandro Aguilar' },
+  es: { founder: 'Alejandro Aguilar, fundador de Bralto' },
+  en: { founder: 'Alejandro Aguilar, founder of Bralto' },
 }
 
 export default async function SobreNosotrosView({ locale }: { locale: Locale }) {
@@ -58,7 +58,7 @@ export default async function SobreNosotrosView({ locale }: { locale: Locale }) 
           </h2>
           <div className="ab-mission">
             {(['card1', 'card2'] as const).map((card) => (
-              <div key={card} className="ab-mission__card hm-glass hm-glass--thick hm-rv">
+              <div key={card} className="ab-mission__card hm-rv">
                 <p className="pg-tag">{t(`mission.${card}Label`)}</p>
                 <p className="ab-mission__body">{t(`mission.${card}Body`)}</p>
               </div>
@@ -89,16 +89,17 @@ export default async function SobreNosotrosView({ locale }: { locale: Locale }) 
               <span>{t('close.headline')}</span> <span className="b">{t('close.headlineItalic')}</span>
             </h2>
             <p className="hm-lead">{t('close.body')}</p>
-            <p className="ab-signature">{t('close.signature')}</p>
+            <p className="ab-signature">
+              {/* El nombre va al lado: la foto no repite el texto alternativo */}
+              <Image src={signaturePhoto} alt="" width={48} height={48} className="ab-signature__photo" placeholder="blur" />
+              {t('close.signature')}
+            </p>
             <Link href={`/${locale}/agendar`} className="hm-btn hm-btn--solid">
               {t('close.cta')}
               <Arrow />
             </Link>
             <p className="ab-close__note">{cta('note')}</p>
           </div>
-          <figure className="ab-photo ab-photo--small hm-glass hm-rv">
-            <Image src={closePhoto} alt={ALT[locale].portrait} placeholder="blur" sizes="(min-width: 1000px) 440px, 100vw" />
-          </figure>
         </div>
       </section>
     </main>

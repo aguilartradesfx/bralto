@@ -26,7 +26,6 @@
 .sv-chart,
 .sv-minis > div,
 .sv-flow__step,
-.sv-step,
 .sv-chip,
 .sv-check__item,
 .sv-browser__url {
@@ -197,120 +196,116 @@
   }
 }
 
-/* ---------- Cómo trabajamos: secuencia real, numerada ---------- */
-.sv-steps {
+/* ---------- Cómo trabajamos: lista numerada al lado del título, sin tarjetas ---------- */
+.sv-process {
   display: grid;
-  gap: 12px;
-  margin: clamp(40px, 5vw, 60px) 0 0;
+  gap: clamp(32px, 4vw, 48px);
+}
+
+.sv-steps {
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .sv-step {
-  position: relative;
   display: grid;
-  align-content: start;
-  gap: 10px;
-  padding: 26px 26px 30px;
-  border-radius: var(--r-lg);
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 20px;
+  padding: 28px 0;
+  box-shadow: inset 0 1px 0 var(--rule);
+}
+
+.sv-step:last-child {
+  box-shadow: inset 0 1px 0 var(--rule), inset 0 -1px 0 var(--rule);
 }
 
 .sv-step__n {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  margin-bottom: 10px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px var(--rule-2);
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: .06em;
-  color: var(--ink-2);
+  font: 300 34px/1 var(--font-display);
+  letter-spacing: -.04em;
+  color: var(--ink-3);
 }
 
 .sv-step h3 {
-  margin: 0;
-  font-size: 19px;
+  margin: 0 0 8px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -.02em;
 }
 
 .sv-step p {
   margin: 0;
-  font-size: 14.5px;
+  max-width: 60ch;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink-2);
 }
 
-@media (min-width: 900px) {
-  .sv-steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  /* Hilo entre pasos, a la altura del número */
-  .sv-step + .sv-step::before {
-    content: '';
-    position: absolute;
-    top: 45px;
-    left: -12px;
-    width: 12px;
-    height: 1px;
-    background: var(--rule-2);
+@media (min-width: 1000px) {
+  .sv-process {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
   }
 }
 
-/* ---------- Otros servicios ---------- */
+/* ---------- Otros servicios: índice de enlaces, sin tarjetas ---------- */
 .sv-related {
   padding-bottom: 0;
 }
 
 .sv-related__list {
-  display: grid;
-  gap: 12px;
-  margin: 24px 0 0;
+  margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.sv-related__card {
+.sv-related__row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px 16px;
-  height: 100%;
-  padding: 22px 24px;
-  transition: transform .4s var(--ease);
+  gap: 4px 20px;
+  padding: 20px 4px;
+  box-shadow: inset 0 1px 0 var(--rule);
 }
 
-.sv-related__card:hover {
-  transform: translateY(-2px);
+.sv-related__list li:last-child .sv-related__row {
+  box-shadow: inset 0 1px 0 var(--rule), inset 0 -1px 0 var(--rule);
 }
 
 .sv-related__label {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -.015em;
 }
 
 .sv-related__desc {
   grid-column: 1;
-  font-size: 14px;
+  font-size: 14.5px;
   line-height: 1.5;
   color: var(--ink-2);
 }
 
-.sv-related__card .hm-arrow {
+.sv-related__row .hm-arrow {
   grid-column: 2;
   grid-row: 1 / span 2;
+  transition: transform .3s var(--ease);
 }
 
-.sv-related__card:hover .hm-arrow {
-  transform: translateX(3px);
+@media (hover: hover) {
+  .sv-related__row:hover .hm-arrow {
+    transform: translateX(4px);
+  }
 }
 
 @media (min-width: 900px) {
-  .sv-related__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .sv-related__row {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr) auto;
+  }
+
+  .sv-related__desc,
+  .sv-related__row .hm-arrow {
+    grid-column: auto;
+    grid-row: auto;
   }
 }
 

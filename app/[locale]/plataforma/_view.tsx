@@ -39,9 +39,9 @@ export default async function PlataformaView({ locale }: { locale: Locale }) {
         <div className="hm-wrap">
           <SectionHead compact id="pf-includes-title" light={t('includesLight')} bold={t('includesBold')} />
           <p className="hm-lead pf-sub">{t('includesDesc')}</p>
-          <div className="pf-cats">
+          <div className="pf-cats hm-glass hm-glass--thick hm-rv">
             {CATEGORIES.map((id) => (
-              <div key={id} className="pf-cat hm-glass hm-rv">
+              <div key={id} className="pf-cat">
                 <h3>{pt(`tabs.${id}.label`)}</h3>
                 <ul>
                   {(pt.raw(`tabs.${id}.features`) as string[]).map((feature) => (
