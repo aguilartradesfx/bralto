@@ -54,14 +54,6 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
               </Link>
             </div>
           </div>
-          <dl className="sv-specs hm-glass">
-            {copy.stats.map(([value, label]) => (
-              <div key={label}>
-                <dt>{label}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
@@ -74,6 +66,15 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
             light={t('featuresLight')}
             bold={t('featuresBold')}
           />
+          {/* Las cifras clave del servicio, fuera del hero (que queda en título, texto y botones) */}
+          <dl className="sv-specs hm-rv">
+            {copy.stats.map(([value, label]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
           <ul className="sv-features hm-glass hm-glass--thick hm-rv">
             {copy.features.map((f) => (
               <li key={f.t}>

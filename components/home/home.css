@@ -1195,8 +1195,9 @@ html[data-consent-open] .hm {
 }
 
 /* ---------- Hero ---------- */
+/* El contenido arranca a menos de 96 px del nav (el nav flota 14 px abajo del borde) */
 .hm-hero {
-  padding-top: calc(var(--nav-h) + clamp(84px, 13vh, 140px));
+  padding-top: calc(var(--nav-h) + clamp(72px, 11vh, 104px));
   padding-bottom: clamp(64px, 8vw, 112px);
 }
 
@@ -1981,6 +1982,12 @@ html[data-consent-open] .hm {
 /* Encabezado de páginas interiores con el diseño nuevo (/casos) */
 .hm-hero--page {
   padding-bottom: clamp(32px, 4vw, 56px);
+}
+
+/* Sin eyebrow arriba, el título no necesita el margen que lo separaba de él */
+.hm-hero__title:first-child,
+.hm-page-title:first-child {
+  margin-top: 0;
 }
 
 .hm-page-title {

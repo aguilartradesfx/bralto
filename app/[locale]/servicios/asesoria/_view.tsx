@@ -20,7 +20,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Asesoría de marketing',
     headline: 'Estrategia clara,',
     headlineBold: 'acciones concretas.',
-    sub: 'Para negocios que ya tienen algo construido y quieren crecer con intención, no con tácticas sueltas que no van a ningún lado.',
+    sub: 'Para negocios que ya tienen algo construido y quieren crecer con intención, no con tácticas sueltas.',
     stats: [
       ['Diagnóstico', 'Incluido'],
       ['90 días', 'Roadmap'],
@@ -73,7 +73,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Marketing advisory',
     headline: 'Clear strategy,',
     headlineBold: 'concrete action.',
-    sub: 'For businesses that already have something built and want to grow with intention, not with scattered tactics that go nowhere.',
+    sub: 'For businesses that already have something built and want to grow with intention, not scattered tactics.',
     stats: [
       ['Diagnosis', 'Included'],
       ['90 days', 'Roadmap'],

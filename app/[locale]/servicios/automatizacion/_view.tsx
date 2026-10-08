@@ -42,7 +42,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Automatización e IA',
     headline: 'Su operación,',
     headlineBold: 'sin intervención.',
-    sub: 'Automatizamos los procesos repetitivos de su negocio para que su equipo se enfoque en lo que realmente importa y el trabajo siga fluyendo solo.',
+    sub: 'Automatizamos los procesos repetitivos para que su equipo se enfoque en lo importante y el trabajo fluya solo.',
     stats: [
       ['Make / n8n', 'Plataformas'],
       ['2 a 3 sem.', 'Tiempo de entrega'],
@@ -86,7 +86,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Automation & AI',
     headline: 'Your business,',
     headlineBold: 'on autopilot.',
-    sub: 'We automate the repetitive work so your team can focus on what actually moves the needle, and everything keeps running on its own.',
+    sub: 'We automate the repetitive work so your team can focus on what matters while everything runs on its own.',
     stats: [
       ['Make / n8n', 'Platforms'],
       ['2 to 3 wks', 'Delivery time'],
