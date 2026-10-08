@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import { SiteShell } from '@/components/home/shell'
 import type { Metadata } from 'next'
@@ -102,8 +102,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params
 
+  // Un "idioma" que no es es/en es una ruta que no existe fuera de /es y /en (el middleware deja
+  // pasar /Diagnostico-…, /Proposal-…; un documento de cliente mal escrito cae aquí). Se manda a
+  // /es, donde el 404 del sitio es estático: un notFound() aquí sería dinámico y Next lo
+  // entregaría como página de error armada en el navegador, a veces en blanco.
   if (!routing.locales.includes(locale as 'es' | 'en')) {
-    notFound()
+    redirect(`/es/${locale}`)
   }
 
   setRequestLocale(locale)

@@ -34,6 +34,8 @@ type Props = { locale: Locale; logo: ReactNode; groups: MegaGroup[]; labels: Nav
 
 // Flujos donde el nav no debe distraer: sin links ni megamenú
 const FOCUS_PATHS = ['/agendar', '/confirmacion', '/listo']
+// Los mismos fuera de /es y /en (solo en español)
+const FOCUS_ROOT_PATHS = ['/payment-info']
 
 function LangSwitch({ locale, label, pathname }: { locale: Locale; label: string; pathname: string }) {
   const rest = pathname.replace(/^\/(es|en)(?=\/|$)/, '')
@@ -57,7 +59,9 @@ function LangSwitch({ locale, label, pathname }: { locale: Locale; label: string
 export function HomeNav({ locale, logo, groups, labels }: Props) {
   const pathname = usePathname() || `/${locale}`
   const onHome = pathname === `/${locale}` || pathname === `/${locale}/`
-  const focus = FOCUS_PATHS.some((p) => pathname.startsWith(`/${locale}${p}`))
+  const focus =
+    FOCUS_PATHS.some((p) => pathname.startsWith(`/${locale}${p}`)) ||
+    FOCUS_ROOT_PATHS.some((p) => pathname.startsWith(p))
   const home = onHome ? '' : `/${locale}`
 
   const [menuOpen, setMenuOpen] = useState(false)

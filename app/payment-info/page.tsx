@@ -1,241 +1,154 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, Check, ArrowLeftRight, ArrowLeft, CreditCard } from 'lucide-react'
-import Link from 'next/link'
+import { Arrow } from '@/components/home/icons'
+import { formatMoney, parseAmount } from '@/lib/payments/amount'
+import './payment-info.css'
 
-const RATE = 550 // 1 USD = 550 CRC
+// Link de pago abierto de Tilopay (lo genera su portal): el cliente escribe el monto acordado
+const TILOPAY_OPEN_LINK = 'https://tp.cr/s/MzY0Mzg2'
+
+// Tipo de cambio de referencia para el convertidor (se actualiza a mano; el banco aplica el suyo)
+const RATE = 550
 const QUICK_AMOUNTS = [10, 25, 50, 100, 250, 500]
 
-function CopyButton({ value }: { value: string }) {
+const HOLDER = 'JOSE ALEJANDRO AGUILAR MADRIGAL'
+const ACCOUNTS = [
+  { title: 'Cuenta en dólares', bac: '966869398', iban: 'CR96010200009668693984' },
+  { title: 'Cuenta en colones', bac: '938979937', iban: 'CR43010200009389799374' },
+]
+
+function Field({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(value)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {}
   }
 
   return (
-    <button
-      onClick={handleCopy}
-      className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 border border-white/8 hover:border-white/15 transition-all"
-    >
-      {copied
-        ? <Check size={13} className="text-[#5bb6ff]" />
-        : <Copy size={13} className="text-white/35 group-hover:text-white/55" />
-      }
-    </button>
-  )
-}
-
-function AccountField({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div className="py-3.5 border-b border-white/[0.06] last:border-0">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25 mb-1.5">{label}</p>
-      <div className="flex items-center justify-between gap-3">
-        <p className={`text-sm leading-snug truncate ${mono ? 'font-mono tracking-wide text-white/90' : 'text-white/75'}`}>
-          {value}
-        </p>
-        <CopyButton value={value} />
+    <div className="pi-field">
+      <div className="pi-field__text">
+        <p className="pi-field__label">{label}</p>
+        <p className={mono ? 'pi-field__value pi-mono' : 'pi-field__value'}>{value}</p>
       </div>
+      <button type="button" className="pi-copy" onClick={copy} aria-label={`Copiar ${label}`}>
+        {copied ? 'Copiado' : 'Copiar'}
+      </button>
+      <span className="sr-only" aria-live="polite">
+        {copied ? `${label} copiado` : ''}
+      </span>
     </div>
   )
 }
 
 export default function PaymentInfoPage() {
   const [amount, setAmount] = useState('')
-  const [direction, setDirection] = useState<'usd-to-crc' | 'crc-to-usd'>('usd-to-crc')
+  const [from, setFrom] = useState<'USD' | 'CRC'>('USD')
+  const to = from === 'USD' ? 'CRC' : 'USD'
 
-  const numeric = parseFloat(amount) || 0
-  const converted =
-    direction === 'usd-to-crc'
-      ? numeric > 0 ? (numeric * RATE).toLocaleString('es-CR') : ''
-      : numeric > 0 ? (numeric / RATE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+  const value = parseAmount(amount)
+  const converted = from === 'USD' ? value * RATE : value / RATE
 
-  const fromPrefix = direction === 'usd-to-crc' ? '$' : '₡'
-  const toPrefix   = direction === 'usd-to-crc' ? '₡' : '$'
-  const fromLabel  = direction === 'usd-to-crc' ? 'Dólares (USD)' : 'Colones (CRC)'
-  const toLabel    = direction === 'usd-to-crc' ? 'Colones (CRC)' : 'Dólares (USD)'
-
-  const handleSwap = () => {
-    setDirection(d => d === 'usd-to-crc' ? 'crc-to-usd' : 'usd-to-crc')
+  function swap() {
+    setFrom(to)
     setAmount('')
   }
 
   return (
-    <div className="min-h-screen bg-[#131316] text-white px-4 py-10 md:py-14">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_35%_at_50%_0%,rgba(249,115,22,0.05),transparent)] pointer-events-none" />
-
-      <div className="relative z-10 max-w-3xl mx-auto">
-
-        {/* Back */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-white/30 hover:text-white/55 transition-colors text-sm mb-10"
-        >
-          <ArrowLeft size={14} />
-          Volver al inicio
-        </Link>
-
-        {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#5bb6ff]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5bb6ff]">
-              Información de Pago
-            </p>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">
+    <main data-focus-page>
+      <section className="hm-hero hm-hero--page" aria-labelledby="pi-title">
+        <div className="hm-wrap">
+          <h1 id="pi-title" className="hm-page-title">
             Centro de pagos.
           </h1>
-          <p className="text-sm text-white/40 max-w-md leading-relaxed">
-            Utilice cualquiera de las siguientes cuentas bancarias para realizar depósitos o transferencias.
-          </p>
+          <p className="hm-lead">Pague por transferencia a una de estas cuentas o con tarjeta mediante Tilopay.</p>
         </div>
+      </section>
 
-        {/* Account cards — 2 col grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-
-          {/* USD */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
-                  <span className="text-sm font-bold text-[#5bb6ff]">$</span>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white leading-tight">Cuenta en Dólares</p>
-                  <p className="text-xs text-white/30 mt-0.5">USD</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#5bb6ff]/12 border border-[#5bb6ff]/22 text-[#5bb6ff]">
-                BAC
-              </span>
-            </div>
-            <AccountField label="Cliente" value="JOSE ALEJANDRO AGUILAR MADRIGAL" />
-            <AccountField label="Número de cuenta BAC" value="966869398" mono />
-            <AccountField label="Número de cuenta IBAN" value="CR96010200009668693984" mono />
-          </div>
-
-          {/* CRC */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/6 border border-white/10">
-                  <span className="text-sm font-bold text-white/45">₡</span>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white leading-tight">Cuenta en Colones</p>
-                  <p className="text-xs text-white/30 mt-0.5">CRC</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#5bb6ff]/12 border border-[#5bb6ff]/22 text-[#5bb6ff]">
-                BAC
-              </span>
-            </div>
-            <AccountField label="Cliente" value="JOSE ALEJANDRO AGUILAR MADRIGAL" />
-            <AccountField label="Número de cuenta BAC" value="938979937" mono />
-            <AccountField label="Número de cuenta IBAN" value="CR43010200009389799374" mono />
-          </div>
-
-        </div>
-
-        {/* Converter */}
-        <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 mb-4">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
-              <ArrowLeftRight size={15} className="text-[#5bb6ff]" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white leading-tight">Convertidor de Moneda</p>
-              <p className="text-xs text-white/30 mt-0.5">
-                Tipo de cambio: $1 USD = ₡{RATE.toLocaleString()} CRC
-              </p>
-            </div>
-          </div>
-
-          {/* Inputs row */}
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25 mb-2">{fromLabel}</p>
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus-within:border-[#5bb6ff]/35 transition-all">
-                <span className="text-white/30 text-sm mr-2 shrink-0">{fromPrefix}</span>
-                <input
-                  type="number"
-                  min="0"
-                  value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder:text-white/20 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={handleSwap}
-              className="shrink-0 mb-0.5 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-[#5bb6ff]/12 hover:border-[#5bb6ff]/25 transition-all"
-            >
-              <ArrowLeftRight size={13} className="text-white/35" />
-            </button>
-
-            <div className="flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25 mb-2">{toLabel}</p>
-              <div className="flex items-center bg-white/[0.02] border border-white/8 rounded-xl px-4 py-3">
-                <span className="text-white/20 text-sm mr-2 shrink-0">{toPrefix}</span>
-                <span className={`text-sm ${converted ? 'text-[#5bb6ff] font-semibold' : 'text-white/20'}`}>
-                  {converted || '0.00'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick amounts */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {QUICK_AMOUNTS.map(amt => (
-              <button
-                key={amt}
-                onClick={() => { setDirection('usd-to-crc'); setAmount(String(amt)) }}
-                className="px-3 py-1.5 text-xs rounded-lg bg-white/5 border border-white/8 text-white/40 hover:text-white/65 hover:bg-white/8 hover:border-white/14 transition-all"
-              >
-                ${amt}
-              </button>
+      <div className="hm-wrap pi">
+        <section aria-labelledby="pi-transfer-title">
+          <h2 id="pi-transfer-title" className="pi-h2">
+            Transferencia bancaria
+          </h2>
+          <div className="pi-accounts">
+            {ACCOUNTS.map((account) => (
+              <article key={account.bac} className="pi-account hm-glass" aria-label={`${account.title}, BAC`}>
+                <h3 className="pi-account__title">
+                  {account.title}
+                  <span>BAC</span>
+                </h3>
+                <Field label="Titular" value={HOLDER} />
+                <Field label="Número de cuenta BAC" value={account.bac} mono />
+                <Field label="IBAN" value={account.iban} mono />
+              </article>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Stripe */}
-        <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 md:p-6">
-          <div className="flex items-start gap-3 mb-5">
-            <div className="shrink-0 flex h-9 w-9 items-center justify-center rounded-xl bg-[#5bb6ff]/10 border border-[#5bb6ff]/20">
-              <CreditCard size={15} className="text-[#5bb6ff]" />
+        <section className="pi-panel hm-glass" aria-labelledby="pi-convert-title">
+          <h2 id="pi-convert-title" className="pi-h2">
+            Convertidor de moneda
+          </h2>
+          <p className="pi-muted">
+            Tipo de cambio de referencia: {formatMoney(1, 'USD')} = {formatMoney(RATE, 'CRC')}. El banco aplica el suyo.
+          </p>
+          <div className="pi-convert">
+            <div className="pi-convert__field">
+              <label htmlFor="pi-amount">{from === 'USD' ? 'Monto en dólares' : 'Monto en colones'}</label>
+              <input
+                id="pi-amount"
+                className="pi-input"
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder={from === 'USD' ? '100' : '55 000'}
+              />
             </div>
-            <div>
-              <p className="text-sm font-semibold text-white leading-tight">¿Ya discutimos el precio?</p>
-              <p className="text-xs text-white/30 mt-0.5">Paga directamente con tarjeta — seguro y rápido vía Stripe</p>
+            <button type="button" className="pi-swap" onClick={swap}>
+              {from === 'USD' ? 'Convertir colones' : 'Convertir dólares'}
+            </button>
+            <div className="pi-convert__field">
+              <p className="pi-convert__label" id="pi-result-label">
+                {to === 'CRC' ? 'En colones' : 'En dólares'}
+              </p>
+              <output className="pi-result" htmlFor="pi-amount" aria-labelledby="pi-result-label" aria-live="polite">
+                {formatMoney(value ? converted : 0, to)}
+              </output>
             </div>
           </div>
+          {from === 'USD' && (
+            <div className="pi-quick" role="group" aria-label="Montos rápidos en dólares">
+              {QUICK_AMOUNTS.map((quick) => (
+                <button key={quick} type="button" onClick={() => setAmount(String(quick))}>
+                  {formatMoney(quick, 'USD').replace(/[.,]00$/, '')}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
 
-          <p className="text-sm text-white/45 leading-relaxed mb-6">
-            Elige el monto que acordamos, ingresa tu información y listo. El pago es procesado de forma segura por{' '}
-            <span className="text-[#5bb6ff]">Stripe</span>.
-          </p>
-
-          <a
-            href="https://buy.stripe.com/28EdR9ec29au7jTaxRbsc00?locale=en&__embed_source=buy_btn_1T9u3dEQo0AZC6TyjennjZJH"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-white/7 hover:bg-white/11 border border-white/10 hover:border-white/18 text-white/80 hover:text-white text-xs font-bold uppercase tracking-[0.18em] transition-all active:scale-[0.99]"
-          >
-            Hacer Pago
+        <section className="pi-panel pi-pay hm-glass" aria-labelledby="pi-card-title">
+          <h2 id="pi-card-title" className="pi-h2">
+            Pago con tarjeta
+          </h2>
+          <p className="pi-muted">Escriba el monto que acordamos y pague con tarjeta de forma segura con Tilopay.</p>
+          <a className="hm-btn hm-btn--solid" href={TILOPAY_OPEN_LINK} target="_blank" rel="noopener noreferrer">
+            Pagar con tarjeta
+            <Arrow />
           </a>
-        </div>
+          <p className="pi-note">Se abre la página de pago de Tilopay en otra pestaña.</p>
+        </section>
 
-        <p className="text-center text-xs text-white/18 mt-8">
-          Si tiene dudas sobre el proceso de pago, contáctenos directamente.
+        <p className="pi-help">
+          ¿Dudas sobre el pago? Escríbanos a <a href="mailto:hola@bralto.io">hola@bralto.io</a>.
         </p>
-
       </div>
-    </div>
+    </main>
   )
 }

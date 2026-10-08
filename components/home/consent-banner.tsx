@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { CONSENT_STORAGE_KEY, readConsent, trackingCookieNames, type ConsentChoice } from '@/lib/consent'
+import { isPrivateSurface } from '@/lib/host-routing'
 
 // Banner de cookies del sitio público. La carga de GTM la decide el script del <head>
 // (lib/consent.ts); este banner guarda la elección y, al aceptar, carga las etiquetas.
@@ -39,6 +40,8 @@ export function ConsentBanner({ labels, privacyHref }: { labels: ConsentLabels; 
   const ref = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    // En el panel y la firma de contratos no se carga nada: no hay nada que consentir
+    if (isPrivateSurface(location.hostname, location.pathname)) return
     let stored: ConsentChoice | null = null
     try {
       stored = readConsent(localStorage.getItem(CONSENT_STORAGE_KEY))
