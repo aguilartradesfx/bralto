@@ -50,7 +50,7 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     triggerTitle: 'La asesoría es exactamente para esto.',
     triggerBody: 'Si reconoce {n} de estos puntos, ya tenemos por dónde empezar. Una sesión de 30 minutos puede cambiar completamente la dirección.',
-    triggerBtn: 'Agendar ahora',
+    triggerBtn: 'Agendar diagnóstico',
     features: [
       { t: 'Diagnóstico de marca', d: 'Analizamos su propuesta de valor, posicionamiento actual, competencia directa y audiencia objetivo. Identificamos brechas y oportunidades concretas.' },
       { t: 'Plan de marketing a medida', d: 'Definimos canales prioritarios, mensajes clave, presupuesto recomendado y un cronograma de acciones para los próximos 90 días.' },
@@ -105,7 +105,7 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     triggerTitle: 'This is exactly what the advisory is for.',
     triggerBody: 'If you checked {n} of these, we already know where to start. One 30-minute session can completely change your direction.',
-    triggerBtn: 'Book now',
+    triggerBtn: 'Book a diagnostic call',
     features: [
       { t: 'Brand diagnosis', d: 'We analyze your value proposition, current positioning, direct competitors, and target audience. We identify gaps and concrete opportunities.' },
       { t: 'Custom marketing plan', d: 'We define priority channels, key messages, recommended budget, and an action timeline for the next 90 days.' },

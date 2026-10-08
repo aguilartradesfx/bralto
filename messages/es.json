@@ -85,13 +85,13 @@
   "AboutPage": {
     "meta": {
       "title": "Sobre nosotros — Bralto | Infraestructura de operaciones automatizadas",
-      "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una empresa enterprise. Conozca la historia, misión y principios detrás del sistema."
+      "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una gran empresa. Conozca la historia, misión y principios detrás del sistema."
     },
     "hero": {
       "eyebrow": "Sobre Bralto",
       "headline": "El personal no escala.",
       "headlineItalic": "Los sistemas sí.",
-      "sub": "Construimos la infraestructura que permite a negocios establecidos operar como una empresa enterprise — sin el costo de serlo."
+      "sub": "Construimos la infraestructura que permite a negocios establecidos operar como una gran empresa, sin el costo de serlo."
     },
     "origin": {
       "eyebrow": "Cómo empezó",
@@ -108,7 +108,7 @@
       "card1Label": "Misión",
       "card1Body": "Que cada negocio opere como el mejor de su categoría — sin tener que crecer su equipo para lograrlo.",
       "card2Label": "Visión",
-      "card2Body": "Un mundo donde un negocio mediano compite de igual a igual con uno enterprise. No por tamaño. Por la calidad de sus operaciones."
+      "card2Body": "Un mundo donde un negocio mediano compite de igual a igual con una gran empresa. No por tamaño. Por la calidad de sus operaciones."
     },
     "principles": {
       "eyebrow": "Cómo operamos",
@@ -117,7 +117,7 @@
       "items": [
         { "number": "01", "title": "Sistemas, no parches", "body": "No agregamos otra herramienta al stack. Reemplazamos el stack." },
         { "number": "02", "title": "Resultados antes que estética", "body": "Si no genera ingresos o ahorra costos, no entra al sistema. Punto." },
-        { "number": "03", "title": "Implementación rápida o no la hacemos", "body": "Setenta y dos horas de diagnóstico a entrega. Si no cumplimos, no paga." },
+        { "number": "03", "title": "Implementación rápida, con plazos claros", "body": "Un sitio web suele estar listo en 5 a 10 días hábiles; una automatización, en 2 a 3 semanas; un sistema interno, en 4 a 12 semanas, según el alcance." },
         { "number": "04", "title": "Su negocio, su plataforma", "body": "Todo lo que construimos corre sobre su propio dominio, su propia marca, su propia infraestructura. Nunca dependiente de nosotros." }
       ]
     },
@@ -144,9 +144,9 @@
     "close": {
       "headline": "Construyamos el sistema",
       "headlineItalic": "que su negocio necesita.",
-      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso.",
+      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Son 30 minutos. Si decide avanzar, le descontamos los $97 completos del proyecto.",
       "signature": "— Alejandro Aguilar, Fundador",
-      "cta": "Agendar llamada conmigo"
+      "cta": "Agendar diagnóstico"
     }
   },
   "PreciosPage": {
@@ -520,7 +520,7 @@
     },
     "guarantee": {
       "title": "Sin riesgo de su lado.",
-      "body": "Si en el primer mes después de activar el sistema no genera leads calificados que cubran su mensualidad, seguimos trabajando sin costo hasta lograrlo."
+      "body": "Si en el primer mes después de activar el sistema no genera leads calificados, seguimos trabajando sin costo hasta lograrlo."
     },
     "testimonials": {
       "eyebrow": "Clientes",

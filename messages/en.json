@@ -117,7 +117,7 @@
       "items": [
         { "number": "01", "title": "Systems, not patches", "body": "We don't add another tool to the stack. We replace the stack." },
         { "number": "02", "title": "Results before aesthetics", "body": "If it doesn't drive revenue or cut cost, it doesn't ship. Period." },
-        { "number": "03", "title": "Fast implementation or we don't take the project", "body": "Seventy-two hours from diagnosis to delivery. If we miss it, you don't pay." },
+        { "number": "03", "title": "Fast implementation, clear timelines", "body": "A website is usually ready in 5 to 10 business days; an automation, in 2 to 3 weeks; an internal system, in 4 to 12 weeks, depending on scope." },
         { "number": "04", "title": "Your business, your platform", "body": "Everything we build runs on your own domain, your own brand, your own infrastructure. Never dependent on us." }
       ]
     },
@@ -144,9 +144,9 @@
     "close": {
       "headline": "Let's build the system",
       "headlineItalic": "your business needs.",
-      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. Thirty minutes. No commitment.",
+      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. It takes 30 minutes. If you move forward, we credit the full $97 toward your project.",
       "signature": "— Alejandro Aguilar, Founder",
-      "cta": "Book a call with me"
+      "cta": "Book a diagnostic call"
     }
   },
   "PreciosPage": {
@@ -520,7 +520,7 @@
     },
     "guarantee": {
       "title": "No risk on your side.",
-      "body": "If, in the first month after the system goes live, it doesn't generate qualified leads that cover your monthly fee, we keep working at no cost until it does."
+      "body": "If, in the first month after the system goes live, it doesn't generate qualified leads, we keep working at no cost until it does."
     },
     "testimonials": {
       "eyebrow": "Clients",

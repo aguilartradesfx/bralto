@@ -61,7 +61,7 @@ const CONTENT: Record<Locale, Copy> = {
     beforeSide: 'Sin automatizar',
     beforeItems: ['Responder cada lead manualmente', 'Copiar datos entre herramientas', 'Olvidar dar seguimiento', 'Equipo frustrado con tareas repetitivas'],
     afterSide: 'Con Bralto',
-    afterItems: ['Lead responde solo en segundos', 'Datos fluyen entre sistemas solos', 'Seguimientos automáticos en el momento justo', 'Equipo enfocado en lo que importa'],
+    afterItems: ['Cada lead recibe respuesta en segundos','Datos fluyen entre sistemas solos', 'Seguimientos automáticos en el momento justo', 'Equipo enfocado en lo que importa'],
     features: [
       { t: 'Workflow end-to-end', d: 'Mapeamos y automatizamos el proceso completo — desde el trigger hasta el resultado final, sin pasos manuales.' },
       { t: 'Agente de IA a medida', d: 'Configuramos un agente que atiende por WhatsApp, email o internamente según la necesidad del negocio.' },
