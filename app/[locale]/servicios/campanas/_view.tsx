@@ -123,7 +123,6 @@ export default async function CampanasView({ locale }: { locale: Locale }) {
         <div className="sv-dash hm-glass hm-glass--thick hm-rv">
           <div className="sv-dash__head">
             <p className="sv-dash__title">
-              <span className="sv-live" aria-hidden="true" />
               {c.dash.header}
             </p>
             <p className="sv-tag">{t('illustrative')}</p>

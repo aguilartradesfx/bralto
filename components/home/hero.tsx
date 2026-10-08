@@ -34,7 +34,6 @@ export async function Hero({ locale }: { locale: Locale }) {
         <figure className="hm-console hm-glass hm-glass--thick hm-in" style={vars({ d: 4 })} aria-label={t('system.label')}>
           <figcaption className="hm-console__head">
             <span>{t('system.title')}</span>
-            <span className="hm-live">{t('system.live')}</span>
           </figcaption>
           <ol className="hm-track">
             {events.map((e, i) => (

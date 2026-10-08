@@ -121,6 +121,7 @@ const CONTENT: Record<Locale, Copy> = {
 export default async function SitiosWebView({ locale }: { locale: Locale }) {
   const c = CONTENT[locale]
   const t = await getTranslations({ locale, namespace: 'Home.cases' })
+  const sp = await getTranslations({ locale, namespace: 'Home.servicePage' })
 
   return (
     <ServicePage locale={locale} service="sitiosWeb" copy={c}>
@@ -163,6 +164,7 @@ export default async function SitiosWebView({ locale }: { locale: Locale }) {
                 <i />
               </span>
               <span className="sv-browser__url">{c.auditUrl}</span>
+              <span className="sv-tag">{sp('example')}</span>
             </div>
             <figcaption className="sv-tag">{c.auditLabel}</figcaption>
             <ul className="sv-rings">

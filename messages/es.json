@@ -301,7 +301,6 @@
       "system": {
         "label": "Caso de ejemplo de un sistema trabajando",
         "title": "Caso de ejemplo",
-        "live": "En vivo",
         "note": "Ejemplo básico de un negocio que automatiza sus procesos. Con inteligencia artificial, el alcance es prácticamente ilimitado.",
         "events": [
           {

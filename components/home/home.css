@@ -1277,22 +1277,6 @@ html[data-consent-open] .hm {
   color: var(--ink-3);
 }
 
-.hm-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--ink-2);
-}
-
-.hm-live::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
-}
-
 .hm-track {
   display: grid;
   gap: var(--gap);
@@ -2562,12 +2546,6 @@ html[data-consent-open] .hm {
   }
 }
 
-@keyframes hm-blink {
-  50% {
-    opacity: .35;
-  }
-}
-
 @keyframes hm-drift-a {
   to {
     transform: translate3d(9vw, 8vh, 0) scale(1.08);
@@ -2777,10 +2755,6 @@ html[data-consent-open] .hm {
   .hm-in {
     animation: hm-in 1s var(--ease) both;
     animation-delay: calc(var(--d, 0) * 110ms + 80ms);
-  }
-
-  .hm-live::before {
-    animation: hm-blink 2.4s ease-in-out infinite;
   }
 
   .hm-station__node i,
