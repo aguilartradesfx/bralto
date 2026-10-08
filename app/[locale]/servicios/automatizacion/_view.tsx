@@ -51,7 +51,7 @@ const CONTENT: Record<Locale, Copy> = {
     wfHeadline: 'De un lead a una venta,',
     wfItalic: 'sin tocar nada.',
     flow: [
-      { tag: 'Trigger', label: 'Lead nuevo detectado', sub: 'Formulario · WhatsApp · Email' },
+      { tag: 'Trigger', label: 'Lead nuevo detectado', sub: 'Formulario, WhatsApp o email' },
       { tag: 'Procesa', label: 'IA evalúa y responde', sub: 'Mensaje personalizado al instante' },
       { tag: 'Ejecuta', label: 'Cita agendada', sub: 'Sync automático con Calendar' },
       { tag: 'Resultado', label: 'CRM actualizado', sub: 'Equipo notificado · Todo listo' },
@@ -95,7 +95,7 @@ const CONTENT: Record<Locale, Copy> = {
     wfHeadline: 'From a new lead to a closed deal,',
     wfItalic: 'zero manual work.',
     flow: [
-      { tag: 'Trigger', label: 'New lead detected', sub: 'Form · WhatsApp · Email' },
+      { tag: 'Trigger', label: 'New lead detected', sub: 'Form, WhatsApp, or email' },
       { tag: 'Process', label: 'AI evaluates & replies', sub: 'Personalized message in seconds' },
       { tag: 'Execute', label: 'Meeting booked', sub: 'Auto-synced with Calendar' },
       { tag: 'Result', label: 'CRM updated', sub: 'Team notified · Ready to go' },

@@ -136,7 +136,7 @@ export default function AsesoriaView({ locale }: { locale: Locale }) {
             {c.phases.map((phase, i) => (
               <li key={phase.title} className="sv-road__phase hm-rv">
                 <span className="sv-road__node" aria-hidden="true">
-                  {String(i + 1).padStart(2, '0')}
+                  {i + 1}
                 </span>
                 <span className="sv-tag">{phase.days}</span>
                 <h3>{phase.title}</h3>

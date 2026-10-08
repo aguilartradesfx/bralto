@@ -34,7 +34,6 @@ export async function Compare({ locale }: { locale: Locale }) {
                       <s className="hm-strike">{r.before}</s>
                     </p>
                     <p className="hm-compare__after">
-                      <span className="hm-compare__dot" aria-hidden="true" />
                       <span>
                         <span className="sr-only">{t('colAfter')}: </span>
                         {r.after}

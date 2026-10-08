@@ -51,7 +51,6 @@ export async function Hero({ locale }: { locale: Locale }) {
                 )}
                 <div className="hm-station__tile hm-inset">
                   <div className="hm-station__meta">
-                    <span>{String(i + 1).padStart(2, '0')}</span>
                     <span>{e.time}</span>
                   </div>
                   <b className="hm-station__title">{e.title}</b>

@@ -463,15 +463,6 @@ html[data-consent-open] .hm {
   color: var(--ink-2);
 }
 
-.hm-eyebrow::before {
-  content: '';
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1.5px var(--ink-3);
-}
-
 /* Título de una sección sin encabezado grande ("Otros servicios", los grupos de /precios,
    "Propósito", el proyecto de cada caso): con la fuente del sitio, no como etiqueta mono */
 .hm-subtitle {
@@ -1560,15 +1551,6 @@ html[data-consent-open] .hm {
   line-height: 1.45;
 }
 
-.hm-compare__dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  transform: translateY(-2px);
-}
-
 @media (min-width: 900px) {
   .hm-compare__slab {
     left: calc(40% + 8px);
@@ -2593,13 +2575,6 @@ html[data-consent-open] .hm {
   }
 }
 
-@keyframes hm-dot-on {
-  from {
-    opacity: .18;
-    transform: translateY(-2px) scale(.6);
-  }
-}
-
 @keyframes hm-trail {
   to {
     stroke-dashoffset: 0;
@@ -2820,12 +2795,6 @@ html[data-consent-open] .hm {
       animation: hm-strike linear both;
       animation-timeline: view();
       animation-range: entry 70% cover 46%;
-    }
-
-    .hm-compare__dot {
-      animation: hm-dot-on linear both;
-      animation-timeline: view();
-      animation-range: entry 90% cover 48%;
     }
 
     .hm-layer__led {

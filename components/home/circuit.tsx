@@ -83,7 +83,7 @@ export async function Circuit({ locale }: { locale: Locale }) {
               return (
                 <li key={layer.title} className="hm-layer hm-glass hm-rv" style={vars({ x, y, f: FRACTIONS[k] })}>
                   <div className="hm-layer__top">
-                    <span>{String(k + 1).padStart(2, '0')}</span>
+                    <span>{k + 1}</span>
                     <i className="hm-layer__led" aria-hidden="true" />
                   </div>
                   <h3>{layer.title}</h3>

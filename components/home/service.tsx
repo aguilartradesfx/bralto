@@ -100,7 +100,7 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
             {copy.steps.map((s, i) => (
               <li key={s.t} className="sv-step hm-rv">
                 <span className="sv-step__n" aria-hidden="true">
-                  {String(i + 1).padStart(2, '0')}
+                  {i + 1}
                 </span>
                 <div>
                   <h3>{s.t}</h3>
