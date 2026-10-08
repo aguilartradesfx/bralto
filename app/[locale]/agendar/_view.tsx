@@ -5,29 +5,12 @@ import { useLocale } from 'next-intl'
 import { GlassCalendar } from '@/components/ui/glass-calendar'
 import { Arrow, Check } from '@/components/home/icons'
 import { PaymentForm, type PaymentLabels } from '@/components/payments/payment-form'
+import { bookableDays, costaRicaToday, localDate, slotKey } from '@/lib/diagnostic/days'
 import type { ClientCheckout } from '@/lib/payments/types'
 import { cn } from '@/lib/utils'
 import './agendar.css'
 
 // ─── Static data ──────────────────────────────────────────────────────────────
-
-function getAvailableDays(): Date[] {
-  const days: Date[] = []
-  const today = new Date()
-  let offset = 1
-  while (days.length < 5) {
-    const d = new Date(today)
-    d.setDate(today.getDate() + offset)
-    const dow = d.getDay()
-    if (dow !== 0 && dow !== 6) days.push(d)
-    offset++
-  }
-  return days
-}
-
-function slotKey(date: Date, timeId: string): string {
-  return `${date.toISOString().slice(0, 10)}-${timeId}`
-}
 
 const TIME_SLOTS = [
   { id: '9am',  label: '9:00 AM' },
@@ -281,7 +264,9 @@ export default function AgendarPage() {
   const locale = useLocale()
   const c = CONTENT[locale as 'es' | 'en'] ?? CONTENT.es
 
-  const availableDays = getAvailableDays()
+  // Con la fecha de Costa Rica: el servidor (UTC) y el navegador marcan los mismos días
+  const availableDays = bookableDays(Date.now()).map(localDate)
+  const today = localDate(costaRicaToday(Date.now()))
 
   const [step, setStep] = useState(0)
   const [submitting, setSubmitting] = useState(false)
@@ -525,6 +510,7 @@ export default function AgendarPage() {
                   update('selectedTime', null)
                 }}
                 selectableDates={availableDays}
+                today={today}
               />
 
               {form.selectedDate && (

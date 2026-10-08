@@ -39,12 +39,14 @@ interface GlassCalendarProps extends React.HTMLAttributes<HTMLDivElement> {
   onDateSelect?: (date: Date) => void
   /** Solo estas fechas se pueden elegir; las demás se ven deshabilitadas */
   selectableDates: Date[]
+  /** Día que se marca como hoy. Sin él se usa el reloj local, que en el servidor (UTC) puede ser otro día */
+  today?: Date
   locale?: 'es' | 'en'
   className?: string
 }
 
 export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps>(
-  ({ className, selectedDate, onDateSelect, selectableDates, locale = 'es', ...props }, ref) => {
+  ({ className, selectedDate, onDateSelect, selectableDates, today, locale = 'es', ...props }, ref) => {
     const dfLocale = locale === 'en' ? enUS : es
     // Empieza en el mes de la primera fecha elegible (o el actual)
     const [currentMonth, setCurrentMonth] = React.useState(() => selectableDates[0] ?? new Date())
@@ -105,7 +107,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                   'bk-day',
                   selectable && 'is-available',
                   selected && 'is-selected',
-                  isToday(date) && !selected && 'is-today',
+                  (today ? isSameDay(date, today) : isToday(date)) && !selected && 'is-today',
                 )}
               >
                 {date.getDate()}
