@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata({
     locale,
     pathByLocale: { es: path, en: path },
-    titles: { es: `${client.name} — ${client.industry}`, en: `${client.name} — ${client.en?.industry ?? client.industry}` },
+    titles: { es: `${client.name}: ${client.industry}`, en: `${client.name}: ${client.en?.industry ?? client.industry}` },
     descriptions: { es: client.tagline, en: client.en?.tagline ?? client.tagline },
     ogImage: client.coverImage,
   })
@@ -138,7 +138,7 @@ export default async function CasePage({ params }: Props) {
                   <div className="cs-shot__img">
                     <Image
                       src={img}
-                      alt={`${client.name} — ${c.view} ${i + 1}`}
+                      alt={`${client.name}, ${c.view} ${i + 1}`}
                       fill
                       sizes={i % 3 === 0 ? '(min-width: 1200px) 1160px, 100vw' : '(min-width: 900px) 580px, 100vw'}
                     />

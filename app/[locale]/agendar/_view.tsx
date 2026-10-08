@@ -206,6 +206,12 @@ interface FormData {
   answers: Record<string, string>
 }
 
+// Las respuestas viajan tal cual al CRM ("Facturación mensual - 2.0" en GoHighLevel), donde filtros
+// y automatizaciones pueden depender del texto exacto: solo cambia cómo se muestran los rangos
+function optionLabel(opt: string, lang: 'es' | 'en') {
+  return opt.replace(/ – /g, lang === 'en' ? ' to ' : ' a ')
+}
+
 // Errores junto a cada campo o grupo: la fecha, el horario, cada dato de contacto y cada pregunta
 type ErrorKey = 'date' | 'time' | ContactField | `q:${string}`
 type FieldErrors = Partial<Record<ErrorKey, string>>
@@ -770,7 +776,7 @@ export default function AgendarPage() {
                         {q.options.map((opt) => (
                           <OptionCard
                             key={opt}
-                            label={opt}
+                            label={optionLabel(opt, lang)}
                             selected={form.answers[q.id] === opt}
                             onClick={() => setAnswer(q.id, opt)}
                           />

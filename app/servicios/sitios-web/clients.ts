@@ -19,7 +19,7 @@ export const clients: ClientProject[] = [
     en: {
       industry: 'Restaurant & reservations',
       tagline: 'A complete reservation platform, a 24/7 AI agent, and monthly video production.',
-      story: "Nanku had a digital presence, but not the operation a restaurant of its caliber needs. We came in to restructure everything — a new website built from scratch, automated flows, and centralized customer service — so the business could run on its own without depending on the team for every detail. Today they receive reservations automatically, serve customers across multiple channels, and have new content every month.",
+      story: "Nanku had a digital presence, but not the operation a restaurant of its caliber needs. We came in to restructure everything (a new website built from scratch, automated flows, and centralized customer service) so the business could run on its own without depending on the team for every detail. Today they receive reservations automatically, serve customers across multiple channels, and have new content every month.",
       deliverables: [
         "Website designed from scratch, mobile-first and SEO-optimized",
         "Reservation system built right into the site",
@@ -33,7 +33,7 @@ export const clients: ClientProject[] = [
     industry: 'Restaurante & Reservas',
     tagline: 'Plataforma completa de reservas, agente de IA 24/7 y producción audiovisual mensual.',
     url: 'https://www.restaurantenanku.net/',
-    story: 'Nanku tenía presencia digital, pero no la operación que un restaurante de su nivel necesita. Llegamos a reestructurarlo todo — nuevo sitio construido desde cero, flujos automatizados y atención al cliente centralizada — para que el negocio funcionara solo sin depender del equipo para cada detalle. Hoy reciben reservas en automático, atienden por múltiples canales y tienen contenido nuevo cada mes.',
+    story: 'Nanku tenía presencia digital, pero no la operación que un restaurante de su nivel necesita. Llegamos a reestructurarlo todo (nuevo sitio construido desde cero, flujos automatizados y atención al cliente centralizada) para que el negocio funcionara solo sin depender del equipo para cada detalle. Hoy reciben reservas en automático, atienden por múltiples canales y tienen contenido nuevo cada mes.',
     deliverables: [
       'Sitio web diseñado desde cero, mobile-first y optimizado para SEO',
       'Sistema de reservas integrado directamente en el sitio',
@@ -101,7 +101,7 @@ export const clients: ClientProject[] = [
     en: {
       industry: 'Tourism & travel',
       tagline: 'A 4-in-1 portal with a tour booking engine, automated flows, and routes by client type.',
-      story: "TravelCore wanted a platform that could handle both corporate and vacation clients, with real-time bookings and no manual management. We built a complete digital ecosystem that separates, routes, and serves each type of client differently — all automated under the hood.",
+      story: "TravelCore wanted a platform that could handle both corporate and vacation clients, with real-time bookings and no manual management. We built a complete digital ecosystem that separates, routes, and serves each type of client differently, all automated under the hood.",
       deliverables: [
         "4-in-1 web portal with a landing page and three distinct paths: corporate, vacation, and bookings",
         "Tour booking engine with real-time availability",
@@ -115,7 +115,7 @@ export const clients: ClientProject[] = [
     industry: 'Turismo & Viajes',
     tagline: 'Portal 4 en 1 con motor de agenda para tours, flujos automatizados y rutas por tipo de cliente.',
     url: 'https://www.mytravelcore.com/',
-    story: 'TravelCore quería una plataforma que pudiera manejar tanto clientes corporativos como vacacionales, con reservas en tiempo real y sin gestión manual. Construimos un ecosistema digital completo que separa, enruta y atiende a cada tipo de cliente de forma diferente — todo automatizado por debajo.',
+    story: 'TravelCore quería una plataforma que pudiera manejar tanto clientes corporativos como vacacionales, con reservas en tiempo real y sin gestión manual. Construimos un ecosistema digital completo que separa, enruta y atiende a cada tipo de cliente de forma diferente, todo automatizado por debajo.',
     deliverables: [
       'Portal web 4 en 1 con página de entrada y tres rutas diferenciadas: corporativo, vacacional y reservas',
       'Motor de agenda para tours con disponibilidad en tiempo real',
@@ -142,7 +142,7 @@ export const clients: ClientProject[] = [
     en: {
       industry: 'Wholesale',
       tagline: "Website and digital system for Costa Rica's leading liquidation distributor.",
-      story: "AO Liquidation Warehouse is the official supplier of liquidation merchandise from U.S. retailers in Costa Rica — Amazon, Target, Walmart, Home Depot. They had a physical presence and years of experience, but no digital platform that matched the operation. We built them an online presence that conveys authority and trust, and that consistently generates qualified B2B leads.",
+      story: "AO Liquidation Warehouse is the official supplier of liquidation merchandise from U.S. retailers in Costa Rica: Amazon, Target, Walmart, and Home Depot. They had a physical presence and years of experience, but no digital platform that matched the operation. We built them an online presence that conveys authority and trust, and that consistently generates qualified B2B leads.",
       deliverables: [
         "Professional website with a design that conveys authority in the liquidation market",
         "Product and lot catalog organized by category (pallets, lots, containers)",
@@ -156,7 +156,7 @@ export const clients: ClientProject[] = [
     industry: 'Comercio Mayorista',
     tagline: 'Sitio web y sistema digital para el principal distribuidor de liquidaciones de Costa Rica.',
     url: 'https://www.aoliquidationwarehouse.com/',
-    story: 'AO Liquidation Warehouse es el proveedor oficial de mercancía de liquidación de retailers estadounidenses en Costa Rica — Amazon, Target, Walmart, Home Depot. Tenían presencia física y años de experiencia, pero no una plataforma digital que estuviera a la altura de la operación. Les construimos una presencia online que transmite autoridad y confianza, y que genera leads de clientes B2B calificados de forma constante.',
+    story: 'AO Liquidation Warehouse es el proveedor oficial de mercancía de liquidación de retailers estadounidenses en Costa Rica: Amazon, Target, Walmart y Home Depot. Tenían presencia física y años de experiencia, pero no una plataforma digital que estuviera a la altura de la operación. Les construimos una presencia online que transmite autoridad y confianza, y que genera leads de clientes B2B calificados de forma constante.',
     deliverables: [
       'Sitio web profesional con diseño que comunica autoridad en el mercado de liquidaciones',
       'Catálogo de productos y lotes organizado por categorías (pallets, lotes, contenedores)',

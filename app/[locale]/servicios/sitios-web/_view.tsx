@@ -26,7 +26,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Sitios web profesionales',
     headline: 'Su mejor vendedor,',
     headlineBold: 'online 24/7.',
-    sub: 'Diseño a medida, SEO incluido y entrega en tiempo récord — para que su presencia online trabaje mientras usted descansa.',
+    sub: 'Diseño a medida, SEO incluido y entrega en tiempo récord, para que su presencia online trabaje mientras usted descansa.',
     stats: [
       ['4+', 'Proyectos entregados'],
       ['SEO', 'Incluido'],
@@ -37,7 +37,7 @@ const CONTENT: Record<Locale, Copy> = {
     projectsDesc: 'Haga clic en cualquier proyecto para ver la historia completa y la galería de imágenes.',
     lighthouseHeadline: 'Sitios que',
     lighthouseItalic: 'cargan rápido.',
-    lighthouseDesc: 'Google prioriza los sitios veloces. Cada décima de segundo que su sitio tarda en cargar es tráfico que pierde. Entregamos sitios con Lighthouse 100 en rendimiento — medible, verificable, sin excusas.',
+    lighthouseDesc: 'Google prioriza los sitios veloces. Cada décima de segundo que su sitio tarda en cargar es tráfico que pierde. Entregamos sitios con Lighthouse 100 en rendimiento: medible, verificable, sin excusas.',
     lighthouseStats: [
       { v: '< 1s', l: 'Tiempo hasta interactivo' },
       { v: '100', l: 'Rendimiento' },
@@ -45,15 +45,15 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     scoreLabels: ['Rendimiento', 'SEO', 'Prácticas recomendadas'],
     auditUrl: 'suempresa.com',
-    auditLabel: 'Auditoría Lighthouse — suempresa.com',
+    auditLabel: 'Auditoría Lighthouse de suempresa.com',
     passText: 'Cumple los estándares de Google',
     features: [
-      { t: 'Diseño a medida', d: 'Interfaz construida sobre su identidad de marca — nunca plantillas genéricas.' },
+      { t: 'Diseño a medida', d: 'Interfaz construida sobre su identidad de marca, nunca sobre plantillas genéricas.' },
       { t: 'Hasta 8 páginas', d: 'Inicio, servicios, nosotros, contacto y más. Cada página pensada para convertir.' },
       { t: 'SEO técnico', d: 'Estructura semántica, velocidad, meta tags y sitemap para posicionar desde el día uno.' },
       { t: 'Captura de leads', d: 'Formularios directos a su correo, WhatsApp o CRM sin fricciones.' },
       { t: 'Integraciones', d: 'Conectamos con las herramientas que ya usa sin procesos intermedios.' },
-      { t: 'Entrega rápida', d: 'La mayoría de proyectos listos en 5–10 días hábiles desde el briefing.' },
+      { t: 'Entrega rápida', d: 'La mayoría de proyectos listos en 5 a 10 días hábiles desde el briefing.' },
     ],
     steps: [
       { t: 'Diagnóstico', d: 'Entendemos su negocio, objetivos y mensaje. Definimos estructura y tono.' },
@@ -73,7 +73,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Professional websites',
     headline: 'Your best salesperson,',
     headlineBold: 'online 24/7.',
-    sub: 'Custom design, SEO included, and delivered fast — so your online presence works while you sleep.',
+    sub: 'Custom design, SEO included, and delivered fast, so your online presence works while you sleep.',
     stats: [
       ['4+', 'Projects delivered'],
       ['SEO', 'Included'],
@@ -84,7 +84,7 @@ const CONTENT: Record<Locale, Copy> = {
     projectsDesc: 'Click any project to see the full story and image gallery.',
     lighthouseHeadline: 'Sites that',
     lighthouseItalic: 'load fast.',
-    lighthouseDesc: 'Google prioritizes fast sites. Every tenth of a second you take to load is traffic you lose. We deliver sites with Lighthouse 100 on Performance — measurable, verifiable, no excuses.',
+    lighthouseDesc: 'Google prioritizes fast sites. Every tenth of a second you take to load is traffic you lose. We deliver sites with Lighthouse 100 on Performance: measurable, verifiable, no excuses.',
     lighthouseStats: [
       { v: '< 1s', l: 'Time to interactive' },
       { v: '100', l: 'Performance' },
@@ -92,15 +92,15 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     scoreLabels: ['Performance', 'SEO', 'Best Practices'],
     auditUrl: 'yourcompany.com',
-    auditLabel: 'Lighthouse audit — yourcompany.com',
+    auditLabel: 'Lighthouse audit for yourcompany.com',
     passText: 'All criteria meet Google standards',
     features: [
-      { t: 'Custom design', d: 'Interface built on your brand identity — never generic templates.' },
+      { t: 'Custom design', d: 'Interface built on your brand identity, never on generic templates.' },
       { t: 'Up to 8 pages', d: 'Home, services, about, contact, and more. Every page designed to convert.' },
       { t: 'Technical SEO', d: 'Semantic structure, speed, meta tags, and sitemap so you rank from day one.' },
       { t: 'Lead capture', d: 'Forms that go straight to your email, WhatsApp, or CRM without friction.' },
       { t: 'Integrations', d: 'We connect with the tools you already use without extra steps in between.' },
-      { t: 'Fast delivery', d: 'Most projects ready in 5–10 business days from the briefing.' },
+      { t: 'Fast delivery', d: 'Most projects ready in 5 to 10 business days from the briefing.' },
     ],
     steps: [
       { t: 'Discovery', d: 'We understand your business, goals, and message. We define structure and tone.' },

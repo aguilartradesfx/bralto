@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const l = (locale === 'en' ? 'en' : 'es') as Locale
 
   const titles: Record<Locale, string> = {
-    es: 'Bralto — Automatización e Infraestructura Digital para Negocios',
-    en: 'Bralto — Automation & Digital Infrastructure for Businesses',
+    es: 'Bralto | Automatización e Infraestructura Digital para Negocios',
+    en: 'Bralto | Automation & Digital Infrastructure for Businesses',
   }
 
   const descriptions: Record<Locale, string> = {

@@ -68,35 +68,35 @@
     "badge2": "Free tool",
     "title": "FunnelLab",
     "titleItalic": "by Bralto.",
-    "desc": "Simulate your complete sales funnel and predict your strategy's outcome — before spending a dime on ads.",
+    "desc": "Simulate your complete sales funnel and predict your strategy's outcome, before spending a dime on ads.",
     "bullets": [
       "Predict how many leads and sales you'll generate before you spend",
       "Spot the bottleneck that's killing your conversions",
       "Compare scenarios: webinar or VSL? Meta or Google?",
-      "AI analysis included — tells you exactly where to improve"
+      "AI analysis included: it tells you exactly where to improve"
     ],
     "cta": "Try FunnelLab free",
     "cardTitle": "Active simulation",
-    "cardSub": "Sales funnel — Google Ads",
+    "cardSub": "Sales funnel on Google Ads",
     "stages": ["Visitors", "Leads", "Prospects", "Customers"],
     "roiLabel": "Projected ROI",
     "cpaLabel": "Cost per customer"
   },
   "AboutPage": {
     "meta": {
-      "title": "About Us — Bralto | Automated Operations Infrastructure",
+      "title": "About Us: Automated Operations Infrastructure | Bralto",
       "description": "Bralto builds the digital infrastructure that lets established businesses run like an enterprise. The story, mission, and principles behind the system."
     },
     "hero": {
       "eyebrow": "About Bralto",
       "headline": "Headcount doesn't scale.",
       "headlineItalic": "Systems do.",
-      "sub": "We build the operational infrastructure that lets established businesses run like an enterprise — without the enterprise cost."
+      "sub": "We build the operational infrastructure that lets established businesses run like an enterprise, without the enterprise cost."
     },
     "origin": {
       "headline": "One simple idea.",
       "headlineItalic": "One massive problem.",
-      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins — but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A customer who left for the competitor because the competitor actually answered at 2am.",
+      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins, but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A customer who left for the competitor because the competitor actually answered at 2am.",
       "p2": "The problem wasn't a lack of tools. It was the exact opposite: duct-taped tech stacks with 8, 10, 15 different tools that don't talk to each other. CRMs over here, forms over there, half-built automations, broken integrations. Expensive software that ends up costing more in complexity than in licenses.",
       "p3": "Bralto was built to fix that at the root. One platform that replaces the entire stack, paired with custom implementations that connect AI, data, and processes into a single system. We don't sell software. We rebuild how the business runs.",
       "statValue": "8+",
@@ -105,7 +105,7 @@
     "mission": {
       "eyebrow": "Purpose",
       "card1Label": "Mission",
-      "card1Body": "Make every business operate like the best in its category — without growing the team to get there.",
+      "card1Body": "Make every business operate like the best in its category, without growing the team to get there.",
       "card2Label": "Vision",
       "card2Body": "A world where a mid-sized business competes head-to-head with an enterprise player. Not because of size. Because of how well it runs."
     },
@@ -143,8 +143,8 @@
     "close": {
       "headline": "Let's build the system",
       "headlineItalic": "your business needs.",
-      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. It takes 30 minutes. If you move forward, we credit the full $97 toward your project.",
-      "signature": "— Alejandro Aguilar, Founder",
+      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you, straight up, what can be automated, what can't, and what I'd change first. It takes 30 minutes. If you move forward, we credit the full $97 toward your project.",
+      "signature": "Alejandro Aguilar, Founder",
       "cta": "Book a diagnostic call"
     }
   },
@@ -194,7 +194,7 @@
     "badgeSub": "Included with every system",
     "headline": "Your whole business,",
     "headlineItalic": "in one platform.",
-    "desc": "CRM, websites, funnels, scheduling, payments, and multichannel marketing — all in one place. It comes included with every system we build.",
+    "desc": "CRM, websites, funnels, scheduling, payments, and multichannel marketing, all in one place. It comes included with every system we build.",
     "cta": "Book a diagnostic call",
     "includesLight": "Everything you need to run your business",
     "includesBold": "without juggling tools.",
@@ -217,7 +217,7 @@
   },
   "Home": {
     "meta": {
-      "title": "Bralto — AI-powered automated systems that sell",
+      "title": "Bralto | AI-powered automated systems that sell",
       "description": "We build and integrate custom intelligent systems that automate your entire commercial operation."
     },
     "nav": {
@@ -421,7 +421,7 @@
       "all": "View all case studies"
     },
     "casesPage": {
-      "metaTitle": "Case studies — Bralto",
+      "metaTitle": "Case studies | Bralto",
       "metaDescription": "Bralto projects at work: websites, AI agents, automations, and custom systems for restaurants, real estate, tourism, and retail.",
       "eyebrow": "Case studies",
       "titleLight": "Systems that are already",

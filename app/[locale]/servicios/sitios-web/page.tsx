@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/servicios/sitios-web', en: '/servicios/sitios-web' },
     titles: {
-      es: 'Sitios Web que Convierten — Diseño y Desarrollo',
-      en: 'Websites That Convert — Design and Development',
+      es: 'Sitios Web que Convierten: Diseño y Desarrollo',
+      en: 'Websites That Convert: Design and Development',
     },
     descriptions: {
       es: 'Sitios web a medida con SEO técnico, performance optimizada y conexión directa a su CRM. Para negocios que venden, no solo informan.',

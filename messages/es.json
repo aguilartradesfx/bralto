@@ -68,23 +68,23 @@
     "badge2": "Herramienta gratuita",
     "title": "FunnelLab",
     "titleItalic": "by Bralto.",
-    "desc": "Simulá tu embudo de ventas completo y predecí el resultado de tu estrategia — antes de gastar un peso en publicidad.",
+    "desc": "Simulá tu embudo de ventas completo y predecí el resultado de tu estrategia, antes de gastar un peso en publicidad.",
     "bullets": [
       "Predecí cuántos leads y ventas vas a generar antes de gastar",
       "Identificá el cuello de botella que mata tus conversiones",
       "Compará escenarios: ¿webinar o VSL? ¿Meta o Google?",
-      "Análisis con IA incluido — te dice exactamente dónde mejorar"
+      "Análisis con IA incluido: te dice exactamente dónde mejorar"
     ],
     "cta": "Probar FunnelLab gratis",
     "cardTitle": "Simulación activa",
-    "cardSub": "Funnel de ventas — Google Ads",
+    "cardSub": "Funnel de ventas en Google Ads",
     "stages": ["Visitas", "Leads", "Prospectos", "Clientes"],
     "roiLabel": "ROI proyectado",
     "cpaLabel": "Costo por cliente"
   },
   "AboutPage": {
     "meta": {
-      "title": "Sobre nosotros — Bralto | Infraestructura de operaciones automatizadas",
+      "title": "Sobre nosotros: infraestructura de operaciones automatizadas | Bralto",
       "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una gran empresa. Conozca la historia, misión y principios detrás del sistema."
     },
     "hero": {
@@ -96,7 +96,7 @@
     "origin": {
       "headline": "Una idea simple,",
       "headlineItalic": "un problema enorme.",
-      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables — pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
+      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables, pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
       "p2": "El problema no era falta de herramientas. Era exactamente lo opuesto: stacks tecnológicos parchados con 8, 10, 15 herramientas distintas que no se hablan entre sí. CRMs por aquí, formularios por allá, automatizaciones a medias, integraciones rotas. Software caro que termina costando más en complejidad que en licencias.",
       "p3": "Bralto se construyó para resolverlo de raíz. Una sola plataforma que reemplaza todo el stack, combinada con implementaciones a la medida que conectan IA, datos y procesos en un sistema único. No vendemos software. Reconstruimos cómo opera el negocio.",
       "statValue": "8+",
@@ -105,7 +105,7 @@
     "mission": {
       "eyebrow": "Propósito",
       "card1Label": "Misión",
-      "card1Body": "Que cada negocio opere como el mejor de su categoría — sin tener que crecer su equipo para lograrlo.",
+      "card1Body": "Que cada negocio opere como el mejor de su categoría, sin tener que crecer su equipo para lograrlo.",
       "card2Label": "Visión",
       "card2Body": "Un mundo donde un negocio mediano compite de igual a igual con una gran empresa. No por tamaño. Por la calidad de sus operaciones."
     },
@@ -144,7 +144,7 @@
       "headline": "Construyamos el sistema",
       "headlineItalic": "que su negocio necesita.",
       "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Son 30 minutos. Si decide avanzar, le descontamos los $97 completos del proyecto.",
-      "signature": "— Alejandro Aguilar, Fundador",
+      "signature": "Alejandro Aguilar, Fundador",
       "cta": "Agendar diagnóstico"
     }
   },
@@ -194,7 +194,7 @@
     "badgeSub": "Incluida en cada sistema",
     "headline": "Todo su negocio,",
     "headlineItalic": "en una sola plataforma.",
-    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar. Viene incluida en cada sistema que construimos.",
+    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal, todo reunido en un solo lugar. Viene incluida en cada sistema que construimos.",
     "cta": "Agendar diagnóstico",
     "includesLight": "Todo lo que necesita para operar",
     "includesBold": "sin saltar entre herramientas.",
@@ -217,7 +217,7 @@
   },
   "Home": {
     "meta": {
-      "title": "Bralto — Sistemas automatizados con IA que venden",
+      "title": "Bralto | Sistemas automatizados con IA que venden",
       "description": "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial."
     },
     "nav": {
@@ -421,7 +421,7 @@
       "all": "Ver todos los casos"
     },
     "casesPage": {
-      "metaTitle": "Casos reales — Bralto",
+      "metaTitle": "Casos reales | Bralto",
       "metaDescription": "Proyectos de Bralto funcionando: sitios web, agentes de IA, automatizaciones y sistemas a la medida para restaurantes, inmobiliarias, turismo y comercio.",
       "eyebrow": "Casos reales",
       "titleLight": "Sistemas que ya están",

@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/servicios/sistemas-internos', en: '/servicios/sistemas-internos' },
     titles: {
-      es: 'Sistemas Internos — Dashboards y Operaciones a Medida',
-      en: 'Internal Systems — Custom Dashboards and Operations',
+      es: 'Sistemas Internos: Dashboards y Operaciones a Medida',
+      en: 'Internal Systems: Custom Dashboards and Operations',
     },
     descriptions: {
       es: 'Construimos los sistemas internos que su equipo necesita: dashboards, gestores de pedidos, paneles operativos. Conectados a su stack actual.',

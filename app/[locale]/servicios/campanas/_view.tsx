@@ -21,7 +21,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Campañas publicitarias',
     headline: 'Anuncios que',
     headlineBold: 'convierten.',
-    sub: 'Gestionamos sus campañas en Meta y Google de principio a fin — desde la estrategia hasta la optimización diaria.',
+    sub: 'Gestionamos sus campañas en Meta y Google de principio a fin, desde la estrategia hasta la optimización diaria.',
     stats: [
       ['Meta + Google', 'Plataformas'],
       ['2×/semana', 'Optimización'],
@@ -30,7 +30,7 @@ const CONTENT: Record<Locale, Copy> = {
     metricsHeadline: 'Lo que ve cuando',
     metricsItalic: 'la campaña funciona.',
     dash: {
-      header: 'Campaña activa — Mes 2',
+      header: 'Campaña activa (mes 2)',
       metricLabels: ['ROAS', 'Leads generados', 'CPC promedio', 'Alcance total'],
       chartLabel: 'Evolución de leads por semana',
       barLabels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'],
@@ -56,10 +56,10 @@ const CONTENT: Record<Locale, Copy> = {
       { t: 'Seguimiento y optimización', d: 'Monitoreamos el rendimiento diariamente, hacemos ajustes dos veces por semana y entregamos reporte semanal con los resultados y próximos pasos.' },
     ],
     faqs: [
-      { q: '¿El presupuesto de pauta está incluido?', a: 'No. Bralto cobra un fee mensual de gestión y estrategia. El presupuesto de anuncios lo maneja usted directamente desde su cuenta de Meta o Google — así tiene control total sobre lo que gasta.' },
+      { q: '¿El presupuesto de pauta está incluido?', a: 'No. Bralto cobra un fee mensual de gestión y estrategia. El presupuesto de anuncios lo maneja usted directamente desde su cuenta de Meta o Google, así tiene control total sobre lo que gasta.' },
       { q: '¿Qué plataformas cubren?', a: 'Principalmente Meta (Facebook e Instagram) y Google (Search y Display). Para ciertos negocios también gestionamos TikTok Ads o LinkedIn Ads según donde esté la audiencia más relevante.' },
       { q: '¿Cuánto tiempo tarda en ver resultados?', a: 'Las primeras 2-3 semanas son de aprendizaje del algoritmo. Entre la semana 4 y 8 empezamos a ver los primeros resultados sólidos. Para resultados consistentes y escalables, lo ideal es evaluar con 3 meses de datos.' },
-      { q: '¿Qué pasa si los resultados no son los esperados?', a: 'Ajustamos la estrategia con base en los datos. Revisamos creativos, audiencias y estructuras de campaña. Nuestro trabajo es optimizar continuamente — no hay garantía de ROAS específico porque depende de muchas variables del mercado, pero sí hay compromiso de mejora constante.' },
+      { q: '¿Qué pasa si los resultados no son los esperados?', a: 'Ajustamos la estrategia con base en los datos. Revisamos creativos, audiencias y estructuras de campaña. Nuestro trabajo es optimizar continuamente. No hay garantía de ROAS específico porque depende de muchas variables del mercado, pero sí hay compromiso de mejora constante.' },
     ],
     ctaHeadline: 'Hablemos de',
     ctaBold: 'sus campañas.',
@@ -68,7 +68,7 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Paid Advertising',
     headline: 'Ads that',
     headlineBold: 'actually convert.',
-    sub: 'We run your Meta and Google campaigns end to end — from strategy to daily optimization.',
+    sub: 'We run your Meta and Google campaigns end to end, from strategy to daily optimization.',
     stats: [
       ['Meta + Google', 'Platforms'],
       ['2×/week', 'Optimization'],
@@ -77,7 +77,7 @@ const CONTENT: Record<Locale, Copy> = {
     metricsHeadline: 'What you see when',
     metricsItalic: 'the campaign works.',
     dash: {
-      header: 'Active campaign — Month 2',
+      header: 'Active campaign (month 2)',
       metricLabels: ['ROAS', 'Leads generated', 'Avg CPC', 'Total reach'],
       chartLabel: 'Weekly lead growth',
       barLabels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7', 'Wk 8'],
@@ -103,10 +103,10 @@ const CONTENT: Record<Locale, Copy> = {
       { t: 'Tracking & optimization', d: 'We monitor performance daily, make adjustments twice a week, and deliver a weekly report with results and next steps.' },
     ],
     faqs: [
-      { q: 'Is ad spend included?', a: "No. Bralto charges a monthly management and strategy fee. You control the ad budget directly from your Meta or Google account — so you always know exactly what you're spending." },
+      { q: 'Is ad spend included?', a: "No. Bralto charges a monthly management and strategy fee. You control the ad budget directly from your Meta or Google account, so you always know exactly what you're spending." },
       { q: 'Which platforms do you cover?', a: 'Mainly Meta (Facebook and Instagram) and Google (Search and Display). For certain businesses we also manage TikTok Ads or LinkedIn Ads depending on where the most relevant audience is.' },
-      { q: 'How long before I see results?', a: 'The first 2–3 weeks are the algorithm learning phase. Between weeks 4 and 8 we start seeing solid early results. For consistent, scalable performance, 3 months of data is the ideal window to evaluate.' },
-      { q: "What if results don't meet expectations?", a: "We adjust strategy based on the data — revisiting creatives, audiences, and campaign structure. Our job is to keep optimizing. There's no guarantee of a specific ROAS since it depends on many market variables, but there is a commitment to constant improvement." },
+      { q: 'How long before I see results?', a: 'The first 2 to 3 weeks are the algorithm learning phase. Between weeks 4 and 8 we start seeing solid early results. For consistent, scalable performance, 3 months of data is the ideal window to evaluate.' },
+      { q: "What if results don't meet expectations?", a: "We adjust strategy based on the data, revisiting creatives, audiences, and campaign structure. Our job is to keep optimizing. There's no guarantee of a specific ROAS since it depends on many market variables, but there is a commitment to constant improvement." },
     ],
     ctaHeadline: "Let's talk about",
     ctaBold: 'your campaigns.',
