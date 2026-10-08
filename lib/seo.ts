@@ -8,7 +8,7 @@ type Locale = 'es' | 'en'
 
 type BuildPageMetadataInput = {
   locale: Locale
-  /** Path after the locale segment, e.g. '/precios'. Empty string for home. */
+  /** Path after the locale segment, e.g. '/servicios'. Empty string for home. */
   pathByLocale: Record<Locale, string>
   titles: Record<Locale, string>
   descriptions: Record<Locale, string>

@@ -49,7 +49,7 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
                 {t('cta')}
                 <Arrow />
               </Link>
-              <Link href={`/${locale}/precios`} className="hm-btn hm-btn--glass hm-glass">
+              <Link href={`/${locale}/servicios`} className="hm-btn hm-btn--glass hm-glass">
                 {t('all')}
               </Link>
             </div>

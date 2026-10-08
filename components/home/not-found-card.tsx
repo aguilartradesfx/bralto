@@ -17,7 +17,7 @@ export function NotFoundCard() {
             Ir al inicio
             <Arrow />
           </Link>
-          <Link href="/es/precios" className="hm-btn hm-btn--glass hm-glass">
+          <Link href="/es/servicios" className="hm-btn hm-btn--glass hm-glass">
             Ver servicios
           </Link>
         </>

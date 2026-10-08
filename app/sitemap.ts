@@ -12,7 +12,7 @@ type Route = {
 
 const ROUTES: Route[] = [
   { priority: 1.0,  changeFrequency: 'weekly',  path: '' },
-  { priority: 0.9,  changeFrequency: 'monthly', path: '/precios' },
+  { priority: 0.9,  changeFrequency: 'monthly', path: '/servicios' },
   { priority: 0.9,  changeFrequency: 'monthly', path: '/agendar' },
   { priority: 0.8,  changeFrequency: 'monthly', path: '/sobre-nosotros' },
   { priority: 0.8,  changeFrequency: 'monthly', path: '/plataforma' },

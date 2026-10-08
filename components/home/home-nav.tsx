@@ -276,7 +276,7 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
             <p className="hm-mega__note">{labels.megaNote}</p>
           </div>
           <div className="hm-mega__foot">
-            <Link href={`/${locale}/precios`}>
+            <Link href={`/${locale}/servicios`}>
               {labels.megaAll}
               <Arrow />
             </Link>

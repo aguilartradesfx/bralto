@@ -18,5 +18,5 @@ export const SERVICE_PATHS: Record<string, string> = {
 export const FUNNELLAB_URL = 'https://funnellabs.bralto.io'
 
 export function serviceHref(locale: Locale, key: string) {
-  return key === 'funnelLab' ? FUNNELLAB_URL : `/${locale}${SERVICE_PATHS[key] ?? '/precios'}`
+  return key === 'funnelLab' ? FUNNELLAB_URL : `/${locale}${SERVICE_PATHS[key] ?? '/servicios'}`
 }
