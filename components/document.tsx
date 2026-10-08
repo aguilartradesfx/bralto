@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import { ParticlesBackground } from '@/components/particles-background'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 import { tagManagerBootScript } from '@/lib/consent'
@@ -8,32 +7,13 @@ import { scrollRestorationScript } from '@/lib/scroll-restoration'
 
 const GTM_ID = 'GTM-KTGZ86BC'
 
-const geist = Geist({
-  subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
-})
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
-  display: 'swap',
-})
-
 // <html> y <body> de cada sección. El layout raíz solo pasa los hijos: así cada sección
 // (/es, /en, el panel, /payment-info, el 404…) sale del servidor con su idioma en <html lang>,
 // sin un script que lo corrija en el navegador.
-export function Document({ lang, children }: { lang: 'es' | 'en'; children: ReactNode }) {
+// fonts: las variables de fuente de la sección (el sitio público pone las suyas en .hm)
+export function Document({ lang, fonts, children }: { lang: 'es' | 'en'; fonts?: string; children: ReactNode }) {
   return (
-    <html lang={lang} suppressHydrationWarning className={`dark ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}>
+    <html lang={lang} suppressHydrationWarning className={fonts ? `dark ${fonts}` : 'dark'}>
       <head>
         {/* GTM según el consentimiento de cookies (lib/consent.ts); nunca en el panel ni en la firma de contratos */}
         <script
