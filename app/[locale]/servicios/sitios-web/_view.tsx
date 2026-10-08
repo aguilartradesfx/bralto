@@ -10,7 +10,6 @@ const SCORES = [100, 98, 100]
 type Copy = ServiceCopy & {
   projectsHeadline: string
   projectsItalic: string
-  projectsDesc: string
   lighthouseHeadline: string
   lighthouseItalic: string
   lighthouseDesc: string
@@ -34,7 +33,6 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     projectsHeadline: 'El trabajo',
     projectsItalic: 'habla solo.',
-    projectsDesc: 'Haga clic en cualquier proyecto para ver la historia completa y la galería de imágenes.',
     lighthouseHeadline: 'Sitios que',
     lighthouseItalic: 'cargan rápido.',
     lighthouseDesc: 'Google prioriza los sitios veloces. Cada décima de segundo que su sitio tarda en cargar es tráfico que pierde. Entregamos sitios con Lighthouse 100 en rendimiento: medible, verificable, sin excusas.',
@@ -81,7 +79,6 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     projectsHeadline: 'The work',
     projectsItalic: 'speaks for itself.',
-    projectsDesc: 'Click any project to see the full story and image gallery.',
     lighthouseHeadline: 'Sites that',
     lighthouseItalic: 'load fast.',
     lighthouseDesc: 'Google prioritizes fast sites. Every tenth of a second you take to load is traffic you lose. We deliver sites with Lighthouse 100 on Performance: measurable, verifiable, no excuses.',
@@ -127,10 +124,7 @@ export default async function SitiosWebView({ locale }: { locale: Locale }) {
     <ServicePage locale={locale} service="sitiosWeb" copy={c}>
       <section className="hm-section" aria-labelledby="sv-work-title">
         <div className="hm-wrap">
-          <div className="hm-cases__head">
-            <SectionHead id="sv-work-title" light={c.projectsHeadline} bold={c.projectsItalic} />
-            <p className="hm-lead sv-aside">{c.projectsDesc}</p>
-          </div>
+          <SectionHead id="sv-work-title" light={c.projectsHeadline} bold={c.projectsItalic} />
           <ul className="hm-cases">
             {clients.map((client) => (
               <li key={client.id}>
