@@ -25,6 +25,10 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
     <div className={`hm ${sora.variable} ${jetbrainsMono.variable}`} data-theme="dark" suppressHydrationWarning>
       {/* Fija el tema antes del primer pintado (sin flash); debe ser el primer hijo */}
       <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
+      {/* Primer foco del teclado: salta las paradas del nav (se ve solo al enfocarlo) */}
+      <a href="#contenido" className="hm-skip hm-btn hm-btn--solid hm-btn--sm">
+        {t('skip')}
+      </a>
       <Ambient />
       <HomeNav
         locale={locale}
@@ -51,7 +55,9 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
           megaAll: t('mega.all'),
         }}
       />
-      {children}
+      <div id="contenido" tabIndex={-1} className="hm-content">
+        {children}
+      </div>
       <HomeFooter locale={locale} showLegal={legal} />
       <Specular />
       <ConsentBanner

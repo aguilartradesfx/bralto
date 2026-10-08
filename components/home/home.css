@@ -586,6 +586,24 @@ html[data-consent-open] .hm {
 }
 
 /* ---------- Nav ---------- */
+/* "Saltar al contenido": fuera de la vista hasta que el teclado llega a él */
+.hm-skip {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 70;
+  transform: translateY(calc(-100% - 24px));
+}
+
+.hm-skip:focus-visible {
+  transform: none;
+}
+
+/* El destino del salto recibe el foco, pero no lleva anillo: es todo el contenido */
+.hm-content:focus {
+  outline: none;
+}
+
 .hm-nav {
   position: fixed;
   top: 14px;

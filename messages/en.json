@@ -222,6 +222,7 @@
     },
     "nav": {
       "label": "Main",
+      "skip": "Skip to content",
       "home": "Bralto, home",
       "links": {
         "sistema": "How it works",

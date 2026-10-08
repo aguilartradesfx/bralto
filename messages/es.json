@@ -222,6 +222,7 @@
     },
     "nav": {
       "label": "Principal",
+      "skip": "Saltar al contenido",
       "home": "Bralto, inicio",
       "links": {
         "sistema": "Cómo funciona",
