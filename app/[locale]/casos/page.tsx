@@ -55,8 +55,12 @@ export default async function CasosPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="hm-section hm-section--tight hm-section--joined" aria-label={t('casesPage.eyebrow')}>
+      <section className="hm-section hm-section--tight hm-section--joined" aria-labelledby="hm-cases-list-title">
         <div className="hm-wrap">
+          {/* Entre el h1 y el h3 de cada caso: el título de la lista, solo para lectores de pantalla */}
+          <h2 id="hm-cases-list-title" className="sr-only">
+            {t('casesPage.eyebrow')}
+          </h2>
           <ul className="hm-cases hm-cases--page">
             {clients.map((client, i) => (
               <li key={client.id}>

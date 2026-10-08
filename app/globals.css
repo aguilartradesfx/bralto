@@ -26,6 +26,18 @@
   }
 }
 
+/* Los controles responden al primer toque, sin esperar el doble toque del zoom */
+a,
+button,
+input,
+select,
+textarea,
+label,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+}
+
 body {
   background-color: #060607;
   color: #f0f0f0;

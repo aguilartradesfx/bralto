@@ -69,6 +69,8 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const megaRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   // Si lo abrió el puntero al pasar, el clic que sigue no lo cierra
   const hoverOpened = useRef(false)
@@ -90,12 +92,29 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
     if (!megaOpen) hoverOpened.current = false
   }, [megaOpen])
 
+  // Al abrir el menú móvil, el foco entra a su primer elemento
+  useEffect(() => {
+    if (!menuOpen) return
+    const frame = requestAnimationFrame(() => menuRef.current?.querySelector<HTMLElement>('summary, a[href], button')?.focus())
+    return () => cancelAnimationFrame(frame)
+  }, [menuOpen])
+
+  // Tab desde el último elemento del menú vuelve al botón "Menú" en vez de irse a la página de atrás
+  const onMenuKeyDown = (e: ReactKeyboardEvent) => {
+    if (e.key !== 'Tab' || e.shiftKey) return
+    const items = [...(menuRef.current?.querySelectorAll<HTMLElement>('summary, a[href], button') ?? [])].filter((el) => el.offsetParent !== null)
+    if (document.activeElement !== items[items.length - 1]) return
+    e.preventDefault()
+    menuButtonRef.current?.focus()
+  }
+
   useEffect(() => {
     if (!menuOpen && !megaOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        // Si el foco estaba en el panel, vuelve a "Servicios" en vez de perderse
+        // Si el foco estaba en el panel o en el menú, vuelve a su botón en vez de perderse
         if (panelRef.current?.contains(document.activeElement)) triggerRef.current?.focus()
+        if (menuRef.current?.contains(document.activeElement)) menuButtonRef.current?.focus()
         setMenuOpen(false)
         setMegaOpen(false)
       }
@@ -222,6 +241,7 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
             </span>
             <span className="hm-nav__cta">{cta}</span>
             <button
+              ref={menuButtonRef}
               type="button"
               className="hm-nav__menu"
               aria-expanded={menuOpen}
@@ -287,7 +307,7 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
       </div>
 
       {/* Menú móvil */}
-      <div id="hm-menu" className="hm-menu hm-glass" hidden={!menuOpen}>
+      <div ref={menuRef} id="hm-menu" className="hm-menu hm-glass" hidden={!menuOpen} onKeyDown={onMenuKeyDown}>
         <details className="hm-menu__services">
           <summary>
             {labels.services}

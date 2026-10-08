@@ -4,23 +4,18 @@ import { createServerClient } from '@supabase/ssr'
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 import { OPT_IN_REGION, REGION_COOKIE, requiresOptIn } from './lib/consent'
+import { preferredLocale } from './lib/locale'
 import { isPanelPath, resolveHostRouting } from './lib/host-routing'
 import { hasPermission, requiredPermission, type PanelPermission } from './lib/panel-access'
 import type { UserProfile } from './types/user-profiles'
 
-// Spanish-speaking countries → es, everything else → en
-const SPANISH_COUNTRIES = new Set([
-  'MX', 'ES', 'AR', 'CO', 'PE', 'CL', 'EC', 'VE', 'GT', 'CU', 'BO',
-  'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ', 'PR',
-])
-
+// La elección guardada, después el idioma del navegador y por último el país (lib/locale.ts)
 function getPreferredLocale(request: NextRequest): string {
-  const country = request.headers.get('x-vercel-ip-country') ?? ''
-  if (SPANISH_COUNTRIES.has(country)) return 'es'
-  // Fallback: check Accept-Language header
-  const acceptLang = request.headers.get('accept-language') ?? ''
-  if (acceptLang.toLowerCase().startsWith('es')) return 'es'
-  return 'en'
+  return preferredLocale({
+    cookie: request.cookies.get('NEXT_LOCALE')?.value,
+    acceptLanguage: request.headers.get('accept-language'),
+    country: request.headers.get('x-vercel-ip-country'),
+  })
 }
 
 const intlMiddleware = createIntlMiddleware({

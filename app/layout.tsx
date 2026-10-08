@@ -1,6 +1,13 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { SITE_URL } from '@/lib/seo'
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#050505' },
+    { media: '(prefers-color-scheme: light)', color: '#e8e8e8' },
+  ],
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
