@@ -13,7 +13,7 @@ const GTM_ID = 'GTM-KTGZ86BC'
 // fonts: las variables de fuente de la sección (el sitio público pone las suyas en .hm)
 export function Document({ lang, fonts, children }: { lang: 'es' | 'en'; fonts?: string; children: ReactNode }) {
   return (
-    <html lang={lang} suppressHydrationWarning className={fonts ? `dark ${fonts}` : 'dark'}>
+    <html lang={lang} suppressHydrationWarning className={fonts ? `dark ${fonts}` : 'dark'} data-scroll-behavior="smooth">
       <head>
         {/* GTM según el consentimiento de cookies (lib/consent.ts); nunca en el panel ni en la firma de contratos */}
         <script
