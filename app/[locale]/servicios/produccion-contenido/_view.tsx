@@ -19,7 +19,6 @@ const POSTS: Record<number, string[]> = {
 const CELLS: (number | null)[] = [...Array(4).fill(null), ...Array.from({ length: 31 }, (_, i) => i + 1)]
 
 type Copy = ServiceCopy & {
-  calSectionLabel: string
   calHeadline: string
   calItalic: string
   calDesc: string
@@ -41,7 +40,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['Stories', 'Incluidas'],
       ['100%', 'Gestionado'],
     ],
-    calSectionLabel: 'Su mes de contenido, planeado',
     calHeadline: 'Siempre sabe',
     calItalic: 'qué se publica.',
     calDesc: 'Cada mes recibe el calendario completo con los posts programados por plataforma. Usted aprueba antes de publicar. Sin sorpresas, sin improvisación de último minuto.',
@@ -86,7 +84,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['Stories', 'Included'],
       ['100%', 'Managed'],
     ],
-    calSectionLabel: 'Your month of content, planned',
     calHeadline: 'You always know',
     calItalic: "what's going live.",
     calDesc: 'Every month you get the full content calendar with posts scheduled by platform. You approve before anything goes live. No surprises, no last-minute scrambling.',
@@ -131,7 +128,7 @@ export default function ProduccionContenidoView({ locale }: { locale: Locale }) 
       <section className="hm-section" aria-labelledby="sv-cal-title">
         <div className="hm-wrap sv-split">
           <div>
-            <SectionHead id="sv-cal-title" eyebrow={c.calSectionLabel} light={c.calHeadline} bold={c.calItalic} />
+            <SectionHead id="sv-cal-title" light={c.calHeadline} bold={c.calItalic} />
             <p className="hm-lead">{c.calDesc}</p>
             <ul className="sv-platforms">
               {c.platforms.map((p) => (

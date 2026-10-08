@@ -37,7 +37,7 @@ export default async function SobreNosotrosView({ locale }: { locale: Locale }) 
             <Image src={PHOTO_1} alt={ALT[locale].founder} width={640} height={800} priority sizes="(min-width: 1000px) 520px, 100vw" />
           </figure>
           <div>
-            <SectionHead id="ab-origin-title" eyebrow={t('origin.eyebrow')} light={t('origin.headline')} bold={t('origin.headlineItalic')} />
+            <SectionHead id="ab-origin-title" light={t('origin.headline')} bold={t('origin.headlineItalic')} />
             <div className="ab-prose">
               <p>{t('origin.p1')}</p>
               <p>{t('origin.p2')}</p>
@@ -53,7 +53,7 @@ export default async function SobreNosotrosView({ locale }: { locale: Locale }) 
 
       <section className="hm-section" aria-labelledby="ab-mission-title">
         <div className="hm-wrap">
-          <h2 id="ab-mission-title" className="hm-eyebrow">
+          <h2 id="ab-mission-title" className="hm-subtitle">
             {t('mission.eyebrow')}
           </h2>
           <div className="ab-mission">

@@ -14,7 +14,6 @@ const ROWS = [
 ]
 
 type Copy = ServiceCopy & {
-  dashSectionLabel: string
   dashHeadline: string
   dashItalic: string
   appUrl: string
@@ -40,7 +39,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['100%', 'Código suyo'],
       ['30 días', 'Soporte incluido'],
     ],
-    dashSectionLabel: 'Lo que construimos',
     dashHeadline: 'Su sistema, construido',
     dashItalic: 'para usted.',
     appUrl: 'crm.suempresa.io/panel',
@@ -90,7 +88,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['100%', 'Your code'],
       ['30 days', 'Support included'],
     ],
-    dashSectionLabel: 'What we build',
     dashHeadline: 'Your system, built',
     dashItalic: 'for you.',
     appUrl: 'crm.yourcompany.io/dashboard',
@@ -138,7 +135,7 @@ export default async function SistemasInternosView({ locale }: { locale: Locale 
 
   return (
     <ServicePage locale={locale} service="sistemasInternos" copy={c}>
-      <Showcase id="sv-app-title" eyebrow={c.dashSectionLabel} light={c.dashHeadline} bold={c.dashItalic}>
+      <Showcase id="sv-app-title" light={c.dashHeadline} bold={c.dashItalic}>
         <figure className="sv-app hm-glass hm-glass--thick hm-rv">
           <figcaption className="sr-only">{c.appCaption}</figcaption>
           <div className="sv-browser__bar">

@@ -41,7 +41,7 @@ export async function Platform({ locale }: { locale: Locale }) {
     <section id="plataforma" className="hm-section" aria-labelledby="hm-platform-title">
       <div className="hm-wrap hm-platform">
         <div className="hm-platform__copy">
-          <SectionHead id="hm-platform-title" eyebrow={t('eyebrow')} light={t('titleLight')} bold={t('titleBold')} />
+          <SectionHead id="hm-platform-title" light={t('titleLight')} bold={t('titleBold')} />
           <p className="hm-lead hm-rv">{t('lead')}</p>
           <ul className="hm-chips hm-rv">
             {features.map((f) => (

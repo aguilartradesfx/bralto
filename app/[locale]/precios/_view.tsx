@@ -32,7 +32,7 @@ export default async function PreciosView({ locale }: { locale: Locale }) {
           aria-labelledby={`pr-group-${gi}`}
         >
           <div className="hm-wrap">
-            <h2 id={`pr-group-${gi}`} className="hm-eyebrow">
+            <h2 id={`pr-group-${gi}`} className="hm-subtitle">
               {group.heading}
             </h2>
             <ul className="pr-list">

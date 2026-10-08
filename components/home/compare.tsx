@@ -11,7 +11,7 @@ export async function Compare({ locale }: { locale: Locale }) {
   return (
     <section className="hm-section" aria-labelledby="hm-compare-title">
       <div className="hm-wrap">
-        <SectionHead center id="hm-compare-title" eyebrow={t('eyebrow')} light={t('titleLight')} bold={t('titleBold')} />
+        <SectionHead center id="hm-compare-title" light={t('titleLight')} bold={t('titleBold')} />
 
         {/* Lo de "casi todos" queda tachado sobre el fondo; lo de 2027, sobre una placa de vidrio.
             Dos grupos: captar y vender / organizar y gestionar. */}

@@ -28,7 +28,6 @@ const FLOW_ICONS = [
 ]
 
 type Copy = ServiceCopy & {
-  wfLabel: string
   wfHeadline: string
   wfItalic: string
   flow: { tag: string; label: string; sub: string }[]
@@ -49,7 +48,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['2–3 sem.', 'Tiempo de entrega'],
       ['30 días', 'Soporte incluido'],
     ],
-    wfLabel: 'En acción',
     wfHeadline: 'De un lead a una venta,',
     wfItalic: 'sin tocar nada.',
     flow: [
@@ -94,7 +92,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['2–3 wks', 'Delivery time'],
       ['30 days', 'Support included'],
     ],
-    wfLabel: 'In action',
     wfHeadline: 'From a new lead to a closed deal,',
     wfItalic: 'zero manual work.',
     flow: [
@@ -136,7 +133,7 @@ export default function AutomatizacionView({ locale }: { locale: Locale }) {
 
   return (
     <ServicePage locale={locale} service="automatizacion" copy={c}>
-      <Showcase id="sv-flow-title" eyebrow={c.wfLabel} light={c.wfHeadline} bold={c.wfItalic}>
+      <Showcase id="sv-flow-title" light={c.wfHeadline} bold={c.wfItalic}>
         <div className="sv-flow hm-glass hm-glass--thick hm-rv">
           <ol className="sv-flow__steps">
             {c.flow.map((step, i) => (

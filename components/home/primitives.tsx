@@ -23,13 +23,14 @@ export function Ambient() {
   )
 }
 
-type HeadProps = { eyebrow: string; light: string; bold: string; id: string; center?: boolean; compact?: boolean }
+type HeadProps = { eyebrow?: string; light: string; bold: string; id: string; center?: boolean; compact?: boolean }
 
-// compact: título en una línea y más chico, para secciones donde manda la pieza visual
+// compact: título en una línea y más chico, para secciones donde manda la pieza visual.
+// eyebrow: como mucho uno cada tres secciones (el hero cuenta); el título solo alcanza
 export function SectionHead({ eyebrow, light, bold, id, center, compact }: HeadProps) {
   return (
     <div className={cn('hm-head hm-rv', center && 'hm-head--center', compact && 'hm-head--compact')}>
-      <p className="hm-eyebrow">{eyebrow}</p>
+      {eyebrow && <p className="hm-eyebrow">{eyebrow}</p>}
       <h2 className="hm-h2" id={id}>
         <span>{light}</span> <span className="b">{bold}</span>
       </h2>

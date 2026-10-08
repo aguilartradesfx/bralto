@@ -3,11 +3,9 @@ import { ServicePage, type ServiceCopy } from '@/components/home/service'
 import { ServiceChecklist } from '@/components/home/service-checklist'
 
 type Copy = ServiceCopy & {
-  roadmapLabel: string
   roadmapHeadline: string
   roadmapItalic: string
   phases: { days: string; title: string; desc: string }[]
-  checklistLabel: string
   checklistHeadline: string
   checklistItalic: string
   checklistDesc: string
@@ -28,7 +26,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['90 días', 'Roadmap'],
       ['2×/mes', 'Seguimiento'],
     ],
-    roadmapLabel: 'Su hoja de ruta en 90 días',
     roadmapHeadline: 'De la confusión',
     roadmapItalic: 'a la claridad.',
     phases: [
@@ -36,7 +33,6 @@ const CONTENT: Record<Locale, Copy> = {
       { days: 'Días 31–60', title: 'Estrategia', desc: 'Documento de posicionamiento, canales prioritarios, mensajes clave y KPIs por fase.' },
       { days: 'Días 61–90', title: 'Ejecución', desc: 'Primeras acciones en marcha, seguimiento semanal y ajuste según los primeros datos.' },
     ],
-    checklistLabel: 'Diagnóstico rápido',
     checklistHeadline: '¿Cómo está su',
     checklistItalic: 'marketing hoy?',
     checklistDesc: 'Marque todo lo que le suene conocido. Si elige 3 o más, tenemos algo importante para hablar.',
@@ -83,7 +79,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['90 days', 'Roadmap'],
       ['2×/mo', 'Check-ins'],
     ],
-    roadmapLabel: 'Your 90-day roadmap',
     roadmapHeadline: 'From confusion',
     roadmapItalic: 'to clarity.',
     phases: [
@@ -91,7 +86,6 @@ const CONTENT: Record<Locale, Copy> = {
       { days: 'Days 31–60', title: 'Strategy', desc: 'Positioning document, priority channels, key messages, and KPIs by phase.' },
       { days: 'Days 61–90', title: 'Execution', desc: 'First actions in motion, weekly check-ins, and adjustments based on early data.' },
     ],
-    checklistLabel: 'Quick diagnosis',
     checklistHeadline: "How's your",
     checklistItalic: 'marketing today?',
     checklistDesc: 'Check everything that sounds familiar. If you pick 3 or more, we have something important to talk about.',
@@ -137,7 +131,7 @@ export default function AsesoriaView({ locale }: { locale: Locale }) {
     <ServicePage locale={locale} service="asesoria" copy={c}>
       <section className="hm-section" aria-labelledby="sv-road-title">
         <div className="hm-wrap">
-          <SectionHead id="sv-road-title" eyebrow={c.roadmapLabel} light={c.roadmapHeadline} bold={c.roadmapItalic} />
+          <SectionHead id="sv-road-title" light={c.roadmapHeadline} bold={c.roadmapItalic} />
           <ol className="sv-road">
             {c.phases.map((phase, i) => (
               <li key={phase.title} className="sv-road__phase hm-rv">
@@ -153,7 +147,6 @@ export default function AsesoriaView({ locale }: { locale: Locale }) {
 
           <div className="sv-split sv-check-wrap">
             <div>
-              <p className="hm-eyebrow">{c.checklistLabel}</p>
               <h3>
                 {c.checklistHeadline} <span className="b">{c.checklistItalic}</span>
               </h3>

@@ -11,8 +11,6 @@ export async function Hero({ locale }: { locale: Locale }) {
   return (
     <section id="inicio" className="hm-hero" aria-labelledby="hm-hero-title">
       <div className="hm-wrap hm-hero__inner">
-        {/* El separador queda pegado a la palabra anterior: nunca abre una línea */}
-        <p className="hm-eyebrow hm-in">{t('eyebrow').replaceAll(' · ', '\u00a0· ')}</p>
         <h1 id="hm-hero-title" className="hm-hero__title">
           <span className="hm-hero__l1">{t('titleLight')}</span> <span className="hm-hero__l2">{t('titleBold')}</span>
         </h1>

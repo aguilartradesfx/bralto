@@ -110,7 +110,7 @@ export default async function CasePage({ params }: Props) {
       <section className="hm-section" aria-labelledby="cs-project-title">
         <div className="hm-wrap cs-story">
           <div>
-            <h2 id="cs-project-title" className="hm-eyebrow">
+            <h2 id="cs-project-title" className="hm-subtitle">
               {c.project}
             </h2>
             <p className="cs-story__text">{story}</p>
@@ -152,7 +152,7 @@ export default async function CasePage({ params }: Props) {
 
       <section className="hm-section" aria-labelledby="cs-more-title">
         <div className="hm-wrap">
-          <h2 id="cs-more-title" className="hm-eyebrow">
+          <h2 id="cs-more-title" className="hm-subtitle">
             {c.more}
           </h2>
           <ul className="hm-cases">

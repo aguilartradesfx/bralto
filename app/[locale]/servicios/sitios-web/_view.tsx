@@ -8,11 +8,9 @@ import { ServicePage, type ServiceCopy } from '@/components/home/service'
 const SCORES = [100, 98, 100]
 
 type Copy = ServiceCopy & {
-  projectsLabel: string
   projectsHeadline: string
   projectsItalic: string
   projectsDesc: string
-  lighthouseLabel: string
   lighthouseHeadline: string
   lighthouseItalic: string
   lighthouseDesc: string
@@ -34,11 +32,9 @@ const CONTENT: Record<Locale, Copy> = {
       ['SEO', 'Incluido'],
       ['≤10 días', 'Tiempo de entrega'],
     ],
-    projectsLabel: 'Proyectos realizados',
     projectsHeadline: 'El trabajo',
     projectsItalic: 'habla solo.',
     projectsDesc: 'Haga clic en cualquier proyecto para ver la historia completa y la galería de imágenes.',
-    lighthouseLabel: 'Rendimiento que se mide',
     lighthouseHeadline: 'Sitios que',
     lighthouseItalic: 'cargan rápido.',
     lighthouseDesc: 'Google prioriza los sitios veloces. Cada décima de segundo que su sitio tarda en cargar es tráfico que pierde. Entregamos sitios con Lighthouse 100 en rendimiento — medible, verificable, sin excusas.',
@@ -83,11 +79,9 @@ const CONTENT: Record<Locale, Copy> = {
       ['SEO', 'Included'],
       ['≤10 days', 'Delivery time'],
     ],
-    projectsLabel: "Work we've done",
     projectsHeadline: 'The work',
     projectsItalic: 'speaks for itself.',
     projectsDesc: 'Click any project to see the full story and image gallery.',
-    lighthouseLabel: 'Performance you can measure',
     lighthouseHeadline: 'Sites that',
     lighthouseItalic: 'load fast.',
     lighthouseDesc: 'Google prioritizes fast sites. Every tenth of a second you take to load is traffic you lose. We deliver sites with Lighthouse 100 on Performance — measurable, verifiable, no excuses.',
@@ -133,7 +127,7 @@ export default async function SitiosWebView({ locale }: { locale: Locale }) {
       <section className="hm-section" aria-labelledby="sv-work-title">
         <div className="hm-wrap">
           <div className="hm-cases__head">
-            <SectionHead id="sv-work-title" eyebrow={c.projectsLabel} light={c.projectsHeadline} bold={c.projectsItalic} />
+            <SectionHead id="sv-work-title" light={c.projectsHeadline} bold={c.projectsItalic} />
             <p className="hm-lead sv-aside">{c.projectsDesc}</p>
           </div>
           <ul className="hm-cases">
@@ -149,7 +143,7 @@ export default async function SitiosWebView({ locale }: { locale: Locale }) {
       <section className="hm-section" aria-labelledby="sv-lh-title">
         <div className="hm-wrap sv-split">
           <div>
-            <SectionHead id="sv-lh-title" eyebrow={c.lighthouseLabel} light={c.lighthouseHeadline} bold={c.lighthouseItalic} />
+            <SectionHead id="sv-lh-title" light={c.lighthouseHeadline} bold={c.lighthouseItalic} />
             <p className="hm-lead">{c.lighthouseDesc}</p>
             <dl className="sv-minis">
               {c.lighthouseStats.map((s) => (

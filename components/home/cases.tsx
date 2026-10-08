@@ -13,7 +13,7 @@ export async function Cases({ locale }: { locale: Locale }) {
     <section id="casos-reales" className="hm-section" aria-labelledby="hm-cases-title">
       <div className="hm-wrap">
         <div className="hm-cases__head">
-          <SectionHead id="hm-cases-title" eyebrow={t('eyebrow')} light={t('titleLight')} bold={t('titleBold')} />
+          <SectionHead id="hm-cases-title" light={t('titleLight')} bold={t('titleBold')} />
           <Link href={`/${locale}/casos`} className="hm-btn hm-btn--glass hm-glass hm-rv">
             {t('all')}
             <Arrow />

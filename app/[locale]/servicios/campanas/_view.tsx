@@ -8,7 +8,6 @@ const BAR_VALS = [38, 54, 72, 91, 85, 100, 96, 100]
 const AD_PLATFORMS = ['Meta Ads', 'Google Ads', 'Instagram']
 
 type Copy = ServiceCopy & {
-  metricsLabel: string
   metricsHeadline: string
   metricsItalic: string
   dash: { header: string; metricLabels: string[]; chartLabel: string; barLabels: string[] }
@@ -28,7 +27,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['2×/semana', 'Optimización'],
       ['Semanal', 'Reporte'],
     ],
-    metricsLabel: 'Reporte de ejemplo',
     metricsHeadline: 'Lo que ve cuando',
     metricsItalic: 'la campaña funciona.',
     dash: {
@@ -76,7 +74,6 @@ const CONTENT: Record<Locale, Copy> = {
       ['2×/week', 'Optimization'],
       ['Weekly', 'Reporting'],
     ],
-    metricsLabel: 'Sample report',
     metricsHeadline: 'What you see when',
     metricsItalic: 'the campaign works.',
     dash: {
@@ -122,7 +119,7 @@ export default async function CampanasView({ locale }: { locale: Locale }) {
 
   return (
     <ServicePage locale={locale} service="campanas" copy={c}>
-      <Showcase id="sv-show-title" eyebrow={c.metricsLabel} light={c.metricsHeadline} bold={c.metricsItalic}>
+      <Showcase id="sv-show-title" light={c.metricsHeadline} bold={c.metricsItalic}>
         <div className="sv-dash hm-glass hm-glass--thick hm-rv">
           <div className="sv-dash__head">
             <p className="sv-dash__title">

@@ -38,9 +38,7 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
     <main className="sv">
       <section className="hm-hero hm-hero--page" aria-labelledby="sv-title">
         <div className="hm-wrap">
-          <p className="hm-eyebrow hm-in">
-            {t('eyebrow')} · {copy.badge}
-          </p>
+          <p className="hm-eyebrow hm-in">{copy.badge}</p>
           <h1 id="sv-title" className="hm-page-title">
             <span className="hm-hero__l1">{copy.headline}</span> <span className="hm-hero__l2">{copy.headlineBold}</span>
           </h1>
@@ -73,7 +71,6 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
         <div className="hm-wrap">
           <SectionHead
             id="sv-features-title"
-            eyebrow={t('featuresEyebrow')}
             light={t('featuresLight')}
             bold={t('featuresBold')}
           />
@@ -113,7 +110,6 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
 
       <FaqBlock
         titleId="sv-faq-title"
-        eyebrow={t('faqEyebrow')}
         light={t('faqLight')}
         bold={t('faqBold')}
         items={copy.faqs}
@@ -137,7 +133,7 @@ async function RelatedServices({ locale, current, label }: { locale: Locale; cur
   return (
     <section className="hm-section sv-related" aria-labelledby="sv-related-title">
       <div className="hm-wrap">
-        <h2 id="sv-related-title" className="hm-eyebrow">
+        <h2 id="sv-related-title" className="hm-subtitle">
           {label}
         </h2>
         <ul className="sv-related__list">
@@ -156,16 +152,14 @@ async function RelatedServices({ locale, current, label }: { locale: Locale; cur
   )
 }
 
-/** Encabezado + cuerpo de la pieza única de un servicio */
+/** Encabezado + cuerpo de la pieza única de un servicio (va pegada al hero: sin eyebrow) */
 export function Showcase({
   id,
-  eyebrow,
   light,
   bold,
   children,
 }: {
   id: string
-  eyebrow: string
   light: string
   bold: string
   children: ReactNode
@@ -173,7 +167,7 @@ export function Showcase({
   return (
     <section className="hm-section" aria-labelledby={id}>
       <div className="hm-wrap">
-        <SectionHead id={id} eyebrow={eyebrow} light={light} bold={bold} />
+        <SectionHead id={id} light={light} bold={bold} />
         {children}
       </div>
     </section>

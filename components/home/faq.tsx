@@ -3,7 +3,7 @@ import { SectionHead, type Locale } from './primitives'
 
 export type FaqItem = { q: string; a: string }
 
-type BlockProps = { id?: string; titleId: string; eyebrow: string; light: string; bold: string; items: FaqItem[] }
+type BlockProps = { id?: string; titleId: string; eyebrow?: string; light: string; bold: string; items: FaqItem[] }
 
 // Acordeón nativo (<details name>): accesible con teclado y lector de pantalla, sin JS
 export function FaqBlock({ id, titleId, eyebrow, light, bold, items }: BlockProps) {
@@ -34,7 +34,6 @@ export async function Faq({ locale }: { locale: Locale }) {
     <FaqBlock
       id="faq"
       titleId="hm-faq-title"
-      eyebrow={t('eyebrow')}
       light={t('titleLight')}
       bold={t('titleBold')}
       items={t.raw('items') as FaqItem[]}

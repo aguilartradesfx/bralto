@@ -47,7 +47,6 @@ export default async function CasosPage({ params }: Props) {
     <main>
       <section className="hm-hero hm-hero--page" aria-labelledby="hm-cases-page-title">
         <div className="hm-wrap">
-          <p className="hm-eyebrow hm-in">{t('casesPage.eyebrow')}</p>
           <h1 id="hm-cases-page-title" className="hm-page-title">
             <span className="hm-hero__l1">{t('casesPage.titleLight')}</span>{' '}
             <span className="hm-hero__l2">{t('casesPage.titleBold')}</span>

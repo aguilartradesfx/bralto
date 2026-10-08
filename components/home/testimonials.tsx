@@ -16,7 +16,6 @@ export async function Testimonials({ locale }: { locale: Locale }) {
         <SectionHead
           center
           id="hm-testimonials-title"
-          eyebrow={t('testimonials.eyebrow')}
           light={t('testimonials.titleLight')}
           bold={t('testimonials.titleBold')}
         />

@@ -94,7 +94,6 @@
       "sub": "Construimos la infraestructura que permite a negocios establecidos operar como una gran empresa, sin el costo de serlo."
     },
     "origin": {
-      "eyebrow": "Cómo empezó",
       "headline": "Una idea simple,",
       "headlineItalic": "un problema enorme.",
       "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables — pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
@@ -197,15 +196,12 @@
     "headlineItalic": "en una sola plataforma.",
     "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar. Viene incluida en cada sistema que construimos.",
     "cta": "Agendar diagnóstico",
-    "includesLabel": "Qué incluye",
     "includesLight": "Todo lo que necesita para operar",
     "includesBold": "sin saltar entre herramientas.",
     "includesDesc": "Tres áreas, una sola plataforma. Sin plugins, sin integraciones frágiles y sin costos escondidos.",
-    "replacesLabel": "Lo que reemplaza",
     "replacesLight": "Una plataforma",
     "replacesBold": "en vez de diez suscripciones.",
     "replacesDesc": "Todo lo que hoy paga por separado, incluido en su sistema.",
-    "faqLabel": "Preguntas frecuentes",
     "faqLight": "Antes de",
     "faqBold": "empezar.",
     "faq": [
@@ -296,7 +292,6 @@
       "language": "Idioma"
     },
     "hero": {
-      "eyebrow": "Automatización · Inteligencia Artificial · Sistemas a la medida",
       "titleLight": "Un sitio web ya no es suficiente.",
       "titleBold": "Su negocio necesita un sistema.",
       "lead": "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial.",
@@ -337,7 +332,6 @@
       }
     },
     "compare": {
-      "eyebrow": "2027",
       "titleLight": "¿Qué necesita un negocio",
       "titleBold": "para vender en 2027?",
       "colBefore": "Lo que tienen casi todos",
@@ -421,7 +415,6 @@
       "closingBold": "No páginas web: sistemas que hacen funcionar su negocio."
     },
     "cases": {
-      "eyebrow": "Casos reales",
       "titleLight": "Sistemas que ya están",
       "titleBold": "funcionando.",
       "view": "Ver caso",
@@ -436,7 +429,6 @@
       "lead": "Elija un proyecto para ver qué construimos y cómo funciona."
     },
     "platform": {
-      "eyebrow": "Plataforma",
       "titleLight": "Todas estas herramientas",
       "titleBold": "están incluidas.",
       "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones de WhatsApp, Instagram y correo, pipeline de ventas, automatizaciones, agenda, pagos y reportes. Una sola plataforma que reemplaza todas las herramientas que hoy paga por separado.",
@@ -523,7 +515,6 @@
       "body": "Si en el primer mes después de activar el sistema no genera leads calificados, seguimos trabajando sin costo hasta lograrlo."
     },
     "testimonials": {
-      "eyebrow": "Clientes",
       "titleLight": "En palabras de",
       "titleBold": "nuestros clientes.",
       "videoPlaceholder": "[Video testimonial real]",
@@ -537,7 +528,6 @@
       ]
     },
     "faq": {
-      "eyebrow": "Preguntas frecuentes",
       "titleLight": "Lo que",
       "titleBold": "necesita saber.",
       "items": [
@@ -580,16 +570,13 @@
       "note": "$97 USD · Se descuenta del proyecto si decide contratar"
     },
     "servicePage": {
-      "eyebrow": "Servicio",
       "cta": "Agendar diagnóstico",
       "all": "Ver todos los servicios",
-      "featuresEyebrow": "Qué incluye",
       "featuresLight": "Todo incluido.",
       "featuresBold": "Sin sorpresas.",
       "processEyebrow": "Cómo trabajamos",
       "processLight": "Simple y",
       "processBold": "sin vueltas.",
-      "faqEyebrow": "Preguntas frecuentes",
       "faqLight": "Todo lo que",
       "faqBold": "quería saber.",
       "related": "Otros servicios",
