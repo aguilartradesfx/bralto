@@ -217,7 +217,9 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
           </ul>
           <div className="hm-nav__right">
             <LangSwitch locale={locale} label={labels.language} pathname={pathname} />
-            <ThemeToggle label={labels.theme} />
+            <span className="hm-nav__theme">
+              <ThemeToggle label={labels.theme} />
+            </span>
             <span className="hm-nav__cta">{cta}</span>
             <button
               type="button"
@@ -318,6 +320,10 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
         </ul>
         <div className="hm-menu__foot">
           <LangSwitch locale={locale} label={labels.language} pathname={pathname} />
+          {/* En teléfonos el tema va aquí y la barra queda en logo y menú */}
+          <span className="hm-menu__theme">
+            <ThemeToggle label={labels.theme} />
+          </span>
           {cta}
         </div>
       </div>

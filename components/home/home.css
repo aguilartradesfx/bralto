@@ -792,6 +792,26 @@ html[data-consent-open] .hm {
   display: inline-flex;
 }
 
+/* El interruptor de tema, en teléfonos, va dentro del menú: la barra queda en logo y menú.
+   Solo uno se ve a la vez (comparten view-transition-name) */
+.hm-nav__theme {
+  display: inline-flex;
+}
+
+.hm-menu__theme {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .hm-nav__theme {
+    display: none;
+  }
+
+  .hm-menu__theme {
+    display: inline-flex;
+  }
+}
+
 @media (min-width: 640px) {
   .hm-nav__cta {
     display: inline-flex;
