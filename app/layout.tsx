@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
-import { CookieConsent } from '@/components/cookie-consent'
 import { ParticlesBackground } from '@/components/particles-background'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
+import { tagManagerBootScript } from '@/lib/consent'
 import { PRIVATE_SURFACE_JS } from '@/lib/host-routing'
 import { scrollRestorationScript } from '@/lib/scroll-restoration'
+
+const GTM_ID = 'GTM-KTGZ86BC'
 
 const geist = Geist({
   subsets: ['latin'],
@@ -112,23 +114,21 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning className={`dark ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}>
       <head>
-        {/* Google Tag Manager — not on the panel or contract signing pages */}
-        <script dangerouslySetInnerHTML={{ __html: `if(!${PRIVATE_SURFACE_JS}){(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KTGZ86BC');}` }} />
+        {/* GTM según el consentimiento de cookies (lib/consent.ts); nunca en el panel ni en la firma de contratos */}
+        <script
+          dangerouslySetInnerHTML={{ __html: tagManagerBootScript({ gtmId: GTM_ID, privateSurfaceJs: PRIVATE_SURFACE_JS }) }}
+        />
         {/* Cada carga arranca arriba; la URL (query y #ancla) queda intacta */}
         <script dangerouslySetInnerHTML={{ __html: scrollRestorationScript }} />
         <OrganizationJsonLd />
         <WebSiteJsonLd />
       </head>
       <body>
-        {/* Google Tag Manager (noscript) */}
-        <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTGZ86BC" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} />
+        {/* Sin el iframe noscript de GTM: sin JavaScript no hay banner para aceptar ni rechazar */}
         {/* Partículas con scroll: una sola vez para todo el sitio público */}
         <ParticlesBackground />
-        {/* All content above background layers */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {children}
-          <CookieConsent />
-        </div>
+        {/* All content above background layers; el banner de cookies vive en SiteShell */}
+        <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
       </body>
     </html>
   )

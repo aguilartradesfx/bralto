@@ -161,20 +161,84 @@ html:has(.hm[data-theme='light']) body {
 }
 
 
-/* Banner de cookies (global): dentro del home pierde el cian y queda monocromo */
-html:has(.hm) [data-cookie-icon] {
-  border-color: rgba(255, 255, 255, .14);
-  background: rgba(255, 255, 255, .06);
+/* Banner de cookies: vidrio del tema, abajo a la derecha (abajo a lo ancho en móvil).
+   Con las dos clases: .hm-glass, más abajo, pone position: relative */
+.hm-consent.hm-glass {
+  position: fixed;
+  right: var(--gutter);
+  bottom: var(--gutter);
+  z-index: 60;
+  width: min(440px, calc(100vw - 2 * var(--gutter)));
+  padding: 20px 22px 22px;
+  border-radius: var(--r-lg);
+  animation: hm-consent-in .5s var(--ease) both;
 }
 
-html:has(.hm) [data-cookie-icon] svg {
-  color: #b3b3b3;
+.hm-consent__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
 }
 
-html:has(.hm) [data-cookie-accept] {
-  background: linear-gradient(180deg, #ffffff, #d2d2d2);
-  color: #0a0a0a;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+.hm-consent__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.hm-consent__text a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hm-consent__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.hm-consent__actions .hm-btn {
+  padding: 0 14px;
+}
+
+@keyframes hm-consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-consent {
+    animation: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .hm-consent.hm-glass {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .hm-consent__actions .hm-btn {
+    height: 46px;
+  }
+}
+
+/* Con el banner abierto, la página reserva al final el alto que tapa (--consent-space, lo mide
+   consent-banner.tsx) y el foco y las anclas se quedan por encima: nada queda fuera de alcance */
+html[data-consent-open] {
+  scroll-padding-bottom: var(--consent-space, 0px);
+}
+
+html[data-consent-open] .hm {
+  padding-bottom: var(--consent-space, 0px);
 }
 
 ::view-transition-old(root),
@@ -2386,6 +2450,35 @@ html:has(.hm) [data-cookie-accept] {
   margin: 0;
   font: 400 12.5px/1.6 var(--font-mono);
   color: var(--ink-3);
+}
+
+/* Privacidad, términos y preferencias de cookies, bajo el copyright */
+.hm-footer__policies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hm-footer__policies a,
+.hm-footer__textbtn {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 400 12.5px/1.6 var(--font-mono);
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color .25s;
+}
+
+.hm-footer__policies a:hover,
+.hm-footer__textbtn:hover {
+  color: var(--ink);
 }
 
 .hm-footer__col h2 {

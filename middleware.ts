@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import { OPT_IN_REGION, REGION_COOKIE, requiresOptIn } from './lib/consent'
 import { isPanelPath, resolveHostRouting } from './lib/host-routing'
 import { hasPermission, requiredPermission, type PanelPermission } from './lib/panel-access'
 import type { UserProfile } from './types/user-profiles'
@@ -38,7 +39,25 @@ const NON_LOCALE_PREFIXES = [
   '/payment-info',
 ]
 
-const PERMISSION_COLUMNS = 'is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
+// Visitas de la UE, el EEE o el Reino Unido: el script de GTM no carga nada hasta que acepten
+// (lib/consent.ts). La cookie es estrictamente necesaria: solo dice la región, no identifica.
+function markConsentRegion(request: NextRequest, response: NextResponse): NextResponse {
+  const optIn = requiresOptIn(request.headers.get('x-vercel-ip-country'))
+  const current = request.cookies.get(REGION_COOKIE)?.value
+  if (optIn && current !== OPT_IN_REGION) {
+    response.cookies.set(REGION_COOKIE, OPT_IN_REGION, {
+      path: '/',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+      secure: process.env.NODE_ENV === 'production',
+    })
+  } else if (!optIn && current) {
+    response.cookies.delete(REGION_COOKIE)
+  }
+  return response
+}
+
+const PERMISSION_COLUMNS ='is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
 
 // Session + section permission check for panel routes
 async function guardPanel(request: NextRequest): Promise<NextResponse> {
@@ -94,7 +113,7 @@ export async function middleware(request: NextRequest) {
 
   // ── Public routes outside the locale tree ────────────────────────────────
   if (NON_LOCALE_PREFIXES.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next()
+    return markConsentRegion(request, NextResponse.next())
   }
 
   // ── Locale redirect for root and non-prefixed public paths ───────────────
@@ -104,11 +123,11 @@ export async function middleware(request: NextRequest) {
   if (!hasLocalePrefix) {
     const url = request.nextUrl.clone()
     url.pathname = `/${getPreferredLocale(request)}${pathname}`
-    return NextResponse.redirect(url)
+    return markConsentRegion(request, NextResponse.redirect(url))
   }
 
   // ── next-intl handles locale cookie, alternate links, etc. ────────────────
-  return intlMiddleware(request)
+  return markConsentRegion(request, intlMiddleware(request))
 }
 
 export const config = {

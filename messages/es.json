@@ -600,7 +600,17 @@
       "tagline": "Infraestructura digital para negocios",
       "copyright": "© {year} Bralto",
       "services": "Servicios",
-      "company": "Empresa"
+      "company": "Empresa",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "cookies": "Preferencias de cookies"
+    },
+    "consent": {
+      "title": "Cookies",
+      "text": "Usamos cookies propias para que el sitio funcione y, si usted acepta, de Google y Meta para medir las visitas y los anuncios.",
+      "privacy": "Política de privacidad",
+      "essential": "Solo esenciales",
+      "accept": "Aceptar todo"
     },
     "pending": "Pendiente · se oculta en producción"
   }
