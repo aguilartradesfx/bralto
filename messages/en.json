@@ -84,7 +84,7 @@
   },
   "AboutPage": {
     "meta": {
-      "title": "About Us: Automated Operations Infrastructure | Bralto",
+      "title": "About us: automated operations infrastructure",
       "description": "Bralto builds the digital infrastructure that lets established businesses run like an enterprise. The story, mission, and principles behind the system."
     },
     "hero": {
@@ -144,7 +144,7 @@
       "headline": "Let's build the system",
       "headlineItalic": "your business needs.",
       "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you, straight up, what can be automated, what can't, and what I'd change first. It takes 30 minutes. If you move forward, we credit the full $97 toward your project.",
-      "signature": "Alejandro Aguilar, Founder",
+      "signature": "Alejandro Aguilar, founder",
       "cta": "Book a diagnostic call"
     }
   },

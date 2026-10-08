@@ -75,7 +75,7 @@ const CONTENT: Record<Locale, Copy> = {
     ctaBold: 'su contenido.',
   },
   en: {
-    badge: 'Content Production',
+    badge: 'Content production',
     headline: 'Content that sells,',
     headlineBold: 'every month.',
     sub: "We produce, edit, and publish professional content for your social media, so you don't have to worry about a thing.",

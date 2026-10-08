@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const l = (locale === 'en' ? 'en' : 'es') as Locale
 
   const titles: Record<Locale, string> = {
-    es: 'Bralto | Automatización e Infraestructura Digital para Negocios',
-    en: 'Bralto | Automation & Digital Infrastructure for Businesses',
+    es: 'Automatización e infraestructura digital para negocios',
+    en: 'Automation and digital infrastructure for businesses',
   }
 
   const descriptions: Record<Locale, string> = {
@@ -74,7 +74,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: descriptions[l],
     keywords: KEYWORDS[l],
     openGraph: {
-      title: titles[l],
+      title: `${titles[l]} | Bralto`,
       description: descriptions[l],
       url: `${SITE_URL}/${l}`,
       siteName: 'Bralto',
@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: titles[l],
+      title: `${titles[l]} | Bralto`,
       description: descriptions[l],
       images: ['/og-image.jpg'],
     },

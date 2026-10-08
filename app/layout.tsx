@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     apple: '/Favicon.png',
   },
   title: {
-    default: 'Bralto | Automatización e Infraestructura Digital para Negocios',
+    default: 'Automatización e infraestructura digital para negocios | Bralto',
     template: '%s | Bralto',
   },
   description:
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     locale: 'es_LA',
     url: SITE_URL,
     siteName: 'Bralto',
-    title: 'Bralto | Automatización e Infraestructura Digital para Negocios',
+    title: 'Automatización e infraestructura digital para negocios | Bralto',
     description:
       'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en LATAM, España y Estados Unidos.',
     images: [
@@ -51,13 +51,13 @@ export const metadata: Metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Bralto: Automatización Digital para Negocios',
+        alt: 'Bralto: automatización digital para negocios',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bralto | Automatización e Infraestructura Digital para Negocios',
+    title: 'Automatización e infraestructura digital para negocios | Bralto',
     description:
       'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. LATAM, España y Estados Unidos.',
     images: ['/og-image.jpg'],

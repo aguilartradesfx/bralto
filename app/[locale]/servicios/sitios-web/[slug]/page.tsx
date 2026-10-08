@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata({
     locale,
     pathByLocale: { es: path, en: path },
-    titles: { es: `${client.name}: ${client.industry}`, en: `${client.name}: ${client.en?.industry ?? client.industry}` },
+    titles: { es: `${client.name}: ${client.industry.charAt(0).toLowerCase()}${client.industry.slice(1)}`, en: `${client.name}: ${client.en?.industry ?? client.industry}` },
     descriptions: { es: client.tagline, en: client.en?.tagline ?? client.tagline },
     ogImage: client.coverImage,
   })

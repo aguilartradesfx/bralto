@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/plataforma', en: '/plataforma' },
     titles: {
-      es: 'La Plataforma Bralto: todo su negocio en una sola plataforma',
-      en: 'The Bralto Platform: Your whole business in one platform',
+      es: 'La plataforma Bralto: todo su negocio en un solo lugar',
+      en: 'The Bralto platform: your whole business in one place',
     },
     descriptions: {
       es: 'CRM, sitios web, funnels, agenda, pagos y marketing multicanal en una sola plataforma, incluida en cada sistema que construimos. Reemplaza más de 10 herramientas.',

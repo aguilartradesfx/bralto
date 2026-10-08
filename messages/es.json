@@ -40,7 +40,7 @@
         ]
       },
       "sitios": {
-        "label": "Sitios Web",
+        "label": "Sitios web",
         "features": [
           "Constructor de páginas sin código",
           "Formularios inteligentes",
@@ -84,7 +84,7 @@
   },
   "AboutPage": {
     "meta": {
-      "title": "Sobre nosotros: infraestructura de operaciones automatizadas | Bralto",
+      "title": "Sobre nosotros: infraestructura de operaciones automatizadas",
       "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una gran empresa. Conozca la historia, misión y principios detrás del sistema."
     },
     "hero": {
@@ -144,7 +144,7 @@
       "headline": "Construyamos el sistema",
       "headlineItalic": "que su negocio necesita.",
       "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Son 30 minutos. Si decide avanzar, le descontamos los $97 completos del proyecto.",
-      "signature": "Alejandro Aguilar, Fundador",
+      "signature": "Alejandro Aguilar, fundador",
       "cta": "Agendar diagnóstico"
     }
   },

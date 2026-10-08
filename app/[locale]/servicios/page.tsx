@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     pathByLocale: { es: '/servicios', en: '/servicios' },
     titles: {
       es: 'Servicios: sitios web, automatización con IA y sistemas a la medida',
-      en: 'Services: Websites, AI automation, and custom systems',
+      en: 'Services: websites, AI automation, and custom systems',
     },
     descriptions: {
       es: 'Sitios web, contenido, campañas, automatización con IA y sistemas internos. Cada proyecto se cotiza a la medida después de un diagnóstico de 30 minutos.',

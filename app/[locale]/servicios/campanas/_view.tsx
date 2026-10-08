@@ -65,7 +65,7 @@ const CONTENT: Record<Locale, Copy> = {
     ctaBold: 'sus campañas.',
   },
   en: {
-    badge: 'Paid Advertising',
+    badge: 'Paid advertising',
     headline: 'Ads that',
     headlineBold: 'actually convert.',
     sub: 'We run your Meta and Google campaigns end to end, from strategy to daily optimization.',

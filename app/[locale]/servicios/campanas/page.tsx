@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/servicios/campanas', en: '/servicios/campanas' },
     titles: {
-      es: 'Campañas de Marketing Digital: Meta, Google, LinkedIn',
-      en: 'Digital Marketing Campaigns: Meta, Google, LinkedIn',
+      es: 'Campañas de marketing digital: Meta, Google y LinkedIn',
+      en: 'Digital marketing campaigns: Meta, Google, and LinkedIn',
     },
     descriptions: {
       es: 'Campañas pagadas con tracking real, segmentación accionable y reportes claros. Conectadas directo a su CRM para medir cierres, no solo clicks.',
