@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import { Arrow } from './icons'
 import { SectionHead, type Locale } from './primitives'
 
 type Row = { before: string; after: string }
@@ -11,21 +12,19 @@ export async function Compare({ locale }: { locale: Locale }) {
   return (
     <section className="hm-section" aria-labelledby="hm-compare-title">
       <div className="hm-wrap">
-        <SectionHead center id="hm-compare-title" light={t('titleLight')} bold={t('titleBold')} />
+        <SectionHead center size="md" id="hm-compare-title" light={t('titleLight')} bold={t('titleBold')} />
 
-        {/* Lo de "casi todos" queda tachado sobre el fondo; lo de 2027, sobre una placa de vidrio.
-            Dos grupos: captar y vender / organizar y gestionar. */}
-        <div className="hm-compare hm-rv">
-          <div className="hm-compare__slab hm-glass hm-glass--thick" aria-hidden="true" />
-          <div className="hm-compare__head" aria-hidden="true">
+        {/* Una tabla pareja: lo de "casi todos" tachado, lo de 2027 al lado. Dos grupos: captar y
+            vender / organizar y gestionar. */}
+        <div className="hm-compare hm-glass hm-glass--thick hm-rv">
+          <div className="hm-compare__cols" aria-hidden="true">
             <span>{t('colBefore')}</span>
+            <span />
             <span>{t('colAfter')}</span>
           </div>
           {groups.map((group) => (
-            <div key={group.label} className="hm-compare__group">
-              <h3 className="hm-compare__label">
-                <span>{group.label}</span>
-              </h3>
+            <div key={group.label}>
+              <h3 className="hm-compare__label">{group.label}</h3>
               <ul className="hm-compare__rows">
                 {group.rows.map((r) => (
                   <li key={r.after} className="hm-compare__row">
@@ -33,11 +32,12 @@ export async function Compare({ locale }: { locale: Locale }) {
                       <span className="sr-only">{t('colBefore')}: </span>
                       <s className="hm-strike">{r.before}</s>
                     </p>
+                    <span className="hm-compare__arrow" aria-hidden="true">
+                      <Arrow />
+                    </span>
                     <p className="hm-compare__after">
-                      <span>
-                        <span className="sr-only">{t('colAfter')}: </span>
-                        {r.after}
-                      </span>
+                      <span className="sr-only">{t('colAfter')}: </span>
+                      {r.after}
                     </p>
                   </li>
                 ))}
