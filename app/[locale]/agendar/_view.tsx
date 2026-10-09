@@ -19,7 +19,8 @@ const CONTENT = {
     backToSite: 'Volver al sitio',
     eyebrow: 'Diagnóstico de 30 minutos',
     headline: 'Agende su diagnóstico con el equipo.',
-    subline: '30 minutos · $97 USD, que se descuentan del proyecto si decide contratar',
+    // El costo se ve después de los datos (resumen y pago), no al entrar: decisión de Alejandro
+    subline: 'En 30 minutos entendemos su negocio y le decimos qué tiene sentido hoy.',
     stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio', 'Pago'],
     slotLocked: 'Horario reservado temporalmente',
     step0Heading: 'Seleccione una fecha',
@@ -106,7 +107,7 @@ const CONTENT = {
     backToSite: 'Back to site',
     eyebrow: '30-minute diagnostic call',
     headline: 'Book your diagnostic call with our team.',
-    subline: '30 minutes · $97 USD, deducted from the project if you hire us',
+    subline: 'In 30 minutes we understand your business and tell you what makes sense right now.',
     stepLabels: ['Date & time', 'Your info', 'Your business', 'Payment'],
     slotLocked: 'Time slot temporarily reserved',
     step0Heading: 'Select a date',
