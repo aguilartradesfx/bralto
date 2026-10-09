@@ -497,6 +497,8 @@
       "price": "$3,500",
       "currency": "USD",
       "financing": "Financiamiento disponible",
+      "scope": "El precio final depende del alcance y se define en el diagnóstico.",
+      "includesLabel": "Qué incluye",
       "includes": [
         "Diagnóstico",
         "Diseño",

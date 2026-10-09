@@ -497,6 +497,8 @@
       "price": "$3,500",
       "currency": "USD",
       "financing": "Financing available",
+      "scope": "The final price depends on the scope and is defined during the diagnosis.",
+      "includesLabel": "What's included",
       "includes": [
         "Diagnosis",
         "Design",
