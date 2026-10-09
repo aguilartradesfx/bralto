@@ -1236,11 +1236,29 @@ html[data-consent-open] .hm {
   container-type: inline-size;
 }
 
-.hm-hero__title {
-  margin: 28px 0 0;
-  font-size: clamp(40px, 5.6cqi, 72px);
-  line-height: 1.02;
-  letter-spacing: -.045em;
+/* Titular del home: la primera frase entra chica y la segunda es la protagonista, medida contra el
+   ancho del contenido (dos renglones parejos en escritorio) */
+.hm-statement {
+  margin: 0;
+}
+
+.hm-statement__lead {
+  display: block;
+  font-size: clamp(20px, 2.4cqi, 40px);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  color: var(--ink-2);
+}
+
+.hm-statement__claim {
+  display: block;
+  margin-top: .12em;
+  font-size: clamp(46px, 9cqi, 150px);
+  font-weight: 600;
+  line-height: .98;
+  letter-spacing: -.055em;
+  text-wrap: balance;
 }
 
 .hm-hero__l1 {
@@ -2009,7 +2027,6 @@ html[data-consent-open] .hm {
 }
 
 /* Sin eyebrow arriba, el título no necesita el margen que lo separaba de él */
-.hm-hero__title:first-child,
 .hm-page-title:first-child {
   margin-top: 0;
 }
@@ -2911,10 +2928,6 @@ html[data-motion='paused'] :is(.hm-orb, .hm-station__node i, .hm-station__lit, .
 /* Pantallas grandes: con el contenido más ancho, los títulos y el texto de entrada crecen un poco
    (desde donde estaban a 1600 px, sin saltos) para que no quede una columna angosta en el centro */
 @media (min-width: 1600px) {
-  .hm-hero__title {
-    font-size: clamp(40px, 5.6cqi, 88px);
-  }
-
   .hm-page-title {
     font-size: clamp(72px, 4.5vw, 88px);
   }

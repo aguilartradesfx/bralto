@@ -11,8 +11,9 @@ export async function Hero({ locale }: { locale: Locale }) {
   return (
     <section id="inicio" className="hm-hero" aria-labelledby="hm-hero-title">
       <div className="hm-wrap hm-hero__inner">
-        <h1 id="hm-hero-title" className="hm-hero__title">
-          <span className="hm-hero__l1">{t('titleLight')}</span> <span className="hm-hero__l2">{t('titleBold')}</span>
+        <h1 id="hm-hero-title" className="hm-statement">
+          <span className="hm-statement__lead">{t('titleLight')}</span>{' '}
+          <span className="hm-statement__claim">{t('titleBold')}</span>
         </h1>
 
         <div className="hm-hero__row">
