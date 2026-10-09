@@ -417,7 +417,9 @@
       "titleLight": "Sistemas que ya están",
       "titleBold": "funcionando.",
       "view": "Ver caso",
-      "all": "Ver todos los casos"
+      "all": "Ver todos los casos",
+      "carousel": "Casos reales",
+      "position": "Caso {i} de {n}: {title}"
     },
     "casesPage": {
       "metaTitle": "Casos reales | Bralto",

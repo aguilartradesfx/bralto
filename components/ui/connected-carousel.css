@@ -1,0 +1,323 @@
+/* Connected Carousel (connected-carousel.tsx). Colores y tipografías por variables, con valores
+   neutros si la página no las define: --cc-card, --cc-ink, --cc-ink-2, --cc-ink-3, --cc-chip,
+   --cc-muted, --cc-track, --cc-fill, --cc-shadow y --cc-font-title / -text / -chip.
+   Las tarjetas son sólidas: los puentes que las unen tienen que ser del mismo color. */
+
+.cc {
+  --cc-card-c: var(--cc-card, #ffffff);
+  --cc-ink-c: var(--cc-ink, #111111);
+  --cc-chip-c: var(--cc-chip, color-mix(in srgb, var(--cc-ink-c) 8%, var(--cc-card-c)));
+  --cc-muted-c: var(--cc-muted, color-mix(in srgb, var(--cc-ink-c) 6%, var(--cc-card-c)));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow-x: clip;
+  padding-top: 8px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cc-stage {
+  position: relative;
+  width: 100%;
+  touch-action: pan-y;
+}
+
+.cc-card {
+  border-radius: 32px;
+  background: var(--cc-card-c);
+  color: var(--cc-ink-c);
+  box-shadow: var(--cc-shadow, 0 10px 30px rgba(0, 0, 0, .08), 0 4px 12px rgba(0, 0, 0, .06));
+  will-change: transform;
+}
+
+.cc-card.is-side {
+  cursor: pointer;
+}
+
+.cc-card__clip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Franja de las vecinas: la misma portada, recortada */
+.cc-card__thumb {
+  position: absolute;
+  inset: 0;
+  padding: 8px;
+}
+
+.cc-card__thumb.is-off,
+.cc-card__body.is-off {
+  pointer-events: none;
+}
+
+.cc-card__shot,
+.cc-card__media {
+  position: relative;
+  overflow: hidden;
+  background: var(--cc-muted-c);
+}
+
+.cc-card__shot {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+}
+
+.cc-card__shot img,
+.cc-card__media img {
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Cada lado muestra otra parte de la portada: con pocos casos, las franjas de los extremos son
+   del mismo caso y así no se ven repetidas */
+.cc-card__thumb.is-left img {
+  object-position: 22% 50%;
+}
+
+.cc-card__thumb.is-right img {
+  object-position: 78% 50%;
+}
+
+/* El contenido mide lo que la tarjeta activa, aunque la tarjeta todavía sea una franja */
+.cc-card__stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  container-type: inline-size;
+}
+
+.cc-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+}
+
+.cc-card__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  padding: 4px 2px;
+}
+
+.cc-card__title {
+  margin: 0;
+  font: var(--cc-font-title, 600 20px/1.2 system-ui, sans-serif);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+
+.cc-card__ctx {
+  margin: auto 0;
+  font: var(--cc-font-text, 400 15px/1.55 system-ui, sans-serif);
+  color: var(--cc-ink-2, currentColor);
+  text-wrap: pretty;
+}
+
+.cc-card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Cliente e industria: dos etiquetas unidas por un cuello */
+.cc-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cc-chip {
+  display: inline-block;
+  max-width: 100%;
+  padding: 5px 10px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--cc-chip-c);
+  font: var(--cc-font-chip, 600 12px/1.25 system-ui, sans-serif);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc-chip--tag {
+  font-weight: 500;
+  color: var(--cc-ink-3, currentColor);
+}
+
+.cc-chips__link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 6px;
+  margin: -1px 0;
+  padding: 0 12px;
+  color: var(--cc-chip-c);
+}
+
+.cc-chips__link svg {
+  display: block;
+  flex: none;
+  fill: currentColor;
+  overflow: visible;
+}
+
+.cc-card__link {
+  flex: none;
+}
+
+.cc-card__media {
+  flex: 1;
+  width: 100%;
+  max-height: 220px;
+  border-radius: 18px;
+}
+
+/* Con lugar, el texto a la izquierda y la imagen a la derecha */
+@container (min-width: 500px) {
+  .cc-card__body {
+    flex-direction: row;
+    gap: 28px;
+    padding: 28px;
+  }
+
+  .cc-card__media {
+    flex: none;
+    width: clamp(180px, 44%, 380px);
+    height: 100%;
+    max-height: none;
+    border-radius: 22px;
+  }
+}
+
+/* Puentes entre la activa y sus vecinas (del color de la tarjeta) */
+.cc-bridge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  margin: auto 0;
+  color: var(--cc-card-c);
+  pointer-events: none;
+}
+
+.cc-bridge--big {
+  width: 22px;
+  height: 42px;
+}
+
+.cc-bridge--small {
+  width: 18px;
+  height: 28px;
+}
+
+.cc-bridge--right {
+  left: calc(100% - 1px);
+}
+
+.cc-bridge--left {
+  right: calc(100% - 1px);
+}
+
+.cc-bridge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  overflow: visible;
+}
+
+/* Pestañas: 24 px de alto para el dedo; la activa muestra el avance del autoplay */
+.cc-tabs {
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.cc-tab {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: width .3s ease-out;
+}
+
+.cc-tab.is-on {
+  width: 96px;
+}
+
+.cc-tab__bar {
+  display: block;
+  width: 8px;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--cc-track, var(--cc-chip-c));
+  transition: width .3s ease-out, background-color .2s ease;
+}
+
+.cc-tab.is-on .cc-tab__bar {
+  width: 80px;
+}
+
+.cc-tab:not(.is-on):hover .cc-tab__bar {
+  background: color-mix(in srgb, var(--cc-ink-c) 35%, transparent);
+}
+
+.cc-tab__fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--cc-fill, #2563eb);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.cc-tab:focus-visible {
+  outline: none;
+}
+
+.cc-tab:focus-visible .cc-tab__bar {
+  outline: 2px solid var(--cc-ink-c);
+  outline-offset: 3px;
+}
+
+.cc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-tab,
+  .cc-tab__bar {
+    transition: none;
+  }
+}

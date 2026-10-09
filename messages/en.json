@@ -417,7 +417,9 @@
       "titleLight": "Systems that are already",
       "titleBold": "working.",
       "view": "View case",
-      "all": "View all case studies"
+      "all": "View all case studies",
+      "carousel": "Case studies",
+      "position": "Case {i} of {n}: {title}"
     },
     "casesPage": {
       "metaTitle": "Case studies | Bralto",
