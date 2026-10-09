@@ -60,7 +60,7 @@ export default function PaymentInfoPage() {
 
   return (
     <main data-focus-page>
-      <section className="hm-hero hm-hero--page" aria-labelledby="pi-title">
+      <section className="hm-hero hm-hero--page hm-hero--fit" aria-labelledby="pi-title">
         <div className="hm-wrap">
           <h1 id="pi-title" className="hm-page-title">
             Centro de pagos.

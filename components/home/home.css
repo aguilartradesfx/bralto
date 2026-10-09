@@ -22,7 +22,7 @@
   --r-lg: 28px;
   --r-xl: 40px;
   --r-pill: 999px;
-  --maxw: 1180px;
+  --maxw: clamp(1180px, 75vw, 1560px);
   --gutter: 24px;
   --blur: 28px;
   --nav-h: 60px;
@@ -1216,6 +1216,20 @@ html[data-consent-open] .hm {
 .hm-hero {
   padding-top: calc(var(--nav-h) + clamp(72px, 11vh, 104px));
   padding-bottom: clamp(64px, 8vw, 112px);
+}
+
+/* En escritorio la primera sección ocupa toda la pantalla, con el contenido centrado. En
+   teléfonos no (sería solo espacio vacío) ni en páginas de trámite (--fit: /payment-info, legales) */
+@media (min-width: 1024px) {
+  .hm-hero:not(.hm-hero--fit) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: calc(var(--nav-h) + 32px);
+    padding-bottom: 32px;
+  }
 }
 
 .hm-hero__inner {
@@ -2871,5 +2885,25 @@ html[data-motion='paused'] :is(.hm-orb, .hm-station__node i, .hm-station__lit, .
 
   .hm-console {
     border-radius: var(--r-lg);
+  }
+}
+
+/* Pantallas grandes: con el contenido más ancho, los títulos y el texto de entrada crecen un poco
+   (desde donde estaban a 1600 px, sin saltos) para que no quede una columna angosta en el centro */
+@media (min-width: 1600px) {
+  .hm-hero__title {
+    font-size: clamp(40px, 5.6cqi, 88px);
+  }
+
+  .hm-page-title {
+    font-size: clamp(72px, 4.5vw, 88px);
+  }
+
+  .hm-h2 {
+    font-size: clamp(60px, 3.75vw, 72px);
+  }
+
+  .hm-lead {
+    font-size: clamp(18.5px, 1.15vw, 20.5px);
   }
 }

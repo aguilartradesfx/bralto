@@ -46,7 +46,7 @@ export function LegalPage({ locale, doc }: { locale: Locale; doc: LegalDoc }) {
   const c = COPY[locale]
   return (
     <main>
-      <section className="hm-hero hm-hero--page" aria-labelledby="lg-title">
+      <section className="hm-hero hm-hero--page hm-hero--fit" aria-labelledby="lg-title">
         <div className="hm-wrap">
           <h1 id="lg-title" className="hm-page-title lg-title" lang="es">
             {doc.title}
