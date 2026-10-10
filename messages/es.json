@@ -96,7 +96,7 @@
     "origin": {
       "headline": "Una idea simple,",
       "headlineItalic": "un problema enorme.",
-      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables, pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
+      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables, pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Una cotización que tardó tres días en salir. Un cliente que ya había pagado y tuvo que escribir para saber cuándo empezaban.",
       "p2": "El problema no era falta de herramientas. Era exactamente lo opuesto: stacks tecnológicos parchados con 8, 10, 15 herramientas distintas que no se hablan entre sí. CRMs por aquí, formularios por allá, automatizaciones a medias, integraciones rotas. Software caro que termina costando más en complejidad que en licencias.",
       "p3": "Bralto se construyó para resolverlo de raíz. Una sola plataforma que reemplaza todo el stack, combinada con implementaciones a la medida que conectan IA, datos y procesos en un sistema único. No vendemos software. Reconstruimos cómo opera el negocio.",
       "statValue": "8+",
@@ -359,7 +359,7 @@
             },
             {
               "before": "Responder WhatsApp cuando se puede",
-              "after": "IA que responde en segundos, 24/7"
+              "after": "IA que responde, cotiza y agenda, 24/7"
             },
             {
               "before": "Seguimiento en Excel",
@@ -409,7 +409,7 @@
         },
         {
           "title": "Atender",
-          "body": "Agentes de IA en WhatsApp, Instagram, web y correo que responden, califican y agendan al instante."
+          "body": "Agentes de IA en WhatsApp, Instagram, web y correo que califican, cotizan, agendan y pasan cada venta al CRM."
         },
         {
           "title": "Gestionar clientes",

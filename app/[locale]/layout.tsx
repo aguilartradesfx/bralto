@@ -62,8 +62,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const descriptions: Record<Locale, string> = {
-    es: 'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y sistemas integrados. Para empresas que ya están establecidas y quieren escalar sin caos.',
-    en: 'We automate your business operations with AI, CRM, WhatsApp, and integrated systems. For established companies that want to scale without chaos.',
+    es: 'Construimos e integramos sistemas a la medida que automatizan la operación comercial de su negocio: sitio web, CRM, IA, pagos y reportes, todo conectado.',
+    en: "We build and integrate custom systems that automate your business's commercial operation: website, CRM, AI, payments, and reporting, all connected.",
   }
 
   return {

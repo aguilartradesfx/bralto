@@ -89,7 +89,7 @@ const CONTENT: Record<Locale, Copy> = {
       { t: 'Todos sus canales', d: 'WhatsApp, Instagram, Messenger, el chat de su sitio web y el correo, desde un solo lugar.' },
       { t: 'Califica y agenda', d: 'Hace las preguntas correctas, separa a los interesados y agenda la cita directo en su calendario.' },
       { t: 'Pasa a una persona cuando hace falta', d: 'Si algo se sale de lo que sabe, le pasa la conversación a alguien de su equipo con todo el contexto.' },
-      { t: 'Todo queda en el CRM', d: 'Cada conversación y cada dato del contacto quedan registrados para dar seguimiento.' },
+      { t: 'Todo queda en el CRM', d: 'Cada conversación y cada dato del contacto quedan registrados, y la venta sigue con el resto de su sistema: cotización, pago y seguimiento.' },
       { t: 'Soporte post-entrega 30 días', d: 'Un mes de soporte incluido para resolver dudas, ajustes menores y garantizar que todo opere en producción.' },
     ],
     steps: [
@@ -149,7 +149,7 @@ const CONTENT: Record<Locale, Copy> = {
       { t: 'All your channels', d: 'WhatsApp, Instagram, Messenger, your website chat, and email, all in one place.' },
       { t: 'Qualifies and books', d: 'It asks the right questions, sorts out the real prospects, and books the meeting straight onto your calendar.' },
       { t: 'Hands off to a person when needed', d: 'When something falls outside what it knows, it passes the conversation to someone on your team with full context.' },
-      { t: 'Everything in the CRM', d: 'Every conversation and every contact detail is logged so you can follow up.' },
+      { t: 'Everything in the CRM', d: 'Every conversation and contact detail is logged, and the sale moves on through the rest of your system: quote, payment, and follow-up.' },
       { t: '30-day post-launch support', d: 'A full month of support included to answer questions, handle minor tweaks, and make sure everything runs smoothly in production.' },
     ],
     steps: [
