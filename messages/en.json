@@ -385,8 +385,8 @@
     },
     "system": {
       "eyebrow": "How it works",
-      "titleLight": "Your website is just the door.",
-      "titleBold": "This is what goes behind it.",
+      "titleLight": "A website is just the door.",
+      "titleBold": "But what about what's behind it?",
       "hubLabel": "The door",
       "hubTitle": "Your website",
       "layers": [
@@ -542,22 +542,26 @@
       "items": [
         {
           "q": "How is this different from a regular website?",
-          "a": "A website only displays information. A system captures the customer, responds to them, follows up, and measures whether they bought. The website is just one piece of the system."
+          "a": "A website only displays information. A system captures the customer, responds, quotes, collects payment, follows up, and shows your team where every sale stands. The website is just the door."
         },
         {
           "q": "Do I need to know about technology to use it?",
           "a": "No. We hand everything over up and running, and your team manages it from a single platform, including from their phones. We will teach you how to use it."
         },
         {
-          "q": "Will the AI respond well to my customers?",
-          "a": "The agent is trained on your business information: services, prices, hours, and frequently asked questions. When something falls outside what it knows, it hands the conversation to someone on your team."
+          "q": "Is this a chatbot?",
+          "a": "No. We integrate complete systems: your website, your messaging channels, the CRM, quotes, approvals, payments, and reports are connected, and every sale moves on its own from one step to the next. AI is one more piece: it's trained on your business information and hands your team anything outside what it knows."
+        },
+        {
+          "q": "Which processes can be automated?",
+          "a": "The ones that depend on someone remembering today: replying to and qualifying leads, quoting, requesting approvals, sending payment links, creating orders and users, following up, and building reports. In the diagnosis we look at which ones will have the biggest impact on your business."
         },
         {
           "q": "How long does it take to be up and running?",
           "a": "It depends on the scope. After the diagnosis, we give you an exact timeline in writing."
         },
         {
-          "q": "What if I already have a website or a CRM?",
+          "q": "What if I already have a website, a CRM, or other tools?",
           "a": "We review what you already have. If it works, we connect it to the system; if not, we migrate your information to the new platform."
         },
         {

@@ -385,8 +385,8 @@
     },
     "system": {
       "eyebrow": "Cómo funciona",
-      "titleLight": "Su sitio web es solo la puerta.",
-      "titleBold": "Esto es lo que va detrás.",
+      "titleLight": "Un sitio web es solo la puerta.",
+      "titleBold": "Pero ¿y lo que va detrás?",
       "hubLabel": "La puerta",
       "hubTitle": "Su sitio web",
       "layers": [
@@ -542,22 +542,26 @@
       "items": [
         {
           "q": "¿En qué se diferencia esto de una página web normal?",
-          "a": "Una página web solo muestra información. Un sistema capta al cliente, le responde, le da seguimiento y mide si compró. La página web es una pieza más del sistema."
+          "a": "Una página web solo muestra información. Un sistema capta al cliente, le responde, cotiza, cobra, da seguimiento y le muestra a su equipo en qué va cada venta. La página web es solo la puerta."
         },
         {
           "q": "¿Tengo que saber de tecnología para usarlo?",
           "a": "No. Le entregamos todo funcionando y su equipo lo maneja desde una sola plataforma, también desde el celular. Le enseñamos a usarla."
         },
         {
-          "q": "¿La IA va a responder bien a mis clientes?",
-          "a": "El agente se entrena con la información de su negocio: servicios, precios, horarios y preguntas frecuentes. Cuando algo se sale de lo que sabe, pasa la conversación a una persona de su equipo."
+          "q": "¿Esto es un chatbot?",
+          "a": "No. Integramos sistemas completos: su sitio, sus canales de conversación, el CRM, las cotizaciones, las aprobaciones, los pagos y los reportes quedan conectados, y cada venta avanza sola de un paso al siguiente. La IA es una pieza más: se entrena con la información de su negocio y le pasa a su equipo lo que se sale de lo que sabe."
+        },
+        {
+          "q": "¿Qué procesos se pueden automatizar?",
+          "a": "Los que hoy dependen de que alguien se acuerde: responder y calificar contactos, cotizar, pedir aprobaciones, enviar enlaces de pago, crear órdenes y usuarios, dar seguimiento y armar reportes. En el diagnóstico vemos cuáles tienen más impacto en su negocio."
         },
         {
           "q": "¿Cuánto tarda en estar funcionando?",
           "a": "Depende del alcance. Después del diagnóstico le damos un plazo exacto por escrito."
         },
         {
-          "q": "¿Qué pasa si ya tengo página web o CRM?",
+          "q": "¿Qué pasa si ya tengo página web, CRM u otras herramientas?",
           "a": "Revisamos lo que ya tiene. Si sirve, lo conectamos al sistema; si no, migramos su información a la nueva plataforma."
         },
         {
