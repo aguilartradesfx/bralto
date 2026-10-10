@@ -106,7 +106,8 @@ export function ServiceJsonLd({
   )
 }
 
-// Cada nota de /noticias: firmada por Alejandro y basada en la fuente que cita
+// Cada nota de /noticias, firmada por Alejandro: las noticias citan su fuente (NewsArticle); los
+// artículos de Bralto no tienen fuente (BlogPosting)
 export function NewsArticleJsonLd(props: {
   url: string
   headline: string
@@ -115,11 +116,11 @@ export function NewsArticleJsonLd(props: {
   datePublished: string
   dateModified: string
   inLanguage: 'es' | 'en'
-  sourceUrl: string
+  sourceUrl: string | null
 }) {
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
+    '@type': props.sourceUrl ? 'NewsArticle' : 'BlogPosting',
     mainEntityOfPage: props.url,
     headline: props.headline,
     description: props.description,
@@ -127,7 +128,7 @@ export function NewsArticleJsonLd(props: {
     datePublished: props.datePublished,
     dateModified: props.dateModified,
     inLanguage: props.inLanguage,
-    isBasedOn: props.sourceUrl,
+    ...(props.sourceUrl ? { isBasedOn: props.sourceUrl } : {}),
     author: {
       '@type': 'Person',
       name: 'Alejandro Aguilar',

@@ -1,6 +1,8 @@
 export type NewsLocale = 'es' | 'en'
 export type NewsStatus = 'publicada' | 'oculta'
 export type NewsAction = 'ver' | 'publicar' | 'ocultar'
+// noticia: sobre una fuente externa; articulo: guía, caso o comparativa de Bralto, sin fuente
+export type NewsType = 'noticia' | 'articulo'
 
 // Lo que escribe Gemini en un idioma
 export type NewsDraft = {
@@ -20,6 +22,7 @@ export type SourceContext = {
 export type NewsRow = {
   id: string
   slug: string
+  tipo: NewsType
   titulo_es: string
   resumen_es: string
   cuerpo_es: string
@@ -28,8 +31,8 @@ export type NewsRow = {
   resumen_en: string
   cuerpo_en: string
   imagen_alt_en: string
-  fuente_url: string
-  fuente_nombre: string
+  fuente_url: string | null
+  fuente_nombre: string | null
   imagen_url: string
   publicada_en: string
   estado: NewsStatus

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { bodyFormatProblems, copiedPhrases, countWords, findBannedTerms, validateDraft } from './rules.ts'
+import { bodyFormatProblems, copiedPhrases, countWords, findBannedTerms, publishDateProblems, validateArticle, validateDraft } from './rules.ts'
 import type { NewsDraft, SourceContext } from './types.ts'
 
 const words = (n: number, w = 'palabra') => Array.from({ length: n }, (_, i) => `${w}${i}`).join(' ')
@@ -111,4 +111,41 @@ test('el link de la fuente no lleva espacios, comillas ni < >', () => {
 test('"ago high-level" no es la marca prohibida', () => {
   assert.deepEqual(findBannedTerms('two years ago high-level talks began'), [])
   assert.deepEqual(findBannedTerms('a cargo high level'), [])
+})
+
+// ---------- Artículos de Bralto (sin fuente) ----------
+const articulo = (over: Partial<NewsDraft> = {}): NewsDraft => draft({ cuerpo: body(650), ...over })
+
+test('un artículo válido no tiene problemas y no necesita fuente', () => {
+  assert.deepEqual(validateArticle(articulo(), 'es'), [])
+})
+
+test('el artículo tiene entre 500 y 900 palabras en español y entre 430 y 1000 en inglés', () => {
+  assert.match(validateArticle(articulo({ cuerpo: body(499) }), 'es').join(), /499 palabras/)
+  assert.match(validateArticle(articulo({ cuerpo: body(901) }), 'es').join(), /901 palabras/)
+  assert.deepEqual(validateArticle(articulo({ cuerpo: body(900) }), 'es'), [])
+  assert.deepEqual(validateArticle(articulo({ cuerpo: body(435) }), 'en'), [])
+  assert.match(validateArticle(articulo({ cuerpo: body(429) }), 'en').join(), /\[en\]/)
+})
+
+test('el artículo no menciona el precio del diagnóstico ni reembolsos', () => {
+  for (const frase of ['el diagnóstico cuesta $97', 'son 97 USD', 'pagás $ 97 y listo', 'sin reembolso', 'no reembolsable', 'refund policy']) {
+    const problemas = validateArticle(articulo({ resumen: draft().resumen.replace('herramientas', frase) }), 'es')
+    assert.match(problemas.join(), /precio del diagnóstico|reembolsos/, frase)
+  }
+  assert.deepEqual(validateArticle(articulo({ resumen: draft().resumen.replace('herramientas', '1997 herramientas') }), 'es'), [])
+})
+
+test('el artículo sigue las reglas comunes: GoHighLevel, formato y < >', () => {
+  assert.match(validateArticle(articulo({ titulo: 'Bralto y GoHighLevel' }), 'es').join(), /prohibido/)
+  assert.match(validateArticle(articulo({ cuerpo: body(650) + '\n\n- uno' }), 'es').join(), /listas/)
+  assert.match(validateArticle(articulo({ titulo: 'Top 10 <b>' }), 'es').join(), /< ni >/)
+})
+
+test('fecha de publicación del relleno: en el pasado y hasta 60 días atrás', () => {
+  const ahora = new Date('2026-10-10T08:00:00Z')
+  assert.deepEqual(publishDateProblems('2026-10-03T12:00:00Z', ahora), [])
+  assert.match(publishDateProblems('2026-10-11T12:00:00Z', ahora).join(), /futuro/)
+  assert.match(publishDateProblems('2026-07-01T12:00:00Z', ahora).join(), /60 días/)
+  assert.match(publishDateProblems('ayer', ahora).join(), /fecha/)
 })

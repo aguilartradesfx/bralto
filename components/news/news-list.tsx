@@ -45,9 +45,12 @@ export async function NewsList({ locale, items, page, hasMore }: Props) {
                         priority={page === 1 && i < 3}
                       />
                       <span className="nw-card__text">
-                        <time className="nw-date" dateTime={row.publicada_en}>
-                          {formatNewsDate(row.publicada_en, locale)}
-                        </time>
+                        <span className="nw-card__meta">
+                          <span className="nw-tag">{row.tipo === 'articulo' ? t('tagArticle') : t('tagNews')}</span>
+                          <time className="nw-date" dateTime={row.publicada_en}>
+                            {formatNewsDate(row.publicada_en, locale)}
+                          </time>
+                        </span>
                         <h2 className="nw-card__title">{n.titulo}</h2>
                         <span className="nw-card__lead">{n.resumen}</span>
                       </span>

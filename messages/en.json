@@ -637,6 +637,10 @@
     "readSource": "Read the original story on {name}",
     "aiNote": "Written with the help of artificial intelligence, based on the cited source.",
     "preview": "Preview: this story is hidden and does not appear on the site.",
-    "back": "All news"
+    "back": "All news",
+    "articleEyebrow": "From Bralto",
+    "aiNoteOwn": "Written with the help of artificial intelligence.",
+    "tagNews": "News",
+    "tagArticle": "Bralto"
   }
 }

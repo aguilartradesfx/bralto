@@ -40,3 +40,23 @@ test('decodeImage acepta base64 con o sin prefijo data:', () => {
   assert.equal(decodeImage('aGVsbG8=').toString(), 'hello')
   assert.equal(decodeImage('data:image/png;base64,aGVsbG8=').toString(), 'hello')
 })
+
+test('parsePublish: tipo artículo sin fuente y con fecha opcional', () => {
+  const { fuente_url, fuente_nombre, fuente_texto, ...sinFuente } = ok
+  const r = parsePublish({ ...sinFuente, tipo: 'articulo', publicada_en: '2026-10-03T12:00:00Z' })
+  assert.equal(r.ok, true)
+  if (r.ok) {
+    assert.equal(r.value.tipo, 'articulo')
+    assert.equal(r.value.publicada_en, '2026-10-03T12:00:00Z')
+  }
+})
+
+test('parsePublish: sin tipo es una noticia; un tipo desconocido no pasa', () => {
+  const r = parsePublish(ok)
+  assert.equal(r.ok && r.value.tipo, 'noticia')
+  assert.equal(parsePublish({ ...ok, tipo: 'opinion' }).ok, false)
+})
+
+test('parseValidate acepta el tipo artículo sin fuente', () => {
+  assert.equal(parseValidate({ idioma: 'es', tipo: 'articulo', borrador: draft }).ok, true)
+})

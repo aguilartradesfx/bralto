@@ -637,6 +637,10 @@
     "readSource": "Leer la nota original en {name}",
     "aiNote": "Redactada con apoyo de inteligencia artificial a partir de la fuente citada.",
     "preview": "Vista previa: esta nota está oculta y no aparece en el sitio.",
-    "back": "Todas las noticias"
+    "back": "Todas las noticias",
+    "articleEyebrow": "Artículo de Bralto",
+    "aiNoteOwn": "Redactado con apoyo de inteligencia artificial.",
+    "tagNews": "Noticia",
+    "tagArticle": "Bralto"
   }
 }

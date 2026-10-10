@@ -8,7 +8,7 @@ const TABLE = 'noticias'
 export const BUCKET = 'noticias'
 export const PAGE_SIZE = 24
 const COLUMNS =
-  'id, slug, titulo_es, resumen_es, cuerpo_es, imagen_alt_es, titulo_en, resumen_en, cuerpo_en, imagen_alt_en, fuente_url, fuente_nombre, imagen_url, publicada_en, estado, actualizada_en'
+  'id, slug, tipo, titulo_es, resumen_es, cuerpo_es, imagen_alt_es, titulo_en, resumen_en, cuerpo_en, imagen_alt_en, fuente_url, fuente_nombre, imagen_url, publicada_en, estado, actualizada_en'
 
 function publicClient() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
@@ -62,19 +62,23 @@ export async function listForSitemap(): Promise<{ slug: string; actualizada_en: 
   return data ?? []
 }
 
-// Todo lo ya guardado (también lo oculto) y los títulos de las últimas 2 semanas
-export async function recentForDedup(): Promise<{ fuentes: string[]; titulos: string[] }> {
+// Todo lo ya guardado (también lo oculto), los títulos de noticias de las últimas 2 semanas
+// (para no repetir tema) y los de los artículos de Bralto de los últimos 60 días
+export async function recentForDedup(): Promise<{ fuentes: string[]; titulos: string[]; articulos: string[] }> {
   const db = createServiceClient()
-  const since = new Date(Date.now() - 14 * 24 * 3600 * 1000).toISOString()
-  const [all, recent] = await Promise.all([
-    db.from(TABLE).select('fuente_url'),
-    db.from(TABLE).select('titulo_es').gte('creada_en', since).order('creada_en', { ascending: false }),
+  const dias = (n: number) => new Date(Date.now() - n * 24 * 3600 * 1000).toISOString()
+  const [all, recent, articles] = await Promise.all([
+    db.from(TABLE).select('fuente_url').not('fuente_url', 'is', null),
+    db.from(TABLE).select('titulo_es').eq('tipo', 'noticia').gte('publicada_en', dias(14)).order('publicada_en', { ascending: false }),
+    db.from(TABLE).select('titulo_es').eq('tipo', 'articulo').gte('publicada_en', dias(60)).order('publicada_en', { ascending: false }),
   ])
   if (all.error) fail('fuentes usadas', all.error)
   if (recent.error) fail('títulos recientes', recent.error)
+  if (articles.error) fail('artículos recientes', articles.error)
   return {
     fuentes: (all.data ?? []).map((r) => r.fuente_url as string),
     titulos: (recent.data ?? []).map((r) => r.titulo_es as string),
+    articulos: (articles.data ?? []).map((r) => r.titulo_es as string),
   }
 }
 
@@ -104,7 +108,9 @@ export async function removeCover(path: string): Promise<void> {
   await createServiceClient().storage.from(BUCKET).remove([path])
 }
 
-export async function insertNews(row: Omit<NewsRow, 'id' | 'publicada_en' | 'actualizada_en'>): Promise<NewsRow> {
+export async function insertNews(
+  row: Omit<NewsRow, 'id' | 'publicada_en' | 'actualizada_en'> & { publicada_en?: string },
+): Promise<NewsRow> {
   const { data, error } = await createServiceClient().from(TABLE).insert(row).select(COLUMNS).single()
   if (error) fail('guardar', error)
   return data as NewsRow

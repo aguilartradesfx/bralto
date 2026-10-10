@@ -74,30 +74,35 @@ export function bodyFormatProblems(body: string): string[] {
   return problems
 }
 
-export function validateDraft(draft: NewsDraft, locale: NewsLocale, source: SourceContext): string[] {
+// Lo que vale para toda nota, con fuente o sin ella: largo, formato, marcado y términos prohibidos
+function commonProblems(draft: NewsDraft, range: { min: number; max: number }, extra: string[]): string[] {
   const out: string[] = []
-  const add = (msg: string) => out.push(`[${locale}] ${msg}`)
   const titulo = draft.titulo.trim()
   const resumen = draft.resumen.trim()
   const alt = draft.imagen_alt.trim()
 
-  if (!titulo) add('Falta el título.')
-  else if (titulo.length > TITLE_MAX) add(`El título tiene ${titulo.length} caracteres; máximo ${TITLE_MAX}.`)
+  if (!titulo) out.push('Falta el título.')
+  else if (titulo.length > TITLE_MAX) out.push(`El título tiene ${titulo.length} caracteres; máximo ${TITLE_MAX}.`)
   if (resumen.length < SUMMARY_LENGTH.min || resumen.length > SUMMARY_LENGTH.max)
-    add(`El resumen tiene ${resumen.length} caracteres; debe tener entre ${SUMMARY_LENGTH.min} y ${SUMMARY_LENGTH.max}.`)
-  if (!alt || alt.length > ALT_MAX) add(`Falta el texto alternativo de la imagen o pasa de ${ALT_MAX} caracteres.`)
+    out.push(`El resumen tiene ${resumen.length} caracteres; debe tener entre ${SUMMARY_LENGTH.min} y ${SUMMARY_LENGTH.max}.`)
+  if (!alt || alt.length > ALT_MAX) out.push(`Falta el texto alternativo de la imagen o pasa de ${ALT_MAX} caracteres.`)
 
   const n = countWords(draft.cuerpo)
-  const range = BODY_WORDS[locale]
-  if (n < range.min || n > range.max) add(`El cuerpo tiene ${n} palabras; debe tener entre ${range.min} y ${range.max}.`)
-  for (const p of bodyFormatProblems(draft.cuerpo)) add(p)
+  if (n < range.min || n > range.max) out.push(`El cuerpo tiene ${n} palabras; debe tener entre ${range.min} y ${range.max}.`)
+  out.push(...bodyFormatProblems(draft.cuerpo))
 
   // Estos campos terminan en atributos y en el JSON-LD de la página: nada de marcado
-  if ([titulo, resumen, alt, source.fuente_nombre].some((v) => /[<>]/.test(v)))
-    add('El título, el resumen, el texto alternativo y el nombre de la fuente no llevan < ni >.')
+  if ([titulo, resumen, alt, ...extra].some((v) => /[<>]/.test(v)))
+    out.push('El título, el resumen, el texto alternativo y el nombre de la fuente no llevan < ni >.')
 
-  const banned = findBannedTerms([titulo, resumen, draft.cuerpo, alt, source.fuente_nombre].join('\n'))
-  if (banned.length) add(`Menciona un término prohibido: ${[...new Set(banned)].join(', ')}.`)
+  const banned = findBannedTerms([titulo, resumen, draft.cuerpo, alt, ...extra].join('\n'))
+  if (banned.length) out.push(`Menciona un término prohibido: ${[...new Set(banned)].join(', ')}.`)
+  return out
+}
+
+export function validateDraft(draft: NewsDraft, locale: NewsLocale, source: SourceContext): string[] {
+  const out = commonProblems(draft, BODY_WORDS[locale], [source.fuente_nombre])
+  const add = (msg: string) => out.push(msg)
 
   let url: URL | null = null
   try {
@@ -112,8 +117,34 @@ export function validateDraft(draft: NewsDraft, locale: NewsLocale, source: Sour
   if (countWords(source.fuente_texto) < SOURCE_MIN_WORDS) {
     add(`El texto de la fuente llegó con menos de ${SOURCE_MIN_WORDS} palabras; no se puede revisar que nada esté copiado.`)
   } else {
-    const copied = copiedPhrases([titulo, resumen, draft.cuerpo].join('\n'), source.fuente_texto)
+    const copied = copiedPhrases([draft.titulo, draft.resumen, draft.cuerpo].join('\n'), source.fuente_texto)
     if (copied.length) add(`Tiene frases copiadas de la fuente: «${copied.slice(0, 3).join('», «')}».`)
   }
-  return out
+  return out.map((p) => `[${locale}] ${p}`)
+}
+
+// Artículos de Bralto (guías, casos y comparativas): sin fuente, más largos. El costo del
+// diagnóstico solo se muestra en /agendar (decisión de Alejandro) y nunca se habla de reembolsos.
+export const ARTICLE_WORDS: Record<NewsLocale, { min: number; max: number }> = {
+  es: { min: 500, max: 900 },
+  en: { min: 430, max: 1000 },
+}
+const DIAGNOSTIC_PRICE = /\$\s?97\b|\b97\s?(usd|d[oó]lares)\b/i
+const REFUNDS = /reembols|refund/i
+
+export function validateArticle(draft: NewsDraft, locale: NewsLocale): string[] {
+  const out = commonProblems(draft, ARTICLE_WORDS[locale], [])
+  const all = [draft.titulo, draft.resumen, draft.cuerpo, draft.imagen_alt].join('\n')
+  if (DIAGNOSTIC_PRICE.test(all)) out.push('No menciona el precio del diagnóstico: eso se ve recién en /agendar.')
+  if (REFUNDS.test(all)) out.push('No habla de reembolsos.')
+  return out.map((p) => `[${locale}] ${p}`)
+}
+
+// Fecha de las notas de relleno: en el pasado (5 min de margen) y no más de 60 días atrás
+export function publishDateProblems(iso: string, now: Date = new Date()): string[] {
+  const t = Date.parse(iso)
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(iso) || Number.isNaN(t)) return ['La fecha de publicación no es una fecha ISO válida.']
+  if (t > now.getTime() + 5 * 60 * 1000) return ['La fecha de publicación está en el futuro.']
+  if (t < now.getTime() - 60 * 24 * 3600 * 1000) return ['La fecha de publicación es de hace más de 60 días.']
+  return []
 }

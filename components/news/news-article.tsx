@@ -27,7 +27,7 @@ export async function NewsArticle({ row, locale, preview }: Props) {
           <a href={`/${locale}/noticias`} className="nw-back">
             {t('back')}
           </a>
-          <p className="hm-eyebrow">{t('eyebrow')}</p>
+          <p className="hm-eyebrow">{row.tipo === 'articulo' ? t('articleEyebrow') : t('eyebrow')}</p>
           <h1 id="nw-title" className="nw-title">
             {n.titulo}
           </h1>
@@ -58,14 +58,16 @@ export async function NewsArticle({ row, locale, preview }: Props) {
             )}
           </article>
 
-          <aside className="nw-source hm-glass" aria-label={t('source')}>
-            <span className="hm-eyebrow">{t('source')}</span>
-            <a href={row.fuente_url} target="_blank" rel="noopener">
-              {t('readSource', { name: row.fuente_nombre })}
-            </a>
-          </aside>
+          {row.fuente_url && (
+            <aside className="nw-source hm-glass" aria-label={t('source')}>
+              <span className="hm-eyebrow">{t('source')}</span>
+              <a href={row.fuente_url} target="_blank" rel="noopener">
+                {t('readSource', { name: row.fuente_nombre ?? row.fuente_url })}
+              </a>
+            </aside>
+          )}
 
-          <p className="nw-ai">{t('aiNote')}</p>
+          <p className="nw-ai">{row.tipo === 'articulo' ? t('aiNoteOwn') : t('aiNote')}</p>
         </div>
       </section>
 

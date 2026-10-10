@@ -3,7 +3,7 @@ import { hasNewsApiKey } from '@/lib/news/api-key'
 import { composeCover } from '@/lib/news/cover'
 import { signNewsToken } from '@/lib/news/links'
 import { decodeImage, parsePublish } from '@/lib/news/payload'
-import { validateDraft } from '@/lib/news/rules'
+import { publishDateProblems, validateArticle, validateDraft } from '@/lib/news/rules'
 import { slugify, uniqueSlug } from '@/lib/news/slug'
 import { insertNews, removeCover, sourceExists, takenSlugs, uploadCover } from '@/lib/news/store'
 
@@ -25,11 +25,16 @@ export async function POST(req: Request) {
   if (!parsed.ok) return NextResponse.json({ error: 'Pedido incompleto', problemas: parsed.problems }, { status: 400 })
   const input = parsed.value
 
-  const source = { fuente_url: input.fuente_url, fuente_nombre: input.fuente_nombre, fuente_texto: input.fuente_texto }
-  const problemas = [...validateDraft(input.es, 'es', source), ...validateDraft(input.en, 'en', source)]
+  // Noticias: con fuente y sin frases copiadas. Artículos de Bralto: sin fuente, con sus propias reglas
+  const esNoticia = input.tipo === 'noticia'
+  const source = { fuente_url: input.fuente_url ?? '', fuente_nombre: input.fuente_nombre ?? '', fuente_texto: input.fuente_texto ?? '' }
+  const problemas = esNoticia
+    ? [...validateDraft(input.es, 'es', source), ...validateDraft(input.en, 'en', source)]
+    : [...validateArticle(input.es, 'es'), ...validateArticle(input.en, 'en')]
+  if (input.publicada_en) problemas.push(...publishDateProblems(input.publicada_en))
   if (problemas.length) return NextResponse.json({ error: 'La nota no cumple las reglas', problemas }, { status: 422 })
 
-  if (await sourceExists(input.fuente_url))
+  if (esNoticia && (await sourceExists(source.fuente_url)))
     return NextResponse.json({ error: 'Esa fuente ya tiene una nota' }, { status: 409 })
 
   let cover: Buffer
@@ -49,6 +54,7 @@ export async function POST(req: Request) {
   try {
     row = await insertNews({
       slug,
+      tipo: input.tipo,
       titulo_es: input.es.titulo.trim(),
       resumen_es: input.es.resumen.trim(),
       cuerpo_es: input.es.cuerpo.trim(),
@@ -57,10 +63,11 @@ export async function POST(req: Request) {
       resumen_en: input.en.resumen.trim(),
       cuerpo_en: input.en.cuerpo.trim(),
       imagen_alt_en: input.en.imagen_alt.trim(),
-      fuente_url: input.fuente_url,
-      fuente_nombre: input.fuente_nombre.trim(),
+      fuente_url: esNoticia ? source.fuente_url : null,
+      fuente_nombre: esNoticia ? source.fuente_nombre.trim() : null,
       imagen_url,
       estado: input.estado,
+      ...(input.publicada_en ? { publicada_en: input.publicada_en } : {}),
     })
   } catch (err) {
     await removeCover(path)

@@ -224,3 +224,47 @@
   max-width: 68ch;
   margin: -12px 0 0;
 }
+
+.nw-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Noticia o artículo de Bralto: una etiqueta mono chica, como los eyebrows del sitio */
+.nw-tag {
+  font: 500 10.5px/1 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* En el teléfono el texto baja un punto: a 17px la nota se sentía grande (pedido de Alejandro) */
+@media (max-width: 640px) {
+  .nw-title {
+    font-size: clamp(26px, 7.4vw, 32px);
+  }
+
+  .nw-body p {
+    font-size: 15.5px;
+    line-height: 1.7;
+  }
+
+  .nw-body h2 {
+    margin-top: 30px;
+    font-size: 19px;
+  }
+
+  .nw-source a {
+    font-size: 15px;
+  }
+
+  .nw-card__title {
+    font-size: 17.5px;
+  }
+
+  .nw-card__lead {
+    font-size: 14px;
+  }
+}
