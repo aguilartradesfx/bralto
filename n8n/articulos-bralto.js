@@ -57,6 +57,7 @@ return [{ json: {
   remitente: 'Bralto Noticias <noticias@send.bralto.io>',
   modeloTexto: 'gemini-3.5-flash',
   modeloImagen: 'gemini-3-pro-image',
+  modeloImagenRespaldo: 'gemini-3.1-flash-image',
   modeloEditor: 'chat-latest',
   modeloRespaldo: 'gpt-6.1-sol',
   ficha: 'Bralto (bralto.io) construye e integra sistemas a la medida que automatizan la operación comercial de negocios establecidos: sitio web, CRM, agentes de IA, automatizaciones, pagos y reportes, todo conectado en una sola plataforma. Tiene sede en Costa Rica y trabaja con negocios de América y Europa. Su fundador y CEO es Alejandro Aguilar.\\nLo que construye, por capas: Atraer (anuncios en Meta y Google con CAPI y eventos de ventas reales, para que el algoritmo aprenda de ventas y no de clics); Captar (sitio, landing pages, formularios y chats que convierten visitas en contactos); Atender (agentes de IA en WhatsApp, Instagram, web y correo que califican, cotizan, agendan y pasan cada venta al CRM); Gestionar clientes (CRM con el historial de cada cliente, su pipeline y seguimiento automático); Automatizar la operación (cotizaciones, aprobaciones, documentos y tareas del equipo); Accesos a la medida (portales y logins para clientes, equipo o socios).\\nServicios: sitios web, automatización de procesos, agentes de IA, producción de contenido, campañas, sistemas internos y asesoría.\\nPlataforma: todo lo que construye queda en la plataforma del cliente (CRM, conversaciones, pipeline, automatizaciones, agenda, pagos y reportes) y reemplaza herramientas que se pagan por separado, como HubSpot, Mailchimp, ClickFunnels, ManyChat, Calendly o Typeform.\\nLa IA es una pieza del sistema, no un chatbot suelto: se entrena con la información del negocio y le pasa al equipo lo que se sale de lo que sabe.\\nGarantía: si en el primer mes después de activar el sistema no genera leads calificados, Bralto sigue trabajando sin costo hasta lograrlo.\\nCómo empezar: un diagnóstico de 30 minutos para entender el negocio y decir por dónde empezar; se agenda en bralto.io.\\nCasos reales (use solo estos datos; no hay cifras de resultados publicadas, así que no invente porcentajes, montos, plazos ni testimonios):\\n- Nanku, restaurante: sitio nuevo con reservas integradas, plataforma para clientes, pedidos y comunicaciones, WhatsApp, Instagram, Messenger y web en un solo lugar, agente de IA que atiende y cierra reservas 24/7, recordatorios y seguimiento automáticos y producción audiovisual mensual.\\n- Ecoviva, inmobiliaria: sitio de alto impacto y un agente de IA con acceso a todas las propiedades, que asesora sobre características, precios, ubicación y disponibilidad, agenda visitas desde el chat y avisa al equipo.\\n- TravelCore, turismo: portal 4 en 1 con rutas para clientes corporativos, vacacionales y reservas, motor de agenda de tours en tiempo real y confirmaciones, recordatorios y seguimiento automáticos.\\n- AO Liquidation Warehouse, mayorista de liquidaciones en Costa Rica: sitio que comunica autoridad, catálogo de lotes por categorías, solicitud de cotización directa a ventas y captación de leads B2B.',
@@ -767,6 +768,7 @@ const generarImagen = node({
     retryOnFail: true,
     maxTries: 5,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [11760, 200]
   },
   output: [{ candidates: [{ content: { parts: [{ inlineData: { mimeType: 'image/png', data: 'iVBORw0KGgo=' } }] } }] }]
@@ -1220,6 +1222,48 @@ return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }]
   output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
 });
 
+const pedidoImagenRespaldo = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Pedido: imagen de respaldo',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const p = $('Pedido: imagen').first().json;
+return [{ json: { url: 'https://generativelanguage.googleapis.com/v1beta/models/' + cfg.modeloImagenRespaldo + ':generateContent', body: p.body } }];`
+    },
+    position: [11760, 500]
+  },
+  output: [{ url: 'u', body: {} }]
+});
+
+const generarImagenRespaldo = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'Generar imagen (Nano Banana 2)',
+    parameters: {
+      method: 'POST',
+      url: expr('{{ $json.url }}'),
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'googlePalmApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: GEMINI,
+    retryOnFail: true,
+    maxTries: 4,
+    waitBetweenTries: 5000,
+    position: [11960, 500]
+  },
+  output: [{ candidates: [{ content: { parts: [{ inlineData: { mimeType: 'image/jpeg', data: '/9j/' } }] } }] }]
+});
+
 export default workflow('articulos-bralto', 'Bralto · Artículo diario')
   .add(relleno)
   .to(configuracion)
@@ -1240,4 +1284,5 @@ export default workflow('articulos-bralto', 'Bralto · Artículo diario')
   .add(revisarEs.onError(respaldo_revisarEs.to(gpt_revisarEs.to(norm_revisarEs.to(juntarRevision)))))
   .add(revisarEs2.onError(respaldo_revisarEs2.to(gpt_revisarEs2.to(norm_revisarEs2.to(juntarRevision2)))))
   .add(traducir.onError(respaldo_traducir.to(gpt_traducir.to(norm_traducir.to(leerTraduccion)))))
-  .add(corregirEn.onError(respaldo_corregirEn.to(gpt_corregirEn.to(norm_corregirEn.to(leerCorreccionEn)))));
+  .add(corregirEn.onError(respaldo_corregirEn.to(gpt_corregirEn.to(norm_corregirEn.to(leerCorreccionEn)))))
+  .add(generarImagen.onError(pedidoImagenRespaldo.to(generarImagenRespaldo.to(sacarImagen))));

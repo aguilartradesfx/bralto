@@ -56,6 +56,7 @@ return [{ json: {
   modeloTexto: 'gemini-3.5-flash',
   modeloLectura: 'gemini-3.5-flash',
   modeloImagen: 'gemini-3-pro-image',
+  modeloImagenRespaldo: 'gemini-3.1-flash-image',
   modeloEditor: 'chat-latest',
   modeloRespaldo: 'gpt-6.1-sol',
   hoy: new Date(finVentana).toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica', dateStyle: 'long' }),
@@ -1372,6 +1373,7 @@ const generarImagen = node({
     retryOnFail: true,
     maxTries: 5,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [11760, 200]
   },
   output: [{ candidates: [{ content: { parts: [{ inlineData: { mimeType: 'image/png', data: 'iVBORw0KGgo=' } }] } }] }]
@@ -1976,6 +1978,48 @@ return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }]
   output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
 });
 
+const pedidoImagenRespaldo = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Pedido: imagen de respaldo',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const p = $('Pedido: imagen').first().json;
+return [{ json: { url: 'https://generativelanguage.googleapis.com/v1beta/models/' + cfg.modeloImagenRespaldo + ':generateContent', body: p.body } }];`
+    },
+    position: [11760, 500]
+  },
+  output: [{ url: 'u', body: {} }]
+});
+
+const generarImagenRespaldo = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'Generar imagen (Nano Banana 2)',
+    parameters: {
+      method: 'POST',
+      url: expr('{{ $json.url }}'),
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'googlePalmApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: GEMINI,
+    retryOnFail: true,
+    maxTries: 4,
+    waitBetweenTries: 5000,
+    position: [11960, 500]
+  },
+  output: [{ candidates: [{ content: { parts: [{ inlineData: { mimeType: 'image/jpeg', data: '/9j/' } }] } }] }]
+});
+
 export default workflow('noticias-ia-diarias', 'Bralto · Noticias IA diarias')
   .add(relleno)
   .to(configuracion)
@@ -2008,4 +2052,5 @@ export default workflow('noticias-ia-diarias', 'Bralto · Noticias IA diarias')
   .add(revisarEs.onError(respaldo_revisarEs.to(gpt_revisarEs.to(norm_revisarEs.to(juntarRevision)))))
   .add(revisarEs2.onError(respaldo_revisarEs2.to(gpt_revisarEs2.to(norm_revisarEs2.to(juntarRevision2)))))
   .add(traducir.onError(respaldo_traducir.to(gpt_traducir.to(norm_traducir.to(leerTraduccion)))))
-  .add(corregirEn.onError(respaldo_corregirEn.to(gpt_corregirEn.to(norm_corregirEn.to(leerCorreccionEn)))));
+  .add(corregirEn.onError(respaldo_corregirEn.to(gpt_corregirEn.to(norm_corregirEn.to(leerCorreccionEn)))))
+  .add(generarImagen.onError(pedidoImagenRespaldo.to(generarImagenRespaldo.to(sacarImagen))));
