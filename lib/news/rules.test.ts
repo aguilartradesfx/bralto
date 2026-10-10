@@ -93,3 +93,22 @@ test('el cuerpo no lleva HTML, links, listas, negritas ni otros títulos', () =>
 test('el cuerpo necesita al menos 3 párrafos', () => {
   assert.match(bodyFormatProblems('Uno solo.\n\n## Sub\n\nDos.').join(), /párrafos/)
 })
+
+test('el título, el resumen, el texto alternativo y el nombre de la fuente no llevan < ni >', () => {
+  for (const campo of ['titulo', 'resumen', 'imagen_alt'] as const) {
+    const valor = draft()[campo].replace(/ /, ' </script><b> ')
+    assert.match(validateDraft(draft({ [campo]: valor }), 'es', source).join(), /< ni >/, campo)
+  }
+  assert.match(validateDraft(draft(), 'es', { ...source, fuente_nombre: 'X</script>' }).join(), /< ni >/)
+})
+
+test('el link de la fuente no lleva espacios, comillas ni < >', () => {
+  assert.match(validateDraft(draft(), 'es', { ...source, fuente_url: 'https://x.com/a</script><script>alert(1)' }).join(), /link/)
+  assert.match(validateDraft(draft(), 'es', { ...source, fuente_url: 'https://x.com/a b' }).join(), /link/)
+  assert.match(validateDraft(draft(), 'es', { ...source, fuente_url: 'https://x.com/a"onmouseover' }).join(), /link/)
+})
+
+test('"ago high-level" no es la marca prohibida', () => {
+  assert.deepEqual(findBannedTerms('two years ago high-level talks began'), [])
+  assert.deepEqual(findBannedTerms('a cargo high level'), [])
+})

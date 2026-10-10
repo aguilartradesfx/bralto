@@ -13,8 +13,8 @@ export const COPY_RUN = 8
 const SOURCE_MIN_WORDS = 150
 const MIN_PARAGRAPHS = 3
 
-// "high-level" es inglés común; la marca va junta, con espacios o con guiones
-const BANNED = /go[\s-]*high[\s-]*level|highlevel|\bghl\b/gi
+// "high-level" es inglés común (también "ago high-level"); la marca va junta, con espacios o con guiones
+const BANNED = /\bgo[\s-]*high[\s-]*level|highlevel|\bghl\b/gi
 
 const tokens = (text: string) =>
   text
@@ -92,6 +92,10 @@ export function validateDraft(draft: NewsDraft, locale: NewsLocale, source: Sour
   if (n < range.min || n > range.max) add(`El cuerpo tiene ${n} palabras; debe tener entre ${range.min} y ${range.max}.`)
   for (const p of bodyFormatProblems(draft.cuerpo)) add(p)
 
+  // Estos campos terminan en atributos y en el JSON-LD de la página: nada de marcado
+  if ([titulo, resumen, alt, source.fuente_nombre].some((v) => /[<>]/.test(v)))
+    add('El título, el resumen, el texto alternativo y el nombre de la fuente no llevan < ni >.')
+
   const banned = findBannedTerms([titulo, resumen, draft.cuerpo, alt, source.fuente_nombre].join('\n'))
   if (banned.length) add(`Menciona un término prohibido: ${[...new Set(banned)].join(', ')}.`)
 
@@ -101,7 +105,8 @@ export function validateDraft(draft: NewsDraft, locale: NewsLocale, source: Sour
   } catch {
     url = null
   }
-  if (!url || url.protocol !== 'https:') add('El link de la fuente tiene que ser https.')
+  if (!url || url.protocol !== 'https:' || !/^https:\/\/[^\s<>"'`]+$/.test(source.fuente_url))
+    add('El link de la fuente tiene que ser https, sin espacios, comillas ni < >.')
   if (!source.fuente_nombre.trim()) add('Falta el nombre de la fuente.')
 
   if (countWords(source.fuente_texto) < SOURCE_MIN_WORDS) {

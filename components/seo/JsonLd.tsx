@@ -1,3 +1,4 @@
+import { toJsonLd } from '@/lib/json-ld'
 import { SITE_URL } from '@/lib/seo'
 
 export function OrganizationJsonLd() {
@@ -41,7 +42,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
     />
   )
 }
@@ -60,7 +61,7 @@ export function WebSiteJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
     />
   )
 }
@@ -100,7 +101,7 @@ export function ServiceJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
     />
   )
 }
@@ -141,5 +142,5 @@ export function NewsArticleJsonLd(props: {
     },
   }
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }} />
 }
