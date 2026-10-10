@@ -149,3 +149,22 @@ test('fecha de publicación del relleno: en el pasado y hasta 60 días atrás', 
   assert.match(publishDateProblems('2026-07-01T12:00:00Z', ahora).join(), /60 días/)
   assert.match(publishDateProblems('ayer', ahora).join(), /fecha/)
 })
+
+test('el artículo nunca dice que el diagnóstico es gratis', () => {
+  for (const frase of ['agende su diagnóstico gratuito', 'un diagnóstico sin costo de 30 minutos', 'el diagnóstico es gratis', 'book a free 30-minute diagnostic', 'diagnóstico sin compromiso']) {
+    const problemas = validateArticle(articulo({ resumen: draft().resumen.replace('herramientas', frase) }), 'es')
+    assert.match(problemas.join(), /gratis/, frase)
+  }
+  // La garantía sí dice "sin costo", pero no habla del diagnóstico
+  assert.deepEqual(validateArticle(articulo({ resumen: draft().resumen.replace('herramientas', 'seguimos trabajando sin costo') }), 'es'), [])
+})
+
+test('el precio del diagnóstico se detecta en otros formatos', () => {
+  for (const frase of ['USD 97', 'USD97', '97 dollars', '97 dólares']) {
+    assert.match(validateArticle(articulo({ resumen: draft().resumen.replace('herramientas', frase) }), 'es').join(), /precio del diagnóstico/, frase)
+  }
+})
+
+test('"freelancer" cerca de "diagnóstico" no cuenta como "free"', () => {
+  assert.deepEqual(validateArticle(articulo({ resumen: draft().resumen.replace('herramientas', 'un freelancer con diagnóstico propio') }), 'es'), [])
+})

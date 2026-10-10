@@ -129,7 +129,10 @@ export const ARTICLE_WORDS: Record<NewsLocale, { min: number; max: number }> = {
   es: { min: 500, max: 900 },
   en: { min: 430, max: 1000 },
 }
-const DIAGNOSTIC_PRICE = /\$\s?97\b|\b97\s?(usd|d[oó]lares)\b/i
+const DIAGNOSTIC_PRICE = /\$\s?97\b|\b97\s?(usd|d[oó]lares|dollars)\b|\busd\s?97\b/i
+// El diagnóstico tiene costo: "gratis", "sin costo" o "free" cerca de "diagnóstico" sería falso
+const FREE = '\\b(gratis|gratuit[oa]s?|sin costo|sin compromiso|free|no[- ]cost|no obligation)\\b'
+const FREE_DIAGNOSTIC = new RegExp(`${FREE}[^.\\n]{0,40}diagn[oó]stic|diagn[oó]stic[^.\\n]{0,40}${FREE}`, 'i')
 const REFUNDS = /reembols|refund/i
 
 export function validateArticle(draft: NewsDraft, locale: NewsLocale): string[] {
@@ -137,6 +140,7 @@ export function validateArticle(draft: NewsDraft, locale: NewsLocale): string[] 
   const all = [draft.titulo, draft.resumen, draft.cuerpo, draft.imagen_alt].join('\n')
   if (DIAGNOSTIC_PRICE.test(all)) out.push('No menciona el precio del diagnóstico: eso se ve recién en /agendar.')
   if (REFUNDS.test(all)) out.push('No habla de reembolsos.')
+  if (FREE_DIAGNOSTIC.test(all)) out.push('No dice que el diagnóstico es gratis: tiene costo.')
   return out.map((p) => `[${locale}] ${p}`)
 }
 

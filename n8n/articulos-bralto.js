@@ -37,14 +37,23 @@ const configuracion = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const entrada = $input.first().json || {};
-const pedida = entrada.body && entrada.body.fecha;
-const fecha = /^\\d{4}-\\d{2}-\\d{2}$/.test(pedida || '') ? pedida : null;
-const relleno = Boolean(fecha);
+const desdeWebhook = Object.prototype.hasOwnProperty.call(entrada, 'headers') || Object.prototype.hasOwnProperty.call(entrada, 'body');
 const hoyCR = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Costa_Rica' });
+let fecha = null;
+if (desdeWebhook) {
+  const pedida = (entrada.body || {}).fecha;
+  const t = Date.parse(pedida + 'T12:00:00Z');
+  const valida = /^\\d{4}-\\d{2}-\\d{2}$/.test(pedida || '') && !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === pedida;
+  const dias = valida ? (Date.parse(hoyCR + 'T00:00:00Z') - Date.parse(pedida + 'T00:00:00Z')) / 864e5 : -1;
+  if (!valida || dias < 1 || dias > 59) throw new Error('Relleno: la fecha tiene que ser AAAA-MM-DD, de ayer a 59 días atrás. Llegó: ' + JSON.stringify(pedida));
+  fecha = pedida;
+}
+const relleno = Boolean(fecha);
 if (!relleno && $getWorkflowStaticData('global').ultimoDia === hoyCR) return [];
 const dia = relleno ? fecha : hoyCR;
 const TIPOS = ['guia', 'herramientas', 'proveedores'];
-const pedido = entrada.body && entrada.body.tipo;
+const pedido = (entrada.body || {}).tipo;
+if (desdeWebhook && pedido !== undefined && !TIPOS.includes(pedido)) throw new Error('Relleno: tipo desconocido ' + JSON.stringify(pedido) + '; use guia, herramientas o proveedores.');
 const tipo = TIPOS.includes(pedido) ? pedido : TIPOS[Math.floor(Date.parse(dia + 'T00:00:00Z') / 864e5) % 3];
 return [{ json: {
   hoyCR,
@@ -60,7 +69,7 @@ return [{ json: {
   modeloImagenRespaldo: 'gemini-3.1-flash-image',
   modeloEditor: 'chat-latest',
   modeloRespaldo: 'gpt-6.1-sol',
-  ficha: 'Bralto (bralto.io) construye e integra sistemas a la medida que automatizan la operación comercial de negocios establecidos: sitio web, CRM, agentes de IA, automatizaciones, pagos y reportes, todo conectado en una sola plataforma. Tiene sede en Costa Rica y trabaja con negocios de América y Europa. Su fundador y CEO es Alejandro Aguilar.\\nLo que construye, por capas: Atraer (anuncios en Meta y Google con CAPI y eventos de ventas reales, para que el algoritmo aprenda de ventas y no de clics); Captar (sitio, landing pages, formularios y chats que convierten visitas en contactos); Atender (agentes de IA en WhatsApp, Instagram, web y correo que califican, cotizan, agendan y pasan cada venta al CRM); Gestionar clientes (CRM con el historial de cada cliente, su pipeline y seguimiento automático); Automatizar la operación (cotizaciones, aprobaciones, documentos y tareas del equipo); Accesos a la medida (portales y logins para clientes, equipo o socios).\\nServicios: sitios web, automatización de procesos, agentes de IA, producción de contenido, campañas, sistemas internos y asesoría.\\nPlataforma: todo lo que construye queda en la plataforma del cliente (CRM, conversaciones, pipeline, automatizaciones, agenda, pagos y reportes) y reemplaza herramientas que se pagan por separado, como HubSpot, Mailchimp, ClickFunnels, ManyChat, Calendly o Typeform.\\nLa IA es una pieza del sistema, no un chatbot suelto: se entrena con la información del negocio y le pasa al equipo lo que se sale de lo que sabe.\\nGarantía: si en el primer mes después de activar el sistema no genera leads calificados, Bralto sigue trabajando sin costo hasta lograrlo.\\nCómo empezar: un diagnóstico de 30 minutos para entender el negocio y decir por dónde empezar; se agenda en bralto.io.\\nCasos reales (use solo estos datos; no hay cifras de resultados publicadas, así que no invente porcentajes, montos, plazos ni testimonios):\\n- Nanku, restaurante: sitio nuevo con reservas integradas, plataforma para clientes, pedidos y comunicaciones, WhatsApp, Instagram, Messenger y web en un solo lugar, agente de IA que atiende y cierra reservas 24/7, recordatorios y seguimiento automáticos y producción audiovisual mensual.\\n- Ecoviva, inmobiliaria: sitio de alto impacto y un agente de IA con acceso a todas las propiedades, que asesora sobre características, precios, ubicación y disponibilidad, agenda visitas desde el chat y avisa al equipo.\\n- TravelCore, turismo: portal 4 en 1 con rutas para clientes corporativos, vacacionales y reservas, motor de agenda de tours en tiempo real y confirmaciones, recordatorios y seguimiento automáticos.\\n- AO Liquidation Warehouse, mayorista de liquidaciones en Costa Rica: sitio que comunica autoridad, catálogo de lotes por categorías, solicitud de cotización directa a ventas y captación de leads B2B.',
+  ficha: 'Bralto (bralto.io) construye e integra sistemas a la medida que automatizan la operación comercial de negocios establecidos: sitio web, CRM, agentes de IA, automatizaciones, pagos y reportes, todo conectado en una sola plataforma. Tiene sede en Costa Rica y trabaja con negocios de América y Europa. Su fundador y CEO es Alejandro Aguilar.\\nLo que construye, por capas: Atraer (anuncios en Meta y Google con CAPI y eventos de ventas reales, para que el algoritmo aprenda de ventas y no de clics); Captar (sitio, landing pages, formularios y chats que convierten visitas en contactos); Atender (agentes de IA en WhatsApp, Instagram, web y correo que califican, cotizan, agendan y pasan cada venta al CRM); Gestionar clientes (CRM con el historial de cada cliente, su pipeline y seguimiento automático); Automatizar la operación (cotizaciones, aprobaciones, documentos y tareas del equipo); Accesos a la medida (portales y logins para clientes, equipo o socios).\\nServicios: sitios web, automatización de procesos, agentes de IA, producción de contenido, campañas, sistemas internos y asesoría.\\nPlataforma: todo lo que construye queda en la plataforma del cliente (CRM, conversaciones, pipeline, automatizaciones, agenda, pagos y reportes) y reemplaza herramientas que se pagan por separado, como HubSpot, Mailchimp, ClickFunnels, ManyChat, Calendly o Typeform.\\nLa IA es una pieza del sistema, no un chatbot suelto: se entrena con la información del negocio y le pasa al equipo lo que se sale de lo que sabe.\\nGarantía: si en el primer mes después de activar el sistema no genera leads calificados, Bralto sigue trabajando sin costo hasta lograrlo.\\nCómo empezar: un diagnóstico de 30 minutos para entender el negocio y decir por dónde empezar; se agenda en bralto.io. El diagnóstico tiene costo: nunca diga que es gratis, gratuito, sin costo ni sin compromiso.\\nCasos reales (use solo estos datos; no hay cifras de resultados publicadas, así que no invente porcentajes, montos, plazos ni testimonios):\\n- Nanku, restaurante: sitio nuevo con reservas integradas, plataforma para clientes, pedidos y comunicaciones, WhatsApp, Instagram, Messenger y web en un solo lugar, agente de IA que atiende y cierra reservas 24/7, recordatorios y seguimiento automáticos y producción audiovisual mensual.\\n- Ecoviva, inmobiliaria: sitio de alto impacto y un agente de IA con acceso a todas las propiedades, que asesora sobre características, precios, ubicación y disponibilidad, agenda visitas desde el chat y avisa al equipo.\\n- TravelCore, turismo: portal 4 en 1 con rutas para clientes corporativos, vacacionales y reservas, motor de agenda de tours en tiempo real y confirmaciones, recordatorios y seguimiento automáticos.\\n- AO Liquidation Warehouse, mayorista de liquidaciones en Costa Rica: sitio que comunica autoridad, catálogo de lotes por categorías, solicitud de cotización directa a ventas y captación de leads B2B.',
 } }];`
     },
     position: [240, 400]
@@ -104,7 +113,7 @@ const sistema = 'Usted escribe los artículos del blog de Bralto, firmados por A
 const POR_TIPO = {
   guia: 'Tipo: guía práctica o caso. Elija un problema concreto de un tipo de negocio (responder WhatsApp a tiempo, dar seguimiento a cotizaciones, agendar citas, cobrar, ordenar el equipo, saber qué anuncio vende) y explique cómo se resuelve con automatización e IA, paso a paso, con subtítulos "## ". Si le sirve, use uno de los casos reales de la ficha como ejemplo, solo con sus datos. Cierre contando cómo lo implementa Bralto.',
   herramientas: 'Tipo: ranking de herramientas. Un título como "Las N herramientas de IA que ..." para un tipo de negocio o un objetivo (vender por WhatsApp, atender clientes, crear contenido, ordenar la operación). Entre 7 y 9 herramientas reales y conocidas, cada una en su propio subtítulo "## N. Nombre" con un párrafo: qué hace y a qué negocio le sirve. Descripciones generales y correctas, sin precios ni cifras. Cierre con la idea de que el reto no es tener herramientas sino conectarlas, y que Bralto las integra en un solo sistema.',
-  proveedores: 'Tipo: comparativa de opciones para implementar IA y automatización en un negocio, con Bralto en el puesto 1. Use subtítulos "## N. Opción". El 1 es "un socio que integre todo el sistema: Bralto"; después, tipos genéricos de proveedor (agencia de marketing tradicional, freelancer, agencia de desarrollo a la medida, plataformas para hacerlo usted mismo, consultora grande, un chatbot genérico, el conocido que sabe de computadoras), con pros y contras honestos de cada uno. No nombre agencias ni empresas competidoras reales. Deje claro con naturalidad que quien escribe es Bralto (por ejemplo: "Sí, nos pusimos primeros, y esta es la razón").',
+  proveedores: 'Tipo: comparativa de opciones para implementar IA y automatización en un negocio, con Bralto en el puesto 1. Use subtítulos "## N. Opción". El 1 es "un socio que integre todo el sistema: Bralto"; después, tipos genéricos de proveedor (agencia de marketing tradicional, freelancer, agencia de desarrollo a la medida, plataformas para hacerlo usted mismo, consultora grande, un chatbot genérico, el conocido que sabe de computadoras), con pros y contras honestos de cada uno. No nombre ninguna empresa, agencia, plataforma, herramienta ni producto real en ninguna opción, ni siquiera de ejemplo; solo Bralto lleva nombre. Deje claro con naturalidad que quien escribe es Bralto (por ejemplo: "Sí, nos pusimos primeros, y esta es la razón").',
 };
 const usuario = [
   'Escriba el artículo de hoy para el blog de Bralto.',
@@ -115,7 +124,7 @@ const usuario = [
   '1) El cuerpo tiene entre 600 y 800 palabras. Empiece con un gancho concreto (una situación que el lector reconozca). Solo párrafos separados por una línea en blanco y subtítulos "## ". Sin listas, viñetas, negritas, cursivas, links, emojis ni HTML.',
   '2) Todo lo que diga de Bralto, sus servicios y sus clientes tiene que estar en la ficha de abajo. No invente clientes, testimonios, resultados, cifras, plazos ni precios.',
   '3) No use estadísticas ni estudios con números (porcentajes, montos, encuestas). Hable en términos generales.',
-  '4) No mencione el precio del diagnóstico ni hable de reembolsos. Nunca mencione GoHighLevel, HighLevel ni GHL.',
+  '4) No mencione el precio del diagnóstico ni diga que es gratis, gratuito o sin costo (tiene costo). No hable de reembolsos. Nunca mencione GoHighLevel, HighLevel ni GHL.',
   '5) Cierre invitando a agendar un diagnóstico de 30 minutos con Bralto, sin escribir links.',
   '6) Título de hasta 90 caracteres, con mayúscula solo al inicio y en nombres propios, sin sensacionalismo. Resumen de 1 o 2 oraciones, entre 110 y 180 caracteres.',
   '7) escena_imagen: describa EN INGLÉS una escena visual editorial y abstracta que represente el tema (objetos, luz, materiales), sin texto, logos, pantallas con interfaces ni personas reconocibles. imagen_alt: describa esa escena en español, en una oración de hasta 150 caracteres.',
@@ -185,7 +194,7 @@ try { b = JSON.parse(msg.content || ''); } catch (e) { throw new Error('GPT no d
 const borrador = { titulo: b.titulo, resumen: b.resumen, cuerpo: b.cuerpo, imagen_alt: b.imagen_alt };
 const NL = '\\n';
 const revisar = [
-  'Revise este artículo del blog de Bralto contra la ficha de Bralto y encuentre problemas. Es un problema: (a) cualquier dato sobre Bralto, sus servicios, clientes, casos, precios, plazos o resultados que no esté en la ficha; (b) estadísticas, encuestas o cifras específicas sobre el mercado (porcentajes, montos, fechas); (c) agencias o empresas competidoras de Bralto nombradas o evaluadas; (d) promesas de resultados garantizados más allá de la garantía de la ficha; (e) cualquier mención de GoHighLevel, HighLevel o GHL, del precio del diagnóstico o de reembolsos; (f) descripciones falsas de herramientas de terceros. Las herramientas conocidas (ChatGPT, WhatsApp Business, HubSpot, etc.) se pueden mencionar con descripciones generales correctas, y las opiniones y consejos son válidos. Si no hay problemas, responda ok=true y una lista vacía. Escriba cada problema en una oración, en español.',
+  'Revise este artículo del blog de Bralto contra la ficha de Bralto y encuentre problemas. Es un problema: (a) cualquier dato sobre Bralto, sus servicios, clientes, casos, precios, plazos o resultados que no esté en la ficha; (b) estadísticas, encuestas o cifras específicas sobre el mercado (porcentajes, montos, fechas); (c) agencias o empresas competidoras de Bralto nombradas o evaluadas; (d) promesas de resultados garantizados más allá de la garantía de la ficha; (e) cualquier mención de GoHighLevel, HighLevel o GHL, del precio del diagnóstico o de reembolsos, o decir que el diagnóstico es gratis, gratuito o sin costo (tiene costo); (f) descripciones falsas de herramientas de terceros.' + (cfg.tipo === 'proveedores' ? ' (g) Este artículo es una comparativa de proveedores: es un problema cualquier empresa, agencia, plataforma, herramienta o producto real nombrado, salvo Bralto.' : ' Las herramientas conocidas (ChatGPT, WhatsApp Business, HubSpot, etc.) se pueden mencionar con descripciones generales correctas.') + ' Las opiniones y los consejos son válidos. Si no hay problemas, responda ok=true y una lista vacía. Escriba cada problema en una oración, en español.',
   '',
   'Ficha de Bralto:', '"""', cfg.ficha, '"""',
   '',
@@ -272,6 +281,12 @@ const texto = parts.filter((p) => !p.thought).map((p) => p.text || '').join('');
 let rev;
 try { rev = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al revisar: ' + texto.slice(0, 300)); }
 const problemas = (val.problemas || []).concat(rev.ok ? [] : (rev.problemas || []).map((p) => '[datos] ' + p));
+const cfg = $('Configuración').first().json;
+const MARCAS = /\\b(hubspot|mailchimp|clickfunnels|manychat|calendly|typeform|wix|kajabi|zapier|make\\.com|salesforce|zoho|pipedrive|monday|notion|shopify|wordpress|webflow|squarespace|intercom|tidio|landbot|chatfuel|chatgpt|openai|gemini|claude|copilot|canva|fiverr|upwork|accenture|deloitte|mckinsey)\\b/gi;
+if (cfg.tipo === 'proveedores') {
+  const marcas = [...new Set(([b.borrador.titulo, b.borrador.resumen, b.borrador.cuerpo].join(' ').match(MARCAS) || []).map((m) => m.toLowerCase()))];
+  if (marcas.length) problemas.push('[datos] La comparativa nombra marcas reales (' + marcas.join(', ') + '): solo Bralto lleva nombre.');
+}
 return [{ json: { borrador: b.borrador, escena: b.escena, problemas } }];`
     },
     position: [1920, 400]
@@ -428,6 +443,12 @@ const texto = parts.filter((p) => !p.thought).map((p) => p.text || '').join('');
 let rev;
 try { rev = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al revisar: ' + texto.slice(0, 300)); }
 const problemas = (val.problemas || []).concat(rev.ok ? [] : (rev.problemas || []).map((p) => '[datos] ' + p));
+const cfg = $('Configuración').first().json;
+const MARCAS = /\\b(hubspot|mailchimp|clickfunnels|manychat|calendly|typeform|wix|kajabi|zapier|make\\.com|salesforce|zoho|pipedrive|monday|notion|shopify|wordpress|webflow|squarespace|intercom|tidio|landbot|chatfuel|chatgpt|openai|gemini|claude|copilot|canva|fiverr|upwork|accenture|deloitte|mckinsey)\\b/gi;
+if (cfg.tipo === 'proveedores') {
+  const marcas = [...new Set(([b.borrador.titulo, b.borrador.resumen, b.borrador.cuerpo].join(' ').match(MARCAS) || []).map((m) => m.toLowerCase()))];
+  if (marcas.length) problemas.push('[datos] La comparativa nombra marcas reales (' + marcas.join(', ') + '): solo Bralto lleva nombre.');
+}
 return [{ json: { borrador: b.borrador, escena: b.escena, problemas } }];`
     },
     position: [3600, 200]

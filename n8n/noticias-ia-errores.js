@@ -20,20 +20,23 @@ const ex = e.execution || {};
 // El relleno de notas pasadas (webhook) no avisa: si falla una fecha se prueba otra
 if (ex.mode === 'webhook') return [];
 const nodo = ex.lastNodeExecuted || 'un paso desconocido';
+const flujo = (e.workflow && e.workflow.name) || 'Noticias IA';
+const articulo = /art[ií]culo/i.test(flujo);
 const err = ex.error || {};
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const partes = [
-  '<p>La nota de hoy <b>no se publicó</b>. Nada quedó a medias en el sitio.</p>',
+  '<p>' + (articulo ? 'El artículo de Bralto de hoy' : 'La noticia de hoy') + ' <b>no se publicó</b>. Nada quedó a medias en el sitio.</p>',
+  '<p><b>Workflow:</b> ' + esc(flujo) + '</p>',
   '<p><b>Paso que falló:</b> ' + esc(nodo) + '</p>',
   '<p><b>Error:</b> ' + esc(err.message || 'sin mensaje') + '</p>',
 ];
 if (err.description) partes.push('<pre style="white-space:pre-wrap">' + esc(String(err.description).slice(0, 3000)) + '</pre>');
 if (ex.url) partes.push('<p><a href="' + ex.url + '">Ver la ejecución en n8n</a></p>');
-partes.push('<p style="color:#777">Si falló la corrida de las 6:00, n8n la intenta de nuevo a las 6:45.</p>');
+partes.push('<p style="color:#777">Si falló la primera corrida del día (' + (articulo ? '12:00' : '6:00') + '), n8n la intenta de nuevo 45 minutos después.</p>');
 return [{ json: {
   from: 'Bralto Noticias <noticias@send.bralto.io>',
   to: ['aguilartradesfx@gmail.com'],
-  subject: 'Noticias IA: falló «' + nodo + '»',
+  subject: flujo + ': falló «' + nodo + '»',
   html: partes.join('\\n'),
 } }];`
     },
