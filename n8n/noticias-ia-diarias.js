@@ -493,6 +493,9 @@ const leerConGemini = node({
     },
     credentials: GEMINI,
     onError: 'continueRegularOutput',
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
     position: [4080, 400]
   },
   output: [{ candidates: [{ content: { parts: [{ text: 'Texto del artículo' }] } }] }]
@@ -510,9 +513,12 @@ const textoGemini = node({
 const leidas = $input.all().map((item, i) => {
   const p = Array.isArray(item.pairedItem) ? item.pairedItem[0] : item.pairedItem;
   const c = pedidos[p ? p.item : i];
-  const parts = ((item.json.candidates || [])[0] || {}).content?.parts || [];
+  const cand0 = (item.json.candidates || [])[0] || {};
+  const parts = (cand0.content || {}).parts || [];
   const texto = parts.filter((x) => !x.thought).map((x) => x.text || '').join('').trim();
-  const ok = texto && !texto.includes('NO_DISPONIBLE');
+  const meta = (cand0.urlContextMetadata || {}).urlMetadata || [];
+  const abrio = meta.some((m) => m.urlRetrievalStatus === 'URL_RETRIEVAL_STATUS_SUCCESS');
+  const ok = abrio && texto && !texto.includes('NO_DISPONIBLE');
   return Object.assign({}, c, { texto: ok ? texto : '', palabras: ok ? texto.split(/\\s+/).filter(Boolean).length : 0 });
 }).sort((a, b) => a.orden - b.orden);
 const elegida = leidas.find((c) => c.palabras >= 250) || $('Texto de la página').first().json.respaldo || null;
@@ -547,13 +553,12 @@ const avisoNoSeLeyo = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const cfg = $('Configuración').first().json;
-$getWorkflowStaticData('global').ultimoDia = cfg.hoyCR;
 const cands = $('Candidatas').all().map((i) => i.json.link);
 return [{ json: {
   from: cfg.remitente,
   to: [cfg.avisoA],
   subject: 'Noticias IA: hoy no se publicó',
-  html: '<p>Hoy no se publicó ninguna nota: no se pudo leer el texto completo de ninguna de las noticias elegidas.</p><p style="color:#777">' + cands.join('<br>') + '</p>',
+  html: '<p>No se pudo leer el texto completo de ninguna de las noticias elegidas. Si fue la corrida de las 6:00, se intenta de nuevo a las 6:45.</p><p style="color:#777">' + cands.join('<br>') + '</p>',
 } }];`
     },
     position: [4800, 600]
