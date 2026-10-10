@@ -1,0 +1,270 @@
+/* ==========================================================================
+   Noticias de IA (/noticias): listado y nota, bajo .hm con sus tokens.
+   ========================================================================== */
+
+/* ---------- Listado ---------- */
+.nw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nw-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+  transition: transform .3s var(--ease);
+}
+
+.nw-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.nw-card__text {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px 20px 22px;
+}
+
+.nw-card__title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.015em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.nw-card__lead {
+  font-size: 14.5px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .nw-card:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.nw-date,
+.nw-ai {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.nw-empty {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+.nw-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.nw-pager a,
+.nw-back {
+  color: var(--ink-2);
+  font-size: 14.5px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--ink-3);
+}
+
+.nw-pager a:hover,
+.nw-back:hover {
+  color: var(--ink);
+}
+
+/* ---------- Nota ---------- */
+.nw-head {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+}
+
+.nw-head > * {
+  max-width: 860px;
+}
+
+.nw-title {
+  margin: 0;
+  font-size: clamp(32px, 4.2vw, 54px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.nw-preview {
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: var(--r-sm);
+  box-shadow: inset 0 0 0 1px var(--accent-ink);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.nw-byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.nw-byline__photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.nw-byline > span {
+  display: grid;
+  gap: 2px;
+}
+
+.nw-byline__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nw-byline__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.nw-byline__meta {
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+
+.nw-main .hm-wrap {
+  display: grid;
+  gap: 32px;
+}
+
+.nw-cover {
+  margin: 0;
+}
+
+.nw-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--r-lg);
+}
+
+/* El mismo ritmo de lectura que privacidad y términos */
+.nw-body {
+  max-width: 68ch;
+}
+
+.nw-body p {
+  margin: 0 0 18px;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.nw-body h2 {
+  margin: 36px 0 14px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.nw-source {
+  display: grid;
+  gap: 8px;
+  max-width: 68ch;
+  padding: 18px 22px;
+  border-radius: var(--r-md);
+}
+
+.nw-source a {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--accent-ink);
+  overflow-wrap: anywhere;
+}
+
+.nw-ai {
+  max-width: 68ch;
+  margin: -12px 0 0;
+}
+
+.nw-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Noticia o artículo de Bralto: una etiqueta mono chica, como los eyebrows del sitio */
+.nw-tag {
+  font: 500 10.5px/1 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* En el teléfono el texto baja un punto: a 17px la nota se sentía grande (pedido de Alejandro) */
+@media (max-width: 640px) {
+  .nw-title {
+    font-size: clamp(26px, 7.4vw, 32px);
+  }
+
+  .nw-body p {
+    font-size: 15.5px;
+    line-height: 1.7;
+  }
+
+  .nw-body h2 {
+    margin-top: 30px;
+    font-size: 19px;
+  }
+
+  .nw-source a {
+    font-size: 15px;
+  }
+
+  .nw-card__title {
+    font-size: 17.5px;
+  }
+
+  .nw-card__lead {
+    font-size: 14px;
+  }
+}

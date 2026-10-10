@@ -231,6 +231,7 @@
         "sistema": "Cómo funciona",
         "casos": "Casos",
         "plataforma": "Plataforma",
+        "noticias": "Noticias",
         "about": "Sobre nosotros"
       },
       "services": "Servicios",
@@ -616,5 +617,30 @@
       "accept": "Aceptar todo"
     },
     "pending": "Pendiente · se oculta en producción"
+  },
+  "News": {
+    "meta": {
+      "title": "Noticias de IA para negocios",
+      "description": "Una nota cada día sobre inteligencia artificial: qué pasó, por qué importa y qué significa para su negocio."
+    },
+    "eyebrow": "Noticias de IA",
+    "titleLight": "Lo que pasa en IA,",
+    "titleBold": "explicado para su negocio",
+    "lead": "Una nota cada mañana: qué pasó, por qué importa y qué significa para un negocio como el suyo.",
+    "empty": "Todavía no hay notas publicadas. La primera sale pronto.",
+    "newer": "Notas más recientes",
+    "older": "Notas anteriores",
+    "author": "Alejandro Aguilar",
+    "role": "CEO Bralto",
+    "published": "Publicada el {date}",
+    "source": "Fuente",
+    "readSource": "Leer la nota original en {name}",
+    "aiNote": "Redactada con apoyo de inteligencia artificial a partir de la fuente citada.",
+    "preview": "Vista previa: esta nota está oculta y no aparece en el sitio.",
+    "back": "Todas las noticias",
+    "articleEyebrow": "Artículo de Bralto",
+    "aiNoteOwn": "Redactado con apoyo de inteligencia artificial.",
+    "tagNews": "Noticia",
+    "tagArticle": "Bralto"
   }
 }

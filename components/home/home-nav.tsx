@@ -15,6 +15,7 @@ export type NavLabels = {
   sistema: string
   casos: string
   plataforma: string
+  noticias: string
   about: string
   services: string
   cta: string
@@ -79,6 +80,7 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
     { href: `${home}#como-funciona`, label: labels.sistema },
     { href: `/${locale}/casos`, label: labels.casos },
     { href: `/${locale}/plataforma`, label: labels.plataforma },
+    { href: `/${locale}/noticias`, label: labels.noticias },
     { href: `/${locale}/sobre-nosotros`, label: labels.about },
   ]
 

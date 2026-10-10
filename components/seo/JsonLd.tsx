@@ -1,3 +1,4 @@
+import { toJsonLd } from '@/lib/json-ld'
 import { SITE_URL } from '@/lib/seo'
 
 export function OrganizationJsonLd() {
@@ -41,7 +42,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
     />
   )
 }
@@ -60,7 +61,7 @@ export function WebSiteJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
     />
   )
 }
@@ -100,7 +101,47 @@ export function ServiceJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }}
     />
   )
+}
+
+// Cada nota de /noticias, firmada por Alejandro: las noticias citan su fuente (NewsArticle); los
+// artículos de Bralto no tienen fuente (BlogPosting)
+export function NewsArticleJsonLd(props: {
+  url: string
+  headline: string
+  description: string
+  image: string
+  datePublished: string
+  dateModified: string
+  inLanguage: 'es' | 'en'
+  sourceUrl: string | null
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': props.sourceUrl ? 'NewsArticle' : 'BlogPosting',
+    mainEntityOfPage: props.url,
+    headline: props.headline,
+    description: props.description,
+    image: [props.image],
+    datePublished: props.datePublished,
+    dateModified: props.dateModified,
+    inLanguage: props.inLanguage,
+    ...(props.sourceUrl ? { isBasedOn: props.sourceUrl } : {}),
+    author: {
+      '@type': 'Person',
+      name: 'Alejandro Aguilar',
+      jobTitle: 'CEO',
+      url: `${SITE_URL}/${props.inLanguage}/sobre-nosotros`,
+      worksFor: { '@type': 'Organization', name: 'Bralto', url: SITE_URL },
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Bralto',
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
+    },
+  }
+
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: toJsonLd(schema) }} />
 }

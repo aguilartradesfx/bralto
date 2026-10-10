@@ -231,6 +231,7 @@
         "sistema": "How it works",
         "casos": "Case studies",
         "plataforma": "Platform",
+        "noticias": "News",
         "about": "About"
       },
       "services": "Services",
@@ -616,5 +617,30 @@
       "accept": "Accept all"
     },
     "pending": "Pending · hidden in production"
+  },
+  "News": {
+    "meta": {
+      "title": "AI news for business",
+      "description": "One story a day about artificial intelligence: what happened, why it matters, and what it means for your business."
+    },
+    "eyebrow": "AI news",
+    "titleLight": "What's happening in AI,",
+    "titleBold": "explained for your business",
+    "lead": "One story every morning: what happened, why it matters, and what it means for a business like yours.",
+    "empty": "No stories published yet. The first one is coming soon.",
+    "newer": "Newer stories",
+    "older": "Older stories",
+    "author": "Alejandro Aguilar",
+    "role": "CEO, Bralto",
+    "published": "Published {date}",
+    "source": "Source",
+    "readSource": "Read the original story on {name}",
+    "aiNote": "Written with the help of artificial intelligence, based on the cited source.",
+    "preview": "Preview: this story is hidden and does not appear on the site.",
+    "back": "All news",
+    "articleEyebrow": "From Bralto",
+    "aiNoteOwn": "Written with the help of artificial intelligence.",
+    "tagNews": "News",
+    "tagArticle": "Bralto"
   }
 }
