@@ -104,3 +104,42 @@ export function ServiceJsonLd({
     />
   )
 }
+
+// Cada nota de /noticias: firmada por Alejandro y basada en la fuente que cita
+export function NewsArticleJsonLd(props: {
+  url: string
+  headline: string
+  description: string
+  image: string
+  datePublished: string
+  dateModified: string
+  inLanguage: 'es' | 'en'
+  sourceUrl: string
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    mainEntityOfPage: props.url,
+    headline: props.headline,
+    description: props.description,
+    image: [props.image],
+    datePublished: props.datePublished,
+    dateModified: props.dateModified,
+    inLanguage: props.inLanguage,
+    isBasedOn: props.sourceUrl,
+    author: {
+      '@type': 'Person',
+      name: 'Alejandro Aguilar',
+      jobTitle: 'CEO',
+      url: `${SITE_URL}/${props.inLanguage}/sobre-nosotros`,
+      worksFor: { '@type': 'Organization', name: 'Bralto', url: SITE_URL },
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Bralto',
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
+    },
+  }
+
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+}

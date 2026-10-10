@@ -40,6 +40,7 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
           sistema: t('links.sistema'),
           casos: t('links.casos'),
           plataforma: t('links.plataforma'),
+          noticias: t('links.noticias'),
           about: t('links.about'),
           services: t('services'),
           cta: t('cta'),
