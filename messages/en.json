@@ -621,12 +621,12 @@
   "News": {
     "meta": {
       "title": "AI news for business",
-      "description": "One story a day about artificial intelligence: what happened, why it matters, and what it means for your business."
+      "description": "Artificial intelligence news and practical guides for businesses: what happened, why it matters, and how to use it."
     },
     "eyebrow": "AI news",
     "titleLight": "What's happening in AI,",
     "titleBold": "explained for your business",
-    "lead": "One story every morning: what happened, why it matters, and what it means for a business like yours.",
+    "lead": "Every morning, the AI story that matters most to a business, and at noon a practical guide from Bralto.",
     "empty": "No stories published yet. The first one is coming soon.",
     "newer": "Newer stories",
     "older": "Older stories",

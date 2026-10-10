@@ -17,6 +17,8 @@ const armarAviso = node({
       language: 'javaScript',
       jsCode: `const e = $input.first().json;
 const ex = e.execution || {};
+// El relleno de notas pasadas (webhook) no avisa: si falla una fecha se prueba otra
+if (ex.mode === 'webhook') return [];
 const nodo = ex.lastNodeExecuted || 'un paso desconocido';
 const err = ex.error || {};
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);

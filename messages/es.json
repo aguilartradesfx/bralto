@@ -621,12 +621,12 @@
   "News": {
     "meta": {
       "title": "Noticias de IA para negocios",
-      "description": "Una nota cada día sobre inteligencia artificial: qué pasó, por qué importa y qué significa para su negocio."
+      "description": "Noticias de inteligencia artificial y guías prácticas para negocios: qué pasó, por qué importa y cómo aprovecharlo."
     },
     "eyebrow": "Noticias de IA",
     "titleLight": "Lo que pasa en IA,",
     "titleBold": "explicado para su negocio",
-    "lead": "Una nota cada mañana: qué pasó, por qué importa y qué significa para un negocio como el suyo.",
+    "lead": "Cada mañana, la noticia de IA que más le importa a un negocio, y al mediodía una guía práctica de Bralto.",
     "empty": "Todavía no hay notas publicadas. La primera sale pronto.",
     "newer": "Notas más recientes",
     "older": "Notas anteriores",

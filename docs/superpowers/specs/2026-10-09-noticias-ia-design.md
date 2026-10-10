@@ -145,3 +145,17 @@ Publicar una nota diaria sobre IA en bralto.io, en español y en inglés, con im
 ## Costo estimado
 
 Unos USD 10 al mes: alrededor de $0.13 por imagen y $0.20 de texto por día, con precios de la API de Gemini.
+
+## Cambios del 2026-10-10 (pedidos de Alejandro después del primer ensayo)
+
+1. **Producción.** La sección pasó a www.bralto.io (PR #10) y el flujo publica ahí. El ensayo sigue hasta el 13 de octubre.
+2. **Calificación.** Gemini califica cada noticia de 0 a 100: impacto práctico hasta 40, interés humano hasta 35 e importancia hasta 25. Solo pasan las de 75 o más. Si ninguna llega, ese día no se publica y el correo dice cuál fue la mejor y su puntaje.
+3. **Editor GPT.** Gemini escribe el borrador y GPT (`chat-latest`, el modelo de ChatGPT, que Alejandro eligió por conversacional) lo reescribe para que conecte. Las reglas y la revisión de datos se aplican a la versión de GPT.
+4. **Artículos de Bralto.** Se publica uno al día al mediodía, en la misma sección, con `tipo = articulo`, sin fuente y con la etiqueta "Artículo de Bralto".
+   - **Tipos, en rotación:** guía o caso real; ranking de herramientas; comparativa de tipos de proveedor con Bralto #1.
+   - **Comparativa:** a pedido de Alejandro se mezclan los tres tipos. En la comparativa no se nombran agencias reales: inventarles evaluaciones sería publicidad engañosa y un riesgo legal.
+   - **Datos:** se escriben solo con la ficha de Bralto (datos del sitio).
+   - **Reglas propias:** 500 a 900 palabras; sin precio del diagnóstico ni reembolsos; sin estadísticas inventadas.
+5. **Relleno.** Webhooks protegidos (`noticias-relleno`, `articulos-relleno`) publican notas con fecha pasada, hasta 60 días atrás. Se usaron para cargar la semana del 3 al 9 de octubre.
+6. **Respaldo.** Si Gemini falla por demanda, el mismo pedido lo hace GPT (`gpt-6.1-sol`). Gemini 3.1 Pro pasó a `gemini-3.5-flash` porque esa noche tardaba minutos y fallaba.
+7. **Teléfono.** El texto de la nota baja a 15.5 px y el título a un máximo de 32 px.
