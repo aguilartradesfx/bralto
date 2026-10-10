@@ -438,16 +438,6 @@
       "titleLight": "All of these tools",
       "titleBold": "are included.",
       "lead": "Everything we build lives on your own platform: CRM, conversations, pipeline, automations, scheduling, payments, and reports. It replaces the tools you pay for separately today.",
-      "features": [
-        "CRM",
-        "Omnichannel",
-        "Pipeline",
-        "Automations",
-        "Scheduling",
-        "Payments",
-        "Reports",
-        "Mobile app"
-      ],
       "tools": [
         {
           "name": "HubSpot",
@@ -492,7 +482,9 @@
       ],
       "separately": "Separately: $2,000+/mo",
       "included": "Included in your system",
-      "also": "Plus"
+      "also": "Plus",
+      "hubLabel": "All in",
+      "hubTitle": "Your platform"
     },
     "offer": {
       "eyebrow": "Investment",

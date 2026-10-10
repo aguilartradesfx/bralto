@@ -438,16 +438,6 @@
       "titleLight": "Todas estas herramientas",
       "titleBold": "están incluidas.",
       "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones, pipeline, automatizaciones, agenda, pagos y reportes. Reemplaza las herramientas que hoy paga por separado.",
-      "features": [
-        "CRM",
-        "Multicanal",
-        "Pipeline",
-        "Automatizaciones",
-        "Agenda",
-        "Pagos",
-        "Reportes",
-        "App móvil"
-      ],
       "tools": [
         {
           "name": "HubSpot",
@@ -492,7 +482,9 @@
       ],
       "separately": "Por separado: $2,000+/mes",
       "included": "Incluido en su sistema",
-      "also": "Y también"
+      "also": "Y también",
+      "hubLabel": "Todo en",
+      "hubTitle": "Su plataforma"
     },
     "offer": {
       "eyebrow": "Inversión",

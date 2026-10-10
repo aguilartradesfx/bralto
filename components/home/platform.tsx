@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { Check } from './icons'
 import { SectionHead, type Locale } from './primitives'
+import { ToolsHub } from './tools-hub'
 
 type Tool = { name: string; price: string }
 
@@ -45,24 +46,24 @@ export async function Receipt({ locale, included }: { locale: Locale; included?:
 
 export async function Platform({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'Home.platform' })
-  const features = t.raw('features') as string[]
+  const tools = t.raw('tools') as Tool[]
 
   return (
     <section id="plataforma" className="hm-section" aria-labelledby="hm-platform-title">
-      <div className="hm-wrap hm-platform">
-        <div className="hm-platform__copy">
+      <div className="hm-wrap">
+        <div className="hm-tools__head">
           <SectionHead id="hm-platform-title" light={t('titleLight')} bold={t('titleBold')} />
           <p className="hm-lead hm-rv">{t('lead')}</p>
-          <ul className="hm-chips hm-rv">
-            {features.map((f) => (
-              <li key={f} className="hm-chip hm-inset">
-                {f}
-              </li>
-            ))}
-          </ul>
         </div>
 
-        <Receipt locale={locale} />
+        <ToolsHub
+          tools={tools}
+          hubLabel={t('hubLabel')}
+          hubTitle={t('hubTitle')}
+          separately={t('separately')}
+          included={t('included')}
+          check={<Check />}
+        />
       </div>
     </section>
   )
