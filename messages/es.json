@@ -308,24 +308,29 @@
             "time": "ahora"
           },
           {
-            "title": "Agente de IA respondió",
-            "detail": "WhatsApp · dudas resueltas",
+            "title": "Agente de IA cotizó",
+            "detail": "Con sus precios y condiciones",
             "time": "+4 s"
           },
           {
-            "title": "Cotización enviada",
-            "detail": "Generada con sus precios",
-            "time": "+1 min"
+            "title": "Cotización aprobada",
+            "detail": "Por el responsable asignado",
+            "time": "+6 min"
           },
           {
-            "title": "Tarea para su equipo",
-            "detail": "Con responsable y fecha",
-            "time": "+5 min"
+            "title": "Enlace de pago enviado",
+            "detail": "Automático al aprobarse",
+            "time": "+6 min"
           },
           {
-            "title": "Cliente entra a su portal",
-            "detail": "Ve el estado de su pedido",
-            "time": "día 2"
+            "title": "Pago recibido",
+            "detail": "Tracking ID, seguimiento y usuario creados",
+            "time": "+2 h"
+          },
+          {
+            "title": "Orden en su panel",
+            "detail": "Con cada paso del proceso",
+            "time": "+2 h"
           }
         ]
       }

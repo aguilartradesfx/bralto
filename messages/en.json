@@ -308,24 +308,29 @@
             "time": "now"
           },
           {
-            "title": "AI agent replied",
-            "detail": "WhatsApp · questions answered",
+            "title": "AI agent built the quote",
+            "detail": "With your prices and terms",
             "time": "+4 s"
           },
           {
-            "title": "Quote sent",
-            "detail": "Generated with your prices",
-            "time": "+1 min"
+            "title": "Quote approved",
+            "detail": "By the assigned owner",
+            "time": "+6 min"
           },
           {
-            "title": "Task for your team",
-            "detail": "Owner and due date set",
-            "time": "+5 min"
+            "title": "Payment link sent",
+            "detail": "Automatically on approval",
+            "time": "+6 min"
           },
           {
-            "title": "Client logs into their portal",
-            "detail": "Checks their order status",
-            "time": "day 2"
+            "title": "Payment received",
+            "detail": "Tracking ID, follow-up, and user created",
+            "time": "+2 h"
+          },
+          {
+            "title": "Order in your dashboard",
+            "detail": "With every step of the process",
+            "time": "+2 h"
           }
         ]
       }
