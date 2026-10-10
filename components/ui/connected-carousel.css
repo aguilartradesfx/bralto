@@ -104,12 +104,13 @@
   padding: 18px;
 }
 
+/* Todo el texto junto y centrado en el alto: ni pegado arriba ni con un hueco en el medio */
 .cc-card__text {
   display: flex;
   flex: 1;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center;
+  gap: 22px;
   min-width: 0;
   padding: 4px 2px;
 }
@@ -118,6 +119,7 @@
   display: grid;
   justify-items: start;
   gap: 12px;
+  max-width: 32em;
 }
 
 .cc-card__title {
