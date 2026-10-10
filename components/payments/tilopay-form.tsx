@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Arrow } from '@/components/home/icons'
+import { cardBrand, formatExpiry, maskCardNumber, type CardBrand, type CardSlot } from '@/lib/payments/card-display'
 import { canCharge, readInitEnvironment } from '@/lib/payments/environment'
 import type { ClientCheckout, PaymentEnvironment, TilopayInitParams } from '@/lib/payments/types'
 import { cn } from '@/lib/utils'
-import type { PaymentLabels } from './payment-form'
+import { CardPreview } from './card-preview'
+import type { PaymentLabels, PaymentSummary } from './payment-form'
 
 // Formulario de tarjeta con el SDK v2 de Tilopay. Trampas comprobadas con la cuenta real:
 // - el contenedor DEBE tener la clase .payFormTilopay (el SDK hace querySelector de ella);
@@ -13,6 +15,8 @@ import type { PaymentLabels } from './payment-form'
 //   habilitan después (el SDK cifra la tarjeta en cada tecla desde Init en adelante);
 // - Init() devuelve environment "PROD" | "TEST": si no es el que espera el sitio, no se cobra;
 // - el 3DS lo monta el SDK en #responseTilopay, que va FUERA del formulario.
+// Al lado va una tarjeta que refleja lo que se escribe: los campos siguen sin controlar (el SDK los
+// lee tal cual) y del número solo se guarda en memoria la versión con puntos, no el número.
 const SDK_URL = 'https://app.tilopay.com/sdk/v2/sdk_tpay.min.js'
 
 type Method = { id: string; name: string; type: string }
@@ -54,10 +58,21 @@ type Status =
   | { kind: 'blocked'; actual: PaymentEnvironment }
   | { kind: 'error'; message: string; canRetry: boolean }
 
-type Props = { checkout: Extract<ClientCheckout, { provider: 'tilopay' }>; labels: PaymentLabels; onBack: () => void }
+type Props = {
+  checkout: Extract<ClientCheckout, { provider: 'tilopay' }>
+  labels: PaymentLabels
+  summary: PaymentSummary
+  onBack: () => void
+}
 
-export function TilopayForm({ checkout, labels, onBack }: Props) {
+export function TilopayForm({ checkout, labels, summary, onBack }: Props) {
   const [status, setStatus] = useState<Status>({ kind: 'loading' })
+  const [slots, setSlots] = useState<CardSlot[][]>(() => maskCardNumber(''))
+  const [brand, setBrand] = useState<CardBrand | null>(null)
+  const [expiry, setExpiry] = useState('')
+  const [cvvLength, setCvvLength] = useState(0)
+  const [flipped, setFlipped] = useState(false)
+  const holder = `${checkout.params.billToFirstName} ${checkout.params.billToLastName}`.trim()
   const [environment, setEnvironment] = useState<PaymentEnvironment | null>(null)
   const [methods, setMethods] = useState<Method[]>([])
   const [methodId, setMethodId] = useState('')
@@ -128,95 +143,126 @@ export function TilopayForm({ checkout, labels, onBack }: Props) {
 
   return (
     <div className="bk-pay">
-      <div className="payFormTilopay bk-pay__form">
-        {/* Método de pago (solo tarjeta) y tarjetas guardadas: el SDK los lee, el cliente no los ve */}
-        <select
-          id="tlpy_payment_method"
-          name="tlpy_payment_method"
-          className="bk-pay__hidden"
-          aria-hidden="true"
-          tabIndex={-1}
-          value={methodId}
-          onChange={(e) => setMethodId(e.target.value)}
-        >
-          {methods.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name}
-            </option>
-          ))}
-        </select>
-        <select id="tlpy_saved_cards" name="tlpy_saved_cards" className="bk-pay__hidden" aria-hidden="true" tabIndex={-1} />
-
-        <div className="bk-field">
-          <label htmlFor="tlpy_cc_number">{labels.cardNumber}</label>
-          <input
-            id="tlpy_cc_number"
-            name="tlpy_cc_number"
-            className="bk-input"
-            type="text"
-            inputMode="numeric"
-            autoComplete="cc-number"
-            placeholder="0000 0000 0000 0000"
-            disabled={!fieldsEnabled}
-          />
+      <aside className="bk-pay__side" data-card-area>
+        <div className="bk-pay__summary">
+          <p className="bk-pay__what">{summary.title}</p>
+          <p className="bk-pay__price">{summary.price}</p>
         </div>
-        <div className="bk-row">
+        <CardPreview
+          slots={slots}
+          brand={brand}
+          expiry={expiry}
+          cvvLength={cvvLength}
+          name={holder}
+          flipped={flipped}
+          labels={{ holder: labels.cardHolder, expires: labels.cardExpires, expiryPlaceholder: labels.cardExpiryPlaceholder, cvv: labels.cardCvv }}
+        />
+        <p className="bk-pay__note">{summary.note}</p>
+      </aside>
+
+      <div className="bk-pay__main">
+        <h2 id="bk-step-title" className="bk-h2">
+          {summary.heading}
+        </h2>
+        <div className="payFormTilopay bk-pay__form">
+          {/* Método de pago (solo tarjeta) y tarjetas guardadas: el SDK los lee, el cliente no los ve */}
+          <select
+            id="tlpy_payment_method"
+            name="tlpy_payment_method"
+            className="bk-pay__hidden"
+            aria-hidden="true"
+            tabIndex={-1}
+            value={methodId}
+            onChange={(e) => setMethodId(e.target.value)}
+          >
+            {methods.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+          <select id="tlpy_saved_cards" name="tlpy_saved_cards" className="bk-pay__hidden" aria-hidden="true" tabIndex={-1} />
+
           <div className="bk-field">
-            <label htmlFor="tlpy_cc_expiration_date">{labels.cardExpiry}</label>
+            <label htmlFor="tlpy_cc_number">{labels.cardNumber}</label>
             <input
-              id="tlpy_cc_expiration_date"
-              name="tlpy_cc_expiration_date"
+              id="tlpy_cc_number"
+              name="tlpy_cc_number"
               className="bk-input"
               type="text"
               inputMode="numeric"
-              autoComplete="cc-exp"
-              placeholder={labels.cardExpiryPlaceholder}
+              autoComplete="cc-number"
+              placeholder="0000 0000 0000 0000"
               disabled={!fieldsEnabled}
+              onInput={(e) => {
+                const value = e.currentTarget.value
+                setSlots(maskCardNumber(value))
+                setBrand(cardBrand(value))
+              }}
             />
           </div>
-          <div className="bk-field">
-            <label htmlFor="tlpy_cvv">{labels.cardCvv}</label>
-            <input
-              id="tlpy_cvv"
-              name="tlpy_cvv"
-              className="bk-input"
-              type="text"
-              inputMode="numeric"
-              autoComplete="cc-csc"
-              placeholder="123"
-              disabled={!fieldsEnabled}
-            />
+          <div className="bk-row">
+            <div className="bk-field">
+              <label htmlFor="tlpy_cc_expiration_date">{labels.cardExpiry}</label>
+              <input
+                id="tlpy_cc_expiration_date"
+                name="tlpy_cc_expiration_date"
+                className="bk-input"
+                type="text"
+                inputMode="numeric"
+                autoComplete="cc-exp"
+                placeholder={labels.cardExpiryPlaceholder}
+                disabled={!fieldsEnabled}
+                onInput={(e) => setExpiry(formatExpiry(e.currentTarget.value))}
+              />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="tlpy_cvv">{labels.cardCvv}</label>
+              <input
+                id="tlpy_cvv"
+                name="tlpy_cvv"
+                className="bk-input"
+                type="text"
+                inputMode="numeric"
+                autoComplete="cc-csc"
+                placeholder="123"
+                disabled={!fieldsEnabled}
+                onInput={(e) => setCvvLength(e.currentTarget.value.replace(/\D/g, '').length)}
+                onFocus={() => setFlipped(true)}
+                onBlur={() => setFlipped(false)}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {status.kind === 'loading' && <p className="bk-pay__status">{labels.loading}</p>}
-      {environment === 'TEST' && status.kind !== 'blocked' && <p className="bk-pay__test">{labels.testMode}</p>}
-      {status.kind === 'blocked' && (
-        <div className="bk-errors" role="alert">
-          <p>{labels.blocked(status.actual, checkout.expectedEnvironment)}</p>
+        {status.kind === 'loading' && <p className="bk-pay__status">{labels.loading}</p>}
+        {environment === 'TEST' && status.kind !== 'blocked' && <p className="bk-pay__test">{labels.testMode}</p>}
+        {status.kind === 'blocked' && (
+          <div className="bk-errors" role="alert">
+            <p>{labels.blocked(status.actual, checkout.expectedEnvironment)}</p>
+          </div>
+        )}
+        {status.kind === 'error' && (
+          <div className="bk-errors" role="alert">
+            <p>{status.message}</p>
+          </div>
+        )}
+
+        {/* El SDK monta aquí el 3DS: fuera del formulario */}
+        <div id="responseTilopay" className="bk-pay__3ds" />
+
+        <div className="bk-nav">
+          <button type="button" onClick={onBack} disabled={status.kind === 'paying'} className="hm-btn hm-btn--glass hm-glass">
+            <Arrow />
+            {labels.back}
+          </button>
+          <button type="button" onClick={pay} disabled={!canPay} className={cn('hm-btn hm-btn--solid', status.kind === 'paying' && 'is-busy')}>
+            {status.kind === 'paying' ? labels.paying : labels.pay}
+            {status.kind !== 'paying' && <Arrow />}
+          </button>
         </div>
-      )}
-      {status.kind === 'error' && (
-        <div className="bk-errors" role="alert">
-          <p>{status.message}</p>
-        </div>
-      )}
-
-      {/* El SDK monta aquí el 3DS: fuera del formulario */}
-      <div id="responseTilopay" className="bk-pay__3ds" />
-
-      <div className="bk-nav">
-        <button type="button" onClick={onBack} disabled={status.kind === 'paying'} className="hm-btn hm-btn--glass hm-glass">
-          <Arrow />
-          {labels.back}
-        </button>
-        <button type="button" onClick={pay} disabled={!canPay} className={cn('hm-btn hm-btn--solid', status.kind === 'paying' && 'is-busy')}>
-          {status.kind === 'paying' ? labels.paying : labels.pay}
-          {status.kind !== 'paying' && <Arrow />}
-        </button>
+        <p className="bk-pay__secure">{labels.secureNote}</p>
       </div>
-      <p className="bk-pay__secure">{labels.secureNote}</p>
     </div>
   )
 }

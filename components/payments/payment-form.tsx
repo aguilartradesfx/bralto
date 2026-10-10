@@ -8,6 +8,9 @@ export type PaymentLabels = {
   cardExpiry: string
   cardExpiryPlaceholder: string
   cardCvv: string
+  /** Etiquetas cortas de la tarjeta que acompaña al formulario */
+  cardHolder: string
+  cardExpires: string
   pay: string
   paying: string
   loading: string
@@ -20,12 +23,15 @@ export type PaymentLabels = {
   secureNote: string
 }
 
-type Props = { checkout: ClientCheckout; labels: PaymentLabels; onBack: () => void }
+/** Lo que se cobra, para el lado oscuro del paso de pago; heading va con id="bk-step-title" */
+export type PaymentSummary = { heading: string; title: string; price: string; note: string }
+
+type Props = { checkout: ClientCheckout; labels: PaymentLabels; summary: PaymentSummary; onBack: () => void }
 
 // Formulario de la pasarela activa. Otra pasarela = otro componente con estas mismas props.
-export function PaymentForm({ checkout, labels, onBack }: Props) {
+export function PaymentForm({ checkout, labels, summary, onBack }: Props) {
   switch (checkout.provider) {
     case 'tilopay':
-      return <TilopayForm checkout={checkout} labels={labels} onBack={onBack} />
+      return <TilopayForm checkout={checkout} labels={labels} summary={summary} onBack={onBack} />
   }
 }
