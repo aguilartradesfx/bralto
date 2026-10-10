@@ -497,10 +497,12 @@ html[data-consent-open] .hm {
   font-weight: 600;
 }
 
+/* Texto de entrada de cada sección: liviano y más chico que el cuerpo de los títulos */
 .hm-lead {
   margin: 0;
   max-width: 38em;
-  font-size: clamp(16px, 1.3vw, 18.5px);
+  font-size: clamp(15.5px, 1.1vw, 16.5px);
+  font-weight: 300;
   line-height: 1.62;
   color: var(--ink-2);
   text-wrap: pretty;
@@ -1674,7 +1676,7 @@ html[data-consent-open] .hm {
   --cc-fill: var(--accent-ink);
   --cc-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 26px 60px -28px rgba(0, 0, 0, .9);
   --cc-font-title: 600 clamp(19px, 1.35vw, 23px)/1.28 var(--font-display);
-  --cc-font-text: 400 clamp(15px, 1vw, 16.5px)/1.6 var(--font-display);
+  --cc-font-text: 300 clamp(14px, .95vw, 15px)/1.6 var(--font-display);
   --cc-font-chip: 600 12px/1.25 var(--font-display);
   margin-top: clamp(28px, 3vw, 44px);
 }
@@ -2177,7 +2179,7 @@ g.is-on .hm-hubmap__spoke {
 .hm-offer__scope {
   max-width: 30em;
   margin: 16px 0 0;
-  font-size: 15.5px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink-2);
   text-wrap: pretty;
@@ -2205,7 +2207,7 @@ g.is-on .hm-hubmap__spoke {
   gap: 12px;
   padding: 13px 0;
   border-top: 1px solid var(--rule);
-  font-size: 15.5px;
+  font-size: 15px;
 }
 
 .hm-offer__list svg {
@@ -2247,7 +2249,6 @@ g.is-on .hm-hubmap__spoke {
 
   .hm-offer__list li {
     padding: 17px 0;
-    font-size: 16px;
   }
 }
 
@@ -2287,6 +2288,7 @@ g.is-on .hm-hubmap__spoke {
 .hm-guarantee p {
   max-width: 62ch;
   margin: 0;
+  font-size: 15px;
   color: var(--ink-2);
   line-height: 1.6;
 }
@@ -2427,6 +2429,7 @@ g.is-on .hm-hubmap__spoke {
 .hm-faq__item p {
   max-width: 60ch;
   margin: 0;
+  font-size: 15px;
   padding: 0 0 24px;
   line-height: 1.65;
   color: var(--ink-2);
@@ -2810,7 +2813,7 @@ g.is-on .hm-hubmap__spoke {
 }
 
 /* "Pausar animaciones" (pie): frena lo que se mueve solo; las apariciones con el scroll no se tocan */
-html[data-motion='paused'] :is(.hm-orb, .hm-hubmap__glow, .hm-hubmap__beam, .hm-station__node i, .hm-station__lit, .hm-station__mover, .hm-station__dot, .hm-station__tile, .sv-flow__step, .sv-flow__step .sv-tag) {
+html[data-motion='paused'] :is(.hm-orb, .hm-hubmap__glow, .hm-hubmap__beam, .hm-station__node i, .hm-station__lit, .hm-station__mover, .hm-station__dot, .hm-station__tile, .sv-flow__step, .sv-flow__step .sv-tag, .sv-pipe__step, .sv-pipe__step .sv-pipe__n) {
   animation-play-state: paused;
 }
 
@@ -2926,6 +2929,6 @@ html[data-motion='paused'] :is(.hm-orb, .hm-hubmap__glow, .hm-hubmap__beam, .hm-
   }
 
   .hm-lead {
-    font-size: clamp(18.5px, 1.15vw, 20.5px);
+    font-size: clamp(16.5px, .9vw, 17.5px);
   }
 }

@@ -168,8 +168,12 @@
         "desc": "Gestión de Meta Ads y Google Ads de punta a punta, con optimización y reporte semanal."
       },
       "automatizacion": {
-        "name": "Automatización de procesos",
-        "desc": "Workflows, agentes de IA e integraciones que hacen correr su operación sola."
+        "name": "Automatizaciones",
+        "desc": "Procesos completos que avanzan solos: cotizaciones, contratos, accesos, tareas y reportes, sin trabajo manual."
+      },
+      "agentesIa": {
+        "name": "Agentes de IA",
+        "desc": "Agentes entrenados con su negocio que responden, califican y agendan en WhatsApp, Instagram, web y correo, a cualquier hora."
       },
       "sistemasInternos": {
         "name": "Sistemas internos a medida",
@@ -261,8 +265,13 @@
           "items": [
             {
               "key": "automatizacion",
-              "label": "Automatización de procesos",
-              "desc": "Flujos, agentes de IA y workflows"
+              "label": "Automatizaciones",
+              "desc": "Procesos que avanzan solos"
+            },
+            {
+              "key": "agentesIa",
+              "label": "Agentes de IA",
+              "desc": "Atienden y agendan 24/7"
             },
             {
               "key": "sistemasInternos",
