@@ -3,6 +3,7 @@ import { workflow, node, trigger, ifElse, expr } from '@n8n/workflow-sdk';
 const GEMINI = { googlePalmApi: { id: 'fEELApbTANN4LwJY', name: 'Gemini · Bralto' } };
 const BRALTO = { httpHeaderAuth: { id: 'eaOrVVhFOjJKtvsK', name: 'Bralto · Noticias API' } };
 const RESEND = { httpHeaderAuth: { id: 'OiG9o9VRxoXp4Hjr', name: 'Resend · Bralto' } };
+const OPENAI = { openAiApi: { id: 'rAg6bPdLSbIgocvv', name: 'OpenAI · Bralto' } };
 
 const cadaDia = trigger({
   type: 'n8n-nodes-base.scheduleTrigger',
@@ -15,6 +16,18 @@ const cadaDia = trigger({
   output: [{}]
 });
 
+const relleno = trigger({
+  type: 'n8n-nodes-base.webhook',
+  version: 2.1,
+  config: {
+    name: 'Relleno (fecha pasada)',
+    parameters: { httpMethod: 'POST', path: 'noticias-relleno', authentication: 'headerAuth', responseMode: 'onReceived', options: {} },
+    credentials: { httpHeaderAuth: { id: 'eaOrVVhFOjJKtvsK', name: 'Bralto · Noticias API' } },
+    position: [0, 650]
+  },
+  output: [{ body: { fecha: '2026-10-05' } }]
+});
+
 const configuracion = node({
   type: 'n8n-nodes-base.code',
   version: 2,
@@ -23,18 +36,29 @@ const configuracion = node({
     parameters: {
       mode: 'runOnceForAllItems',
       language: 'javaScript',
-      jsCode: `const hoyCR = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Costa_Rica' });
-if ($getWorkflowStaticData('global').ultimoDia === hoyCR) return [];
+      jsCode: `const entrada = $input.first().json || {};
+const pedida = entrada.body && entrada.body.fecha;
+const fecha = /^\\d{4}-\\d{2}-\\d{2}$/.test(pedida || '') ? pedida : null;
+const relleno = Boolean(fecha);
+const hoyCR = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Costa_Rica' });
+if (!relleno && $getWorkflowStaticData('global').ultimoDia === hoyCR) return [];
+const finVentana = relleno ? Date.parse(fecha + 'T12:00:00Z') : Date.now();
 return [{ json: {
   hoyCR,
-  base: 'https://braltoio-git-feat-noticias-ia-alejandro-aguilar.vercel.app',
+  relleno,
+  finVentana,
+  publicadaEn: relleno ? new Date(finVentana + Math.floor(Math.random() * 50) * 60000).toISOString() : null,
+  base: 'https://www.bralto.io',
   ensayoHasta: '2026-10-13',
+  umbral: 75,
   avisoA: 'aguilartradesfx@gmail.com',
   remitente: 'Bralto Noticias <noticias@send.bralto.io>',
-  modeloTexto: 'gemini-3.1-pro-preview',
+  modeloTexto: 'gemini-3.5-flash',
   modeloLectura: 'gemini-3.5-flash',
   modeloImagen: 'gemini-3-pro-image',
-  hoy: new Date().toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica', dateStyle: 'long' }),
+  modeloEditor: 'chat-latest',
+  modeloRespaldo: 'gpt-6.1-sol',
+  hoy: new Date(finVentana).toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica', dateStyle: 'long' }),
 } }];`
     },
     position: [240, 400]
@@ -126,7 +150,7 @@ const leerXml = (xml) => {
     return { titulo: limpiar(campo(b, ['title'])), link: link.replace(/&amp;/g, '&').trim(), fecha: campo(b, ['pubDate', 'dc:date', 'published', 'updated']), resumen: limpiar(campo(b, ['description', 'summary', 'content:encoded', 'content'])).slice(0, 500) };
   });
 };
-const ahora = Date.now();
+const ahora = $('Configuración').first().json.finVentana;
 const vistos = new Set();
 const caidos = [];
 const lista = [];
@@ -217,6 +241,7 @@ const avisoSinNoticias = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const cfg = $('Configuración').first().json;
+if (cfg.relleno) return [];
 $getWorkflowStaticData('global').ultimoDia = cfg.hoyCR;
 const caidos = $('Quitar repetidas').first().json.caidos;
 return [{ json: {
@@ -244,16 +269,21 @@ const d = $input.first().json;
 const NL = '\\n';
 const lista = d.lista.map((n) => ({ fuente: n.fuente, titulo: n.titulo, resumen: n.resumen, link: n.link }));
 const prompt = [
-  'Hoy es ' + cfg.hoy + '. Usted es el editor de noticias de IA de Bralto. Sus lectores son dueños de pequeñas y medianas empresas en Latinoamérica que no son técnicos.',
+  'Hoy es ' + cfg.hoy + '. Usted es el editor de noticias de IA de Bralto. Sus lectores son dueños de pequeñas y medianas empresas en Latinoamérica que no son técnicos y tienen poco tiempo.',
   '',
-  'De la lista, elija hasta 3 noticias, en orden de relevancia para ellos. Sirven: herramientas o funciones nuevas que un negocio puede usar ya; cambios de precio o de acceso en productos de uso masivo (ChatGPT, Gemini, Claude, Copilot, Meta AI, WhatsApp, etc.); regulación que los afecte; seguridad y privacidad; casos de uso concretos con resultados. No sirven: rumores; rondas de inversión o valuaciones sin impacto práctico; investigación académica sin aplicación inmediata; opinión; chismes corporativos o de ejecutivos; temas muy técnicos para desarrolladores.',
+  'Califique de 0 a 100 cada noticia de la lista según qué tanto la querría leer uno de ellos y qué tanto le sirve. Sume:',
+  '- Impacto práctico (hasta 40): cambia algo que un negocio puede usar, pagar, aprovechar o debe cuidar ya (herramientas nuevas, cambios de precio o acceso en ChatGPT, Gemini, Claude, Copilot, Meta AI, WhatsApp, Google; regulación; seguridad y fraudes).',
+  '- Interés humano (hasta 35): es sorprendente, cercana o da conversación; alguien se la contaría a un colega.',
+  '- Importancia (hasta 25): es un hecho relevante y nuevo, no un rumor ni una nota menor.',
+  'Puntajes bajos (menos de 50): rondas de inversión, investigación académica sin uso inmediato, opinión, chismes corporativos, temas muy técnicos para desarrolladores, anuncios menores de una empresa.',
+  'Sea exigente: 90 o más es excepcional; 75 es una buena nota; la mayoría de los días casi todo está por debajo de 70.',
   '',
-  'Tampoco elija temas que ya cubrimos en estas notas recientes:',
+  'Penalice con 0 los temas que ya cubrimos en estas notas recientes:',
   d.titulos.length ? d.titulos.map((t) => '- ' + t).join(NL) : '(ninguna)',
   '',
-  'Si ninguna noticia tiene un impacto claro para un negocio, responda publicar=false y explique el motivo en una oración. Si hay, responda publicar=true, motivo vacío y las candidatas: el link exacto de la lista y una oración de por qué le importa a un negocio.',
+  'Devuelva las 5 mejores, de mayor a menor puntaje, con el link exacto de la lista y una oración de por qué le importaría a un dueño de negocio.',
   '',
-  'Noticias de las últimas 24 horas:',
+  'Noticias:',
   JSON.stringify(lista),
 ].join(NL);
 return [{ json: {
@@ -265,11 +295,9 @@ return [{ json: {
       responseSchema: {
         type: 'OBJECT',
         properties: {
-          publicar: { type: 'BOOLEAN' },
-          motivo: { type: 'STRING' },
-          candidatas: { type: 'ARRAY', maxItems: 3, items: { type: 'OBJECT', properties: { link: { type: 'STRING' }, por_que: { type: 'STRING' } }, required: ['link', 'por_que'] } },
+          candidatas: { type: 'ARRAY', maxItems: 5, items: { type: 'OBJECT', properties: { link: { type: 'STRING' }, puntaje: { type: 'INTEGER' }, por_que: { type: 'STRING' } }, required: ['link', 'puntaje', 'por_que'] } },
         },
-        required: ['publicar', 'motivo', 'candidatas'],
+        required: ['candidatas'],
       },
     },
   },
@@ -300,6 +328,7 @@ const elegir = node({
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [2160, 300]
   },
   output: [{ candidates: [{ content: { parts: [{ text: '{"publicar":true,"motivo":"","candidatas":[{"link":"https://openai.com/index/algo","por_que":"x"}]}' }] } }] }]
@@ -313,16 +342,21 @@ const leerEleccion = node({
     parameters: {
       mode: 'runOnceForAllItems',
       language: 'javaScript',
-      jsCode: `const r = $input.first().json;
+      jsCode: `const cfg = $('Configuración').first().json;
+const r = $input.first().json;
 const parts = ((r.candidates || [])[0] || {}).content?.parts || [];
 const texto = parts.filter((p) => !p.thought).map((p) => p.text || '').join('');
 let out;
-try { out = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al elegir: ' + texto.slice(0, 300)); }
+try { out = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al calificar: ' + texto.slice(0, 300)); }
 const prev = $('Quitar repetidas').first().json;
 const porLink = new Map(prev.lista.map((n) => [n.link, n]));
-const candidatas = (out.candidatas || []).filter((c) => porLink.has(c.link)).slice(0, 3)
-  .map((c, i) => Object.assign({}, porLink.get(c.link), { por_que: c.por_que, orden: i }));
-return [{ json: { publicar: Boolean(out.publicar) && candidatas.length > 0, motivo: out.motivo || (candidatas.length ? '' : 'Gemini no eligió ninguna noticia de la lista.'), candidatas } }];`
+const calificadas = (out.candidatas || []).filter((c) => porLink.has(c.link))
+  .map((c) => Object.assign({}, porLink.get(c.link), { por_que: c.por_que, puntaje: Number(c.puntaje) || 0 }))
+  .sort((a, b) => b.puntaje - a.puntaje);
+const candidatas = calificadas.filter((c) => c.puntaje >= cfg.umbral).slice(0, 3).map((c, i) => Object.assign(c, { orden: i }));
+const mejor = calificadas[0];
+const motivo = candidatas.length ? '' : (mejor ? 'Ninguna noticia llegó a ' + cfg.umbral + ' puntos. La mejor tuvo ' + mejor.puntaje + ': «' + mejor.titulo + '».' : 'Gemini no calificó ninguna noticia de la lista.');
+return [{ json: { publicar: candidatas.length > 0, motivo, candidatas, calificadas: calificadas.map((c) => ({ puntaje: c.puntaje, titulo: c.titulo, fuente: c.fuente })) } }];`
     },
     position: [2400, 300]
   },
@@ -353,6 +387,7 @@ const avisoNoPublicar = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const cfg = $('Configuración').first().json;
+if (cfg.relleno) return [];
 $getWorkflowStaticData('global').ultimoDia = cfg.hoyCR;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 return [{ json: {
@@ -553,6 +588,7 @@ const avisoNoSeLeyo = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const cfg = $('Configuración').first().json;
+if (cfg.relleno) return [];
 const cands = $('Candidatas').all().map((i) => i.json.link);
 return [{ json: {
   from: cfg.remitente,
@@ -618,6 +654,85 @@ return [{ json: {
   output: [{ fuente: { fuente: 'OpenAI', titulo: 'Una noticia', link: 'https://openai.com/index/algo', texto: 'Texto' }, prompt: 'p', esquema: {}, url: 'u', body: {} }]
 });
 
+const pedidoEditar = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Pedido: editar',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const f = $('Pedido: redactar').first().json.fuente;
+const parts = (($input.first().json.candidates || [])[0] || {}).content?.parts || [];
+const texto = parts.filter((p) => !p.thought).map((p) => p.text || '').join('');
+let b;
+try { b = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al redactar: ' + texto.slice(0, 300)); }
+const NL = '\\n';
+const sistema = 'Usted es el editor jefe de las notas de IA de Bralto, firmadas por Alejandro Aguilar, CEO de Bralto. Escribe para dueños de pequeñas y medianas empresas en Latinoamérica: gente ocupada y práctica que no es técnica. Su trabajo es tomar un borrador correcto pero plano y convertirlo en una nota que se lea de corrido, que conecte con el lector y que lo deje pensando en su propio negocio.';
+const instrucciones = [
+  'Reescriba esta nota para que tenga más impacto y conecte con el lector.',
+  '',
+  'Cómo:',
+  '- Empiece con un gancho concreto: una situación que un dueño de negocio reconozca, o el dato más llamativo de la noticia.',
+  '- Tono conversacional y cercano, tratando al lector de usted. Oraciones cortas. Nada de jerga técnica sin explicar.',
+  '- Aterrice las ideas con ejemplos de negocios comunes (un restaurante, una clínica, una tienda, un taller, una inmobiliaria).',
+  '- En la sección "Qué significa para su negocio", cierre con un paso concreto que el lector pueda dar esta semana.',
+  '- El título puede ser más atractivo, pero sin sensacionalismo ni preguntas vacías.',
+  '',
+  'Reglas que no se pueden romper:',
+  '1) El cuerpo tiene entre 430 y 560 palabras, con los subtítulos "## Por qué importa" y "## Qué significa para su negocio".',
+  '2) Solo datos que estén en la fuente de abajo. No invente cifras, fechas, nombres, citas ni opiniones de terceros. Omita cálculos y detalles secundarios.',
+  '3) No copie frases de la fuente: nunca más de 5 palabras seguidas iguales.',
+  '4) Solo párrafos separados por una línea en blanco y esos dos subtítulos. Sin listas, viñetas, negritas, cursivas, links, emojis ni HTML.',
+  '5) Título de hasta 90 caracteres, con mayúscula solo al inicio y en nombres propios. Resumen de 1 o 2 oraciones, entre 110 y 180 caracteres.',
+  '6) Nunca mencione GoHighLevel, HighLevel ni GHL. No mencione a Bralto ni ofrezca servicios.',
+  '7) Devuelva también imagen_alt (en español, hasta 150 caracteres) y escena_imagen (en inglés); puede mantener las del borrador.',
+].join(NL);
+const usuario = instrucciones + NL + NL + 'Fuente: ' + f.fuente + ' (' + f.link + ')' + NL + '"""' + NL + f.texto + NL + '"""' + NL + NL + 'Borrador:' + NL + JSON.stringify(b);
+const esquema = {
+  type: 'object',
+  properties: { titulo: { type: 'string' }, resumen: { type: 'string' }, cuerpo: { type: 'string' }, imagen_alt: { type: 'string' }, escena_imagen: { type: 'string' } },
+  required: ['titulo', 'resumen', 'cuerpo', 'imagen_alt', 'escena_imagen'],
+  additionalProperties: false,
+};
+return [{ json: {
+  sistema,
+  instrucciones,
+  esquema,
+  body: { model: cfg.modeloEditor, messages: [{ role: 'system', content: sistema }, { role: 'user', content: usuario }], response_format: { type: 'json_schema', json_schema: { name: 'nota', strict: true, schema: esquema } } },
+} }];`
+    },
+    position: [5160, 350]
+  },
+  output: [{ sistema: 's', instrucciones: 'i', esquema: {}, body: {} }]
+});
+
+const editar = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'Editar con GPT',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 4,
+    waitBetweenTries: 5000,
+    position: [5200, 200]
+  },
+  output: [{ choices: [{ message: { content: '{"titulo":"t","resumen":"r","cuerpo":"c","imagen_alt":"a","escena_imagen":"e"}' } }] }]
+});
+
 const redactar = node({
   type: 'n8n-nodes-base.httpRequest',
   version: 4.4,
@@ -638,6 +753,7 @@ const redactar = node({
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [5040, 200]
   },
   output: [{ candidates: [{ content: { parts: [{ text: '{"titulo":"t","resumen":"r","cuerpo":"c","imagen_alt":"a","escena_imagen":"e"}' }] } }] }]
@@ -653,10 +769,10 @@ const leerBorrador = node({
       language: 'javaScript',
       jsCode: `const cfg = $('Configuración').first().json;
 const f = $('Pedido: redactar').first().json.fuente;
-const parts = (($input.first().json.candidates || [])[0] || {}).content?.parts || [];
-const texto = parts.filter((p) => !p.thought).map((p) => p.text || '').join('');
+const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT no quiso editar la nota: ' + msg.refusal);
 let b;
-try { b = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al redactar: ' + texto.slice(0, 300)); }
+try { b = JSON.parse(msg.content || ''); } catch (e) { throw new Error('GPT no devolvió JSON al editar: ' + String(msg.content).slice(0, 300)); }
 const borrador = { titulo: b.titulo, resumen: b.resumen, cuerpo: b.cuerpo, imagen_alt: b.imagen_alt };
 const NL = '\\n';
 const revisar = [
@@ -726,6 +842,7 @@ const revisarEs = node({
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [5760, 200]
   },
   output: [{ candidates: [{ content: { parts: [{ text: '{"ok":true,"problemas":[]}' }] } }] }]
@@ -776,11 +893,13 @@ const pedidoReescribir = node({
     parameters: {
       mode: 'runOnceForAllItems',
       language: 'javaScript',
-      jsCode: `const r = $('Pedido: redactar').first().json;
+      jsCode: `const cfg = $('Configuración').first().json;
+const e = $('Pedido: editar').first().json;
+const f = $('Pedido: redactar').first().json.fuente;
 const d = $input.first().json;
 const NL = '\\n';
-const prompt = r.prompt + NL + NL + 'Un primer borrador tuvo estos problemas. Escriba una versión nueva que cumpla todas las reglas. Para cada problema de hechos, elimine esa afirmación o escríbala exactamente como la dice la fuente; no agregue datos nuevos:' + NL + d.problemas.map((p) => '- ' + p).join(NL) + NL + NL + 'Borrador anterior:' + NL + JSON.stringify(d.borrador);
-return [{ json: { url: r.url, body: { contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: r.esquema } } } }];`
+const usuario = e.instrucciones + NL + NL + 'Esta versión tuvo estos problemas. Corríjalos y cumpla todas las reglas. Para cada problema de hechos, elimine esa afirmación o escríbala exactamente como la dice la fuente; no agregue datos nuevos:' + NL + d.problemas.map((p) => '- ' + p).join(NL) + NL + NL + 'Fuente: ' + f.fuente + ' (' + f.link + ')' + NL + '"""' + NL + f.texto + NL + '"""' + NL + NL + 'Versión con problemas:' + NL + JSON.stringify(Object.assign({}, d.borrador, { escena_imagen: d.escena }));
+return [{ json: { body: { model: cfg.modeloEditor, messages: [{ role: 'system', content: e.sistema }, { role: 'user', content: usuario }], response_format: { type: 'json_schema', json_schema: { name: 'nota', strict: true, schema: e.esquema } } } } }];`
     },
     position: [6480, 0]
   },
@@ -791,25 +910,25 @@ const reescribir = node({
   type: 'n8n-nodes-base.httpRequest',
   version: 4.4,
   config: {
-    name: 'Reescribir en español',
+    name: 'Reescribir con GPT',
     parameters: {
       method: 'POST',
-      url: expr('{{ $json.url }}'),
+      url: 'https://api.openai.com/v1/chat/completions',
       authentication: 'predefinedCredentialType',
-      nodeCredentialType: 'googlePalmApi',
+      nodeCredentialType: 'openAiApi',
       sendBody: true,
       contentType: 'json',
       specifyBody: 'json',
       jsonBody: expr('{{ JSON.stringify($json.body) }}'),
       options: { timeout: 300000 }
     },
-    credentials: GEMINI,
+    credentials: OPENAI,
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
     position: [6720, 0]
   },
-  output: [{ candidates: [{ content: { parts: [{ text: '{"titulo":"t","resumen":"r","cuerpo":"c","imagen_alt":"a","escena_imagen":"e"}' }] } }] }]
+  output: [{ choices: [{ message: { content: '{"titulo":"t","resumen":"r","cuerpo":"c","imagen_alt":"a","escena_imagen":"e"}' } }] }]
 });
 
 const leerReescritura = node({
@@ -821,10 +940,10 @@ const leerReescritura = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const f = $('Pedido: redactar').first().json.fuente;
-const parts = (($input.first().json.candidates || [])[0] || {}).content?.parts || [];
-const texto = parts.filter((p) => !p.thought).map((p) => p.text || '').join('');
+const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT no quiso reescribir la nota: ' + msg.refusal);
 let b;
-try { b = JSON.parse(texto); } catch (e) { throw new Error('Gemini no devolvió JSON al reescribir: ' + texto.slice(0, 300)); }
+try { b = JSON.parse(msg.content || ''); } catch (e) { throw new Error('GPT no devolvió JSON al reescribir: ' + String(msg.content).slice(0, 300)); }
 const borrador = { titulo: b.titulo, resumen: b.resumen, cuerpo: b.cuerpo, imagen_alt: b.imagen_alt };
 const revisar = JSON.parse(JSON.stringify($('Leer borrador').first().json.revisar));
 const viejo = JSON.stringify($('Leer borrador').first().json.borrador);
@@ -886,6 +1005,7 @@ const revisarEs2 = node({
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [7440, 0]
   },
   output: [{ candidates: [{ content: { parts: [{ text: '{"ok":true,"problemas":[]}' }] } }] }]
@@ -995,6 +1115,7 @@ const traducir = node({
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [8640, 200]
   },
   output: [{ candidates: [{ content: { parts: [{ text: '{"titulo":"t","resumen":"r","cuerpo":"c","imagen_alt":"a"}' }] } }] }]
@@ -1115,6 +1236,7 @@ const corregirEn = node({
     retryOnFail: true,
     maxTries: 4,
     waitBetweenTries: 5000,
+    onError: 'continueErrorOutput',
     position: [10080, 0]
   },
   output: [{ candidates: [{ content: { parts: [{ text: '{"titulo":"t","resumen":"r","cuerpo":"c","imagen_alt":"a"}' }] } }] }]
@@ -1318,15 +1440,18 @@ const armarPublicacion = node({
 const p = $('Pedido: imagen').first().json;
 const f = $('Pedido: redactar').first().json.fuente;
 const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Costa_Rica' });
-return [{ json: { cuerpo: {
+const cuerpo = {
+  tipo: 'noticia',
   es: p.es,
   en: p.en,
   fuente_url: f.link,
   fuente_nombre: f.fuente,
   fuente_texto: f.texto,
   imagen_base64: $input.first().json.imagen_base64,
-  estado: hoy < cfg.ensayoHasta ? 'oculta' : 'publicada',
-} } }];`
+  estado: cfg.relleno || hoy >= cfg.ensayoHasta ? 'publicada' : 'oculta',
+};
+if (cfg.relleno) cuerpo.publicada_en = cfg.publicadaEn;
+return [{ json: { cuerpo } }];`
     },
     position: [12960, 200]
   },
@@ -1364,6 +1489,7 @@ const avisoPublicada = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const cfg = $('Configuración').first().json;
+if (cfg.relleno) return [];
 $getWorkflowStaticData('global').ultimoDia = cfg.hoyCR;
 const r = $input.first().json;
 const p = $('Pedido: imagen').first().json;
@@ -1412,7 +1538,447 @@ const enviarAviso = node({
   output: [{ id: 'email-id' }]
 });
 
+const respaldo_elegir = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respaldo GPT: Elegir con Gemini',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const pedido = $('Pedido: elegir').first().json.body;
+const texto = pedido.contents.map((c) => c.parts.map((p) => p.text || '').join('')).join('\\n\\n');
+const conv = (s) => {
+  const t = String((s && s.type) || 'string').toLowerCase();
+  if (t === 'object') {
+    const props = {};
+    for (const [k, v] of Object.entries(s.properties || {})) props[k] = conv(v);
+    return { type: 'object', properties: props, required: Object.keys(props), additionalProperties: false };
+  }
+  if (t === 'array') return { type: 'array', items: conv(s.items) };
+  return { type: t };
+};
+const gc = pedido.generationConfig || {};
+const body = { model: cfg.modeloRespaldo, messages: [{ role: 'user', content: texto }] };
+if (gc.responseSchema) body.response_format = { type: 'json_schema', json_schema: { name: 'respuesta', strict: true, schema: conv(gc.responseSchema) } };
+return [{ json: { body } }];`
+    },
+    position: [2160, 600]
+  },
+  output: [{ body: {} }]
+});
+
+const gpt_elegir = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'GPT de respaldo: Elegir con Gemini',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
+    position: [2360, 600]
+  },
+  output: [{ choices: [{ message: { content: '{}' } }] }]
+});
+
+const norm_elegir = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respuesta de respaldo: Elegir con Gemini',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT de respaldo no respondió: ' + msg.refusal);
+return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }] } }] } }];`
+    },
+    position: [2560, 600]
+  },
+  output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
+});
+
+const respaldo_redactar = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respaldo GPT: Redactar en español',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const pedido = $('Pedido: redactar').first().json.body;
+const texto = pedido.contents.map((c) => c.parts.map((p) => p.text || '').join('')).join('\\n\\n');
+const conv = (s) => {
+  const t = String((s && s.type) || 'string').toLowerCase();
+  if (t === 'object') {
+    const props = {};
+    for (const [k, v] of Object.entries(s.properties || {})) props[k] = conv(v);
+    return { type: 'object', properties: props, required: Object.keys(props), additionalProperties: false };
+  }
+  if (t === 'array') return { type: 'array', items: conv(s.items) };
+  return { type: t };
+};
+const gc = pedido.generationConfig || {};
+const body = { model: cfg.modeloRespaldo, messages: [{ role: 'user', content: texto }] };
+if (gc.responseSchema) body.response_format = { type: 'json_schema', json_schema: { name: 'respuesta', strict: true, schema: conv(gc.responseSchema) } };
+return [{ json: { body } }];`
+    },
+    position: [5040, 500]
+  },
+  output: [{ body: {} }]
+});
+
+const gpt_redactar = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'GPT de respaldo: Redactar en español',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
+    position: [5240, 500]
+  },
+  output: [{ choices: [{ message: { content: '{}' } }] }]
+});
+
+const norm_redactar = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respuesta de respaldo: Redactar en español',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT de respaldo no respondió: ' + msg.refusal);
+return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }] } }] } }];`
+    },
+    position: [5440, 500]
+  },
+  output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
+});
+
+const respaldo_revisarEs = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respaldo GPT: Revisar hechos',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const pedido = $('Leer borrador').first().json.revisar;
+const texto = pedido.contents.map((c) => c.parts.map((p) => p.text || '').join('')).join('\\n\\n');
+const conv = (s) => {
+  const t = String((s && s.type) || 'string').toLowerCase();
+  if (t === 'object') {
+    const props = {};
+    for (const [k, v] of Object.entries(s.properties || {})) props[k] = conv(v);
+    return { type: 'object', properties: props, required: Object.keys(props), additionalProperties: false };
+  }
+  if (t === 'array') return { type: 'array', items: conv(s.items) };
+  return { type: t };
+};
+const gc = pedido.generationConfig || {};
+const body = { model: cfg.modeloRespaldo, messages: [{ role: 'user', content: texto }] };
+if (gc.responseSchema) body.response_format = { type: 'json_schema', json_schema: { name: 'respuesta', strict: true, schema: conv(gc.responseSchema) } };
+return [{ json: { body } }];`
+    },
+    position: [5760, 500]
+  },
+  output: [{ body: {} }]
+});
+
+const gpt_revisarEs = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'GPT de respaldo: Revisar hechos',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
+    position: [5960, 500]
+  },
+  output: [{ choices: [{ message: { content: '{}' } }] }]
+});
+
+const norm_revisarEs = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respuesta de respaldo: Revisar hechos',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT de respaldo no respondió: ' + msg.refusal);
+return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }] } }] } }];`
+    },
+    position: [6160, 500]
+  },
+  output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
+});
+
+const respaldo_revisarEs2 = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respaldo GPT: Revisar hechos otra vez',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const pedido = $('Leer reescritura').first().json.revisar;
+const texto = pedido.contents.map((c) => c.parts.map((p) => p.text || '').join('')).join('\\n\\n');
+const conv = (s) => {
+  const t = String((s && s.type) || 'string').toLowerCase();
+  if (t === 'object') {
+    const props = {};
+    for (const [k, v] of Object.entries(s.properties || {})) props[k] = conv(v);
+    return { type: 'object', properties: props, required: Object.keys(props), additionalProperties: false };
+  }
+  if (t === 'array') return { type: 'array', items: conv(s.items) };
+  return { type: t };
+};
+const gc = pedido.generationConfig || {};
+const body = { model: cfg.modeloRespaldo, messages: [{ role: 'user', content: texto }] };
+if (gc.responseSchema) body.response_format = { type: 'json_schema', json_schema: { name: 'respuesta', strict: true, schema: conv(gc.responseSchema) } };
+return [{ json: { body } }];`
+    },
+    position: [7440, 300]
+  },
+  output: [{ body: {} }]
+});
+
+const gpt_revisarEs2 = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'GPT de respaldo: Revisar hechos otra vez',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
+    position: [7640, 300]
+  },
+  output: [{ choices: [{ message: { content: '{}' } }] }]
+});
+
+const norm_revisarEs2 = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respuesta de respaldo: Revisar hechos otra vez',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT de respaldo no respondió: ' + msg.refusal);
+return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }] } }] } }];`
+    },
+    position: [7840, 300]
+  },
+  output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
+});
+
+const respaldo_traducir = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respaldo GPT: Traducir al inglés',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const pedido = $('Pedido: traducir').first().json.body;
+const texto = pedido.contents.map((c) => c.parts.map((p) => p.text || '').join('')).join('\\n\\n');
+const conv = (s) => {
+  const t = String((s && s.type) || 'string').toLowerCase();
+  if (t === 'object') {
+    const props = {};
+    for (const [k, v] of Object.entries(s.properties || {})) props[k] = conv(v);
+    return { type: 'object', properties: props, required: Object.keys(props), additionalProperties: false };
+  }
+  if (t === 'array') return { type: 'array', items: conv(s.items) };
+  return { type: t };
+};
+const gc = pedido.generationConfig || {};
+const body = { model: cfg.modeloRespaldo, messages: [{ role: 'user', content: texto }] };
+if (gc.responseSchema) body.response_format = { type: 'json_schema', json_schema: { name: 'respuesta', strict: true, schema: conv(gc.responseSchema) } };
+return [{ json: { body } }];`
+    },
+    position: [8640, 500]
+  },
+  output: [{ body: {} }]
+});
+
+const gpt_traducir = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'GPT de respaldo: Traducir al inglés',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
+    position: [8840, 500]
+  },
+  output: [{ choices: [{ message: { content: '{}' } }] }]
+});
+
+const norm_traducir = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respuesta de respaldo: Traducir al inglés',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT de respaldo no respondió: ' + msg.refusal);
+return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }] } }] } }];`
+    },
+    position: [9040, 500]
+  },
+  output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
+});
+
+const respaldo_corregirEn = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respaldo GPT: Corregir inglés',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const cfg = $('Configuración').first().json;
+const pedido = $('Pedido: corregir inglés').first().json.body;
+const texto = pedido.contents.map((c) => c.parts.map((p) => p.text || '').join('')).join('\\n\\n');
+const conv = (s) => {
+  const t = String((s && s.type) || 'string').toLowerCase();
+  if (t === 'object') {
+    const props = {};
+    for (const [k, v] of Object.entries(s.properties || {})) props[k] = conv(v);
+    return { type: 'object', properties: props, required: Object.keys(props), additionalProperties: false };
+  }
+  if (t === 'array') return { type: 'array', items: conv(s.items) };
+  return { type: t };
+};
+const gc = pedido.generationConfig || {};
+const body = { model: cfg.modeloRespaldo, messages: [{ role: 'user', content: texto }] };
+if (gc.responseSchema) body.response_format = { type: 'json_schema', json_schema: { name: 'respuesta', strict: true, schema: conv(gc.responseSchema) } };
+return [{ json: { body } }];`
+    },
+    position: [10080, 300]
+  },
+  output: [{ body: {} }]
+});
+
+const gpt_corregirEn = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.4,
+  config: {
+    name: 'GPT de respaldo: Corregir inglés',
+    parameters: {
+      method: 'POST',
+      url: 'https://api.openai.com/v1/chat/completions',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'openAiApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 300000 }
+    },
+    credentials: OPENAI,
+    retryOnFail: true,
+    maxTries: 3,
+    waitBetweenTries: 5000,
+    position: [10280, 300]
+  },
+  output: [{ choices: [{ message: { content: '{}' } }] }]
+});
+
+const norm_corregirEn = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Respuesta de respaldo: Corregir inglés',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      language: 'javaScript',
+      jsCode: `const msg = (($input.first().json.choices || [])[0] || {}).message || {};
+if (msg.refusal) throw new Error('GPT de respaldo no respondió: ' + msg.refusal);
+return [{ json: { candidates: [{ content: { parts: [{ text: msg.content || '' }] } }] } }];`
+    },
+    position: [10480, 300]
+  },
+  output: [{ candidates: [{ content: { parts: [{ text: '{}' }] } }] }]
+});
+
 export default workflow('noticias-ia-diarias', 'Bralto · Noticias IA diarias')
+  .add(relleno)
+  .to(configuracion)
   .add(cadaDia)
   .to(configuracion.to(listaFeeds.to(leerFeed.to(ultimas24.to(notasUsadas.to(quitarRepetidas.to(hayNoticias
     .onTrue(pedidoElegir.to(elegir.to(leerEleccion.to(valePublicar
@@ -1424,11 +1990,11 @@ export default workflow('noticias-ia-diarias', 'Bralto · Noticias IA diarias')
       .onFalse(avisoNoPublicar.to(enviarAviso))))))
     .onFalse(avisoSinNoticias.to(enviarAviso)))))))))
   .add(pedidoRedactar)
-  .to(redactar.to(leerBorrador.to(validarEs.to(revisarEs.to(juntarRevision.to(hayProblemasEs
+  .to(redactar.to(pedidoEditar.to(editar.to(leerBorrador.to(validarEs.to(revisarEs.to(juntarRevision.to(hayProblemasEs
     .onTrue(pedidoReescribir.to(reescribir.to(leerReescritura.to(validarEs2.to(revisarEs2.to(juntarRevision2.to(sigueProblemasEs
       .onTrue(detenerEs)
       .onFalse(pedidoTraducir))))))))
-    .onFalse(pedidoTraducir)))))))
+    .onFalse(pedidoTraducir)))))))))
   .add(pedidoTraducir)
   .to(traducir.to(leerTraduccion.to(validarEn.to(juntarEn.to(hayProblemasEn
     .onTrue(pedidoCorregirEn.to(corregirEn.to(leerCorreccionEn.to(validarEn2.to(juntarEn2.to(sigueProblemasEn
@@ -1436,4 +2002,10 @@ export default workflow('noticias-ia-diarias', 'Bralto · Noticias IA diarias')
       .onFalse(pedidoImagen)))))))
     .onFalse(pedidoImagen))))))
   .add(pedidoImagen)
-  .to(generarImagen.to(sacarImagen.to(imagenArchivo.to(achicarImagen.to(imagenTexto.to(armarPublicacion.to(publicar.to(avisoPublicada.to(enviarAviso)))))))));
+  .to(generarImagen.to(sacarImagen.to(imagenArchivo.to(achicarImagen.to(imagenTexto.to(armarPublicacion.to(publicar.to(avisoPublicada.to(enviarAviso)))))))))
+  .add(elegir.onError(respaldo_elegir.to(gpt_elegir.to(norm_elegir.to(leerEleccion)))))
+  .add(redactar.onError(respaldo_redactar.to(gpt_redactar.to(norm_redactar.to(pedidoEditar)))))
+  .add(revisarEs.onError(respaldo_revisarEs.to(gpt_revisarEs.to(norm_revisarEs.to(juntarRevision)))))
+  .add(revisarEs2.onError(respaldo_revisarEs2.to(gpt_revisarEs2.to(norm_revisarEs2.to(juntarRevision2)))))
+  .add(traducir.onError(respaldo_traducir.to(gpt_traducir.to(norm_traducir.to(leerTraduccion)))))
+  .add(corregirEn.onError(respaldo_corregirEn.to(gpt_corregirEn.to(norm_corregirEn.to(leerCorreccionEn)))));
