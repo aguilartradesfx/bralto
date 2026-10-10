@@ -309,7 +309,7 @@
       "system": {
         "label": "Caso de ejemplo de un sistema trabajando",
         "title": "Caso de ejemplo",
-        "note": "Ejemplo básico de un negocio que automatiza sus procesos. Con inteligencia artificial, el alcance es prácticamente ilimitado.",
+        "note": "Ejemplo de una venta automatizada de punta a punta. Con inteligencia artificial, el alcance es prácticamente ilimitado.",
         "events": [
           {
             "title": "Solicitud desde su sitio",
