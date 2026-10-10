@@ -109,9 +109,15 @@
   flex: 1;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
+  gap: 20px;
   min-width: 0;
   padding: 4px 2px;
+}
+
+.cc-card__copy {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
 }
 
 .cc-card__title {
@@ -122,18 +128,10 @@
 }
 
 .cc-card__ctx {
-  margin: auto 0;
+  margin: 0;
   font: var(--cc-font-text, 400 15px/1.55 system-ui, sans-serif);
   color: var(--cc-ink-2, currentColor);
   text-wrap: pretty;
-}
-
-.cc-card__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 /* Cliente e industria: dos etiquetas unidas por un cuello */
@@ -180,7 +178,7 @@
 }
 
 .cc-card__link {
-  flex: none;
+  margin-top: 8px;
 }
 
 .cc-card__media {

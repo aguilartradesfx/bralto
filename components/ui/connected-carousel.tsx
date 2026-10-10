@@ -354,19 +354,20 @@ export function ConnectedCarousel({
                           animate={{ opacity: isActive ? 1 : 0, x: isActive ? 0 : offset < 0 ? -(A.w + 60) : A.w + 60 }}
                           transition={instant ? INSTANT : SPRING}
                         >
+                          {/* Arriba, quién es; abajo, qué se hizo, de dónde partió y el enlace */}
                           <div className="cc-card__text">
-                            <h3 className="cc-card__title">{card.title}</h3>
-                            {card.text ? <p className="cc-card__ctx">{card.text}</p> : null}
-                            <div className="cc-card__foot">
-                              <div className="cc-chips">
-                                <span className="cc-chip">{card.name}</span>
-                                <span className="cc-chips__link" aria-hidden="true">
-                                  <svg viewBox="0 -2 14 12" width="14" height="10" preserveAspectRatio="none">
-                                    <path d="M0 -2 V0 C0 0 5.09091 0.49688 5.09091 4 C5.09091 7.50312 0 8 0 8 V10 H14 V8 C14 8 8.90909 7.50312 8.90909 4 C8.90909 0.49688 14 0 14 0 V-2 Z" />
-                                  </svg>
-                                </span>
-                                <span className="cc-chip cc-chip--tag">{card.tag}</span>
-                              </div>
+                            <div className="cc-chips">
+                              <span className="cc-chip">{card.name}</span>
+                              <span className="cc-chips__link" aria-hidden="true">
+                                <svg viewBox="0 -2 14 12" width="14" height="10" preserveAspectRatio="none">
+                                  <path d="M0 -2 V0 C0 0 5.09091 0.49688 5.09091 4 C5.09091 7.50312 0 8 0 8 V10 H14 V8 C14 8 8.90909 7.50312 8.90909 4 C8.90909 0.49688 14 0 14 0 V-2 Z" />
+                                </svg>
+                              </span>
+                              <span className="cc-chip cc-chip--tag">{card.tag}</span>
+                            </div>
+                            <div className="cc-card__copy">
+                              <h3 className="cc-card__title">{card.title}</h3>
+                              {card.text ? <p className="cc-card__ctx">{card.text}</p> : null}
                               {isActive ? (
                                 <Link
                                   href={card.href}
