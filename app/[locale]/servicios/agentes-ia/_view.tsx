@@ -1,35 +1,14 @@
 import Link from 'next/link'
-import type { ReactNode } from 'react'
-import { Arrow, Check } from '@/components/home/icons'
+import { Calendar, CircleCheck, Inbox, MessageCircleMore } from 'lucide-react'
+import { Arrow, Check, LINE } from '@/components/home/icons'
 import { vars, type Locale } from '@/components/home/primitives'
 import { ServicePage, Showcase, type ServiceCopy } from '@/components/home/service'
 
 // Agentes de IA: atienden, califican y agendan. Antes esta página se llamaba "Automatización", pero
 // un agente que conversa no es una automatización (esa tiene su propia página, /servicios/automatizacion).
 
-// Íconos de trazo fino para las cuatro estaciones del flujo
-const svg = (children: ReactNode) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    {children}
-  </svg>
-)
-
-const FLOW_ICONS = [
-  svg(<path d="M4 13.5h4.2l1.4 2.2h4.8l1.4-2.2H20M4 13.5 6.6 6h10.8L20 13.5V18a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18v-4.5Z" />),
-  svg(<path d="M4.5 7A2.5 2.5 0 0 1 7 4.5h10A2.5 2.5 0 0 1 19.5 7v6.5A2.5 2.5 0 0 1 17 16h-6.5l-4 3.5V16h0A2.5 2.5 0 0 1 4.5 13.5V7ZM9 10.25h.01M12 10.25h.01M15 10.25h.01" />),
-  svg(
-    <>
-      <rect x="4" y="5.5" width="16" height="14" rx="2.5" />
-      <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
-    </>,
-  ),
-  svg(
-    <>
-      <circle cx="12" cy="12" r="8.25" />
-      <path d="m8.75 12.25 2.25 2.25 4.25-4.75" />
-    </>,
-  ),
-]
+// Las cuatro estaciones del flujo: llega, responde, agenda y queda registrado
+const FLOW_ICONS = [Inbox, MessageCircleMore, Calendar, CircleCheck].map((Icon, i) => <Icon key={i} size={20} {...LINE} />)
 
 type Copy = ServiceCopy & {
   wfHeadline: string

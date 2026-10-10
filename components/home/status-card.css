@@ -111,8 +111,8 @@
 
   /* El check se dibuja cuando la tarjeta ya llegó */
   .st-mark--ok path {
-    stroke-dasharray: 14;
-    stroke-dashoffset: 14;
+    stroke-dasharray: 23;
+    stroke-dashoffset: 23;
     animation: st-draw .6s .45s var(--ease) forwards;
   }
 }

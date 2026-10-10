@@ -15,7 +15,7 @@ export function OrganizationJsonLd() {
     },
     address: {
       '@type': 'PostalAddress',
-      addressCountry: 'US',
+      addressCountry: 'CR',
     },
     areaServed: [
       { '@type': 'Continent', name: 'North America' },

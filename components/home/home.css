@@ -1151,6 +1151,20 @@ html[data-consent-open] .hm {
   right: 9px;
 }
 
+/* El ícono que tapa la perilla se va y el otro entra con un giro y un desenfoque suave */
+.hm[data-theme='dark'] .hm-toggle__icon--moon,
+.hm[data-theme='light'] .hm-toggle__icon--sun {
+  opacity: 0;
+  transform: scale(.5) rotate(-45deg);
+  filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hm-toggle__icon {
+    transition: opacity .3s var(--ease), transform .45s var(--ease-liquid), filter .3s var(--ease);
+  }
+}
+
 .hm-toggle__icon--moon {
   left: 9px;
 }
@@ -2276,6 +2290,11 @@ g.is-on .hm-hubmap__spoke {
   height: 76px;
   border-radius: 24px;
   color: var(--ink);
+}
+
+/* El visto del escudo, en naranja como los demás checks */
+.hm-shield path:last-child {
+  stroke: var(--accent-ink);
 }
 
 .hm-guarantee__title {
