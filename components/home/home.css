@@ -2810,7 +2810,7 @@ g.is-on .hm-hubmap__spoke {
 }
 
 /* "Pausar animaciones" (pie): frena lo que se mueve solo; las apariciones con el scroll no se tocan */
-html[data-motion='paused'] :is(.hm-orb, .hm-hubmap__glow, .hm-hubmap__beam, .hm-station__node i, .hm-station__lit, .hm-station__mover, .hm-station__dot, .hm-station__tile, .sv-flow__step, .sv-flow__step .sv-tag) {
+html[data-motion='paused'] :is(.hm-orb, .hm-hubmap__glow, .hm-hubmap__beam, .hm-station__node i, .hm-station__lit, .hm-station__mover, .hm-station__dot, .hm-station__tile, .sv-flow__step, .sv-flow__step .sv-tag, .sv-pipe__step, .sv-pipe__step .sv-pipe__n) {
   animation-play-state: paused;
 }
 

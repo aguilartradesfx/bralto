@@ -168,8 +168,12 @@
         "desc": "End-to-end Meta Ads and Google Ads management, with weekly optimization and reporting."
       },
       "automatizacion": {
-        "name": "Process automation",
-        "desc": "Workflows, AI agents, and integrations that run your operation on autopilot."
+        "name": "Automations",
+        "desc": "Complete processes that move on their own: quotes, contracts, access, tasks, and reports, with no manual work."
+      },
+      "agentesIa": {
+        "name": "AI agents",
+        "desc": "Agents trained on your business that reply, qualify, and book on WhatsApp, Instagram, web, and email, at any hour."
       },
       "sistemasInternos": {
         "name": "Custom internal tools",
@@ -261,8 +265,13 @@
           "items": [
             {
               "key": "automatizacion",
-              "label": "Process automation",
-              "desc": "Flows, AI agents, and workflows"
+              "label": "Automations",
+              "desc": "Processes that run themselves"
+            },
+            {
+              "key": "agentesIa",
+              "label": "AI agents",
+              "desc": "Answer and book 24/7"
             },
             {
               "key": "sistemasInternos",

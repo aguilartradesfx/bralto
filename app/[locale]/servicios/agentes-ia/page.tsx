@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { buildPageMetadata } from '@/lib/seo'
-import AutomatizacionView from './_view'
+import AgentesIaView from './_view'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -15,14 +15,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).locale)
   return buildPageMetadata({
     locale,
-    pathByLocale: { es: '/servicios/automatizacion', en: '/servicios/automatizacion' },
+    pathByLocale: { es: '/servicios/agentes-ia', en: '/servicios/agentes-ia' },
     titles: {
-      es: 'Automatización de procesos de punta a punta',
-      en: 'End-to-end process automation',
+      es: 'Agentes de IA para WhatsApp, Instagram y su sitio web',
+      en: 'AI agents for WhatsApp, Instagram, and your website',
     },
     descriptions: {
-      es: 'Automatizamos procesos completos: solicitudes, cotizaciones, contratos, accesos, tareas del equipo y reportes que avanzan solos entre sus sistemas y su equipo.',
-      en: 'We automate complete processes: requests, quotes, contracts, access, team tasks, and reports that move on their own across your systems and your team.',
+      es: 'Agentes de IA entrenados con la información de su negocio que responden en segundos, califican contactos y agendan citas a cualquier hora.',
+      en: 'AI agents trained on your business information that reply in seconds, qualify leads, and book meetings at any hour.',
     },
   })
 }
@@ -30,5 +30,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const locale = toLocale((await params).locale)
   setRequestLocale(locale)
-  return <AutomatizacionView locale={locale} />
+  return <AgentesIaView locale={locale} />
 }

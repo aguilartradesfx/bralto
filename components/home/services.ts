@@ -12,6 +12,7 @@ export const SERVICE_PATHS: Record<string, string> = {
   campanas: '/servicios/campanas',
   asesoria: '/servicios/asesoria',
   automatizacion: '/servicios/automatizacion',
+  agentesIa: '/servicios/agentes-ia',
   sistemasInternos: '/servicios/sistemas-internos',
 }
 

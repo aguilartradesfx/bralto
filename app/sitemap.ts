@@ -18,6 +18,7 @@ const ROUTES: Route[] = [
   { priority: 0.8,  changeFrequency: 'monthly', path: '/plataforma' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/sitios-web' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/automatizacion' },
+  { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/agentes-ia' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/produccion-contenido' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/campanas' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/sistemas-internos' },
