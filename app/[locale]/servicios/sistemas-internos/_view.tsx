@@ -14,7 +14,6 @@ const ROWS = [
 ]
 
 type Copy = ServiceCopy & {
-  dashSectionLabel: string
   dashHeadline: string
   dashItalic: string
   appUrl: string
@@ -34,13 +33,12 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Sistemas internos',
     headline: 'Su operación,',
     headlineBold: 'hecha sistema.',
-    sub: 'Herramientas internas construidas exactamente para su flujo de trabajo — no soluciones genéricas que obligan a su equipo a adaptarse.',
+    sub: 'Herramientas internas construidas exactamente para su flujo de trabajo, no soluciones genéricas que obligan a su equipo a adaptarse.',
     stats: [
-      ['4–12 sem.', 'Tiempo de entrega'],
+      ['4 a 12 sem.', 'Tiempo de entrega'],
       ['100%', 'Código suyo'],
       ['30 días', 'Soporte incluido'],
     ],
-    dashSectionLabel: 'Lo que construimos',
     dashHeadline: 'Su sistema, construido',
     dashItalic: 'para usted.',
     appUrl: 'crm.suempresa.io/panel',
@@ -59,7 +57,7 @@ const CONTENT: Record<Locale, Copy> = {
       { name: 'Node.js', desc: 'Lógica de servidor' },
     ],
     features: [
-      { t: 'Interfaz diseñada a su flujo', d: 'Dashboards, gestores de pedidos, portales de clientes o cualquier herramienta interna — construida exactamente para cómo opera su equipo.' },
+      { t: 'Interfaz diseñada a su flujo', d: 'Dashboards, gestores de pedidos, portales de clientes o cualquier herramienta interna, construida exactamente para cómo opera su equipo.' },
       { t: 'Multi-usuario y permisos', d: 'Roles diferenciados por área, accesos controlados y login propio. Cada usuario ve y puede hacer solo lo que le corresponde.' },
       { t: 'Base de datos a medida', d: 'Modelamos la estructura de datos de su operación usando Supabase y PostgreSQL. Su información, organizada y disponible en tiempo real.' },
       { t: 'Integraciones con sistemas existentes', d: 'Conectamos con CRM, WhatsApp, Google Sheets, plataformas de facturación, ERP y cualquier sistema que ya use en el día a día.' },
@@ -84,13 +82,12 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Internal systems',
     headline: 'Your operation,',
     headlineBold: 'built into a system.',
-    sub: 'Internal tools built exactly for your workflow — not generic solutions that force your team to adapt.',
+    sub: 'Internal tools built exactly for your workflow, not generic solutions that force your team to adapt.',
     stats: [
-      ['4–12 wks', 'Delivery time'],
+      ['4 to 12 wks', 'Delivery time'],
       ['100%', 'Your code'],
       ['30 days', 'Support included'],
     ],
-    dashSectionLabel: 'What we build',
     dashHeadline: 'Your system, built',
     dashItalic: 'for you.',
     appUrl: 'crm.yourcompany.io/dashboard',
@@ -109,7 +106,7 @@ const CONTENT: Record<Locale, Copy> = {
       { name: 'Node.js', desc: 'Backend logic' },
     ],
     features: [
-      { t: 'Interface built for your workflow', d: 'Dashboards, order managers, client portals, or any internal tool — built exactly for how your team operates.' },
+      { t: 'Interface built for your workflow', d: 'Dashboards, order managers, client portals, or any internal tool, built exactly for how your team operates.' },
       { t: 'Multi-user & permissions', d: 'Role-based access by department, controlled permissions, and individual logins. Each user sees and can do only what they need.' },
       { t: 'Custom database', d: "We model your operation's data structure using Supabase and PostgreSQL. Your information, organized and available in real time." },
       { t: 'Integrations with existing systems', d: 'We connect with CRMs, WhatsApp, Google Sheets, billing platforms, ERPs, and any system you already use day to day.' },
@@ -122,9 +119,9 @@ const CONTENT: Record<Locale, Copy> = {
       { t: 'Delivery & training', d: 'We hand over the working system, run a training session with your team, and leave all documentation ready so you can operate from day one.' },
     ],
     faqs: [
-      { q: 'What kind of systems do you build?', a: "Order managers, custom CRMs, inventory panels, client portals, internal booking systems, operations dashboards, tracking tools — anything you're currently doing by hand or in spreadsheets." },
+      { q: 'What kind of systems do you build?', a: "Order managers, custom CRMs, inventory panels, client portals, internal booking systems, operations dashboards, tracking tools: anything you're currently doing by hand or in spreadsheets." },
       { q: 'Do I own the code after delivery?', a: 'Yes. The source code belongs to the client from day one. We deliver it complete, documented, and with no restrictions.' },
-      { q: 'How long does it take to build a system?', a: 'Between 4 and 12 weeks depending on complexity. A basic system (1–2 modules, no complex integrations) can be ready in a month. A more complex one with multiple modules and integrations can take 2–3 months.' },
+      { q: 'How long does it take to build a system?', a: 'Between 4 and 12 weeks depending on complexity. A basic system (1 or 2 modules, no complex integrations) can be ready in a month. A more complex one with multiple modules and integrations can take 2 to 3 months.' },
       { q: 'How much does a system cost?', a: 'It depends on the number of modules, the integrations required, and the functional complexity. We pin it down precisely after the diagnostic call, where we understand the actual scope.' },
     ],
     ctaHeadline: 'Tell us',
@@ -138,7 +135,7 @@ export default async function SistemasInternosView({ locale }: { locale: Locale 
 
   return (
     <ServicePage locale={locale} service="sistemasInternos" copy={c}>
-      <Showcase id="sv-app-title" eyebrow={c.dashSectionLabel} light={c.dashHeadline} bold={c.dashItalic}>
+      <Showcase id="sv-app-title" light={c.dashHeadline} bold={c.dashItalic}>
         <figure className="sv-app hm-glass hm-glass--thick hm-rv">
           <figcaption className="sr-only">{c.appCaption}</figcaption>
           <div className="sv-browser__bar">

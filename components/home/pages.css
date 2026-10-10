@@ -61,14 +61,18 @@
   margin-top: 20px;
 }
 
+/* Las tres áreas en un solo panel, divididas por líneas (no tres tarjetas iguales) */
 .pf-cats {
   display: grid;
-  gap: 12px;
   margin-top: clamp(36px, 4vw, 52px);
 }
 
 .pf-cat {
   padding: 26px 26px 28px;
+}
+
+.pf-cat + .pf-cat {
+  box-shadow: inset 0 1px 0 var(--rule);
 }
 
 .pf-cat h3 {
@@ -106,76 +110,82 @@
   .pf-cats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .pf-cat + .pf-cat {
+    box-shadow: inset 1px 0 0 var(--rule);
+  }
 }
 
-/* ---------- /precios ---------- */
-.pr-group {
+/* ---------- /servicios (índice) ---------- */
+.si-group {
   padding-block: 8px clamp(36px, 4vw, 52px);
 }
 
-.pr-list {
-  display: grid;
-  gap: 12px;
+.si-list {
   margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.pr-card {
+/* Filas con línea, no tarjetas: nombre, descripción y "Ver detalles" en columnas fijas */
+.si-row {
   display: grid;
-  align-content: start;
   gap: 10px;
-  height: 100%;
-  padding: 26px 26px 24px;
-  transition: transform .4s var(--ease);
+  padding: 24px 4px;
+  box-shadow: inset 0 1px 0 var(--rule);
 }
 
-.pr-card:hover {
-  transform: translateY(-2px);
+.si-list li:last-child .si-row {
+  box-shadow: inset 0 1px 0 var(--rule), inset 0 -1px 0 var(--rule);
 }
 
-.pr-card h3 {
-  margin: 6px 0 0;
+.si-row__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.si-row h3 {
+  margin: 0;
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -.02em;
 }
 
-.pr-card p {
+.si-row__desc {
   margin: 0;
-  font-size: 14.5px;
+  max-width: 60ch;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink-2);
 }
 
-.pr-card__go {
+.si-row__go {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-top: 10px;
   font: 500 11.5px/1 var(--font-mono);
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--ink);
 }
 
-.pr-card:hover .hm-arrow {
-  transform: translateX(3px);
+.si-row .hm-arrow {
+  transition: transform .3s var(--ease);
 }
 
-@media (min-width: 720px) {
-  .pr-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (hover: hover) {
+  .si-row:hover .hm-arrow {
+    transform: translateX(4px);
   }
 }
 
-@media (min-width: 1100px) {
-  .pr-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .pr-group--3 .pr-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (min-width: 900px) {
+  .si-row {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto;
+    align-items: center;
+    gap: 32px;
   }
 }
 
@@ -197,10 +207,6 @@
   width: 100%;
   height: auto;
   border-radius: calc(var(--r-lg) - 10px);
-}
-
-.ab-photo--small {
-  max-width: 440px;
 }
 
 .ab-prose {
@@ -239,19 +245,22 @@
 
 .ab-mission {
   display: grid;
-  gap: 12px;
+  gap: 32px;
   margin-top: 22px;
 }
 
+/* Misión y visión: dos enunciados con una línea arriba, sin tarjetas */
 .ab-mission__card {
   display: grid;
+  align-content: start;
   gap: 14px;
-  padding: clamp(26px, 3vw, 36px);
+  padding-top: 24px;
+  box-shadow: inset 0 1px 0 var(--rule);
 }
 
 .ab-mission__body {
   margin: 0;
-  font-size: clamp(19px, 2vw, 24px);
+  font-size: clamp(22px, 2.4vw, 30px);
   font-weight: 300;
   line-height: 1.35;
   letter-spacing: -.02em;
@@ -270,11 +279,26 @@
   margin-top: 22px;
 }
 
+.ab-close > div {
+  max-width: 46em;
+}
+
 .ab-signature {
-  margin: 20px 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 30px;
   font: 500 12px/1.5 var(--font-mono);
   letter-spacing: .04em;
   color: var(--ink-3);
+}
+
+.ab-signature__photo {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  object-fit: cover;
 }
 
 .ab-close__note {
@@ -293,6 +317,7 @@
 @media (min-width: 720px) {
   .ab-mission {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(32px, 5vw, 64px);
   }
 
   .ab-principles {
@@ -317,13 +342,6 @@
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   }
 
-  .ab-close {
-    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-  }
-
-  .ab-close .ab-photo {
-    justify-self: end;
-  }
 }
 
 /* ---------- Caso ---------- */

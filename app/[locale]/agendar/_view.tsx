@@ -1,53 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useLocale } from 'next-intl'
 import { GlassCalendar } from '@/components/ui/glass-calendar'
 import { Arrow, Check } from '@/components/home/icons'
 import { PaymentForm, type PaymentLabels } from '@/components/payments/payment-form'
+import { dialCodeOptions, guessDialCode, invalidContactFields, type ContactField } from '@/lib/diagnostic/contact'
 import { bookableDays, costaRicaToday, localDate, slotKey } from '@/lib/diagnostic/days'
+import { formatSlotDay, formatSlotTime, localSlotTime, slotStart, TIME_SLOT_IDS } from '@/lib/diagnostic/slots'
 import type { ClientCheckout } from '@/lib/payments/types'
 import { cn } from '@/lib/utils'
 import './agendar.css'
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
-const TIME_SLOTS = [
-  { id: '9am',  label: '9:00 AM' },
-  { id: '1pm',  label: '1:00 PM' },
-  { id: '3pm',  label: '3:00 PM' },
-  { id: '5pm',  label: '5:00 PM' },
-]
-
-const COUNTRY_CODES = [
-  { code: '+1',   label: '+1 · US / Canada' },
-  { code: '+52',  label: '+52 · Mexico' },
-  { code: '+57',  label: '+57 · Colombia' },
-  { code: '+54',  label: '+54 · Argentina' },
-  { code: '+56',  label: '+56 · Chile' },
-  { code: '+51',  label: '+51 · Peru' },
-  { code: '+593', label: '+593 · Ecuador' },
-  { code: '+58',  label: '+58 · Venezuela' },
-  { code: '+507', label: '+507 · Panama' },
-  { code: '+506', label: '+506 · Costa Rica' },
-  { code: '+502', label: '+502 · Guatemala' },
-  { code: '+503', label: '+503 · El Salvador' },
-  { code: '+504', label: '+504 · Honduras' },
-  { code: '+505', label: '+505 · Nicaragua' },
-  { code: '+598', label: '+598 · Uruguay' },
-  { code: '+591', label: '+591 · Bolivia' },
-  { code: '+595', label: '+595 · Paraguay' },
-  { code: '+34',  label: '+34 · Spain' },
-  { code: '+55',  label: '+55 · Brazil' },
-  { code: '+44',  label: '+44 · UK' },
-]
-
 const CONTENT = {
   es: {
     backToSite: 'Volver al sitio',
     eyebrow: 'Diagnóstico de 30 minutos',
     headline: 'Agende su diagnóstico con el equipo.',
-    subline: '30 minutos · $97 USD · Se descuenta del proyecto si decide contratar',
+    // El costo se ve después de los datos (resumen y pago), no al entrar: decisión de Alejandro
+    subline: 'En 30 minutos entendemos su negocio y le decimos qué tiene sentido hoy.',
     stepLabels: ['Fecha y hora', 'Sus datos', 'Su negocio', 'Pago'],
     slotLocked: 'Horario reservado temporalmente',
     step0Heading: 'Seleccione una fecha',
@@ -91,15 +64,17 @@ const CONTENT = {
     errTime: 'Seleccione un horario.',
     errFirstName: 'Ingrese su nombre.',
     errLastName: 'Ingrese su apellido.',
-    errPhone: 'Ingrese su teléfono.',
+    errPhone: 'Ingrese su teléfono sin el código de país, solo con números.',
     errEmail: 'Ingrese un correo válido.',
-    errQuestion: 'Responda: ',
+    errQuestion: 'Elija una opción.',
     errSlotTaken: 'Este horario ya no está disponible. Por favor elija otro.',
     errLockExpired: 'Su reserva temporal expiró. Por favor seleccione un nuevo horario.',
     errConflict: 'Este horario ya fue reservado. Por favor regrese y elija otro.',
     errGeneric: 'Ocurrió un error al agendar. Por favor inténtelo de nuevo.',
-    DAYS: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-    MONTHS: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+    zoneNote: 'Horas de Costa Rica (GMT-6).',
+    zoneLocalNote: 'Debajo de cada una, la hora donde usted está.',
+    localSuffix: 'en su zona',
+    emailPlaceholder: 'nombre@empresa.com',
     questions: [
       {
         id: 'size',
@@ -132,7 +107,7 @@ const CONTENT = {
     backToSite: 'Back to site',
     eyebrow: '30-minute diagnostic call',
     headline: 'Book your diagnostic call with our team.',
-    subline: '30 minutes · $97 USD · Deducted from the project if you hire us',
+    subline: 'In 30 minutes we understand your business and tell you what makes sense right now.',
     stepLabels: ['Date & time', 'Your info', 'Your business', 'Payment'],
     slotLocked: 'Time slot temporarily reserved',
     step0Heading: 'Select a date',
@@ -176,15 +151,17 @@ const CONTENT = {
     errTime: 'Please select a time slot.',
     errFirstName: 'Please enter your first name.',
     errLastName: 'Please enter your last name.',
-    errPhone: 'Please enter your phone number.',
+    errPhone: 'Please enter your phone number without the country code, digits only.',
     errEmail: 'Please enter a valid email address.',
-    errQuestion: 'Please answer: ',
+    errQuestion: 'Please choose an option.',
     errSlotTaken: 'This time slot is no longer available. Please choose another.',
     errLockExpired: 'Your temporary reservation expired. Please select a new time slot.',
     errConflict: 'This slot was just booked. Please go back and choose another.',
     errGeneric: 'Something went wrong. Please try again.',
-    DAYS: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    MONTHS: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    zoneNote: 'Costa Rica time (GMT-6).',
+    zoneLocalNote: 'Under each one, the time where you are.',
+    localSuffix: 'your time',
+    emailPlaceholder: 'name@company.com',
     questions: [
       {
         id: 'size',
@@ -230,6 +207,34 @@ interface FormData {
   answers: Record<string, string>
 }
 
+// Las respuestas viajan tal cual al CRM ("Facturación mensual - 2.0" en GoHighLevel), donde filtros
+// y automatizaciones pueden depender del texto exacto: solo cambia cómo se muestran los rangos
+function optionLabel(opt: string, lang: 'es' | 'en') {
+  return opt.replace(/ – /g, lang === 'en' ? ' to ' : ' a ')
+}
+
+// Errores junto a cada campo o grupo: la fecha, el horario, cada dato de contacto y cada pregunta
+type ErrorKey = 'date' | 'time' | ContactField | `q:${string}`
+type FieldErrors = Partial<Record<ErrorKey, string>>
+
+const FIELD_ID: Record<ContactField, string> = {
+  nombre: 'bk-first',
+  apellido: 'bk-last',
+  telefono: 'bk-phone',
+  email: 'bk-email',
+}
+
+// Errores que se van cuando cambia cada dato
+const CLEARS: Partial<Record<keyof FormData, ErrorKey[]>> = {
+  selectedDate: ['date', 'time'],
+  selectedTime: ['time'],
+  nombre: ['nombre'],
+  apellido: ['apellido'],
+  countryCode: ['telefono'],
+  telefono: ['telefono'],
+  email: ['email'],
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function OptionCard({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
@@ -263,6 +268,7 @@ function StepIndicator({ step, labels }: { step: number; labels: string[] }) {
 export default function AgendarPage() {
   const locale = useLocale()
   const c = CONTENT[locale as 'es' | 'en'] ?? CONTENT.es
+  const lang = locale === 'en' ? 'en' : 'es'
 
   // Con la fecha de Costa Rica: el servidor (UTC) y el navegador marcan los mismos días
   const availableDays = bookableDays(Date.now()).map(localDate)
@@ -272,7 +278,9 @@ export default function AgendarPage() {
   const [submitting, setSubmitting] = useState(false)
   // Lo que devuelve el servidor para el formulario de la pasarela (token del SDK, nunca credenciales)
   const [checkout, setCheckout] = useState<ClientCheckout | null>(null)
-  const [errors, setErrors] = useState<string[]>([])
+  // Errores junto a cada campo y, aparte, los que devuelve el servidor
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [formError, setFormError] = useState<string | null>(null)
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
   const [lockedSlots, setLockedSlots] = useState<Set<string>>(new Set())
   // Curated slots that are actually free in GHL. `null` = couldn't check
@@ -301,6 +309,16 @@ export default function AgendarPage() {
     if (new URLSearchParams(window.location.search).get('pago') === 'cancelado') setNotice(c.paymentCancelled)
   }, [c.paymentCancelled])
 
+  // Zona de quien agenda: solo la sabe el navegador. Con ella, cada horario muestra también su hora
+  const [visitorZone, setVisitorZone] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    try {
+      setVisitorZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+    } catch {}
+  }, [])
+
+  const countryOptions = useMemo(() => dialCodeOptions(lang), [lang])
+
   const [lockExpiresAt, setLockExpiresAt] = useState<number | null>(null)
   const [countdown, setCountdown] = useState(0)
 
@@ -326,7 +344,8 @@ export default function AgendarPage() {
         clearInterval(interval)
         setLockExpiresAt(null)
         setCheckout(null)
-        setErrors([c.errLockExpired])
+        setFieldErrors({})
+        setFormError(c.errLockExpired)
         setStep(0)
         setForm((f) => ({ ...f, selectedDate: null, selectedTime: null }))
         refreshSlots()
@@ -335,51 +354,82 @@ export default function AgendarPage() {
     return () => clearInterval(interval)
   }, [lockExpiresAt, c.errLockExpired])
 
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<FormData>(() => ({
     selectedDate: null,
     selectedTime: null,
     nombre: '',
     apellido: '',
-    countryCode: '+1',
+    // El país que dicen el idioma o la zona del navegador (el selector recién aparece en el paso 2)
+    countryCode: guessDialCode({
+      languages: typeof window === 'undefined' ? [] : navigator.languages,
+      timeZone: typeof window === 'undefined' ? undefined : Intl.DateTimeFormat().resolvedOptions().timeZone,
+      locale: lang,
+    }),
     telefono: '',
     email: '',
     answers: {},
-  })
+  }))
+
+  function clearErrors(keys: ErrorKey[]) {
+    setFormError(null)
+    setFieldErrors((current) => {
+      if (!keys.some((key) => key in current)) return current
+      const next = { ...current }
+      for (const key of keys) delete next[key]
+      return next
+    })
+  }
 
   function update(field: keyof FormData, value: unknown) {
     setForm((f) => ({ ...f, [field]: value }))
-    setErrors([])
+    clearErrors(CLEARS[field] ?? [])
   }
 
   function setAnswer(questionId: string, value: string) {
     setForm((f) => ({ ...f, answers: { ...f.answers, [questionId]: value } }))
-    setErrors([])
+    clearErrors([`q:${questionId}`])
   }
 
-  function validateStep(): string[] {
-    const errs: string[] = []
+  function validateStep(): FieldErrors {
     if (step === 0) {
-      if (!form.selectedDate) errs.push(c.errDate)
-      if (!form.selectedTime) errs.push(c.errTime)
+      if (!form.selectedDate) return { date: c.errDate }
+      if (!form.selectedTime) return { time: c.errTime }
     }
     if (step === 1) {
-      if (!form.nombre.trim()) errs.push(c.errFirstName)
-      if (!form.apellido.trim()) errs.push(c.errLastName)
-      if (!form.telefono.trim()) errs.push(c.errPhone)
-      if (!form.email.trim() || !form.email.includes('@')) errs.push(c.errEmail)
+      const messages: Record<ContactField, string> = {
+        nombre: c.errFirstName,
+        apellido: c.errLastName,
+        telefono: c.errPhone,
+        email: c.errEmail,
+      }
+      return Object.fromEntries(invalidContactFields(form).map((field) => [field, messages[field]]))
     }
     if (step === 2) {
-      for (const q of c.questions) {
-        if (!form.answers[q.id]) errs.push(`${c.errQuestion}"${q.question}"`)
-      }
+      return Object.fromEntries(c.questions.filter((q) => !form.answers[q.id]).map((q) => [`q:${q.id}`, c.errQuestion]))
     }
-    return errs
+    return {}
+  }
+
+  // Muestra los errores y lleva el foco al primero: el lector de pantalla lo lee junto a su mensaje
+  function reportErrors(errors: FieldErrors): boolean {
+    setFieldErrors(errors)
+    setFormError(null)
+    const first = Object.keys(errors)[0] as ErrorKey | undefined
+    if (!first) return false
+    const selector =
+      first === 'date'
+        ? '.bk-day.is-available'
+        : first === 'time'
+          ? '.bk-slot:not(:disabled)'
+          : first.startsWith('q:')
+            ? `#bk-q-${first.slice(2)}-options button`
+            : `#${FIELD_ID[first as ContactField]}`
+    requestAnimationFrame(() => document.querySelector<HTMLElement>(selector)?.focus())
+    return true
   }
 
   async function next() {
-    const errs = validateStep()
-    if (errs.length) { setErrors(errs); return }
-    setErrors([])
+    if (reportErrors(validateStep())) return
 
     if (step === 0) {
       const key = slotKey(form.selectedDate!, form.selectedTime!)
@@ -391,7 +441,7 @@ export default function AgendarPage() {
         })
         const data = await res.json()
         if (!res.ok) {
-          setErrors([data.error ?? c.errSlotTaken])
+          setFormError(data.error ?? c.errSlotTaken)
           refreshSlots()
           return
         }
@@ -407,7 +457,8 @@ export default function AgendarPage() {
   }
 
   async function back() {
-    setErrors([])
+    setFieldErrors({})
+    setFormError(null)
     if (step === 1 && form.selectedDate && form.selectedTime) {
       const key = slotKey(form.selectedDate, form.selectedTime)
       fetch('/api/bookings', {
@@ -424,8 +475,7 @@ export default function AgendarPage() {
   }
 
   async function submit() {
-    const errs = validateStep()
-    if (errs.length) { setErrors(errs); return }
+    if (reportErrors(validateStep())) return
     setSubmitting(true)
 
     const key = slotKey(form.selectedDate!, form.selectedTime!)
@@ -447,7 +497,7 @@ export default function AgendarPage() {
       })
       const data = (await res.json().catch(() => ({}))) as { checkout?: ClientCheckout; holdExpiresAt?: number }
       if (res.status === 409) {
-        setErrors([c.errConflict])
+        setFormError(c.errConflict)
         setSubmitting(false)
         return
       }
@@ -462,10 +512,24 @@ export default function AgendarPage() {
       setStep(3)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch {
-      setErrors([c.errGeneric])
+      setFormError(c.errGeneric)
       setSubmitting(false)
     }
   }
+
+  // Horarios del día elegido: la hora de Costa Rica y, si es otra, la de quien agenda
+  const slots = form.selectedDate
+    ? TIME_SLOT_IDS.map((id) => {
+        const key = slotKey(form.selectedDate!, id)
+        const start = slotStart(key)
+        return {
+          id,
+          label: formatSlotTime(start, lang),
+          local: localSlotTime(start, lang, visitorZone),
+          booked: bookedSlots.has(key) || lockedSlots.has(key) || (ghlAvailable !== null && !ghlAvailable.has(key)),
+        }
+      })
+    : []
 
   return (
     <main className="bk" data-focus-page>
@@ -513,38 +577,52 @@ export default function AgendarPage() {
                 today={today}
               />
 
+              {fieldErrors.date && (
+                <p className="bk-field__error" role="alert">
+                  {fieldErrors.date}
+                </p>
+              )}
+
               {form.selectedDate && (
                 <div key={form.selectedDate.toDateString()} className="bk-slots-wrap">
                   <h3 className="bk-h3">
-                    {c.slotsFor} —{' '}
-                    <span>
-                      {c.DAYS[form.selectedDate.getDay()]} {form.selectedDate.getDate()}{' '}
-                      {c.MONTHS[form.selectedDate.getMonth()]}
-                    </span>
+                    {c.slotsFor}: <span>{formatSlotDay(form.selectedDate, lang)}</span>
                   </h3>
+                  <p className="bk-zone">
+                    {c.zoneNote}
+                    {slots.some((slot) => slot.local) && ` ${c.zoneLocalNote}`}
+                  </p>
                   <div className="bk-slots">
-                    {TIME_SLOTS.map(({ id, label }) => {
-                      const selected = form.selectedTime === id
-                      const key = slotKey(form.selectedDate!, id)
-                      const booked =
-                        bookedSlots.has(key) ||
-                        lockedSlots.has(key) ||
-                        (ghlAvailable !== null && !ghlAvailable.has(key))
+                    {slots.map((slot) => {
+                      const selected = form.selectedTime === slot.id
                       return (
                         <button
-                          key={id}
+                          key={slot.id}
                           type="button"
-                          disabled={booked}
+                          disabled={slot.booked}
                           aria-pressed={selected}
-                          onClick={() => !booked && update('selectedTime', id)}
+                          onClick={() => !slot.booked && update('selectedTime', slot.id)}
                           className={cn('bk-slot', selected && 'is-selected')}
                         >
-                          {label}
-                          {booked && <small>{c.unavailable}</small>}
+                          {slot.label}
+                          {slot.booked ? (
+                            <small>{c.unavailable}</small>
+                          ) : (
+                            slot.local && (
+                              <small>
+                                {slot.local} {c.localSuffix}
+                              </small>
+                            )
+                          )}
                         </button>
                       )
                     })}
                   </div>
+                  {fieldErrors.time && (
+                    <p className="bk-field__error" role="alert">
+                      {fieldErrors.time}
+                    </p>
+                  )}
                 </div>
               )}
             </>
@@ -570,10 +648,16 @@ export default function AgendarPage() {
                       type="text"
                       autoComplete="given-name"
                       required
+                      aria-invalid={fieldErrors.nombre ? true : undefined}
+                      aria-describedby={fieldErrors.nombre ? 'bk-first-error' : undefined}
                       value={form.nombre}
                       onChange={(e) => update('nombre', e.target.value)}
-                      placeholder="Alex"
                     />
+                    {fieldErrors.nombre && (
+                      <p id="bk-first-error" className="bk-field__error">
+                        {fieldErrors.nombre}
+                      </p>
+                    )}
                   </div>
                   <div className="bk-field">
                     <label htmlFor="bk-last">
@@ -586,10 +670,16 @@ export default function AgendarPage() {
                       type="text"
                       autoComplete="family-name"
                       required
+                      aria-invalid={fieldErrors.apellido ? true : undefined}
+                      aria-describedby={fieldErrors.apellido ? 'bk-last-error' : undefined}
                       value={form.apellido}
                       onChange={(e) => update('apellido', e.target.value)}
-                      placeholder="Johnson"
                     />
+                    {fieldErrors.apellido && (
+                      <p id="bk-last-error" className="bk-field__error">
+                        {fieldErrors.apellido}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -605,7 +695,7 @@ export default function AgendarPage() {
                       value={form.countryCode}
                       onChange={(e) => update('countryCode', e.target.value)}
                     >
-                      {COUNTRY_CODES.map(({ code, label }) => (
+                      {countryOptions.map(({ code, label }) => (
                         <option key={code} value={code}>
                           {label}
                         </option>
@@ -618,11 +708,17 @@ export default function AgendarPage() {
                       inputMode="tel"
                       autoComplete="tel-national"
                       required
+                      aria-invalid={fieldErrors.telefono ? true : undefined}
+                      aria-describedby={fieldErrors.telefono ? 'bk-phone-error' : undefined}
                       value={form.telefono}
                       onChange={(e) => update('telefono', e.target.value)}
-                      placeholder="555 000 0000"
                     />
                   </div>
+                  {fieldErrors.telefono && (
+                    <p id="bk-phone-error" className="bk-field__error">
+                      {fieldErrors.telefono}
+                    </p>
+                  )}
                 </div>
 
                 <div className="bk-field">
@@ -635,11 +731,20 @@ export default function AgendarPage() {
                     className="bk-input"
                     type="email"
                     autoComplete="email"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     required
+                    aria-invalid={fieldErrors.email ? true : undefined}
+                    aria-describedby={fieldErrors.email ? 'bk-email-error' : undefined}
                     value={form.email}
                     onChange={(e) => update('email', e.target.value)}
-                    placeholder="alex@company.com"
+                    placeholder={c.emailPlaceholder}
                   />
+                  {fieldErrors.email && (
+                    <p id="bk-email-error" className="bk-field__error">
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
               </div>
             </>
@@ -654,24 +759,38 @@ export default function AgendarPage() {
               <p className="bk-lead">{c.step2Sub}</p>
 
               <div className="bk-questions">
-                {c.questions.map((q) => (
-                  <div key={q.id} className="bk-q" role="group" aria-labelledby={`bk-q-${q.id}`}>
-                    <p id={`bk-q-${q.id}`}>
-                      {q.question}
-                      <span className="bk-req" aria-hidden="true">*</span>
-                    </p>
-                    <div className="bk-options">
-                      {q.options.map((opt) => (
-                        <OptionCard
-                          key={opt}
-                          label={opt}
-                          selected={form.answers[q.id] === opt}
-                          onClick={() => setAnswer(q.id, opt)}
-                        />
-                      ))}
+                {c.questions.map((q) => {
+                  const error = fieldErrors[`q:${q.id}`]
+                  return (
+                    <div
+                      key={q.id}
+                      className="bk-q"
+                      role="group"
+                      aria-labelledby={`bk-q-${q.id}`}
+                      aria-describedby={error ? `bk-q-${q.id}-error` : undefined}
+                    >
+                      <p id={`bk-q-${q.id}`}>
+                        {q.question}
+                        <span className="bk-req" aria-hidden="true">*</span>
+                      </p>
+                      <div id={`bk-q-${q.id}-options`} className="bk-options">
+                        {q.options.map((opt) => (
+                          <OptionCard
+                            key={opt}
+                            label={optionLabel(opt, lang)}
+                            selected={form.answers[q.id] === opt}
+                            onClick={() => setAnswer(q.id, opt)}
+                          />
+                        ))}
+                      </div>
+                      {error && (
+                        <p id={`bk-q-${q.id}-error`} className="bk-field__error">
+                          {error}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="bk-summary">
@@ -696,7 +815,8 @@ export default function AgendarPage() {
                 labels={c.pay}
                 onBack={() => {
                   setCheckout(null)
-                  setErrors([])
+                  setFieldErrors({})
+                  setFormError(null)
                   setStep(2)
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
@@ -704,11 +824,10 @@ export default function AgendarPage() {
             </>
           )}
 
-          {step < 3 && errors.length > 0 && (
+          {/* Errores del servidor (horario tomado, reserva vencida…); los de cada campo van junto a él */}
+          {step < 3 && formError && (
             <div className="bk-errors" role="alert">
-              {errors.map((e) => (
-                <p key={e}>{e}</p>
-              ))}
+              <p>{formError}</p>
             </div>
           )}
 

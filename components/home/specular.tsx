@@ -3,7 +3,9 @@
 import { useEffect } from 'react'
 
 // Reflejo especular y borde vivo que siguen al cursor.
-// Solo con puntero fino, solo sobre los vidrios visibles, un cuadro por frame.
+// Solo con puntero fino, solo sobre los vidrios visibles, un cuadro por frame. Se repinta con el
+// puntero, sin escuchar el scroll: si la página se mueve con el mouse quieto, el reflejo se
+// acomoda en el siguiente movimiento.
 export function Specular() {
   useEffect(() => {
     if (!matchMedia('(pointer: fine)').matches) return
@@ -22,7 +24,6 @@ export function Specular() {
     const lastAngle = new WeakMap<HTMLElement, number>()
     let x = 0
     let y = 0
-    let moved = false
     let frame = 0
 
     const paint = () => {
@@ -42,21 +43,18 @@ export function Specular() {
     }
 
     const schedule = () => {
-      if (moved && !frame) frame = requestAnimationFrame(paint)
+      if (!frame) frame = requestAnimationFrame(paint)
     }
     const onMove = (e: PointerEvent) => {
       x = e.clientX
       y = e.clientY
-      moved = true
       schedule()
     }
 
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('scroll', schedule, { passive: true })
     return () => {
       io.disconnect()
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('scroll', schedule)
       cancelAnimationFrame(frame)
     }
   }, [])

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { buildPageMetadata } from '@/lib/seo'
-import PreciosView from './_view'
+import ServiciosView from './_view'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).locale)
   return buildPageMetadata({
     locale,
-    pathByLocale: { es: '/precios', en: '/precios' },
+    pathByLocale: { es: '/servicios', en: '/servicios' },
     titles: {
-      es: 'Servicios — Sitios web, automatización con IA y sistemas a la medida',
-      en: 'Services — Websites, AI automation, and custom systems',
+      es: 'Servicios: sitios web, automatización con IA y sistemas a la medida',
+      en: 'Services: websites, AI automation, and custom systems',
     },
     descriptions: {
       es: 'Sitios web, contenido, campañas, automatización con IA y sistemas internos. Cada proyecto se cotiza a la medida después de un diagnóstico de 30 minutos.',
@@ -30,5 +30,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const locale = toLocale((await params).locale)
   setRequestLocale(locale)
-  return <PreciosView locale={locale} />
+  return <ServiciosView locale={locale} />
 }

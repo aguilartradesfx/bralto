@@ -1,0 +1,215 @@
+/* ==========================================================================
+   /payment-info con el sistema del sitio: vive bajo .hm y usa sus tokens.
+   ========================================================================== */
+
+/* Alineado a la izquierda con el título; el ancho máximo va en cada bloque */
+.pi {
+  display: grid;
+  gap: 20px;
+  padding-bottom: clamp(56px, 7vw, 96px);
+}
+
+.pi > * {
+  max-width: 920px;
+}
+
+.pi-h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+
+.pi-muted,
+.pi-note,
+.pi-help {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.pi-note {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* Cuentas */
+.pi-accounts {
+  display: grid;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.pi-account {
+  min-width: 0;
+  padding: 22px 22px 10px;
+  border-radius: var(--r-lg);
+}
+
+.pi-account__title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pi-account__title span {
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: .08em;
+  color: var(--ink-3);
+}
+
+.pi-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.pi-field__text {
+  min-width: 0;
+}
+
+.pi-field__label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.pi-field__value {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.pi-mono {
+  font-family: var(--font-mono);
+  letter-spacing: .02em;
+}
+
+.pi-copy,
+.pi-swap,
+.pi-quick button {
+  flex: none;
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--inset-fill);
+  box-shadow: inset 0 0 0 1px var(--inset-edge), inset 0 1px 0 var(--inset-hi);
+  font: 500 13.5px/1 var(--font-display);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color .2s, transform .2s var(--ease);
+}
+
+.pi-copy {
+  min-width: 84px;
+}
+
+.pi-copy:active,
+.pi-swap:active,
+.pi-quick button:active {
+  transform: translateY(1px);
+}
+
+@media (hover: hover) {
+  .pi-copy:hover,
+  .pi-swap:hover,
+  .pi-quick button:hover {
+    background: var(--hover);
+  }
+}
+
+/* Convertidor y pago con tarjeta */
+.pi-panel {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border-radius: var(--r-lg);
+}
+
+.pi-convert {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+  margin-top: 4px;
+}
+
+.pi-convert__field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pi-convert__field label,
+.pi-convert__label {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.pi-input,
+.pi-result {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--inset-fill);
+  box-shadow: inset 0 0 0 1px var(--inset-edge), inset 0 1px 0 var(--inset-hi);
+  font: 400 16px/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.pi-input::placeholder {
+  color: var(--ink-3);
+  opacity: 1;
+}
+
+.pi-result {
+  font-weight: 600;
+}
+
+.pi-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pi-pay {
+  justify-items: start;
+}
+
+.pi-help a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .pi-accounts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pi-convert {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .pi-swap {
+    height: 50px;
+  }
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -34,6 +34,8 @@ type Props = { locale: Locale; logo: ReactNode; groups: MegaGroup[]; labels: Nav
 
 // Flujos donde el nav no debe distraer: sin links ni megamenú
 const FOCUS_PATHS = ['/agendar', '/confirmacion', '/listo']
+// Los mismos fuera de /es y /en (solo en español)
+const FOCUS_ROOT_PATHS = ['/payment-info']
 
 function LangSwitch({ locale, label, pathname }: { locale: Locale; label: string; pathname: string }) {
   const rest = pathname.replace(/^\/(es|en)(?=\/|$)/, '')
@@ -57,13 +59,21 @@ function LangSwitch({ locale, label, pathname }: { locale: Locale; label: string
 export function HomeNav({ locale, logo, groups, labels }: Props) {
   const pathname = usePathname() || `/${locale}`
   const onHome = pathname === `/${locale}` || pathname === `/${locale}/`
-  const focus = FOCUS_PATHS.some((p) => pathname.startsWith(`/${locale}${p}`))
+  const focus =
+    FOCUS_PATHS.some((p) => pathname.startsWith(`/${locale}${p}`)) ||
+    FOCUS_ROOT_PATHS.some((p) => pathname.startsWith(p))
   const home = onHome ? '' : `/${locale}`
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const megaRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  // Si lo abrió el puntero al pasar, el clic que sigue no lo cierra
+  const hoverOpened = useRef(false)
 
   const links = [
     { href: `${home}#como-funciona`, label: labels.sistema },
@@ -79,9 +89,32 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
   }, [pathname])
 
   useEffect(() => {
+    if (!megaOpen) hoverOpened.current = false
+  }, [megaOpen])
+
+  // Al abrir el menú móvil, el foco entra a su primer elemento
+  useEffect(() => {
+    if (!menuOpen) return
+    const frame = requestAnimationFrame(() => menuRef.current?.querySelector<HTMLElement>('summary, a[href], button')?.focus())
+    return () => cancelAnimationFrame(frame)
+  }, [menuOpen])
+
+  // Tab desde el último elemento del menú vuelve al botón "Menú" en vez de irse a la página de atrás
+  const onMenuKeyDown = (e: ReactKeyboardEvent) => {
+    if (e.key !== 'Tab' || e.shiftKey) return
+    const items = [...(menuRef.current?.querySelectorAll<HTMLElement>('summary, a[href], button') ?? [])].filter((el) => el.offsetParent !== null)
+    if (document.activeElement !== items[items.length - 1]) return
+    e.preventDefault()
+    menuButtonRef.current?.focus()
+  }
+
+  useEffect(() => {
     if (!menuOpen && !megaOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        // Si el foco estaba en el panel o en el menú, vuelve a su botón en vez de perderse
+        if (panelRef.current?.contains(document.activeElement)) triggerRef.current?.focus()
+        if (menuRef.current?.contains(document.activeElement)) menuButtonRef.current?.focus()
         setMenuOpen(false)
         setMegaOpen(false)
       }
@@ -99,10 +132,37 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
 
   const openMega = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
+    if (!megaOpen) hoverOpened.current = true
     setMegaOpen(true)
   }
   const closeMegaSoon = () => {
-    closeTimer.current = setTimeout(() => setMegaOpen(false), 160)
+    closeTimer.current = setTimeout(() => {
+      // Con el foco del teclado adentro, que el mouse salga no lo cierra
+      if (!panelRef.current?.contains(document.activeElement)) setMegaOpen(false)
+    }, 160)
+  }
+
+  // El panel va en el HTML después de toda la barra: el Tab se lleva a mano adentro y
+  // de vuelta, para que siga justo después de "Servicios"
+  const firstPanelItem = () => panelRef.current?.querySelector<HTMLElement>('a[href], button')
+  const onTriggerKeyDown = (e: ReactKeyboardEvent) => {
+    if (e.key !== 'Tab' || e.shiftKey || !megaOpen) return
+    const first = firstPanelItem()
+    if (!first) return
+    e.preventDefault()
+    first.focus()
+  }
+  const onPanelKeyDown = (e: ReactKeyboardEvent) => {
+    if (e.key !== 'Tab') return
+    const items = [...(panelRef.current?.querySelectorAll<HTMLElement>('a[href], button') ?? [])]
+    if (e.shiftKey && document.activeElement === items[0]) {
+      e.preventDefault()
+      triggerRef.current?.focus()
+    } else if (!e.shiftKey && document.activeElement === items[items.length - 1]) {
+      e.preventDefault()
+      setMegaOpen(false)
+      triggerRef.current?.closest('li')?.nextElementSibling?.querySelector<HTMLElement>('a[href]')?.focus()
+    }
   }
 
   const cta = (
@@ -140,12 +200,22 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
           <ul className="hm-nav__links">
             <li>
               <button
+                ref={triggerRef}
                 type="button"
                 className="hm-nav__link hm-nav__trigger"
                 aria-expanded={megaOpen}
                 aria-controls="hm-mega"
                 onMouseEnter={openMega}
-                onClick={() => setMegaOpen((o) => !o)}
+                onClick={(e) => {
+                  // Clic de puntero sobre un panel que el hover acaba de abrir: se queda abierto
+                  // (detail es 0 cuando lo activa el teclado)
+                  if (e.detail > 0 && hoverOpened.current) {
+                    hoverOpened.current = false
+                    return
+                  }
+                  setMegaOpen((o) => !o)
+                }}
+                onKeyDown={onTriggerKeyDown}
               >
                 {labels.services}
                 <span className="hm-nav__chev" aria-hidden="true" />
@@ -166,9 +236,12 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
           </ul>
           <div className="hm-nav__right">
             <LangSwitch locale={locale} label={labels.language} pathname={pathname} />
-            <ThemeToggle label={labels.theme} />
+            <span className="hm-nav__theme">
+              <ThemeToggle label={labels.theme} />
+            </span>
             <span className="hm-nav__cta">{cta}</span>
             <button
+              ref={menuButtonRef}
               type="button"
               className="hm-nav__menu"
               aria-expanded={menuOpen}
@@ -183,9 +256,11 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
 
         {/* Megamenú de servicios (escritorio) */}
         <div
+          ref={panelRef}
           id="hm-mega"
           className={cn('hm-mega hm-glass hm-glass--thick', megaOpen && 'is-open')}
           onMouseEnter={openMega}
+          onKeyDown={onPanelKeyDown}
           hidden={!megaOpen}
         >
           {groups.map((group) => (
@@ -223,7 +298,7 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
             <p className="hm-mega__note">{labels.megaNote}</p>
           </div>
           <div className="hm-mega__foot">
-            <Link href={`/${locale}/precios`}>
+            <Link href={`/${locale}/servicios`}>
               {labels.megaAll}
               <Arrow />
             </Link>
@@ -232,7 +307,7 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
       </div>
 
       {/* Menú móvil */}
-      <div id="hm-menu" className="hm-menu hm-glass" hidden={!menuOpen}>
+      <div ref={menuRef} id="hm-menu" className="hm-menu hm-glass" hidden={!menuOpen} onKeyDown={onMenuKeyDown}>
         <details className="hm-menu__services">
           <summary>
             {labels.services}
@@ -265,6 +340,10 @@ export function HomeNav({ locale, logo, groups, labels }: Props) {
         </ul>
         <div className="hm-menu__foot">
           <LangSwitch locale={locale} label={labels.language} pathname={pathname} />
+          {/* En teléfonos el tema va aquí y la barra queda en logo y menú */}
+          <span className="hm-menu__theme">
+            <ThemeToggle label={labels.theme} />
+          </span>
           {cta}
         </div>
       </div>

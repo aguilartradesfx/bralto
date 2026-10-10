@@ -40,7 +40,7 @@
         ]
       },
       "sitios": {
-        "label": "Sitios Web",
+        "label": "Sitios web",
         "features": [
           "Constructor de páginas sin código",
           "Formularios inteligentes",
@@ -68,36 +68,35 @@
     "badge2": "Herramienta gratuita",
     "title": "FunnelLab",
     "titleItalic": "by Bralto.",
-    "desc": "Simulá tu embudo de ventas completo y predecí el resultado de tu estrategia — antes de gastar un peso en publicidad.",
+    "desc": "Simulá tu embudo de ventas completo y predecí el resultado de tu estrategia, antes de gastar un peso en publicidad.",
     "bullets": [
       "Predecí cuántos leads y ventas vas a generar antes de gastar",
       "Identificá el cuello de botella que mata tus conversiones",
       "Compará escenarios: ¿webinar o VSL? ¿Meta o Google?",
-      "Análisis con IA incluido — te dice exactamente dónde mejorar"
+      "Análisis con IA incluido: te dice exactamente dónde mejorar"
     ],
     "cta": "Probar FunnelLab gratis",
     "cardTitle": "Simulación activa",
-    "cardSub": "Funnel de ventas — Google Ads",
+    "cardSub": "Funnel de ventas en Google Ads",
     "stages": ["Visitas", "Leads", "Prospectos", "Clientes"],
     "roiLabel": "ROI proyectado",
     "cpaLabel": "Costo por cliente"
   },
   "AboutPage": {
     "meta": {
-      "title": "Sobre nosotros — Bralto | Infraestructura de operaciones automatizadas",
-      "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una empresa enterprise. Conozca la historia, misión y principios detrás del sistema."
+      "title": "Sobre nosotros: infraestructura de operaciones automatizadas",
+      "description": "Bralto construye la infraestructura digital que permite a negocios establecidos operar como una gran empresa. Conozca la historia, misión y principios detrás del sistema."
     },
     "hero": {
       "eyebrow": "Sobre Bralto",
       "headline": "El personal no escala.",
       "headlineItalic": "Los sistemas sí.",
-      "sub": "Construimos la infraestructura que permite a negocios establecidos operar como una empresa enterprise — sin el costo de serlo."
+      "sub": "Construimos la infraestructura que permite a negocios establecidos operar como una gran empresa, sin el costo de serlo."
     },
     "origin": {
-      "eyebrow": "Cómo empezó",
       "headline": "Una idea simple,",
       "headlineItalic": "un problema enorme.",
-      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables — pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
+      "p1": "Bralto nació de una observación que se repetía en cada negocio que analicé: buenos productos, buenos equipos, márgenes saludables, pero operaciones que dependían completamente de personas para cada paso. Una venta perdida porque nadie contestó a tiempo. Un lead frío porque el seguimiento llegó tarde. Un cliente que se fue a la competencia porque ahí sí le respondieron a las 2am.",
       "p2": "El problema no era falta de herramientas. Era exactamente lo opuesto: stacks tecnológicos parchados con 8, 10, 15 herramientas distintas que no se hablan entre sí. CRMs por aquí, formularios por allá, automatizaciones a medias, integraciones rotas. Software caro que termina costando más en complejidad que en licencias.",
       "p3": "Bralto se construyó para resolverlo de raíz. Una sola plataforma que reemplaza todo el stack, combinada con implementaciones a la medida que conectan IA, datos y procesos en un sistema único. No vendemos software. Reconstruimos cómo opera el negocio.",
       "statValue": "8+",
@@ -106,9 +105,9 @@
     "mission": {
       "eyebrow": "Propósito",
       "card1Label": "Misión",
-      "card1Body": "Que cada negocio opere como el mejor de su categoría — sin tener que crecer su equipo para lograrlo.",
+      "card1Body": "Que cada negocio opere como el mejor de su categoría, sin tener que crecer su equipo para lograrlo.",
       "card2Label": "Visión",
-      "card2Body": "Un mundo donde un negocio mediano compite de igual a igual con uno enterprise. No por tamaño. Por la calidad de sus operaciones."
+      "card2Body": "Un mundo donde un negocio mediano compite de igual a igual con una gran empresa. No por tamaño. Por la calidad de sus operaciones."
     },
     "principles": {
       "eyebrow": "Cómo operamos",
@@ -117,7 +116,7 @@
       "items": [
         { "number": "01", "title": "Sistemas, no parches", "body": "No agregamos otra herramienta al stack. Reemplazamos el stack." },
         { "number": "02", "title": "Resultados antes que estética", "body": "Si no genera ingresos o ahorra costos, no entra al sistema. Punto." },
-        { "number": "03", "title": "Implementación rápida o no la hacemos", "body": "Setenta y dos horas de diagnóstico a entrega. Si no cumplimos, no paga." },
+        { "number": "03", "title": "Implementación rápida, con plazos claros", "body": "Un sitio web suele estar listo en 5 a 10 días hábiles; una automatización, en 2 a 3 semanas; un sistema interno, en 4 a 12 semanas, según el alcance." },
         { "number": "04", "title": "Su negocio, su plataforma", "body": "Todo lo que construimos corre sobre su propio dominio, su propia marca, su propia infraestructura. Nunca dependiente de nosotros." }
       ]
     },
@@ -144,9 +143,9 @@
     "close": {
       "headline": "Construyamos el sistema",
       "headlineItalic": "que su negocio necesita.",
-      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Treinta minutos. Sin compromiso.",
-      "signature": "— Alejandro Aguilar, Fundador",
-      "cta": "Agendar llamada conmigo"
+      "body": "Cada conversación empieza igual: usted me cuenta cómo opera hoy y yo le digo, sin rodeos, qué se puede automatizar, qué no, y qué cambiaría primero. Son 30 minutos. Si decide avanzar, le descontamos los $97 completos del proyecto.",
+      "signature": "Alejandro Aguilar, fundador",
+      "cta": "Agendar diagnóstico"
     }
   },
   "PreciosPage": {
@@ -154,7 +153,6 @@
     "headline": "Todo lo que",
     "headlineItalic": "hacemos.",
     "desc": "Cada servicio se cotiza a la medida: el precio depende del alcance y lo definimos juntos en el diagnóstico.",
-    "custom": "A la medida",
     "free": "Gratis",
     "services": {
       "sitiosWeb": {
@@ -195,17 +193,14 @@
     "badgeSub": "Incluida en cada sistema",
     "headline": "Todo su negocio,",
     "headlineItalic": "en una sola plataforma.",
-    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal — todo reunido en un solo lugar. Viene incluida en cada sistema que construimos.",
+    "desc": "CRM, sitios web, funnels, agenda, pagos y marketing multicanal en un solo lugar. Viene con cada sistema que construimos.",
     "cta": "Agendar diagnóstico",
-    "includesLabel": "Qué incluye",
     "includesLight": "Todo lo que necesita para operar",
     "includesBold": "sin saltar entre herramientas.",
     "includesDesc": "Tres áreas, una sola plataforma. Sin plugins, sin integraciones frágiles y sin costos escondidos.",
-    "replacesLabel": "Lo que reemplaza",
     "replacesLight": "Una plataforma",
     "replacesBold": "en vez de diez suscripciones.",
     "replacesDesc": "Todo lo que hoy paga por separado, incluido en su sistema.",
-    "faqLabel": "Preguntas frecuentes",
     "faqLight": "Antes de",
     "faqBold": "empezar.",
     "faq": [
@@ -221,11 +216,12 @@
   },
   "Home": {
     "meta": {
-      "title": "Bralto — Sistemas automatizados con IA que venden",
+      "title": "Bralto | Sistemas automatizados con IA que venden",
       "description": "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial."
     },
     "nav": {
       "label": "Principal",
+      "skip": "Saltar al contenido",
       "home": "Bralto, inicio",
       "links": {
         "sistema": "Cómo funciona",
@@ -296,7 +292,6 @@
       "language": "Idioma"
     },
     "hero": {
-      "eyebrow": "Automatización · Inteligencia Artificial · Sistemas a la medida",
       "titleLight": "Un sitio web ya no es suficiente.",
       "titleBold": "Su negocio necesita un sistema.",
       "lead": "Construimos e integramos sistemas inteligentes a la medida que automatizan toda su operación comercial.",
@@ -305,7 +300,6 @@
       "system": {
         "label": "Caso de ejemplo de un sistema trabajando",
         "title": "Caso de ejemplo",
-        "live": "En vivo",
         "note": "Ejemplo básico de un negocio que automatiza sus procesos. Con inteligencia artificial, el alcance es prácticamente ilimitado.",
         "events": [
           {
@@ -314,34 +308,38 @@
             "time": "ahora"
           },
           {
-            "title": "Agente de IA respondió",
-            "detail": "WhatsApp · dudas resueltas",
+            "title": "Agente de IA cotizó",
+            "detail": "Con sus precios y condiciones",
             "time": "+4 s"
           },
           {
-            "title": "Cotización enviada",
-            "detail": "Generada con sus precios",
-            "time": "+1 min"
+            "title": "Cotización aprobada",
+            "detail": "Por el responsable asignado",
+            "time": "+6 min"
           },
           {
-            "title": "Tarea para su equipo",
-            "detail": "Con responsable y fecha",
-            "time": "+5 min"
+            "title": "Enlace de pago enviado",
+            "detail": "Automático al aprobarse",
+            "time": "+6 min"
           },
           {
-            "title": "Cliente entra a su portal",
-            "detail": "Ve el estado de su pedido",
-            "time": "día 2"
+            "title": "Pago recibido",
+            "detail": "Tracking ID, seguimiento y usuario creados",
+            "time": "+2 h"
+          },
+          {
+            "title": "Orden en su panel",
+            "detail": "Con cada paso del proceso",
+            "time": "+2 h"
           }
         ]
       }
     },
     "compare": {
-      "eyebrow": "2027",
       "titleLight": "¿Qué necesita un negocio",
       "titleBold": "para vender en 2027?",
-      "colBefore": "Lo que tienen casi todos",
-      "colAfter": "Lo que necesita en 2027",
+      "colBefore": "Lo que hoy tienen casi todos",
+      "colAfter": "Lo que su negocio necesita en 2027",
       "groups": [
         {
           "label": "Captar y vender",
@@ -387,8 +385,8 @@
     },
     "system": {
       "eyebrow": "Cómo funciona",
-      "titleLight": "Su sitio web es solo la puerta.",
-      "titleBold": "Esto es lo que va detrás.",
+      "titleLight": "Un sitio web es solo la puerta.",
+      "titleBold": "Pero ¿y lo que va detrás?",
       "hubLabel": "La puerta",
       "hubTitle": "Su sitio web",
       "layers": [
@@ -421,14 +419,15 @@
       "closingBold": "No páginas web: sistemas que hacen funcionar su negocio."
     },
     "cases": {
-      "eyebrow": "Casos reales",
       "titleLight": "Sistemas que ya están",
       "titleBold": "funcionando.",
       "view": "Ver caso",
-      "all": "Ver todos los casos"
+      "all": "Ver todos los casos",
+      "carousel": "Casos reales",
+      "position": "Caso {i} de {n}: {title}"
     },
     "casesPage": {
-      "metaTitle": "Casos reales — Bralto",
+      "metaTitle": "Casos reales | Bralto",
       "metaDescription": "Proyectos de Bralto funcionando: sitios web, agentes de IA, automatizaciones y sistemas a la medida para restaurantes, inmobiliarias, turismo y comercio.",
       "eyebrow": "Casos reales",
       "titleLight": "Sistemas que ya están",
@@ -436,20 +435,9 @@
       "lead": "Elija un proyecto para ver qué construimos y cómo funciona."
     },
     "platform": {
-      "eyebrow": "Plataforma",
       "titleLight": "Todas estas herramientas",
       "titleBold": "están incluidas.",
-      "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones de WhatsApp, Instagram y correo, pipeline de ventas, automatizaciones, agenda, pagos y reportes. Una sola plataforma que reemplaza todas las herramientas que hoy paga por separado.",
-      "features": [
-        "CRM",
-        "Multicanal",
-        "Pipeline",
-        "Automatizaciones",
-        "Agenda",
-        "Pagos",
-        "Reportes",
-        "App móvil"
-      ],
+      "lead": "Todo lo que construimos queda en su propia plataforma: CRM, conversaciones, pipeline, automatizaciones, agenda, pagos y reportes. Reemplaza las herramientas que hoy paga por separado.",
       "tools": [
         {
           "name": "HubSpot",
@@ -493,7 +481,10 @@
         }
       ],
       "separately": "Por separado: $2,000+/mes",
-      "included": "Incluido en su sistema"
+      "included": "Incluido en su sistema",
+      "also": "Y también",
+      "hubLabel": "Todo en",
+      "hubTitle": "Su plataforma"
     },
     "offer": {
       "eyebrow": "Inversión",
@@ -503,6 +494,8 @@
       "price": "$3,500",
       "currency": "USD",
       "financing": "Financiamiento disponible",
+      "scope": "El precio final depende del alcance y se define en el diagnóstico.",
+      "includesLabel": "Qué incluye",
       "includes": [
         "Diagnóstico",
         "Diseño",
@@ -520,10 +513,9 @@
     },
     "guarantee": {
       "title": "Sin riesgo de su lado.",
-      "body": "Si en el primer mes después de activar el sistema no genera leads calificados que cubran su mensualidad, seguimos trabajando sin costo hasta lograrlo."
+      "body": "Si en el primer mes después de activar el sistema no genera leads calificados, seguimos trabajando sin costo hasta lograrlo."
     },
     "testimonials": {
-      "eyebrow": "Clientes",
       "titleLight": "En palabras de",
       "titleBold": "nuestros clientes.",
       "videoPlaceholder": "[Video testimonial real]",
@@ -537,28 +529,31 @@
       ]
     },
     "faq": {
-      "eyebrow": "Preguntas frecuentes",
       "titleLight": "Lo que",
       "titleBold": "necesita saber.",
       "items": [
         {
           "q": "¿En qué se diferencia esto de una página web normal?",
-          "a": "Una página web solo muestra información. Un sistema capta al cliente, le responde, le da seguimiento y mide si compró. La página web es una pieza más del sistema."
+          "a": "Una página web solo muestra información. Un sistema capta al cliente, le responde, cotiza, cobra, da seguimiento y le muestra a su equipo en qué va cada venta. La página web es solo la puerta."
         },
         {
           "q": "¿Tengo que saber de tecnología para usarlo?",
           "a": "No. Le entregamos todo funcionando y su equipo lo maneja desde una sola plataforma, también desde el celular. Le enseñamos a usarla."
         },
         {
-          "q": "¿La IA va a responder bien a mis clientes?",
-          "a": "El agente se entrena con la información de su negocio: servicios, precios, horarios y preguntas frecuentes. Cuando algo se sale de lo que sabe, pasa la conversación a una persona de su equipo."
+          "q": "¿Esto es un chatbot?",
+          "a": "No. Integramos sistemas completos: su sitio, sus canales de conversación, el CRM, las cotizaciones, las aprobaciones, los pagos y los reportes quedan conectados, y cada venta avanza sola de un paso al siguiente. La IA es una pieza más: se entrena con la información de su negocio y le pasa a su equipo lo que se sale de lo que sabe."
+        },
+        {
+          "q": "¿Qué procesos se pueden automatizar?",
+          "a": "Los que hoy dependen de que alguien se acuerde: responder y calificar contactos, cotizar, pedir aprobaciones, enviar enlaces de pago, crear órdenes y usuarios, dar seguimiento y armar reportes. En el diagnóstico vemos cuáles tienen más impacto en su negocio."
         },
         {
           "q": "¿Cuánto tarda en estar funcionando?",
           "a": "Depende del alcance. Después del diagnóstico le damos un plazo exacto por escrito."
         },
         {
-          "q": "¿Qué pasa si ya tengo página web o CRM?",
+          "q": "¿Qué pasa si ya tengo página web, CRM u otras herramientas?",
           "a": "Revisamos lo que ya tiene. Si sirve, lo conectamos al sistema; si no, migramos su información a la nueva plataforma."
         },
         {
@@ -580,16 +575,13 @@
       "note": "$97 USD · Se descuenta del proyecto si decide contratar"
     },
     "servicePage": {
-      "eyebrow": "Servicio",
       "cta": "Agendar diagnóstico",
       "all": "Ver todos los servicios",
-      "featuresEyebrow": "Qué incluye",
       "featuresLight": "Todo incluido.",
       "featuresBold": "Sin sorpresas.",
       "processEyebrow": "Cómo trabajamos",
       "processLight": "Simple y",
       "processBold": "sin vueltas.",
-      "faqEyebrow": "Preguntas frecuentes",
       "faqLight": "Todo lo que",
       "faqBold": "quería saber.",
       "related": "Otros servicios",
@@ -600,7 +592,19 @@
       "tagline": "Infraestructura digital para negocios",
       "copyright": "© {year} Bralto",
       "services": "Servicios",
-      "company": "Empresa"
+      "company": "Empresa",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "cookies": "Preferencias de cookies",
+      "pauseMotion": "Pausar animaciones",
+      "resumeMotion": "Reanudar animaciones"
+    },
+    "consent": {
+      "title": "Cookies",
+      "text": "Usamos cookies propias para que el sitio funcione y, si usted acepta, de Google y Meta para medir las visitas y los anuncios.",
+      "privacy": "Política de privacidad",
+      "essential": "Solo esenciales",
+      "accept": "Aceptar todo"
     },
     "pending": "Pendiente · se oculta en producción"
   }

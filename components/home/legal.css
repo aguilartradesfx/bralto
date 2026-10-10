@@ -1,0 +1,101 @@
+/* ==========================================================================
+   Privacidad y términos: texto largo, legible, bajo .hm con sus tokens.
+   ========================================================================== */
+
+.lg-title {
+  font-weight: 600;
+}
+
+/* Pegado al título: sin el espacio de sección completo */
+.hm-section.lg {
+  padding-top: 0;
+}
+
+/* Alineado a la izquierda con el título, en una columna legible */
+.lg__wrap {
+  display: grid;
+  gap: 24px;
+}
+
+.lg__wrap > * {
+  max-width: 760px;
+}
+
+/* Aviso de borrador: el naranja accesible del tema, el mismo de los errores */
+.lg-draft {
+  margin: 0;
+  padding: 16px 20px;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.lg-draft strong {
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+
+.lg-lang {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+
+.lg-doc {
+  max-width: 68ch;
+}
+
+.lg-doc > p {
+  margin: 0;
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.lg-doc section {
+  margin-top: 40px;
+}
+
+.lg-doc h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.lg-doc section p,
+.lg-doc li {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.lg-doc section p {
+  margin: 0 0 12px;
+}
+
+.lg-doc ul {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.lg-doc li::marker {
+  color: var(--ink-3);
+}
+
+/* Dato que falta completar */
+.lg-ph {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent-ink) 16%, transparent);
+  color: var(--ink);
+}

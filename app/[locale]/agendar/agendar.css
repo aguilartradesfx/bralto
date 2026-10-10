@@ -171,6 +171,14 @@
   color: var(--ink);
 }
 
+/* Zona de los horarios: todos son de Costa Rica */
+.bk-zone {
+  margin: -6px 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
 /* Calendario */
 .bk-cal__head {
   display: flex;
@@ -245,8 +253,12 @@
   transition: background-color .25s, transform .3s var(--ease);
 }
 
-.bk-day.is-available:hover {
-  background: var(--hover);
+/* Solo con puntero que de verdad pasa por encima (en táctil el :hover queda pegado después
+   de tocar) y nunca sobre el día elegido: le taparía el fondo y dejaría el número ilegible */
+@media (hover: hover) {
+  .bk-day.is-available:not(.is-selected):hover {
+    background: var(--hover);
+  }
 }
 
 .bk-day.is-selected {
@@ -345,7 +357,24 @@
 
 .bk-input::placeholder {
   color: var(--ink-3);
-  opacity: .75;
+  opacity: 1;
+}
+
+.bk-input[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 1px var(--accent-ink), inset 0 1px 0 var(--inset-hi);
+}
+
+/* Error de cada campo, debajo de él: el mismo naranja accesible del aviso general */
+.bk-field__error {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--accent-ink);
+}
+
+/* El foco que lleva la validación no queda debajo del nav fijo */
+.bk :is(input, select, button) {
+  scroll-margin-top: calc(var(--nav-h) + 48px);
 }
 
 .bk-input:focus-visible {

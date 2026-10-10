@@ -1,8 +1,10 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { Document } from '@/components/document'
 import { SiteShell } from '@/components/home/shell'
+import { SITE_URL } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 type Locale = 'es' | 'en'
@@ -50,15 +52,13 @@ const KEYWORDS: Record<Locale, string[]> = {
   ],
 }
 
-const BASE_URL = 'https://bralto.io'
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const l = (locale === 'en' ? 'en' : 'es') as Locale
 
   const titles: Record<Locale, string> = {
-    es: 'Bralto — Automatización e Infraestructura Digital para Negocios',
-    en: 'Bralto — Automation & Digital Infrastructure for Businesses',
+    es: 'Automatización e infraestructura digital para negocios',
+    en: 'Automation and digital infrastructure for businesses',
   }
 
   const descriptions: Record<Locale, string> = {
@@ -73,18 +73,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     description: descriptions[l],
     keywords: KEYWORDS[l],
-    alternates: {
-      canonical: `${BASE_URL}/${l}`,
-      languages: {
-        es: `${BASE_URL}/es`,
-        en: `${BASE_URL}/en`,
-        'x-default': `${BASE_URL}/es`,
-      },
-    },
     openGraph: {
-      title: titles[l],
+      title: `${titles[l]} | Bralto`,
       description: descriptions[l],
-      url: `${BASE_URL}/${l}`,
+      url: `${SITE_URL}/${l}`,
       siteName: 'Bralto',
       type: 'website',
       locale: l === 'es' ? 'es_LA' : 'en_US',
@@ -92,7 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: titles[l],
+      title: `${titles[l]} | Bralto`,
       description: descriptions[l],
       images: ['/og-image.jpg'],
     },
@@ -102,33 +94,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params
 
+  // Un "idioma" que no es es/en es una ruta que no existe fuera de /es y /en (el middleware deja
+  // pasar /Diagnostico-…, /Proposal-…; un documento de cliente mal escrito cae aquí). Se manda a
+  // /es, donde el 404 del sitio es estático: un notFound() aquí sería dinámico y Next lo
+  // entregaría como página de error armada en el navegador, a veces en blanco.
   if (!routing.locales.includes(locale as 'es' | 'en')) {
-    notFound()
+    redirect(`/es/${locale}`)
   }
 
   setRequestLocale(locale)
 
+  const lang = locale === 'en' ? 'en' : 'es'
+
   return (
-    <>
-      <HtmlLang locale={locale} />
+    <Document lang={lang}>
       {/* Las páginas se renderizan en el servidor y los componentes de cliente reciben sus
           textos por props: al navegador solo viaja el idioma, ningún mensaje */}
       <NextIntlClientProvider messages={null}>
         {/* Nav, footer, tema y fondo del diseño nuevo en todas las páginas públicas */}
-        <SiteShell locale={locale === 'en' ? 'en' : 'es'}>{children}</SiteShell>
+        <SiteShell locale={lang}>{children}</SiteShell>
       </NextIntlClientProvider>
-    </>
-  )
-}
-
-// Sets document.documentElement.lang on the client so search engines
-// and screen readers see the right language attribute.
-function HtmlLang({ locale }: { locale: string }) {
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `document.documentElement.lang="${locale}"`,
-      }}
-    />
+    </Document>
   )
 }

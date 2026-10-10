@@ -28,7 +28,6 @@ const FLOW_ICONS = [
 ]
 
 type Copy = ServiceCopy & {
-  wfLabel: string
   wfHeadline: string
   wfItalic: string
   flow: { tag: string; label: string; sub: string }[]
@@ -43,17 +42,16 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Automatización e IA',
     headline: 'Su operación,',
     headlineBold: 'sin intervención.',
-    sub: 'Automatizamos los procesos repetitivos de su negocio para que su equipo se enfoque en lo que realmente importa — y el trabajo siga fluyendo solo.',
+    sub: 'Automatizamos los procesos repetitivos para que su equipo se enfoque en lo importante y el trabajo fluya solo.',
     stats: [
       ['Make / n8n', 'Plataformas'],
-      ['2–3 sem.', 'Tiempo de entrega'],
+      ['2 a 3 sem.', 'Tiempo de entrega'],
       ['30 días', 'Soporte incluido'],
     ],
-    wfLabel: 'En acción',
     wfHeadline: 'De un lead a una venta,',
     wfItalic: 'sin tocar nada.',
     flow: [
-      { tag: 'Trigger', label: 'Lead nuevo detectado', sub: 'Formulario · WhatsApp · Email' },
+      { tag: 'Trigger', label: 'Lead nuevo detectado', sub: 'Formulario, WhatsApp o email' },
       { tag: 'Procesa', label: 'IA evalúa y responde', sub: 'Mensaje personalizado al instante' },
       { tag: 'Ejecuta', label: 'Cita agendada', sub: 'Sync automático con Calendar' },
       { tag: 'Resultado', label: 'CRM actualizado', sub: 'Equipo notificado · Todo listo' },
@@ -61,9 +59,9 @@ const CONTENT: Record<Locale, Copy> = {
     beforeSide: 'Sin automatizar',
     beforeItems: ['Responder cada lead manualmente', 'Copiar datos entre herramientas', 'Olvidar dar seguimiento', 'Equipo frustrado con tareas repetitivas'],
     afterSide: 'Con Bralto',
-    afterItems: ['Lead responde solo en segundos', 'Datos fluyen entre sistemas solos', 'Seguimientos automáticos en el momento justo', 'Equipo enfocado en lo que importa'],
+    afterItems: ['Cada lead recibe respuesta en segundos','Datos fluyen entre sistemas solos', 'Seguimientos automáticos en el momento justo', 'Equipo enfocado en lo que importa'],
     features: [
-      { t: 'Workflow end-to-end', d: 'Mapeamos y automatizamos el proceso completo — desde el trigger hasta el resultado final, sin pasos manuales.' },
+      { t: 'Workflow end-to-end', d: 'Mapeamos y automatizamos el proceso completo, desde el trigger hasta el resultado final, sin pasos manuales.' },
       { t: 'Agente de IA a medida', d: 'Configuramos un agente que atiende por WhatsApp, email o internamente según la necesidad del negocio.' },
       { t: 'Integraciones con sus herramientas', d: 'Conectamos con CRM, WhatsApp, email, Google Workspace, calendarios, ERP y cualquier API con la que ya trabaje.' },
       { t: 'Pruebas y validación', d: 'Antes de entregar, corremos el flujo con casos reales para asegurarnos de que funciona exactamente como diseñamos.' },
@@ -88,17 +86,16 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Automation & AI',
     headline: 'Your business,',
     headlineBold: 'on autopilot.',
-    sub: 'We automate the repetitive work so your team can focus on what actually moves the needle — and everything keeps running on its own.',
+    sub: 'We automate the repetitive work so your team can focus on what matters while everything runs on its own.',
     stats: [
       ['Make / n8n', 'Platforms'],
-      ['2–3 wks', 'Delivery time'],
+      ['2 to 3 wks', 'Delivery time'],
       ['30 days', 'Support included'],
     ],
-    wfLabel: 'In action',
     wfHeadline: 'From a new lead to a closed deal,',
     wfItalic: 'zero manual work.',
     flow: [
-      { tag: 'Trigger', label: 'New lead detected', sub: 'Form · WhatsApp · Email' },
+      { tag: 'Trigger', label: 'New lead detected', sub: 'Form, WhatsApp, or email' },
       { tag: 'Process', label: 'AI evaluates & replies', sub: 'Personalized message in seconds' },
       { tag: 'Execute', label: 'Meeting booked', sub: 'Auto-synced with Calendar' },
       { tag: 'Result', label: 'CRM updated', sub: 'Team notified · Ready to go' },
@@ -108,11 +105,11 @@ const CONTENT: Record<Locale, Copy> = {
     afterSide: 'With Bralto',
     afterItems: ['Leads get a response in seconds', 'Data flows between systems automatically', 'Follow-ups go out at exactly the right time', 'Team focused on the work that matters'],
     features: [
-      { t: 'End-to-end workflow', d: 'We map and automate the entire process — from trigger to final result, with no manual steps in between.' },
-      { t: 'Custom AI agent', d: 'We build an agent that handles conversations via WhatsApp, email, or internally — however your business needs it.' },
+      { t: 'End-to-end workflow', d: 'We map and automate the entire process, from trigger to final result, with no manual steps in between.' },
+      { t: 'Custom AI agent', d: 'We build an agent that handles conversations via WhatsApp, email, or internally, however your business needs it.' },
       { t: 'Integrations with your stack', d: 'We connect with your CRM, WhatsApp, email, Google Workspace, calendars, ERP, and any API you already use.' },
       { t: 'Testing & validation', d: 'Before we ship, we run the workflow with real data to make sure everything works exactly as designed.' },
-      { t: 'Documentation & handoff', d: 'We deliver clear documentation so your team can understand and maintain what we built — no ongoing dependency on us.' },
+      { t: 'Documentation & handoff', d: 'We deliver clear documentation so your team can understand and maintain what we built, with no ongoing dependency on us.' },
       { t: '30-day post-launch support', d: 'A full month of support included to answer questions, handle minor tweaks, and make sure everything runs smoothly in production.' },
     ],
     steps: [
@@ -121,7 +118,7 @@ const CONTENT: Record<Locale, Copy> = {
       { t: 'Test, launch & document', d: 'We validate with real data, iterate until everything works, and deliver with complete documentation and a training session.' },
     ],
     faqs: [
-      { q: 'What kinds of processes can be automated?', a: 'Lead follow-up, client onboarding, internal notifications, automatic reminders, reports, responses to common inquiries, bookings and scheduling — and a lot more.' },
+      { q: 'What kinds of processes can be automated?', a: 'Lead follow-up, client onboarding, internal notifications, automatic reminders, reports, responses to common inquiries, bookings and scheduling, and a lot more.' },
       { q: 'What tools do you use?', a: 'We work with Make (formerly Integromat), n8n, and custom code depending on complexity. We also use the OpenAI API, WhatsApp Business, and whatever tools each client already uses.' },
       { q: 'Do I need technical knowledge to run the automation afterward?', a: 'No. The goal is that it runs itself. The included 30-day support is there to answer questions and make sure your team feels comfortable with what we built.' },
       { q: 'Are platform licenses like Make included?', a: "No. Third-party licenses (Make, n8n cloud, AI APIs) are a separate cost that clients manage directly. We'll help you choose the most cost-effective plan for your volume." },
@@ -136,7 +133,7 @@ export default function AutomatizacionView({ locale }: { locale: Locale }) {
 
   return (
     <ServicePage locale={locale} service="automatizacion" copy={c}>
-      <Showcase id="sv-flow-title" eyebrow={c.wfLabel} light={c.wfHeadline} bold={c.wfItalic}>
+      <Showcase id="sv-flow-title" light={c.wfHeadline} bold={c.wfItalic}>
         <div className="sv-flow hm-glass hm-glass--thick hm-rv">
           <ol className="sv-flow__steps">
             {c.flow.map((step, i) => (

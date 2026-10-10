@@ -1,10 +1,12 @@
+import { SITE_URL } from '@/lib/seo'
+
 export function OrganizationJsonLd() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Bralto',
-    url: 'https://bralto.io',
-    logo: 'https://bralto.io/logo.png',
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
     description:
       'Business automation and digital infrastructure platform. Full-service CRM, AI agents, WhatsApp integrations, and custom systems for established companies across the Americas and beyond.',
     founder: {
@@ -49,7 +51,7 @@ export function WebSiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Bralto',
-    url: 'https://bralto.io',
+    url: SITE_URL,
     description:
       'Business automation and digital infrastructure for companies across the Americas and beyond.',
     inLanguage: ['es', 'en'],
@@ -81,7 +83,7 @@ export function ServiceJsonLd({
     provider: {
       '@type': 'Organization',
       name: 'Bralto',
-      url: 'https://bralto.io',
+      url: SITE_URL,
     },
     areaServed: [
       { '@type': 'Continent', name: 'North America' },
@@ -90,7 +92,7 @@ export function ServiceJsonLd({
     ],
     availableChannel: {
       '@type': 'ServiceChannel',
-      serviceUrl: 'https://bralto.io/agendar',
+      serviceUrl: `${SITE_URL}/es/agendar`,
       serviceType: 'Diagnostic session',
     },
   }

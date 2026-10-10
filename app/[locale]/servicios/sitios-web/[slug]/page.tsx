@@ -22,7 +22,6 @@ const COPY = {
     project: 'El proyecto',
     built: 'Lo que construimos',
     gallery: 'Galería',
-    view: 'vista',
     more: 'Más casos',
     ctaLight: 'Su proyecto,',
     ctaBold: 'el próximo.',
@@ -33,7 +32,6 @@ const COPY = {
     project: 'The project',
     built: 'What we built',
     gallery: 'Gallery',
-    view: 'view',
     more: 'More case studies',
     ctaLight: 'Your project,',
     ctaBold: 'could be next.',
@@ -53,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata({
     locale,
     pathByLocale: { es: path, en: path },
-    titles: { es: `${client.name} — ${client.industry}`, en: `${client.name} — ${client.en?.industry ?? client.industry}` },
+    titles: { es: `${client.name}: ${client.industry.charAt(0).toLowerCase()}${client.industry.slice(1)}`, en: `${client.name}: ${client.en?.industry ?? client.industry}` },
     descriptions: { es: client.tagline, en: client.en?.tagline ?? client.tagline },
     ogImage: client.coverImage,
   })
@@ -74,6 +72,8 @@ export default async function CasePage({ params }: Props) {
   const tagline = en?.tagline ?? client.tagline
   const story = en?.story ?? client.story
   const deliverables = en?.deliverables ?? client.deliverables
+  const coverAlt = en?.coverAlt ?? client.coverAlt
+  const imageAlts = en?.imageAlts ?? client.imageAlts
   // La portada ya va arriba: la galería no la repite
   const gallery = client.images.filter((img) => img !== client.coverImage)
   const others = clients.filter((o) => o.id !== client.id)
@@ -101,7 +101,7 @@ export default async function CasePage({ params }: Props) {
           </div>
           <figure className="cs-cover hm-glass hm-glass--thick">
             <div className="cs-cover__img">
-              <Image src={client.coverImage} alt="" fill priority sizes="(min-width: 1200px) 1160px, 100vw" />
+              <Image src={client.coverImage} alt={coverAlt} fill priority sizes="(min-width: 1200px) 1160px, 100vw" />
             </div>
           </figure>
         </div>
@@ -110,7 +110,7 @@ export default async function CasePage({ params }: Props) {
       <section className="hm-section" aria-labelledby="cs-project-title">
         <div className="hm-wrap cs-story">
           <div>
-            <h2 id="cs-project-title" className="hm-eyebrow">
+            <h2 id="cs-project-title" className="hm-subtitle">
               {c.project}
             </h2>
             <p className="cs-story__text">{story}</p>
@@ -138,7 +138,7 @@ export default async function CasePage({ params }: Props) {
                   <div className="cs-shot__img">
                     <Image
                       src={img}
-                      alt={`${client.name} — ${c.view} ${i + 1}`}
+                      alt={imageAlts[client.images.indexOf(img)]}
                       fill
                       sizes={i % 3 === 0 ? '(min-width: 1200px) 1160px, 100vw' : '(min-width: 900px) 580px, 100vw'}
                     />
@@ -152,7 +152,7 @@ export default async function CasePage({ params }: Props) {
 
       <section className="hm-section" aria-labelledby="cs-more-title">
         <div className="hm-wrap">
-          <h2 id="cs-more-title" className="hm-eyebrow">
+          <h2 id="cs-more-title" className="hm-subtitle">
             {c.more}
           </h2>
           <ul className="hm-cases">

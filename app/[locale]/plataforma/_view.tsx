@@ -37,11 +37,11 @@ export default async function PlataformaView({ locale }: { locale: Locale }) {
 
       <section className="hm-section hm-section--tight" aria-labelledby="pf-includes-title">
         <div className="hm-wrap">
-          <SectionHead compact id="pf-includes-title" eyebrow={t('includesLabel')} light={t('includesLight')} bold={t('includesBold')} />
+          <SectionHead compact id="pf-includes-title" light={t('includesLight')} bold={t('includesBold')} />
           <p className="hm-lead pf-sub">{t('includesDesc')}</p>
-          <div className="pf-cats">
+          <div className="pf-cats hm-glass hm-glass--thick hm-rv">
             {CATEGORIES.map((id) => (
-              <div key={id} className="pf-cat hm-glass hm-rv">
+              <div key={id} className="pf-cat">
                 <h3>{pt(`tabs.${id}.label`)}</h3>
                 <ul>
                   {(pt.raw(`tabs.${id}.features`) as string[]).map((feature) => (
@@ -60,7 +60,7 @@ export default async function PlataformaView({ locale }: { locale: Locale }) {
       <section className="hm-section" aria-labelledby="pf-replaces-title">
         <div className="hm-wrap hm-platform">
           <div className="hm-platform__copy">
-            <SectionHead id="pf-replaces-title" eyebrow={t('replacesLabel')} light={t('replacesLight')} bold={t('replacesBold')} />
+            <SectionHead id="pf-replaces-title" light={t('replacesLight')} bold={t('replacesBold')} />
             <p className="hm-lead hm-rv">{t('replacesDesc')}</p>
           </div>
           <Receipt locale={locale} />
@@ -69,7 +69,6 @@ export default async function PlataformaView({ locale }: { locale: Locale }) {
 
       <FaqBlock
         titleId="pf-faq-title"
-        eyebrow={t('faqLabel')}
         light={t('faqLight')}
         bold={t('faqBold')}
         items={t.raw('faq') as FaqItem[]}

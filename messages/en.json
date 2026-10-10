@@ -68,36 +68,35 @@
     "badge2": "Free tool",
     "title": "FunnelLab",
     "titleItalic": "by Bralto.",
-    "desc": "Simulate your complete sales funnel and predict your strategy's outcome — before spending a dime on ads.",
+    "desc": "Simulate your complete sales funnel and predict your strategy's outcome, before spending a dime on ads.",
     "bullets": [
       "Predict how many leads and sales you'll generate before you spend",
       "Spot the bottleneck that's killing your conversions",
       "Compare scenarios: webinar or VSL? Meta or Google?",
-      "AI analysis included — tells you exactly where to improve"
+      "AI analysis included: it tells you exactly where to improve"
     ],
     "cta": "Try FunnelLab free",
     "cardTitle": "Active simulation",
-    "cardSub": "Sales funnel — Google Ads",
+    "cardSub": "Sales funnel on Google Ads",
     "stages": ["Visitors", "Leads", "Prospects", "Customers"],
     "roiLabel": "Projected ROI",
     "cpaLabel": "Cost per customer"
   },
   "AboutPage": {
     "meta": {
-      "title": "About Us — Bralto | Automated Operations Infrastructure",
+      "title": "About us: automated operations infrastructure",
       "description": "Bralto builds the digital infrastructure that lets established businesses run like an enterprise. The story, mission, and principles behind the system."
     },
     "hero": {
       "eyebrow": "About Bralto",
       "headline": "Headcount doesn't scale.",
       "headlineItalic": "Systems do.",
-      "sub": "We build the operational infrastructure that lets established businesses run like an enterprise — without the enterprise cost."
+      "sub": "We build the operational infrastructure that lets established businesses run like an enterprise, without the enterprise cost."
     },
     "origin": {
-      "eyebrow": "How it started",
       "headline": "One simple idea.",
       "headlineItalic": "One massive problem.",
-      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins — but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A customer who left for the competitor because the competitor actually answered at 2am.",
+      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins, but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A customer who left for the competitor because the competitor actually answered at 2am.",
       "p2": "The problem wasn't a lack of tools. It was the exact opposite: duct-taped tech stacks with 8, 10, 15 different tools that don't talk to each other. CRMs over here, forms over there, half-built automations, broken integrations. Expensive software that ends up costing more in complexity than in licenses.",
       "p3": "Bralto was built to fix that at the root. One platform that replaces the entire stack, paired with custom implementations that connect AI, data, and processes into a single system. We don't sell software. We rebuild how the business runs.",
       "statValue": "8+",
@@ -106,7 +105,7 @@
     "mission": {
       "eyebrow": "Purpose",
       "card1Label": "Mission",
-      "card1Body": "Make every business operate like the best in its category — without growing the team to get there.",
+      "card1Body": "Make every business operate like the best in its category, without growing the team to get there.",
       "card2Label": "Vision",
       "card2Body": "A world where a mid-sized business competes head-to-head with an enterprise player. Not because of size. Because of how well it runs."
     },
@@ -117,7 +116,7 @@
       "items": [
         { "number": "01", "title": "Systems, not patches", "body": "We don't add another tool to the stack. We replace the stack." },
         { "number": "02", "title": "Results before aesthetics", "body": "If it doesn't drive revenue or cut cost, it doesn't ship. Period." },
-        { "number": "03", "title": "Fast implementation or we don't take the project", "body": "Seventy-two hours from diagnosis to delivery. If we miss it, you don't pay." },
+        { "number": "03", "title": "Fast implementation, clear timelines", "body": "A website is usually ready in 5 to 10 business days; an automation, in 2 to 3 weeks; an internal system, in 4 to 12 weeks, depending on scope." },
         { "number": "04", "title": "Your business, your platform", "body": "Everything we build runs on your own domain, your own brand, your own infrastructure. Never dependent on us." }
       ]
     },
@@ -144,9 +143,9 @@
     "close": {
       "headline": "Let's build the system",
       "headlineItalic": "your business needs.",
-      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you — straight up — what can be automated, what can't, and what I'd change first. Thirty minutes. No commitment.",
-      "signature": "— Alejandro Aguilar, Founder",
-      "cta": "Book a call with me"
+      "body": "Every conversation starts the same way: you walk me through how you operate today, and I tell you, straight up, what can be automated, what can't, and what I'd change first. It takes 30 minutes. If you move forward, we credit the full $97 toward your project.",
+      "signature": "Alejandro Aguilar, founder",
+      "cta": "Book a diagnostic call"
     }
   },
   "PreciosPage": {
@@ -154,7 +153,6 @@
     "headline": "Everything",
     "headlineItalic": "we do.",
     "desc": "Every service is custom-quoted: the price depends on scope, and we define it together during the diagnostic call.",
-    "custom": "Custom quote",
     "free": "Free",
     "services": {
       "sitiosWeb": {
@@ -195,17 +193,14 @@
     "badgeSub": "Included with every system",
     "headline": "Your whole business,",
     "headlineItalic": "in one platform.",
-    "desc": "CRM, websites, funnels, scheduling, payments, and multichannel marketing — all in one place. It comes included with every system we build.",
+    "desc": "CRM, websites, funnels, scheduling, payments, and multichannel marketing in one place. It comes with every system we build.",
     "cta": "Book a diagnostic call",
-    "includesLabel": "What's included",
     "includesLight": "Everything you need to run your business",
     "includesBold": "without juggling tools.",
     "includesDesc": "Three areas, one platform. No plugins, no fragile integrations, and no hidden costs.",
-    "replacesLabel": "What it replaces",
     "replacesLight": "One platform",
     "replacesBold": "instead of ten subscriptions.",
     "replacesDesc": "Everything you pay for separately today, included in your system.",
-    "faqLabel": "FAQ",
     "faqLight": "Before you",
     "faqBold": "start.",
     "faq": [
@@ -221,11 +216,12 @@
   },
   "Home": {
     "meta": {
-      "title": "Bralto — AI-powered automated systems that sell",
+      "title": "Bralto | AI-powered automated systems that sell",
       "description": "We build and integrate custom intelligent systems that automate your entire commercial operation."
     },
     "nav": {
       "label": "Main",
+      "skip": "Skip to content",
       "home": "Bralto, home",
       "links": {
         "sistema": "How it works",
@@ -296,7 +292,6 @@
       "language": "Language"
     },
     "hero": {
-      "eyebrow": "Automation · Artificial Intelligence · Custom-built systems",
       "titleLight": "A website is no longer enough.",
       "titleBold": "Your business needs a system.",
       "lead": "We build and integrate custom intelligent systems that automate your entire commercial operation.",
@@ -305,7 +300,6 @@
       "system": {
         "label": "Example case of a system at work",
         "title": "Example case",
-        "live": "Live",
         "note": "A basic example of a business automating its processes. With artificial intelligence, the scope is virtually unlimited.",
         "events": [
           {
@@ -314,34 +308,38 @@
             "time": "now"
           },
           {
-            "title": "AI agent replied",
-            "detail": "WhatsApp · questions answered",
+            "title": "AI agent built the quote",
+            "detail": "With your prices and terms",
             "time": "+4 s"
           },
           {
-            "title": "Quote sent",
-            "detail": "Generated with your prices",
-            "time": "+1 min"
+            "title": "Quote approved",
+            "detail": "By the assigned owner",
+            "time": "+6 min"
           },
           {
-            "title": "Task for your team",
-            "detail": "Owner and due date set",
-            "time": "+5 min"
+            "title": "Payment link sent",
+            "detail": "Automatically on approval",
+            "time": "+6 min"
           },
           {
-            "title": "Client logs into their portal",
-            "detail": "Checks their order status",
-            "time": "day 2"
+            "title": "Payment received",
+            "detail": "Tracking ID, follow-up, and user created",
+            "time": "+2 h"
+          },
+          {
+            "title": "Order in your dashboard",
+            "detail": "With every step of the process",
+            "time": "+2 h"
           }
         ]
       }
     },
     "compare": {
-      "eyebrow": "2027",
       "titleLight": "What does a business need",
       "titleBold": "to sell in 2027?",
-      "colBefore": "What almost everyone has",
-      "colAfter": "What you need in 2027",
+      "colBefore": "What almost everyone has today",
+      "colAfter": "What your business needs in 2027",
       "groups": [
         {
           "label": "Attract and sell",
@@ -387,8 +385,8 @@
     },
     "system": {
       "eyebrow": "How it works",
-      "titleLight": "Your website is just the door.",
-      "titleBold": "This is what goes behind it.",
+      "titleLight": "A website is just the door.",
+      "titleBold": "But what about what's behind it?",
       "hubLabel": "The door",
       "hubTitle": "Your website",
       "layers": [
@@ -421,14 +419,15 @@
       "closingBold": "Not websites: systems that run your business."
     },
     "cases": {
-      "eyebrow": "Case studies",
       "titleLight": "Systems that are already",
       "titleBold": "working.",
       "view": "View case",
-      "all": "View all case studies"
+      "all": "View all case studies",
+      "carousel": "Case studies",
+      "position": "Case {i} of {n}: {title}"
     },
     "casesPage": {
-      "metaTitle": "Case studies — Bralto",
+      "metaTitle": "Case studies | Bralto",
       "metaDescription": "Bralto projects at work: websites, AI agents, automations, and custom systems for restaurants, real estate, tourism, and retail.",
       "eyebrow": "Case studies",
       "titleLight": "Systems that are already",
@@ -436,20 +435,9 @@
       "lead": "Choose a project to see what we built and how it works."
     },
     "platform": {
-      "eyebrow": "Platform",
       "titleLight": "All of these tools",
       "titleBold": "are included.",
-      "lead": "Everything we build lives on your own platform: CRM, WhatsApp, Instagram, and email conversations, sales pipeline, automations, scheduling, payments, and reports. One platform that replaces all the tools you pay for separately today.",
-      "features": [
-        "CRM",
-        "Omnichannel",
-        "Pipeline",
-        "Automations",
-        "Scheduling",
-        "Payments",
-        "Reports",
-        "Mobile app"
-      ],
+      "lead": "Everything we build lives on your own platform: CRM, conversations, pipeline, automations, scheduling, payments, and reports. It replaces the tools you pay for separately today.",
       "tools": [
         {
           "name": "HubSpot",
@@ -493,7 +481,10 @@
         }
       ],
       "separately": "Separately: $2,000+/mo",
-      "included": "Included in your system"
+      "included": "Included in your system",
+      "also": "Plus",
+      "hubLabel": "All in",
+      "hubTitle": "Your platform"
     },
     "offer": {
       "eyebrow": "Investment",
@@ -503,6 +494,8 @@
       "price": "$3,500",
       "currency": "USD",
       "financing": "Financing available",
+      "scope": "The final price depends on the scope and is defined during the diagnosis.",
+      "includesLabel": "What's included",
       "includes": [
         "Diagnosis",
         "Design",
@@ -520,10 +513,9 @@
     },
     "guarantee": {
       "title": "No risk on your side.",
-      "body": "If, in the first month after the system goes live, it doesn't generate qualified leads that cover your monthly fee, we keep working at no cost until it does."
+      "body": "If, in the first month after the system goes live, it doesn't generate qualified leads, we keep working at no cost until it does."
     },
     "testimonials": {
-      "eyebrow": "Clients",
       "titleLight": "In the words of",
       "titleBold": "our clients.",
       "videoPlaceholder": "[Real video testimonial]",
@@ -537,28 +529,31 @@
       ]
     },
     "faq": {
-      "eyebrow": "Frequently asked questions",
       "titleLight": "What you",
       "titleBold": "need to know.",
       "items": [
         {
           "q": "How is this different from a regular website?",
-          "a": "A website only displays information. A system captures the customer, responds to them, follows up, and measures whether they bought. The website is just one piece of the system."
+          "a": "A website only displays information. A system captures the customer, responds, quotes, collects payment, follows up, and shows your team where every sale stands. The website is just the door."
         },
         {
           "q": "Do I need to know about technology to use it?",
           "a": "No. We hand everything over up and running, and your team manages it from a single platform, including from their phones. We will teach you how to use it."
         },
         {
-          "q": "Will the AI respond well to my customers?",
-          "a": "The agent is trained on your business information: services, prices, hours, and frequently asked questions. When something falls outside what it knows, it hands the conversation to someone on your team."
+          "q": "Is this a chatbot?",
+          "a": "No. We integrate complete systems: your website, your messaging channels, the CRM, quotes, approvals, payments, and reports are connected, and every sale moves on its own from one step to the next. AI is one more piece: it's trained on your business information and hands your team anything outside what it knows."
+        },
+        {
+          "q": "Which processes can be automated?",
+          "a": "The ones that depend on someone remembering today: replying to and qualifying leads, quoting, requesting approvals, sending payment links, creating orders and users, following up, and building reports. In the diagnosis we look at which ones will have the biggest impact on your business."
         },
         {
           "q": "How long does it take to be up and running?",
           "a": "It depends on the scope. After the diagnosis, we give you an exact timeline in writing."
         },
         {
-          "q": "What if I already have a website or a CRM?",
+          "q": "What if I already have a website, a CRM, or other tools?",
           "a": "We review what you already have. If it works, we connect it to the system; if not, we migrate your information to the new platform."
         },
         {
@@ -580,16 +575,13 @@
       "note": "$97 USD · Deducted from the project if you hire us"
     },
     "servicePage": {
-      "eyebrow": "Service",
       "cta": "Book a diagnostic call",
       "all": "View all services",
-      "featuresEyebrow": "What's included",
       "featuresLight": "Everything included.",
       "featuresBold": "No surprises.",
       "processEyebrow": "How we work",
       "processLight": "Simple and",
       "processBold": "straightforward.",
-      "faqEyebrow": "FAQ",
       "faqLight": "Everything you",
       "faqBold": "want to know.",
       "related": "Other services",
@@ -600,7 +592,19 @@
       "tagline": "Digital infrastructure for businesses",
       "copyright": "© {year} Bralto",
       "services": "Services",
-      "company": "Company"
+      "company": "Company",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "cookies": "Cookie preferences",
+      "pauseMotion": "Pause animations",
+      "resumeMotion": "Resume animations"
+    },
+    "consent": {
+      "title": "Cookies",
+      "text": "We use our own cookies to run the site and, if you accept, Google and Meta cookies to measure visits and ads.",
+      "privacy": "Privacy policy",
+      "essential": "Essential only",
+      "accept": "Accept all"
     },
     "pending": "Pending · hidden in production"
   }

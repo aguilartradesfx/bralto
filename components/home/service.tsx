@@ -38,9 +38,7 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
     <main className="sv">
       <section className="hm-hero hm-hero--page" aria-labelledby="sv-title">
         <div className="hm-wrap">
-          <p className="hm-eyebrow hm-in">
-            {t('eyebrow')} · {copy.badge}
-          </p>
+          <p className="hm-eyebrow hm-in">{copy.badge}</p>
           <h1 id="sv-title" className="hm-page-title">
             <span className="hm-hero__l1">{copy.headline}</span> <span className="hm-hero__l2">{copy.headlineBold}</span>
           </h1>
@@ -51,19 +49,11 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
                 {t('cta')}
                 <Arrow />
               </Link>
-              <Link href={`/${locale}/precios`} className="hm-btn hm-btn--glass hm-glass">
+              <Link href={`/${locale}/servicios`} className="hm-btn hm-btn--glass hm-glass">
                 {t('all')}
               </Link>
             </div>
           </div>
-          <dl className="sv-specs hm-glass">
-            {copy.stats.map(([value, label]) => (
-              <div key={label}>
-                <dt>{label}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
@@ -73,10 +63,18 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
         <div className="hm-wrap">
           <SectionHead
             id="sv-features-title"
-            eyebrow={t('featuresEyebrow')}
             light={t('featuresLight')}
             bold={t('featuresBold')}
           />
+          {/* Las cifras clave del servicio, fuera del hero (que queda en título, texto y botones) */}
+          <dl className="sv-specs hm-rv">
+            {copy.stats.map(([value, label]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
           <ul className="sv-features hm-glass hm-glass--thick hm-rv">
             {copy.features.map((f) => (
               <li key={f.t}>
@@ -89,8 +87,9 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
         </div>
       </section>
 
+      {/* Pasos en lista al lado del título: la única fila de tarjetas de la página es "Qué incluye" */}
       <section className="hm-section" aria-labelledby="sv-process-title">
-        <div className="hm-wrap">
+        <div className="hm-wrap sv-process">
           <SectionHead
             id="sv-process-title"
             eyebrow={t('processEyebrow')}
@@ -101,10 +100,12 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
             {copy.steps.map((s, i) => (
               <li key={s.t} className="sv-step hm-rv">
                 <span className="sv-step__n" aria-hidden="true">
-                  {String(i + 1).padStart(2, '0')}
+                  {i + 1}
                 </span>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
+                <div>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                </div>
               </li>
             ))}
           </ol>
@@ -113,7 +114,6 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
 
       <FaqBlock
         titleId="sv-faq-title"
-        eyebrow={t('faqEyebrow')}
         light={t('faqLight')}
         bold={t('faqBold')}
         items={copy.faqs}
@@ -137,13 +137,13 @@ async function RelatedServices({ locale, current, label }: { locale: Locale; cur
   return (
     <section className="hm-section sv-related" aria-labelledby="sv-related-title">
       <div className="hm-wrap">
-        <h2 id="sv-related-title" className="hm-eyebrow">
+        <h2 id="sv-related-title" className="hm-subtitle">
           {label}
         </h2>
         <ul className="sv-related__list">
           {related.map((item) => (
             <li key={item.key}>
-              <Link href={serviceHref(locale, item.key)} className="sv-related__card hm-glass hm-rv">
+              <Link href={serviceHref(locale, item.key)} className="sv-related__row hm-rv">
                 <span className="sv-related__label">{item.label}</span>
                 <span className="sv-related__desc">{item.desc}</span>
                 <Arrow />
@@ -156,16 +156,14 @@ async function RelatedServices({ locale, current, label }: { locale: Locale; cur
   )
 }
 
-/** Encabezado + cuerpo de la pieza única de un servicio */
+/** Encabezado + cuerpo de la pieza única de un servicio (va pegada al hero: sin eyebrow) */
 export function Showcase({
   id,
-  eyebrow,
   light,
   bold,
   children,
 }: {
   id: string
-  eyebrow: string
   light: string
   bold: string
   children: ReactNode
@@ -173,7 +171,7 @@ export function Showcase({
   return (
     <section className="hm-section" aria-labelledby={id}>
       <div className="hm-wrap">
-        <SectionHead id={id} eyebrow={eyebrow} light={light} bold={bold} />
+        <SectionHead id={id} light={light} bold={bold} />
         {children}
       </div>
     </section>

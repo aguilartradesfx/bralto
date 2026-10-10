@@ -19,7 +19,6 @@ const POSTS: Record<number, string[]> = {
 const CELLS: (number | null)[] = [...Array(4).fill(null), ...Array.from({ length: 31 }, (_, i) => i + 1)]
 
 type Copy = ServiceCopy & {
-  calSectionLabel: string
   calHeadline: string
   calItalic: string
   calDesc: string
@@ -35,13 +34,12 @@ const CONTENT: Record<Locale, Copy> = {
     badge: 'Producción de contenido',
     headline: 'Contenido que vende,',
     headlineBold: 'mes a mes.',
-    sub: 'Producimos, editamos y publicamos contenido profesional para sus redes sociales — sin que tenga que preocuparse por nada.',
+    sub: 'Producimos, editamos y publicamos contenido profesional para sus redes sociales, sin que tenga que preocuparse por nada.',
     stats: [
-      ['6–12', 'Videos al mes'],
+      ['6 a 12', 'Videos al mes'],
       ['Stories', 'Incluidas'],
       ['100%', 'Gestionado'],
     ],
-    calSectionLabel: 'Su mes de contenido, planeado',
     calHeadline: 'Siempre sabe',
     calItalic: 'qué se publica.',
     calDesc: 'Cada mes recibe el calendario completo con los posts programados por plataforma. Usted aprueba antes de publicar. Sin sorpresas, sin improvisación de último minuto.',
@@ -69,7 +67,7 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     faqs: [
       { q: '¿Ustedes graban o solo editan?', a: 'Depende del plan y la ubicación. En la mayoría de los casos trabajamos con material que el cliente graba o nos envía. Para clientes en zona de cobertura, la producción en sitio se puede incluir o cotizar aparte.' },
-      { q: '¿El servicio incluye la gestión de redes?', a: 'Sí. Publicamos en su nombre según el calendario aprobado. Usted solo revisa y aprueba las piezas antes de que salgan — el resto lo manejamos nosotros.' },
+      { q: '¿El servicio incluye la gestión de redes?', a: 'Sí. Publicamos en su nombre según el calendario aprobado. Usted solo revisa y aprueba las piezas antes de que salgan. El resto lo manejamos nosotros.' },
       { q: '¿Qué plataformas cubren?', a: 'Instagram, TikTok, Facebook y YouTube Shorts. La estrategia se adapta según dónde está su audiencia y cuáles plataformas generan más resultado para su tipo de negocio.' },
       { q: '¿Puedo cambiar de plan?', a: 'Sí, con 15 días de anticipación antes del siguiente ciclo mensual. Sin penalidades.' },
     ],
@@ -77,16 +75,15 @@ const CONTENT: Record<Locale, Copy> = {
     ctaBold: 'su contenido.',
   },
   en: {
-    badge: 'Content Production',
+    badge: 'Content production',
     headline: 'Content that sells,',
     headlineBold: 'every month.',
-    sub: "We produce, edit, and publish professional content for your social media — so you don't have to worry about a thing.",
+    sub: "We produce, edit, and publish professional content for your social media, so you don't have to worry about a thing.",
     stats: [
-      ['6–12', 'Videos per month'],
+      ['6 to 12', 'Videos per month'],
       ['Stories', 'Included'],
       ['100%', 'Managed'],
     ],
-    calSectionLabel: 'Your month of content, planned',
     calHeadline: 'You always know',
     calItalic: "what's going live.",
     calDesc: 'Every month you get the full content calendar with posts scheduled by platform. You approve before anything goes live. No surprises, no last-minute scrambling.',
@@ -114,7 +111,7 @@ const CONTENT: Record<Locale, Copy> = {
     ],
     faqs: [
       { q: 'Do you film or just edit?', a: 'It depends on the plan and location. In most cases we work with footage the client films or sends us. For clients in our coverage area, on-site production can be included or quoted separately.' },
-      { q: 'Does the service include social media management?', a: 'Yes. We publish on your behalf according to the approved calendar. You just review and approve the pieces before they go live — we handle everything else.' },
+      { q: 'Does the service include social media management?', a: 'Yes. We publish on your behalf according to the approved calendar. You just review and approve the pieces before they go live. We handle everything else.' },
       { q: 'Which platforms do you cover?', a: 'Instagram, TikTok, Facebook, and YouTube Shorts. The strategy adapts based on where your audience is and which platforms drive the most results for your type of business.' },
       { q: 'Can I change plans?', a: 'Yes, with 15 days notice before the next monthly cycle. No penalties.' },
     ],
@@ -131,7 +128,7 @@ export default function ProduccionContenidoView({ locale }: { locale: Locale }) 
       <section className="hm-section" aria-labelledby="sv-cal-title">
         <div className="hm-wrap sv-split">
           <div>
-            <SectionHead id="sv-cal-title" eyebrow={c.calSectionLabel} light={c.calHeadline} bold={c.calItalic} />
+            <SectionHead id="sv-cal-title" light={c.calHeadline} bold={c.calItalic} />
             <p className="hm-lead">{c.calDesc}</p>
             <ul className="sv-platforms">
               {c.platforms.map((p) => (

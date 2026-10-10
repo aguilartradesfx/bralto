@@ -3,23 +3,19 @@ import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import { OPT_IN_REGION, REGION_COOKIE, requiresOptIn } from './lib/consent'
+import { preferredLocale } from './lib/locale'
 import { isPanelPath, resolveHostRouting } from './lib/host-routing'
 import { hasPermission, requiredPermission, type PanelPermission } from './lib/panel-access'
 import type { UserProfile } from './types/user-profiles'
 
-// Spanish-speaking countries → es, everything else → en
-const SPANISH_COUNTRIES = new Set([
-  'MX', 'ES', 'AR', 'CO', 'PE', 'CL', 'EC', 'VE', 'GT', 'CU', 'BO',
-  'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ', 'PR',
-])
-
+// La elección guardada, después el idioma del navegador y por último el país (lib/locale.ts)
 function getPreferredLocale(request: NextRequest): string {
-  const country = request.headers.get('x-vercel-ip-country') ?? ''
-  if (SPANISH_COUNTRIES.has(country)) return 'es'
-  // Fallback: check Accept-Language header
-  const acceptLang = request.headers.get('accept-language') ?? ''
-  if (acceptLang.toLowerCase().startsWith('es')) return 'es'
-  return 'en'
+  return preferredLocale({
+    cookie: request.cookies.get('NEXT_LOCALE')?.value,
+    acceptLanguage: request.headers.get('accept-language'),
+    country: request.headers.get('x-vercel-ip-country'),
+  })
 }
 
 const intlMiddleware = createIntlMiddleware({
@@ -38,7 +34,25 @@ const NON_LOCALE_PREFIXES = [
   '/payment-info',
 ]
 
-const PERMISSION_COLUMNS = 'is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
+// Visitas de la UE, el EEE o el Reino Unido: el script de GTM no carga nada hasta que acepten
+// (lib/consent.ts). La cookie es estrictamente necesaria: solo dice la región, no identifica.
+function markConsentRegion(request: NextRequest, response: NextResponse): NextResponse {
+  const optIn = requiresOptIn(request.headers.get('x-vercel-ip-country'))
+  const current = request.cookies.get(REGION_COOKIE)?.value
+  if (optIn && current !== OPT_IN_REGION) {
+    response.cookies.set(REGION_COOKIE, OPT_IN_REGION, {
+      path: '/',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+      secure: process.env.NODE_ENV === 'production',
+    })
+  } else if (!optIn && current) {
+    response.cookies.delete(REGION_COOKIE)
+  }
+  return response
+}
+
+const PERMISSION_COLUMNS ='is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
 
 // Session + section permission check for panel routes
 async function guardPanel(request: NextRequest): Promise<NextResponse> {
@@ -92,9 +106,12 @@ export async function middleware(request: NextRequest) {
     return pathname === '/login' ? NextResponse.next() : guardPanel(request)
   }
 
+  // ── robots.txt y sitemap.xml van en la raíz: sin esto se mandaban a /en/… y daban 404
+  if (pathname === '/robots.txt' || pathname === '/sitemap.xml') return NextResponse.next()
+
   // ── Public routes outside the locale tree ────────────────────────────────
   if (NON_LOCALE_PREFIXES.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next()
+    return markConsentRegion(request, NextResponse.next())
   }
 
   // ── Locale redirect for root and non-prefixed public paths ───────────────
@@ -104,11 +121,11 @@ export async function middleware(request: NextRequest) {
   if (!hasLocalePrefix) {
     const url = request.nextUrl.clone()
     url.pathname = `/${getPreferredLocale(request)}${pathname}`
-    return NextResponse.redirect(url)
+    return markConsentRegion(request, NextResponse.redirect(url))
   }
 
   // ── next-intl handles locale cookie, alternate links, etc. ────────────────
-  return intlMiddleware(request)
+  return markConsentRegion(request, intlMiddleware(request))
 }
 
 export const config = {

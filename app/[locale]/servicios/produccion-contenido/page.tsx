@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/servicios/produccion-contenido', en: '/servicios/produccion-contenido' },
     titles: {
-      es: 'Producción de Contenido para Marca y Marketing',
-      en: 'Content Production for Brand and Marketing',
+      es: 'Producción de contenido para marca y marketing',
+      en: 'Content production for brand and marketing',
     },
     descriptions: {
       es: 'Producción de contenido visual y editorial alineado a la estrategia de su marca. Listo para publicar en redes, web y campañas.',

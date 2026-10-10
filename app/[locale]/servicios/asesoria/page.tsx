@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/servicios/asesoria', en: '/servicios/asesoria' },
     titles: {
-      es: 'Asesoría en Infraestructura Digital y Automatización',
-      en: 'Advisory on Digital Infrastructure and Automation',
+      es: 'Asesoría en infraestructura digital y automatización',
+      en: 'Advisory on digital infrastructure and automation',
     },
     descriptions: {
       es: 'Sesiones de asesoría con el equipo de Bralto para diseñar su stack digital, plan de automatización y arquitectura de datos.',

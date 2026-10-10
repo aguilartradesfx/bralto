@@ -6,7 +6,7 @@ import { Arrow } from './icons'
 import type { Locale } from './primitives'
 
 // Un caso real (los mismos proyectos de las páginas de cada trabajo). Toda la tarjeta
-// lleva a su página. compact: fila del home; feature: fila grande de /casos.
+// lleva a su página. compact: fila del home; feature: tarjeta de la grilla de /casos.
 export function CaseRow({
   client,
   locale,

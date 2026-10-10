@@ -60,6 +60,18 @@
   text-wrap: pretty;
 }
 
+/* Línea en otro idioma (404): más chica, con su enlace subrayado */
+.st__body .st-alt {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.st__body .st-alt a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .st__body .st__hint {
   font-size: 13px;
   color: var(--ink-3);

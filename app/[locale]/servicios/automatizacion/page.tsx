@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     pathByLocale: { es: '/servicios/automatizacion', en: '/servicios/automatizacion' },
     titles: {
-      es: 'Automatización de Procesos con IA y Workflows',
-      en: 'Process Automation with AI and Workflows',
+      es: 'Automatización de procesos con IA y workflows',
+      en: 'Process automation with AI and workflows',
     },
     descriptions: {
       es: 'Automatizamos ventas, atención al cliente y operaciones internas con agentes de IA, CRM y workflows integrados.',

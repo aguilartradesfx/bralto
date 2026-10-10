@@ -23,12 +23,19 @@ export function ThemeToggle({ label }: { label: string }) {
     const current = resolveTheme(stored, matchMedia('(prefers-color-scheme: light)').matches)
     root.dataset.theme = current
     setTheme(current)
+    // Hay dos (en la barra y, en teléfonos, en el menú): los dos siguen al atributo, lo cambie quien lo cambie
+    const observer = new MutationObserver(() => {
+      const next = root.dataset.theme
+      if (next === 'light' || next === 'dark') setTheme(next)
+    })
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
   }, [])
 
   function toggle() {
     const root = homeRoot()
     if (!root) return
-    const next: HomeTheme = theme === 'light' ? 'dark' : 'light'
+    const next: HomeTheme = root.dataset.theme === 'light' ? 'dark' : 'light'
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next)
     } catch {}

@@ -3,10 +3,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { clients } from '@/app/servicios/sitios-web/clients'
 import { CaseRow } from '@/components/home/case-row'
 import { FinalCta } from '@/components/home/final-cta'
+import { SITE_URL } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
-const BASE_URL = 'https://bralto.io'
 const toLocale = (locale: string) => (locale === 'en' ? 'en' : 'es')
 
 export function generateStaticParams() {
@@ -22,13 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: {
-      canonical: `${BASE_URL}/${locale}/casos`,
-      languages: { es: `${BASE_URL}/es/casos`, en: `${BASE_URL}/en/casos`, 'x-default': `${BASE_URL}/es/casos` },
+      canonical: `${SITE_URL}/${locale}/casos`,
+      languages: { es: `${SITE_URL}/es/casos`, en: `${SITE_URL}/en/casos`, 'x-default': `${SITE_URL}/es/casos` },
     },
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}/${locale}/casos`,
+      url: `${SITE_URL}/${locale}/casos`,
       siteName: 'Bralto',
       type: 'website',
       locale: locale === 'es' ? 'es_LA' : 'en_US',
@@ -47,7 +47,6 @@ export default async function CasosPage({ params }: Props) {
     <main>
       <section className="hm-hero hm-hero--page" aria-labelledby="hm-cases-page-title">
         <div className="hm-wrap">
-          <p className="hm-eyebrow hm-in">{t('casesPage.eyebrow')}</p>
           <h1 id="hm-cases-page-title" className="hm-page-title">
             <span className="hm-hero__l1">{t('casesPage.titleLight')}</span>{' '}
             <span className="hm-hero__l2">{t('casesPage.titleBold')}</span>
@@ -56,8 +55,12 @@ export default async function CasosPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="hm-section hm-section--tight hm-section--joined" aria-label={t('casesPage.eyebrow')}>
+      <section className="hm-section hm-section--tight hm-section--joined" aria-labelledby="hm-cases-list-title">
         <div className="hm-wrap">
+          {/* Entre el h1 y el h3 de cada caso: el título de la lista, solo para lectores de pantalla */}
+          <h2 id="hm-cases-list-title" className="sr-only">
+            {t('casesPage.eyebrow')}
+          </h2>
           <ul className="hm-cases hm-cases--page">
             {clients.map((client, i) => (
               <li key={client.id}>

@@ -11,10 +11,9 @@ export async function Hero({ locale }: { locale: Locale }) {
   return (
     <section id="inicio" className="hm-hero" aria-labelledby="hm-hero-title">
       <div className="hm-wrap hm-hero__inner">
-        {/* El separador queda pegado a la palabra anterior: nunca abre una línea */}
-        <p className="hm-eyebrow hm-in">{t('eyebrow').replaceAll(' · ', '\u00a0· ')}</p>
-        <h1 id="hm-hero-title" className="hm-hero__title">
-          <span className="hm-hero__l1">{t('titleLight')}</span> <span className="hm-hero__l2">{t('titleBold')}</span>
+        <h1 id="hm-hero-title" className="hm-statement">
+          <span className="hm-statement__lead">{t('titleLight')}</span>{' '}
+          <span className="hm-statement__claim">{t('titleBold')}</span>
         </h1>
 
         <div className="hm-hero__row">
@@ -36,7 +35,6 @@ export async function Hero({ locale }: { locale: Locale }) {
         <figure className="hm-console hm-glass hm-glass--thick hm-in" style={vars({ d: 4 })} aria-label={t('system.label')}>
           <figcaption className="hm-console__head">
             <span>{t('system.title')}</span>
-            <span className="hm-live">{t('system.live')}</span>
           </figcaption>
           <ol className="hm-track">
             {events.map((e, i) => (
@@ -54,7 +52,6 @@ export async function Hero({ locale }: { locale: Locale }) {
                 )}
                 <div className="hm-station__tile hm-inset">
                   <div className="hm-station__meta">
-                    <span>{String(i + 1).padStart(2, '0')}</span>
                     <span>{e.time}</span>
                   </div>
                   <b className="hm-station__title">{e.title}</b>

@@ -1,40 +1,23 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { CookieConsent } from '@/components/cookie-consent'
-import { ParticlesBackground } from '@/components/particles-background'
-import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
-import { PRIVATE_SURFACE_JS } from '@/lib/host-routing'
+import { SITE_URL } from '@/lib/seo'
 
-const geist = Geist({
-  subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
-})
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
-  display: 'swap',
-})
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#050505' },
+    { media: '(prefers-color-scheme: light)', color: '#e8e8e8' },
+  ],
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://bralto.io'),
+  metadataBase: new URL(SITE_URL),
   icons: {
     icon: '/Favicon.png',
     shortcut: '/Favicon.png',
     apple: '/Favicon.png',
   },
   title: {
-    default: 'Bralto — Automatización e Infraestructura Digital para Negocios',
+    default: 'Automatización e infraestructura digital para negocios | Bralto',
     template: '%s | Bralto',
   },
   description:
@@ -59,15 +42,15 @@ export const metadata: Metadata = {
     'agencia digital Costa Rica',
     'Bralto',
   ],
-  authors: [{ name: 'Bralto', url: 'https://bralto.io' }],
+  authors: [{ name: 'Bralto', url: SITE_URL }],
   creator: 'Bralto',
   publisher: 'Bralto',
   openGraph: {
     type: 'website',
     locale: 'es_LA',
-    url: 'https://bralto.io',
+    url: SITE_URL,
     siteName: 'Bralto',
-    title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
+    title: 'Automatización e infraestructura digital para negocios | Bralto',
     description:
       'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. Servicio integral para restaurantes, clínicas, inmobiliarias y empresas en LATAM, España y Estados Unidos.',
     images: [
@@ -75,13 +58,13 @@ export const metadata: Metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Bralto — Automatización Digital para Negocios',
+        alt: 'Bralto: automatización digital para negocios',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bralto — Automatización e Infraestructura Digital para Negocios',
+    title: 'Automatización e infraestructura digital para negocios | Bralto',
     description:
       'Automatizamos la operación de tu negocio con IA, CRM, WhatsApp y más. LATAM, España y Estados Unidos.',
     images: ['/og-image.jpg'],
@@ -97,38 +80,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: 'https://bralto.io',
-  },
   manifest: '/manifest.json',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html suppressHydrationWarning className={`dark ${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}>
-      <head>
-        {/* Google Tag Manager — not on the panel or contract signing pages */}
-        <script dangerouslySetInnerHTML={{ __html: `if(!${PRIVATE_SURFACE_JS}){(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KTGZ86BC');}` }} />
-        {/* Disable browser scroll restoration */}
-        <script dangerouslySetInnerHTML={{ __html: `if(history.scrollRestoration)history.scrollRestoration='manual';history.replaceState(null,'',window.location.pathname);window.scrollTo(0,0);` }} />
-        <OrganizationJsonLd />
-        <WebSiteJsonLd />
-      </head>
-      <body>
-        {/* Google Tag Manager (noscript) */}
-        <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTGZ86BC" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} />
-        {/* Partículas con scroll: una sola vez para todo el sitio público */}
-        <ParticlesBackground />
-        {/* All content above background layers */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {children}
-          <CookieConsent />
-        </div>
-      </body>
-    </html>
-  )
+// Cada sección pone su <html> con su idioma (components/document.tsx); aquí solo pasan los hijos.
+// El 404 de la raíz (app/not-found.tsx) también arma el suyo.
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return children
 }

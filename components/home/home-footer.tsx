@@ -1,9 +1,11 @@
 import { getTranslations } from 'next-intl/server'
+import { ConsentPreferencesButton } from './consent-banner'
 import { BraltoLogo } from './logo'
+import { MotionToggle } from './motion-toggle'
 import type { Locale } from './primitives'
 import { SERVICE_PATHS, type MegaGroup } from './services'
 
-export async function HomeFooter({ locale }: { locale: Locale }) {
+export async function HomeFooter({ locale, showLegal }: { locale: Locale; showLegal: boolean }) {
   const t = await getTranslations({ locale, namespace: 'Home' })
   // Mismas etiquetas que el megamenú; FunnelLab es externo y se queda en el nav
   const services = (t.raw('nav.groups') as MegaGroup[]).flatMap((g) => g.items).filter((item) => SERVICE_PATHS[item.key])
@@ -15,6 +17,24 @@ export async function HomeFooter({ locale }: { locale: Locale }) {
           <BraltoLogo />
           <p>{t('footer.tagline')}</p>
           <p className="hm-footer__legal">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+          <ul className="hm-footer__policies">
+            {showLegal && (
+              <>
+                <li>
+                  <a href={`/${locale}/privacidad`}>{t('footer.privacy')}</a>
+                </li>
+                <li>
+                  <a href={`/${locale}/terminos`}>{t('footer.terms')}</a>
+                </li>
+              </>
+            )}
+            <li>
+              <ConsentPreferencesButton label={t('footer.cookies')} />
+            </li>
+            <li>
+              <MotionToggle pauseLabel={t('footer.pauseMotion')} resumeLabel={t('footer.resumeMotion')} />
+            </li>
+          </ul>
         </div>
 
         <nav className="hm-footer__col" aria-labelledby="hm-footer-services">

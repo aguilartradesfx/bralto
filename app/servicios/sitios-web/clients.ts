@@ -6,10 +6,13 @@ export interface ClientProject {
   story: string
   deliverables: string[]
   coverImage: string
+  // Texto alternativo de la portada y de cada imagen (mismo orden que images)
+  coverAlt: string
   images: string[]
+  imageAlts: string[]
   url?: string
   // Versión en inglés (home, /casos y la página de cada caso en /en)
-  en?: { industry: string; tagline: string; story?: string; deliverables?: string[] }
+  en?: { industry: string; tagline: string; story?: string; deliverables?: string[]; coverAlt?: string; imageAlts?: string[] }
 }
 
 export const clients: ClientProject[] = [
@@ -19,7 +22,7 @@ export const clients: ClientProject[] = [
     en: {
       industry: 'Restaurant & reservations',
       tagline: 'A complete reservation platform, a 24/7 AI agent, and monthly video production.',
-      story: "Nanku had a digital presence, but not the operation a restaurant of its caliber needs. We came in to restructure everything — a new website built from scratch, automated flows, and centralized customer service — so the business could run on its own without depending on the team for every detail. Today they receive reservations automatically, serve customers across multiple channels, and have new content every month.",
+      story: "Nanku had a digital presence, but not the operation a restaurant of its caliber needs. We came in to restructure everything (a new website built from scratch, automated flows, and centralized customer service) so the business could run on its own without depending on the team for every detail. Today they receive reservations automatically, serve customers across multiple channels, and have new content every month.",
       deliverables: [
         "Website designed from scratch, mobile-first and SEO-optimized",
         "Reservation system built right into the site",
@@ -29,11 +32,21 @@ export const clients: ClientProject[] = [
         "Monthly video production: videos, reels, and social media content",
         "Post-reservation follow-up automations and automatic reminders",
       ],
+      coverAlt: 'Pages of the Nanku website in dark and orange tones, with its menu and photos',
+      imageAlts: [
+        'Two phones with the Nanku site: the cocktail menu and the table reservation form',
+        'Laptop showing the signature cocktails and premium steaks sections of the Nanku site',
+        'Laptop with the About Nanku page, surrounded by other pages of the site',
+        'Three phones with the Nanku site: live music schedule, home page with reservation and WhatsApp buttons, and cocktails',
+        'Mobile screens of the Nanku system: live music schedule, dishes, and the reservations panel',
+        "Laptop showing Nanku's live music page",
+        'Laptop with the Nanku home page and a house cocktail',
+      ],
     },
-    industry: 'Restaurante & Reservas',
+    industry: 'Restaurante y reservas',
     tagline: 'Plataforma completa de reservas, agente de IA 24/7 y producción audiovisual mensual.',
     url: 'https://www.restaurantenanku.net/',
-    story: 'Nanku tenía presencia digital, pero no la operación que un restaurante de su nivel necesita. Llegamos a reestructurarlo todo — nuevo sitio construido desde cero, flujos automatizados y atención al cliente centralizada — para que el negocio funcionara solo sin depender del equipo para cada detalle. Hoy reciben reservas en automático, atienden por múltiples canales y tienen contenido nuevo cada mes.',
+    story: 'Nanku tenía presencia digital, pero no la operación que un restaurante de su nivel necesita. Llegamos a reestructurarlo todo (nuevo sitio construido desde cero, flujos automatizados y atención al cliente centralizada) para que el negocio funcionara solo sin depender del equipo para cada detalle. Hoy reciben reservas en automático, atienden por múltiples canales y tienen contenido nuevo cada mes.',
     deliverables: [
       'Sitio web diseñado desde cero, mobile-first y optimizado para SEO',
       'Sistema de reservas integrado directamente en el sitio',
@@ -44,6 +57,7 @@ export const clients: ClientProject[] = [
       'Automatizaciones de seguimiento post-reserva y recordatorios automáticos',
     ],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723c6584e0c530f51dff.jpg',
+    coverAlt: 'Páginas del sitio de Nanku en tonos oscuros y naranja, con su carta y sus fotos',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6a7dcb4cff00335af.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6c5a58912fbcef5fe.png',
@@ -52,6 +66,15 @@ export const clients: ClientProject[] = [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6a7dcb4cff00335ae.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6d9088c065c3baa62.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1a6d9088c065c3baa63.png',
+    ],
+    imageAlts: [
+      'Dos teléfonos con el sitio de Nanku: la carta de cócteles y el formulario de reserva',
+      'Laptop con las secciones de cócteles de autor y cortes premium del sitio de Nanku',
+      'Laptop con la página Sobre Nanku, rodeada de otras páginas del sitio',
+      'Tres teléfonos con el sitio de Nanku: agenda de música en vivo, portada con botones de reserva y WhatsApp, y cócteles',
+      'Pantallas móviles del sistema de Nanku: agenda de música en vivo, platos y panel de reservas',
+      'Laptop con la página de música en vivo de Nanku',
+      'Laptop con la portada del sitio de Nanku y un cóctel de la casa',
     ],
   },
   {
@@ -70,6 +93,16 @@ export const clients: ClientProject[] = [
         "Property catalog with downloadable spec sheets",
         "Integration with digital channels to centralize every inquiry",
       ],
+      coverAlt: 'Pages of the Ecoviva website in green and white, with its projects and the financing calculator',
+      imageAlts: [
+        'Two phones with the financing calculator and the project gallery',
+        'Mobile screens of the Lomas de la Llanada project: available lots with prices and the site plan',
+        'Laptop with a project section over an aerial photo of the land',
+        'Three phones with the Ecoviva site: Lomas de la Llanada, Río Celeste Oasis, and 100% financing',
+        'Laptop with the Lomas de la Llanada page and an aerial photo of the land',
+        'Laptop with the Lomas de la Llanada overview',
+        'Laptop with the Ecoviva home page and other pages of the site, such as the lot map',
+      ],
     },
     industry: 'Inmobiliaria',
     tagline: 'Presencia digital de alto impacto con agente de IA que asesora y agenda visitas en tiempo real.',
@@ -85,6 +118,7 @@ export const clients: ClientProject[] = [
       'Integración con canales digitales para centralizar todas las consultas',
     ],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723cf5ebf27de325201b.jpg',
+    coverAlt: 'Páginas del sitio de Ecoviva en verde y blanco, con sus proyectos y la calculadora de financiamiento',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b73d829c73b2948285.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b7a7dcb4cff00336b4.png',
@@ -94,6 +128,15 @@ export const clients: ClientProject[] = [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b78a63585a16a61691.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1b784c045c274b6e899.png',
     ],
+    imageAlts: [
+      'Dos teléfonos con la calculadora de financiamiento y la galería del proyecto',
+      'Pantallas móviles del proyecto Lomas de la Llanada: lotes disponibles con precios y plano del terreno',
+      'Laptop con una sección del proyecto sobre una foto aérea del terreno',
+      'Tres teléfonos con el sitio de Ecoviva: Lomas de la Llanada, Río Celeste Oasis y el financiamiento del 100 %',
+      'Laptop con la página de Lomas de la Llanada y una foto aérea del terreno',
+      'Laptop con la presentación de Lomas de la Llanada',
+      'Laptop con la portada de Ecoviva y otras páginas del sitio, como el plano de lotes',
+    ],
   },
   {
     id: 'travelcore',
@@ -101,7 +144,7 @@ export const clients: ClientProject[] = [
     en: {
       industry: 'Tourism & travel',
       tagline: 'A 4-in-1 portal with a tour booking engine, automated flows, and routes by client type.',
-      story: "TravelCore wanted a platform that could handle both corporate and vacation clients, with real-time bookings and no manual management. We built a complete digital ecosystem that separates, routes, and serves each type of client differently — all automated under the hood.",
+      story: "TravelCore wanted a platform that could handle both corporate and vacation clients, with real-time bookings and no manual management. We built a complete digital ecosystem that separates, routes, and serves each type of client differently, all automated under the hood.",
       deliverables: [
         "4-in-1 web portal with a landing page and three distinct paths: corporate, vacation, and bookings",
         "Tour booking engine with real-time availability",
@@ -111,11 +154,21 @@ export const clients: ClientProject[] = [
         "Integrations with communication and internal management tools",
         "Automatic record of every client, booked tour, and contact details",
       ],
+      coverAlt: 'Pages of the TravelCore website in blue and purple, with its tours and destinations',
+      imageAlts: [
+        'Laptop with the TravelCore home page and other tour and destination pages',
+        'Laptop with the TravelCore entry screen: the Earth seen from space and three paths (corporate, vacation, and bookings)',
+        'Three phones with the TravelCore site: the corporate section, the travel home page, and business travel',
+        "Mobile screens of TravelCore's internal portal: dashboard, tour list, and management forms",
+        "Laptop with TravelCore's business travel page",
+        "Laptop with TravelCore's corporate section in dark mode",
+        "Two phones with TravelCore's favorite tours and traveler reviews",
+      ],
     },
-    industry: 'Turismo & Viajes',
+    industry: 'Turismo y viajes',
     tagline: 'Portal 4 en 1 con motor de agenda para tours, flujos automatizados y rutas por tipo de cliente.',
     url: 'https://www.mytravelcore.com/',
-    story: 'TravelCore quería una plataforma que pudiera manejar tanto clientes corporativos como vacacionales, con reservas en tiempo real y sin gestión manual. Construimos un ecosistema digital completo que separa, enruta y atiende a cada tipo de cliente de forma diferente — todo automatizado por debajo.',
+    story: 'TravelCore quería una plataforma que pudiera manejar tanto clientes corporativos como vacacionales, con reservas en tiempo real y sin gestión manual. Construimos un ecosistema digital completo que separa, enruta y atiende a cada tipo de cliente de forma diferente, todo automatizado por debajo.',
     deliverables: [
       'Portal web 4 en 1 con página de entrada y tres rutas diferenciadas: corporativo, vacacional y reservas',
       'Motor de agenda para tours con disponibilidad en tiempo real',
@@ -126,6 +179,7 @@ export const clients: ClientProject[] = [
       'Registro automático de cada cliente, tour reservado y datos de contacto',
     ],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723cbeaa70357710eec8.jpg',
+    coverAlt: 'Páginas del sitio de TravelCore en azul y morado, con sus tours y destinos',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d558216e2b1626ef81.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d5a7dcb4cff003393e.png',
@@ -135,6 +189,15 @@ export const clients: ClientProject[] = [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d5fbeab4c06ded022b.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d4b1d5739146c47c8fa704.png',
     ],
+    imageAlts: [
+      'Laptop con la portada de TravelCore y otras páginas de tours y destinos',
+      'Laptop con la pantalla de entrada de TravelCore: la Tierra vista desde el espacio y tres caminos (corporativo, vacacional y reservas)',
+      'Tres teléfonos con el sitio de TravelCore: la sección corporativa, la portada de viajes y los viajes de negocios',
+      'Pantallas móviles del portal interno de TravelCore: panel, lista de tours y formularios de gestión',
+      'Laptop con la página de viajes de negocios de TravelCore',
+      'Laptop con la sección corporativa de TravelCore en modo oscuro',
+      'Dos teléfonos con los tours favoritos y las reseñas de viajeros de TravelCore',
+    ],
   },
   {
     id: 'ao',
@@ -142,7 +205,7 @@ export const clients: ClientProject[] = [
     en: {
       industry: 'Wholesale',
       tagline: "Website and digital system for Costa Rica's leading liquidation distributor.",
-      story: "AO Liquidation Warehouse is the official supplier of liquidation merchandise from U.S. retailers in Costa Rica — Amazon, Target, Walmart, Home Depot. They had a physical presence and years of experience, but no digital platform that matched the operation. We built them an online presence that conveys authority and trust, and that consistently generates qualified B2B leads.",
+      story: "AO Liquidation Warehouse is the official supplier of liquidation merchandise from U.S. retailers in Costa Rica: Amazon, Target, Walmart, and Home Depot. They had a physical presence and years of experience, but no digital platform that matched the operation. We built them an online presence that conveys authority and trust, and that consistently generates qualified B2B leads.",
       deliverables: [
         "Professional website with a design that conveys authority in the liquidation market",
         "Product and lot catalog organized by category (pallets, lots, containers)",
@@ -152,11 +215,17 @@ export const clients: ClientProject[] = [
         "Local SEO optimization for wholesale distributor searches in Costa Rica",
         "Structure built for B2B operations: language, value proposition, and CTAs for entrepreneurs and businesses",
       ],
+      coverAlt: 'Pages of the AO Liquidation Warehouse website in white and navy, with warehouse photos and product pallets',
+      imageAlts: [
+        'Pages of the AO Liquidation Warehouse website in white and navy, with warehouse photos and product pallets',
+        'Laptop with the AO Liquidation Warehouse home page and pallet catalog pages',
+        'Three phones with the AO Liquidation Warehouse site: its approach, the home page with the WhatsApp button, and the program catalog',
+      ],
     },
-    industry: 'Comercio Mayorista',
+    industry: 'Comercio mayorista',
     tagline: 'Sitio web y sistema digital para el principal distribuidor de liquidaciones de Costa Rica.',
     url: 'https://www.aoliquidationwarehouse.com/',
-    story: 'AO Liquidation Warehouse es el proveedor oficial de mercancía de liquidación de retailers estadounidenses en Costa Rica — Amazon, Target, Walmart, Home Depot. Tenían presencia física y años de experiencia, pero no una plataforma digital que estuviera a la altura de la operación. Les construimos una presencia online que transmite autoridad y confianza, y que genera leads de clientes B2B calificados de forma constante.',
+    story: 'AO Liquidation Warehouse es el proveedor oficial de mercancía de liquidación de retailers estadounidenses en Costa Rica: Amazon, Target, Walmart y Home Depot. Tenían presencia física y años de experiencia, pero no una plataforma digital que estuviera a la altura de la operación. Les construimos una presencia online que transmite autoridad y confianza, y que genera leads de clientes B2B calificados de forma constante.',
     deliverables: [
       'Sitio web profesional con diseño que comunica autoridad en el mercado de liquidaciones',
       'Catálogo de productos y lotes organizado por categorías (pallets, lotes, contenedores)',
@@ -167,10 +236,16 @@ export const clients: ClientProject[] = [
       'Estructura pensada para operaciones B2B: lenguaje, propuesta de valor y CTAs para emprendedores y empresas',
     ],
     coverImage: 'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723cebf1a608431006fb.jpg',
+    coverAlt: 'Páginas del sitio de AO Liquidation Warehouse en blanco y azul marino, con fotos de la bodega y pallets de productos',
     images: [
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5723cebf1a608431006fb.jpg',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5782ea7dcb4cff025ae06.png',
       'https://assets.cdn.filesafe.space/hdVpvshZP3RGJQbxx8GA/media/69d5782f200ae21bdf8235a5.png',
+    ],
+    imageAlts: [
+      'Páginas del sitio de AO Liquidation Warehouse en blanco y azul marino, con fotos de la bodega y pallets de productos',
+      'Laptop con la portada de AO Liquidation Warehouse y páginas del catálogo de pallets',
+      'Tres teléfonos con el sitio de AO Liquidation Warehouse: su enfoque, la portada con el botón de WhatsApp y el catálogo de programas',
     ],
   },
 ]
