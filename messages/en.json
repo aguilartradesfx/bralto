@@ -96,7 +96,7 @@
     "origin": {
       "headline": "One simple idea.",
       "headlineItalic": "One massive problem.",
-      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins, but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A customer who left for the competitor because the competitor actually answered at 2am.",
+      "p1": "Bralto started from a pattern I kept seeing in every business I worked with: great products, great teams, healthy margins, but operations that completely depended on people for every single step. A sale lost because nobody picked up in time. A lead gone cold because follow-up came too late. A quote that took three days to go out. A customer who had already paid and still had to write in to find out when work would start.",
       "p2": "The problem wasn't a lack of tools. It was the exact opposite: duct-taped tech stacks with 8, 10, 15 different tools that don't talk to each other. CRMs over here, forms over there, half-built automations, broken integrations. Expensive software that ends up costing more in complexity than in licenses.",
       "p3": "Bralto was built to fix that at the root. One platform that replaces the entire stack, paired with custom implementations that connect AI, data, and processes into a single system. We don't sell software. We rebuild how the business runs.",
       "statValue": "8+",
@@ -309,7 +309,7 @@
       "system": {
         "label": "Example case of a system at work",
         "title": "Example case",
-        "note": "A basic example of a business automating its processes. With artificial intelligence, the scope is virtually unlimited.",
+        "note": "An example of a sale automated end to end. With artificial intelligence, the scope is virtually unlimited.",
         "events": [
           {
             "title": "Request from your website",
@@ -359,7 +359,7 @@
             },
             {
               "before": "Answering WhatsApp when you can",
-              "after": "AI that replies in seconds, 24/7"
+              "after": "AI that replies, quotes, and books, 24/7"
             },
             {
               "before": "Follow-up in spreadsheets",
@@ -409,7 +409,7 @@
         },
         {
           "title": "Respond",
-          "body": "AI agents on WhatsApp, Instagram, web, and email that reply, qualify, and book appointments instantly."
+          "body": "AI agents on WhatsApp, Instagram, web, and email that qualify, quote, book, and pass every sale to the CRM."
         },
         {
           "title": "Manage clients",

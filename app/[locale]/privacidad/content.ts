@@ -1,7 +1,6 @@
 import type { LegalDoc } from '@/components/home/legal-page'
 
-// BORRADOR pendiente de revisión legal. Lo que va entre corchetes falta completar o confirmar.
-// Describe lo que hace hoy el sitio: agenda y cobro del diagnóstico, firma de contratos y
+// Revisada por el abogado (octubre de 2026). Describe lo que hace hoy el sitio: agenda y cobro del diagnóstico, firma de contratos y
 // propuestas, y las cookies de medición que carga GTM según el consentimiento (lib/consent.ts).
 export const PRIVACY: LegalDoc = {
   title: 'Política de privacidad',
@@ -11,7 +10,7 @@ export const PRIVACY: LegalDoc = {
     {
       heading: 'Quién es responsable de sus datos',
       body: [
-        'El responsable es [razón social de Bralto], con [cédula jurídica o física], domicilio en [dirección en Costa Rica].',
+        'El responsable es Bralto, con sede en Costa Rica.',
         'Para cualquier consulta sobre privacidad puede escribirnos a cs@bralto.io.',
       ],
     },
@@ -36,7 +35,7 @@ export const PRIVACY: LegalDoc = {
           'Medir y mejorar el sitio y nuestros anuncios, solo con las cookies que usted acepta.',
           'Cumplir obligaciones legales, contables y fiscales.',
         ],
-        'Los usamos con su consentimiento, para prestarle el servicio que nos pide y para cumplir la ley. [Confirmar las bases legales con el abogado.]',
+        'Los usamos con su consentimiento, para prestarle el servicio que nos pide y para cumplir la ley.',
       ],
     },
     {
@@ -45,19 +44,20 @@ export const PRIVACY: LegalDoc = {
         'No vendemos sus datos. Los compartimos solo con los proveedores que necesitamos para prestar el servicio, que los tratan por cuenta nuestra:',
         [
           'Tilopay (Costa Rica): procesamiento de pagos.',
-          'Nuestra plataforma de CRM y agenda (proveedor en Estados Unidos): contactos, citas y seguimiento. [Confirmar si se nombra al proveedor.]',
+          'Nuestra plataforma de CRM y agenda (proveedor en Estados Unidos): contactos, citas y seguimiento.',
           'Supabase y Upstash (Estados Unidos): base de datos y reservas temporales de horarios.',
           'Resend (Estados Unidos): envío de correos de contratos y propuestas.',
           'Vercel (Estados Unidos): alojamiento del sitio.',
           'Google (Google Tag Manager y Google Analytics), Meta (píxel de Meta) y Adsmurai: medición de visitas y anuncios, solo con su consentimiento o según su región.',
         ],
-        'Algunos de estos proveedores están fuera de Costa Rica, así que sus datos pueden transferirse a otros países. [Confirmar con el abogado las garantías para estas transferencias.]',
+        'Algunos de estos proveedores están fuera de Costa Rica, así que sus datos pueden transferirse a otros países.',
       ],
     },
     {
       heading: 'Cuánto tiempo los guardamos',
       body: [
-        '[Pendiente de definir: plazo de conservación de los datos de contacto, de las citas, de los pagos (según la obligación contable) y de los contratos.]',
+        'Guardamos sus datos mientras los necesitamos para los fines de esta política: atender su solicitud, prestarle el servicio y darle seguimiento. Los registros de pagos y los contratos los conservamos durante los plazos que exigen las leyes contables y fiscales.',
+        'Cuando ya no los necesitamos, los eliminamos o los anonimizamos. Puede pedirnos que eliminemos sus datos antes; vea «Sus derechos».',
       ],
     },
     {
@@ -65,7 +65,7 @@ export const PRIVACY: LegalDoc = {
       body: [
         'Usted puede pedirnos acceso a sus datos, rectificarlos, suprimirlos u oponerse a su uso, según la Ley 8968 de Protección de la Persona frente al Tratamiento de sus Datos Personales de Costa Rica.',
         'Si visita el sitio desde la Unión Europea, el Espacio Económico Europeo o el Reino Unido, también tiene los derechos del Reglamento General de Protección de Datos (RGPD): portabilidad, limitación del tratamiento y presentar un reclamo ante su autoridad de protección de datos.',
-        'Para ejercerlos, escríbanos a [correo de privacidad]. Le respondemos en un plazo de [plazo de respuesta].',
+        'Para ejercerlos, escríbanos a cs@bralto.io. Le respondemos lo antes posible y dentro de los plazos que fija la ley.',
       ],
     },
     {
@@ -82,7 +82,7 @@ export const PRIVACY: LegalDoc = {
     {
       heading: 'Seguridad',
       body: [
-        'Protegemos sus datos con conexiones cifradas (HTTPS) y acceso restringido a nuestro equipo. [Completar con el abogado.]',
+        'Protegemos sus datos con conexiones cifradas (HTTPS) y acceso restringido a nuestro equipo.',
       ],
     },
     {

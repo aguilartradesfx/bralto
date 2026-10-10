@@ -18,7 +18,7 @@ import { Specular } from './specular'
 export async function SiteShell({ locale, children }: { locale: Locale; children: ReactNode }) {
   const t = await getTranslations({ locale, namespace: 'Home.nav' })
   const tc = await getTranslations({ locale, namespace: 'Home.consent' })
-  // Privacidad y términos son borradores: el enlace solo aparece donde se ven las páginas (lib/legal.ts)
+  // Enlaces a privacidad y términos: solo donde se ven las páginas (lib/legal.ts)
   const legal = legalPagesVisible({ reviewed: LEGAL_REVIEWED, pendingVisible: showPending(process.env) })
 
   return (

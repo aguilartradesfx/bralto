@@ -8,14 +8,14 @@ export function OrganizationJsonLd() {
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
     description:
-      'Business automation and digital infrastructure platform. Full-service CRM, AI agents, WhatsApp integrations, and custom systems for established companies across the Americas and beyond.',
+      'Custom automated systems for established businesses: website, CRM, AI agents, process automation, payments, and reporting, connected in one platform.',
     founder: {
       '@type': 'Person',
       name: 'Alejandro Aguilar',
     },
     address: {
       '@type': 'PostalAddress',
-      addressCountry: 'US',
+      addressCountry: 'CR',
     },
     areaServed: [
       { '@type': 'Continent', name: 'North America' },
@@ -28,7 +28,7 @@ export function OrganizationJsonLd() {
       'CRM',
       'AI Agents',
       'Web Development',
-      'WhatsApp Automation',
+      'Process Automation',
     ],
     sameAs: [],
     contactPoint: {
