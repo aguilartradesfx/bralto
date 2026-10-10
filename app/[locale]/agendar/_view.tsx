@@ -40,12 +40,13 @@ const CONTENT = {
     submit: 'Continuar al pago',
     footer: 'Pago seguro con Tilopay.',
     step3Heading: 'Pago seguro',
-    step3Sub: 'Diagnóstico de 30 minutos · $97 USD',
     pay: {
       cardNumber: 'Número de tarjeta',
       cardExpiry: 'Vencimiento',
       cardExpiryPlaceholder: 'MM/AA',
       cardCvv: 'CVV',
+      cardHolder: 'Titular',
+      cardExpires: 'Vence',
       pay: 'Pagar $97 USD',
       paying: 'Procesando el pago…',
       loading: 'Preparando el formulario de pago…',
@@ -127,12 +128,13 @@ const CONTENT = {
     submit: 'Continue to payment',
     footer: 'Secure payment with Tilopay.',
     step3Heading: 'Secure payment',
-    step3Sub: '30-minute diagnostic call · $97 USD',
     pay: {
       cardNumber: 'Card number',
       cardExpiry: 'Expiration',
       cardExpiryPlaceholder: 'MM/YY',
       cardCvv: 'CVV',
+      cardHolder: 'Cardholder',
+      cardExpires: 'Expires',
       pay: 'Pay $97 USD',
       paying: 'Processing payment…',
       loading: 'Loading the payment form…',
@@ -558,7 +560,11 @@ export default function AgendarPage() {
           </div>
         )}
 
-        <section className="bk-panel hm-glass hm-glass--thick" aria-labelledby="bk-step-title">
+        {/* El pago va en su propio panel, mitad oscura con la tarjeta y mitad blanca con el formulario */}
+        <section
+          className={cn('bk-panel', step === 3 && checkout ? 'bk-panel--pay' : 'hm-glass hm-glass--thick')}
+          aria-labelledby="bk-step-title"
+        >
           {/* ── Paso 0: fecha y hora ── */}
           {step === 0 && (
             <>
@@ -806,13 +812,10 @@ export default function AgendarPage() {
           {/* ── Paso 3: pago (formulario de la pasarela activa) ── */}
           {step === 3 && checkout && (
             <>
-              <h2 id="bk-step-title" className="bk-h2">
-                {c.step3Heading}
-              </h2>
-              <p className="bk-lead">{c.step3Sub}</p>
               <PaymentForm
                 checkout={checkout}
                 labels={c.pay}
+                summary={{ heading: c.step3Heading, title: c.summaryTitle, price: c.summaryPrice, note: c.summaryNote }}
                 onBack={() => {
                   setCheckout(null)
                   setFieldErrors({})

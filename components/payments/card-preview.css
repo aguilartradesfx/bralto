@@ -1,0 +1,243 @@
+/* Tarjeta 3D del paso de pago (card-preview.tsx): grafito con el naranja de Bralto */
+
+.cp {
+  --rx: 9deg;
+  --ry: -14deg;
+  --flip: 0deg;
+  position: relative;
+  width: min(100%, 380px);
+}
+
+.cp[data-flipped='true'] {
+  --flip: 180deg;
+}
+
+/* La perspectiva va en el padre directo de la tarjeta, y las medidas de adentro siguen a su ancho */
+.cp__float {
+  position: relative;
+  z-index: 1;
+  perspective: 1400px;
+  container-type: inline-size;
+}
+
+.cp__card {
+  position: relative;
+  aspect-ratio: 1.586;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(calc(var(--ry) + var(--flip)));
+  transition: transform .8s cubic-bezier(.2, .8, .2, 1);
+}
+
+.cp__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  color: #f6f6f6;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  background:
+    radial-gradient(120% 90% at 105% -5%, rgba(255, 109, 40, .62), transparent 55%),
+    radial-gradient(70% 60% at -10% 110%, rgba(255, 109, 40, .2), transparent 60%),
+    linear-gradient(135deg, #262626 0%, #121212 52%, #060606 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    inset 0 0 0 1px rgba(255, 255, 255, .08),
+    0 30px 60px -24px rgba(0, 0, 0, .85);
+}
+
+/* Brillo de vidrio en diagonal */
+.cp__face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .1) 44%, rgba(255, 255, 255, .02) 52%, transparent 62%);
+}
+
+.cp__front {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  padding: 7% 8%;
+}
+
+.cp__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cp__logo {
+  width: 30%;
+  height: auto;
+  color: #fff;
+}
+
+.cp__brand {
+  font: 700 italic clamp(13px, 4.6cqi, 18px)/1 var(--font-display);
+  letter-spacing: .02em;
+}
+
+.cp__brand--mastercard {
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+.cp__brand--amex {
+  font-style: normal;
+  letter-spacing: .12em;
+}
+
+/* Chip plateado dibujado con degradados */
+.cp__chip {
+  width: 15%;
+  aspect-ratio: 1.3;
+  margin-top: 9%;
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, transparent 32%, rgba(0, 0, 0, .28) 33%, transparent 34%, transparent 66%, rgba(0, 0, 0, .28) 67%, transparent 68%),
+    linear-gradient(0deg, transparent 47%, rgba(0, 0, 0, .28) 48%, transparent 52%),
+    linear-gradient(135deg, #e9e9e9, #9a9a9a 55%, #d6d6d6);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25);
+}
+
+.cp__number {
+  display: flex;
+  flex-wrap: nowrap;
+  align-self: center;
+  gap: 4%;
+  font: 500 clamp(16px, 6.2cqi, 23px)/1 var(--font-mono);
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.cp__group span {
+  opacity: .32;
+}
+
+.cp__group .is-filled {
+  opacity: 1;
+}
+
+.cp__bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cp__field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.cp__field--name {
+  flex: 1;
+}
+
+.cp__label {
+  font: 500 9px/1 var(--font-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .6;
+}
+
+.cp__value {
+  overflow: hidden;
+  font: 500 clamp(11px, 3.6cqi, 14px)/1.2 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cp__value--empty {
+  opacity: .45;
+}
+
+/* Reverso: banda magnética, firma con el CVV (en puntos) y el logo */
+.cp__back {
+  transform: rotateY(180deg);
+}
+
+.cp__stripe {
+  position: absolute;
+  top: 14%;
+  right: 0;
+  left: 0;
+  height: 20%;
+  background: linear-gradient(180deg, #050505, #1a1a1a);
+}
+
+.cp__sign {
+  position: absolute;
+  top: 45%;
+  right: 8%;
+  left: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  height: 17%;
+  padding: 0 4%;
+  border-radius: 4px;
+  background: repeating-linear-gradient(-45deg, #ededed 0 6px, #dcdcdc 6px 12px);
+  color: #0b0b0b;
+}
+
+.cp__sign .cp__label {
+  opacity: .55;
+}
+
+.cp__cvv {
+  padding: 4px 10px;
+  border-radius: 3px;
+  background: #fff;
+  font: 600 15px/1 var(--font-mono);
+  letter-spacing: .2em;
+}
+
+.cp__logo--back {
+  position: absolute;
+  right: 8%;
+  bottom: 9%;
+  width: 22%;
+  opacity: .5;
+}
+
+/* Luz naranja debajo de la tarjeta */
+.cp__glow {
+  position: absolute;
+  right: 12%;
+  bottom: -14%;
+  left: 12%;
+  height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 109, 40, .35), transparent);
+  filter: blur(20px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cp:not([data-still='true']) .cp__float {
+    animation: cp-float 7s ease-in-out infinite;
+  }
+}
+
+@keyframes cp-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0);
+  }
+
+  50% {
+    transform: translateY(-10px) rotateZ(-1deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp__card {
+    transition-duration: .01s;
+  }
+}
