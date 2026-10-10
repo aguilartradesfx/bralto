@@ -37,10 +37,18 @@ const configuracion = node({
       mode: 'runOnceForAllItems',
       language: 'javaScript',
       jsCode: `const entrada = $input.first().json || {};
-const pedida = entrada.body && entrada.body.fecha;
-const fecha = /^\\d{4}-\\d{2}-\\d{2}$/.test(pedida || '') ? pedida : null;
-const relleno = Boolean(fecha);
+const desdeWebhook = Object.prototype.hasOwnProperty.call(entrada, 'headers') || Object.prototype.hasOwnProperty.call(entrada, 'body');
 const hoyCR = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Costa_Rica' });
+let fecha = null;
+if (desdeWebhook) {
+  const pedida = (entrada.body || {}).fecha;
+  const t = Date.parse(pedida + 'T12:00:00Z');
+  const valida = /^\\d{4}-\\d{2}-\\d{2}$/.test(pedida || '') && !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === pedida;
+  const dias = valida ? (Date.parse(hoyCR + 'T00:00:00Z') - Date.parse(pedida + 'T00:00:00Z')) / 864e5 : -1;
+  if (!valida || dias < 1 || dias > 59) throw new Error('Relleno: la fecha tiene que ser AAAA-MM-DD, de ayer a 59 días atrás. Llegó: ' + JSON.stringify(pedida));
+  fecha = pedida;
+}
+const relleno = Boolean(fecha);
 if (!relleno && $getWorkflowStaticData('global').ultimoDia === hoyCR) return [];
 const finVentana = relleno ? Date.parse(fecha + 'T12:00:00Z') : Date.now();
 return [{ json: {
