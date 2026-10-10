@@ -1567,16 +1567,17 @@ html[data-consent-open] .hm {
   }
 }
 
-/* ---------- Circuito: su sitio web es solo la puerta ---------- */
-.hm-circuit {
+/* ---------- Circuito: un sitio web es solo la puerta ---------- */
+/* Tres capas arriba, la puerta al medio y tres abajo. En escritorio empiezan apiladas detrás de la
+   puerta y se reparten con el scroll (circuit-deal.tsx); en teléfonos, una columna quieta */
+.hm-deal {
   position: relative;
   display: grid;
-  gap: 14px;
-  margin: clamp(56px, 7vw, 92px) 0 0;
-  padding: 0 0 0 34px;
+  gap: 22px;
+  margin-top: clamp(40px, 4.5vw, 64px);
 }
 
-.hm-circuit__layers {
+.hm-deal__row {
   display: grid;
   gap: 14px;
   margin: 0;
@@ -1584,27 +1585,44 @@ html[data-consent-open] .hm {
   list-style: none;
 }
 
-/* Columna vertical (móvil y tablet) */
-.hm-circuit::before {
-  content: '';
-  position: absolute;
-  top: 28px;
-  bottom: 28px;
-  left: 11px;
-  width: 1px;
-  background: var(--rule-2);
+.hm-deal__card {
+  position: relative;
+  padding: 20px 22px 22px;
+  border-radius: var(--r-md);
+  will-change: transform;
 }
 
-.hm-circuit__svg {
-  display: none;
+.hm-deal__card h3 {
+  margin: 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.02em;
 }
 
-.hm-hub {
+.hm-deal__card p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.hm-layer__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: .08em;
+  color: var(--ink-3);
+}
+
+.hm-deal__door {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-left: -34px;
-  padding: 18px 22px;
+  justify-self: center;
+  padding: 18px 30px;
   border-radius: var(--r-pill);
 }
 
@@ -1621,149 +1639,21 @@ html[data-consent-open] .hm {
   letter-spacing: -.02em;
 }
 
-.hm-layer {
-  position: relative;
-  padding: 20px 22px 22px;
-  border-radius: var(--r-md);
-}
-
-.hm-layer__top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font: 500 11px/1 var(--font-mono);
-  letter-spacing: .08em;
-  color: var(--ink-3);
-}
-
-.hm-layer__led {
-  position: absolute;
-  top: 25px;
-  left: -26.5px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
-}
-
-.hm-layer h3 {
-  margin: 10px 0 8px;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -.02em;
-}
-
-.hm-layer p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink-2);
-}
-
-@media (min-width: 1100px) {
-  .hm-circuit {
-    display: block;
-    width: clamp(1040px, calc((100svh - 230px) * 1180 / 640), 100%);
-    aspect-ratio: 1180 / 640;
-    margin: 40px auto 0;
-    padding: 0;
-    view-timeline: --hm-ring block;
-  }
-
-  .hm-circuit::before {
-    display: none;
-  }
-
-  .hm-circuit__layers {
-    position: absolute;
-    inset: 0;
-    display: block;
-  }
-
-  .hm-circuit__svg {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
-
-  .hm-hub {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    width: calc(210 / 1180 * 100%);
-    aspect-ratio: 1;
-    margin: 0;
-    padding: 0;
-    border-radius: 50%;
-    text-align: center;
-    translate: -50% -50%;
-  }
-
-  .hm-hub__title {
-    font-size: clamp(18px, 1.8vw, 22px);
-  }
-
-  .hm-layer {
-    position: absolute;
-    top: calc(var(--y) / 640 * 100%);
-    left: calc(var(--x) / 1180 * 100%);
-    width: calc(250 / 1180 * 100%);
-    padding: 16px 18px 18px;
-    translate: -50% -50%;
-  }
-
-  .hm-layer__led {
-    position: static;
-    width: 6px;
-    height: 6px;
-    margin-left: auto;
-  }
-
-  .hm-layer h3 {
-    margin: 8px 0 6px;
-    font-size: 18px;
-  }
-
-  .hm-layer p {
-    font-size: 13px;
-    line-height: 1.5;
+@media (min-width: 640px) {
+  .hm-deal__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.hm-ring {
-  fill: none;
-  stroke: var(--rule-2);
-  stroke-width: 1;
-}
+@media (min-width: 1024px) {
+  .hm-deal__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
 
-.hm-ring__spoke {
-  stroke: var(--rule-2);
-  stroke-width: 1;
-  stroke-dasharray: 2 5;
-}
-
-.hm-ring__trail {
-  fill: none;
-  stroke: var(--ink-2);
-  stroke-width: 1.2;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-
-.hm-ring__dot {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 8;
-  stroke-linecap: round;
-  stroke-dasharray: 0 1;
-  opacity: 0;
+  .hm-deal__card {
+    min-height: 196px;
+  }
 }
 
 /* ---------- Casos ---------- */
@@ -2616,30 +2506,6 @@ html[data-consent-open] .hm {
   }
 }
 
-@keyframes hm-trail {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes hm-ringdot {
-  0% {
-    opacity: 1;
-    stroke-dashoffset: 0;
-  }
-  100% {
-    opacity: 1;
-    stroke-dashoffset: -1;
-  }
-}
-
-@keyframes hm-led {
-  from {
-    opacity: .15;
-    transform: scale(.6);
-  }
-}
-
 /* Consola: ciclo de 13 s. Las estaciones se encienden en 0%, 14%, 28%, 42%, 56%, 70%; todo se apaga en 90%–95%. */
 @keyframes hm-node-0 {
   0%, 90% { opacity: 1; transform: none; }
@@ -2879,31 +2745,6 @@ html[data-motion='paused'] :is(.hm-orb, .hm-station__node i, .hm-station__lit, .
       animation-range: entry 70% cover 46%;
     }
 
-    .hm-layer__led {
-      animation: hm-led linear both;
-      animation-timeline: view();
-      animation-range: cover 34% cover 46%;
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) and (min-width: 1100px) {
-    .hm-ring__trail {
-      animation: hm-trail linear both;
-      animation-timeline: --hm-ring;
-      animation-range: cover 24% cover 70%;
-    }
-
-    .hm-ring__dot {
-      animation: hm-ringdot linear both;
-      animation-timeline: --hm-ring;
-      animation-range: cover 24% cover 70%;
-    }
-
-    .hm-layer__led {
-      animation: hm-led linear both;
-      animation-timeline: --hm-ring;
-      animation-range: cover calc(24% + 46% * var(--f)) cover calc(25% + 46% * var(--f));
-    }
   }
 }
 

@@ -91,7 +91,7 @@ function targetFor(offset: number, L: Layout): Target {
 
 const OFFSETS = [-4, -3, -2, -1, 0, 1, 2, 3, 4] as const
 // Las animaciones llegan en un archivo aparte; mientras tanto, cada tarjeta ya está en su lugar
-const loadFeatures = () => import("./connected-carousel-features").then((mod) => mod.default)
+const loadFeatures = () => import("./motion-features").then((mod) => mod.default)
 const SPRING = { type: "spring", stiffness: 220, damping: 26, mass: 0.75 } as const
 const INSTANT = { duration: 0 } as const
 
