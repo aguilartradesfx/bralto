@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).locale)
   return {
     title: LEGAL_REVIEWED ? TERMS.title : `${TERMS.title} (borrador)`,
-    // Borrador: fuera de los buscadores hasta la revisión legal
+    // Si vuelve a ser borrador: fuera de los buscadores
     robots: LEGAL_REVIEWED ? undefined : { index: false, follow: false },
     alternates: { canonical: `${SITE_URL}/${locale}/terminos` },
   }
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TerminosPage({ params }: Props) {
   const locale = toLocale((await params).locale)
   setRequestLocale(locale)
-  // Borrador pendiente de revisión legal: en producción no existe (lib/legal.ts)
+  // Como borrador, en producción no existe (lib/legal.ts)
   if (!legalPagesVisible({ reviewed: LEGAL_REVIEWED, pendingVisible: showPending(process.env) })) notFound()
   return <LegalPage locale={locale} doc={TERMS} />
 }

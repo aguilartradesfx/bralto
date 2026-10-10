@@ -3,9 +3,9 @@ import { LEGAL_REVIEWED } from '@/lib/legal'
 import type { Locale } from './primitives'
 import './legal.css'
 
-// Privacidad y términos. El texto está en español (es el que revisa el abogado); en /en se
-// avisa que la versión en inglés llega después de la revisión. Mientras sea borrador, un
-// aviso arriba lo dice y los datos que faltan van entre corchetes, resaltados.
+// Privacidad y términos. El texto está en español (es el que revisó el abogado); en /en se
+// avisa que el documento está solo en español. Mientras sea borrador, un aviso arriba lo
+// dice y los datos que faltan van entre corchetes, resaltados.
 
 export type LegalBlock = string | string[] // párrafo o lista
 export type LegalDoc = {
@@ -16,16 +16,20 @@ export type LegalDoc = {
 
 const COPY = {
   es: {
-    updated: 'Borrador del 7 de octubre de 2026',
+    updated: 'Actualizado el 9 de octubre de 2026',
+    draft: 'Borrador del 7 de octubre de 2026',
     draftTitle: 'Borrador pendiente de revisión legal.',
     draftText: 'Este texto todavía no es definitivo: los datos entre corchetes faltan por completar y un abogado debe revisar el documento completo antes de publicarlo.',
     language: null,
+    draftLanguage: null,
   },
   en: {
-    updated: 'Draft of October 7, 2026',
+    updated: 'Updated October 9, 2026',
+    draft: 'Draft of October 7, 2026',
     draftTitle: 'Draft pending legal review.',
     draftText: 'This text is not final yet: the bracketed items are missing and a lawyer must review the whole document before it is published.',
-    language: 'This document is in Spanish while it is under legal review. The English version will be published afterwards.',
+    language: 'This document is available in Spanish only.',
+    draftLanguage: 'This document is in Spanish while it is under legal review. The English version will be published afterwards.',
   },
 }
 
@@ -51,7 +55,7 @@ export function LegalPage({ locale, doc }: { locale: Locale; doc: LegalDoc }) {
           <h1 id="lg-title" className="hm-page-title lg-title" lang="es">
             {doc.title}
           </h1>
-          {!LEGAL_REVIEWED && <p className="hm-lead">{c.updated}</p>}
+          <p className="hm-lead">{LEGAL_REVIEWED ? c.updated : c.draft}</p>
         </div>
       </section>
 
@@ -62,7 +66,7 @@ export function LegalPage({ locale, doc }: { locale: Locale; doc: LegalDoc }) {
               <strong>{c.draftTitle}</strong> {c.draftText}
             </p>
           )}
-          {c.language && <p className="lg-lang">{c.language}</p>}
+          {c.language && <p className="lg-lang">{LEGAL_REVIEWED ? c.language : c.draftLanguage}</p>}
 
           <article className="lg-doc" lang="es">
             <p>{withPlaceholders(doc.intro)}</p>

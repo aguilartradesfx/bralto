@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { clients } from '@/app/servicios/sitios-web/clients'
+import { LEGAL_REVIEWED } from '@/lib/legal'
 import { SITE_URL } from '@/lib/seo'
 
 const LOCALES = ['es', 'en'] as const
@@ -25,6 +26,10 @@ const ROUTES: Route[] = [
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/asesoria' },
   { priority: 0.8,  changeFrequency: 'monthly', path: '/casos' },
   ...clients.map((c): Route => ({ priority: 0.7, changeFrequency: 'monthly', path: `/servicios/sitios-web/${c.id}` })),
+  // Privacidad y términos, solo publicados (como borrador dan 404 en producción)
+  ...(LEGAL_REVIEWED
+    ? (['/privacidad', '/terminos'] as const).map((path): Route => ({ priority: 0.3, changeFrequency: 'monthly', path }))
+    : []),
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
