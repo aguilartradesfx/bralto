@@ -596,7 +596,15 @@
       "faqBold": "want to know.",
       "related": "Other services",
       "example": "Example view",
-      "illustrative": "Illustrative figures"
+      "illustrative": "Illustrative figures",
+      "video": {
+        "label": "Video: {service}",
+        "sound": "Turn sound on",
+        "mute": "Mute",
+        "play": "Play the video",
+        "pause": "Pause the video",
+        "note": "Video in Spanish"
+      }
     },
     "footer": {
       "tagline": "Digital infrastructure for businesses",

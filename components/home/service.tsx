@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { getTranslations } from 'next-intl/server'
+import { serviceVideo } from '@/lib/home/service-videos'
 import { FaqBlock, type FaqItem } from './faq'
 import { FinalCta } from './final-cta'
 import { Arrow, Check } from './icons'
 import { SectionHead, type Locale } from './primitives'
+import { ServiceVideo } from './service-video'
 import { serviceHref, type MegaGroup } from './services'
 import './service.css'
 
@@ -33,27 +35,45 @@ type Props = {
 // Plantilla de las páginas de servicio, con el mismo lenguaje del home y /casos
 export async function ServicePage({ locale, service, copy, children }: Props) {
   const t = await getTranslations({ locale, namespace: 'Home.servicePage' })
+  const video = serviceVideo(service)
 
   return (
     <main className="sv">
       <section className="hm-hero hm-hero--page" aria-labelledby="sv-title">
-        <div className="hm-wrap">
-          <p className="hm-eyebrow hm-in">{copy.badge}</p>
-          <h1 id="sv-title" className="hm-page-title">
-            <span className="hm-hero__l1">{copy.headline}</span> <span className="hm-hero__l2">{copy.headlineBold}</span>
-          </h1>
-          <div className="sv-hero__row">
-            <p className="hm-lead hm-in">{copy.sub}</p>
-            <div className="hm-hero__ctas">
-              <Link href={`/${locale}/agendar`} className="hm-btn hm-btn--solid">
-                {t('cta')}
-                <Arrow />
-              </Link>
-              <Link href={`/${locale}/servicios`} className="hm-btn hm-btn--glass hm-glass">
-                {t('all')}
-              </Link>
+        {/* Con video: texto a la izquierda y el video a la derecha (abajo en teléfonos) */}
+        <div className={`hm-wrap${video ? ' sv-hero--video' : ''}`}>
+          <div className="sv-hero__text">
+            <p className="hm-eyebrow hm-in">{copy.badge}</p>
+            <h1 id="sv-title" className="hm-page-title">
+              <span className="hm-hero__l1">{copy.headline}</span> <span className="hm-hero__l2">{copy.headlineBold}</span>
+            </h1>
+            <div className="sv-hero__row">
+              <p className="hm-lead hm-in">{copy.sub}</p>
+              <div className="hm-hero__ctas">
+                <Link href={`/${locale}/agendar`} className="hm-btn hm-btn--solid">
+                  {t('cta')}
+                  <Arrow />
+                </Link>
+                <Link href={`/${locale}/servicios`} className="hm-btn hm-btn--glass hm-glass">
+                  {t('all')}
+                </Link>
+              </div>
             </div>
           </div>
+          {video && (
+            <ServiceVideo
+              {...video}
+              labels={{
+                label: t('video.label', { service: copy.badge }),
+                sound: t('video.sound'),
+                mute: t('video.mute'),
+                play: t('video.play'),
+                pause: t('video.pause'),
+              }}
+              // Los videos están en español: en /en se avisa
+              note={locale === 'en' ? t('video.note') : undefined}
+            />
+          )}
         </div>
       </section>
 
