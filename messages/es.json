@@ -596,7 +596,15 @@
       "faqBold": "quería saber.",
       "related": "Otros servicios",
       "example": "Vista de ejemplo",
-      "illustrative": "Cifras ilustrativas"
+      "illustrative": "Cifras ilustrativas",
+      "video": {
+        "label": "Video: {service}",
+        "sound": "Activar sonido",
+        "mute": "Silenciar",
+        "play": "Reproducir el video",
+        "pause": "Pausar el video",
+        "note": "Video en español"
+      }
     },
     "footer": {
       "tagline": "Infraestructura digital para negocios",
