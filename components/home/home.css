@@ -585,16 +585,22 @@ html[data-consent-open] .hm {
 }
 
 /* ---------- Nav ---------- */
-/* "Saltar al contenido": fuera de la vista hasta que el teclado llega a él */
+/* "Saltar al contenido": invisible hasta que el teclado llega a él. No basta con subirlo fuera
+   de la pantalla: Safari en iOS dibuja la página detrás de la barra de estado y ahí asomaba.
+   Con opacidad 0 sigue siendo enfocable y los lectores de pantalla lo leen igual. */
 .hm-skip {
   position: fixed;
-  top: 14px;
-  left: 14px;
+  top: max(14px, env(safe-area-inset-top, 0px));
+  left: max(14px, env(safe-area-inset-left, 0px));
   z-index: 70;
-  transform: translateY(calc(-100% - 24px));
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(-100% - 24px - env(safe-area-inset-top, 0px)));
 }
 
 .hm-skip:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
   transform: none;
 }
 
