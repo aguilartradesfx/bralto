@@ -21,3 +21,7 @@ test('los archivos llevan versión, para poder cachearlos un año y cambiarlos s
 test('un servicio sin video (FunnelLab, externo) no tiene', () => {
   assert.equal(serviceVideo('funnelLab'), null)
 })
+
+test('la portada es un cuadro con contenido del video (-p2), no el arranque oscuro', () => {
+  assert.match(serviceVideo('campanas')!.poster, /campanas-v1-p2\.webp$/)
+})

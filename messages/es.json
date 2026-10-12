@@ -599,10 +599,7 @@
       "illustrative": "Cifras ilustrativas",
       "video": {
         "label": "Video: {service}",
-        "sound": "Activar sonido",
-        "mute": "Silenciar",
-        "play": "Reproducir el video",
-        "pause": "Pausar el video",
+        "play": "Ver el video con sonido",
         "note": "Video en español"
       }
     },

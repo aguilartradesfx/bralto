@@ -65,10 +65,7 @@ export async function ServicePage({ locale, service, copy, children }: Props) {
               {...video}
               labels={{
                 label: t('video.label', { service: copy.badge }),
-                sound: t('video.sound'),
-                mute: t('video.mute'),
                 play: t('video.play'),
-                pause: t('video.pause'),
               }}
               // Los videos están en español: en /en se avisa
               note={locale === 'en' ? t('video.note') : undefined}
