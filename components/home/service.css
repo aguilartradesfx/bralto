@@ -122,18 +122,63 @@
   gap: clamp(36px, 5vw, 56px);
 }
 
-.sv-video {
+/* Hoja de vidrio grueso, como la consola del inicio: etiqueta mono arriba y el video adentro,
+   con el radio concéntrico al de la hoja */
+.sv-video.hm-glass {
+  --pad: 10px;
   margin: 0;
+  padding: 0 var(--pad) var(--pad);
+  border-radius: var(--r-lg);
 }
 
-/* Marco 4:3 (el formato de los videos), oscuro como el propio video */
+.sv-video__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 8px 13px;
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.sv-video__head span:last-child {
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* El video, oscuro como su contenido, con un canto fino de luz */
 .sv-video__frame {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border-radius: var(--r-lg);
+  border-radius: calc(var(--r-lg) - var(--pad));
   background: #050505;
-  box-shadow: 0 0 0 1px var(--rule-2), 0 40px 90px -40px rgba(0, 0, 0, .55);
+}
+
+.sv-video__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .06);
+}
+
+@media (min-width: 640px) {
+  .sv-video.hm-glass {
+    --pad: 14px;
+    border-radius: var(--r-xl);
+  }
+
+  .sv-video__frame {
+    border-radius: calc(var(--r-xl) - var(--pad));
+  }
+
+  .sv-video__head {
+    padding: 19px 10px 17px;
+  }
 }
 
 .sv-video__media {
@@ -142,7 +187,7 @@
   height: 100%;
   object-fit: cover;
   /* Desenfocado hasta que la persona aprieta play (la escala tapa el borde que deja el blur) */
-  filter: blur(9px) brightness(.9);
+  filter: blur(9px) brightness(.85);
   transform: scale(1.06);
 }
 
@@ -157,61 +202,66 @@
   }
 }
 
-/* Botón de play con la misma pieza negra brillante del switch de tema: la pista en círculo y,
-   adentro, la perilla con su reflejo; se hunde al presionarla */
+/* Botón de play: el switch de tema en grande. La pista negra en píldora, la perilla brillante
+   con el play y, al lado, el texto; la perilla se corre un poco al pasar y se hunde al presionar */
 .sv-video__play {
   position: absolute;
+  z-index: 2;
   top: 50%;
   left: 50%;
-  display: grid;
-  place-items: center;
-  width: 92px;
-  height: 92px;
-  margin: -46px 0 0 -46px;
-  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+  padding: 0 24px 0 6px;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--r-pill);
+  transform: translate(-50%, -50%);
+  font: 500 15px/1 var(--font-display);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, .92);
   cursor: pointer;
   background: linear-gradient(180deg, #1d1d1d, #020202);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .16),
-    inset 0 -2px 6px rgba(0, 0, 0, .9),
-    0 0 0 1px rgba(255, 255, 255, .16),
-    0 0 0 10px rgba(255, 255, 255, .05),
-    0 18px 40px -10px rgba(0, 0, 0, .8);
+    inset 0 -2px 5px rgba(0, 0, 0, .9),
+    0 0 0 1px rgba(255, 255, 255, .12),
+    0 16px 34px -12px rgba(0, 0, 0, .85);
 }
 
 .sv-video__knob {
   position: relative;
   display: grid;
+  flex: none;
   place-items: center;
-  width: 74px;
-  height: 74px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: radial-gradient(circle at 34% 28%, #6c6c6c, #1e1e1e 58%, #070707);
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, .45),
-    inset 0 -3px 5px rgba(0, 0, 0, .65),
-    0 4px 10px rgba(0, 0, 0, .75);
+    inset 0 -2px 4px rgba(0, 0, 0, .65),
+    0 3px 8px rgba(0, 0, 0, .75);
 }
 
-/* El reflejo de arriba, como el de la perilla del switch */
+/* El reflejo de arriba, en la misma proporción que el de la perilla del switch */
 .sv-video__knob::after {
   content: '';
   position: absolute;
-  top: 7px;
-  left: 17px;
-  right: 19px;
-  height: 22px;
+  top: 5px;
+  left: 11px;
+  right: 13px;
+  height: 15px;
   border-radius: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0));
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0));
   pointer-events: none;
 }
 
 /* El triángulo se corre un poco a la derecha para verse centrado */
 .sv-video__icon {
   position: relative;
-  margin-left: 4px;
+  margin-left: 3px;
   color: #f4f4f4;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .6));
 }
@@ -223,16 +273,16 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .sv-video__knob {
-    transition: transform .3s var(--ease-liquid), box-shadow .2s var(--ease);
+    transition: transform .45s var(--ease-liquid), box-shadow .2s var(--ease);
   }
 
   .sv-video__play:hover .sv-video__knob {
-    transform: scale(1.05);
+    transform: translateX(3px);
   }
 }
 
 .sv-video__play:active .sv-video__knob {
-  transform: translateY(1px) scale(.97);
+  transform: translateY(1px) scale(.96);
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, .35),
     inset 0 -1px 3px rgba(0, 0, 0, .6),
@@ -241,28 +291,23 @@
 
 @media (max-width: 640px) {
   .sv-video__play {
-    width: 76px;
-    height: 76px;
-    margin: -38px 0 0 -38px;
+    gap: 10px;
+    height: 52px;
+    padding: 0 20px 0 5px;
+    font-size: 14px;
   }
 
   .sv-video__knob {
-    width: 60px;
-    height: 60px;
+    width: 42px;
+    height: 42px;
   }
 
   .sv-video__knob::after {
-    top: 6px;
-    left: 14px;
-    right: 15px;
-    height: 18px;
+    top: 4px;
+    left: 10px;
+    right: 11px;
+    height: 13px;
   }
-}
-
-.sv-video__note {
-  margin: 10px 0 0;
-  font-size: 13px;
-  color: var(--ink-3);
 }
 
 @media (min-width: 1024px) {

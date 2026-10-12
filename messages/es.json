@@ -600,7 +600,9 @@
       "video": {
         "label": "Video: {service}",
         "play": "Ver el video con sonido",
-        "note": "Video en español"
+        "cta": "Ver con sonido",
+        "heading": "Cómo funciona",
+        "note": "En español"
       }
     },
     "footer": {

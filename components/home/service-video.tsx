@@ -3,15 +3,16 @@
 import { Play } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-export type ServiceVideoLabels = { label: string; play: string }
+export type ServiceVideoLabels = { label: string; play: string; cta: string; heading: string }
 
-type Props = { src: string; srcMobile: string; poster: string; labels: ServiceVideoLabels; note?: string }
+type Props = { src: string; srcMobile: string; poster: string; duration: string; labels: ServiceVideoLabels; note?: string }
 
 // Video del héroe de cada servicio (decisión de Alejandro): se ve desenfocado hasta que la
 // persona aprieta el botón, y entonces arranca desde el principio, siempre con sonido. Sin
 // controles de pausa ni volumen: o lo ve, o no. Fuera de la pantalla se pausa y sigue al
 // volver; al terminar vuelve al estado inicial para verlo otra vez.
-export function ServiceVideo({ src, srcMobile, poster, labels, note }: Props) {
+// Va en una hoja de vidrio grueso, como la consola del inicio, con su etiqueta mono arriba.
+export function ServiceVideo({ src, srcMobile, poster, duration, labels, note }: Props) {
   const ref = useRef<HTMLVideoElement>(null)
   const started = useRef(false)
   const [playing, setPlaying] = useState(false)
@@ -49,7 +50,11 @@ export function ServiceVideo({ src, srcMobile, poster, labels, note }: Props) {
   }
 
   return (
-    <figure className={`sv-video${playing ? ' is-playing' : ''}`}>
+    <figure className={`sv-video hm-glass hm-glass--thick${playing ? ' is-playing' : ''}`}>
+      <figcaption className="sv-video__head">
+        <span>{labels.heading}</span>
+        <span>{note ? `${note} · ${duration}` : duration}</span>
+      </figcaption>
       <div className="sv-video__frame">
         <video
           ref={ref}
@@ -63,15 +68,18 @@ export function ServiceVideo({ src, srcMobile, poster, labels, note }: Props) {
           <source src={srcMobile} type="video/mp4" media="(max-width: 767px)" />
           <source src={src} type="video/mp4" />
         </video>
+        {/* El switch de tema en grande: la pista negra en píldora y la perilla brillante con el play */}
         {!playing && (
           <button type="button" className="sv-video__play" onClick={start} aria-label={labels.play}>
             <span className="sv-video__knob" aria-hidden="true">
-              <Play className="sv-video__icon" size={26} strokeWidth={1.5} absoluteStrokeWidth fill="currentColor" />
+              <Play className="sv-video__icon" size={18} strokeWidth={1.5} absoluteStrokeWidth fill="currentColor" />
+            </span>
+            <span className="sv-video__cta" aria-hidden="true">
+              {labels.cta}
             </span>
           </button>
         )}
       </div>
-      {note && <figcaption className="sv-video__note">{note}</figcaption>}
     </figure>
   )
 }

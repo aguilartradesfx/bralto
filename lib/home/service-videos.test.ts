@@ -25,3 +25,9 @@ test('un servicio sin video (FunnelLab, externo) no tiene', () => {
 test('la portada es un cuadro con contenido del video (-p2), no el arranque oscuro', () => {
   assert.match(serviceVideo('campanas')!.poster, /campanas-v1-p2\.webp$/)
 })
+
+test('cada video trae su duración en m:ss, para mostrarla sin esperar a que cargue', () => {
+  for (const key of Object.keys(SERVICE_PATHS)) assert.match(serviceVideo(key)!.duration, /^\d+:\d{2}$/, key)
+  assert.equal(serviceVideo('campanas')!.duration, '0:56')
+  assert.equal(serviceVideo('agentesIa')!.duration, '0:51')
+})
