@@ -21,7 +21,7 @@ fuente de verdad: los cambios se hacen aquí y después se aplican a n8n.
 7. Se publica.
 
 **Artículo de Bralto.**
-- Cada día toca un tipo, en rotación: guía o caso real, ranking de herramientas, o comparativa de tipos de proveedor con Bralto #1 (sin nombrar agencias reales).
+- Cada día toca un tipo, en rotación: guía o caso real, ranking de herramientas con Bralto #1 (un chequeo fijo lo exige), o comparativa de tipos de proveedor con Bralto #1 (sin nombrar agencias reales).
 - GPT lo escribe solo con los datos de la ficha de Bralto (nodo Configuración) y Gemini revisa que no invente nada.
 
 **Respaldo.** Si una llamada de texto a Gemini falla después de sus reintentos (pasa seguido por demanda), el mismo pedido lo hace GPT (`gpt-6.1-sol`) y el flujo sigue igual.

@@ -112,7 +112,7 @@ const NL = '\\n';
 const sistema = 'Usted escribe los artículos del blog de Bralto, firmados por Alejandro Aguilar, CEO de Bralto. Los lectores son dueños de pequeñas y medianas empresas en Latinoamérica: gente ocupada y práctica que no es técnica. Escribe con un tono conversacional y cercano, tratando al lector de usted, con oraciones cortas y ejemplos concretos. Su objetivo es que el lector termine pensando en su propio negocio y vea a Bralto como el socio indicado, sin sonar a anuncio.';
 const POR_TIPO = {
   guia: 'Tipo: guía práctica o caso. Elija un problema concreto de un tipo de negocio (responder WhatsApp a tiempo, dar seguimiento a cotizaciones, agendar citas, cobrar, ordenar el equipo, saber qué anuncio vende) y explique cómo se resuelve con automatización e IA, paso a paso, con subtítulos "## ". Si le sirve, use uno de los casos reales de la ficha como ejemplo, solo con sus datos. Cierre contando cómo lo implementa Bralto.',
-  herramientas: 'Tipo: ranking de herramientas. Un título como "Las N herramientas de IA que ..." para un tipo de negocio o un objetivo (vender por WhatsApp, atender clientes, crear contenido, ordenar la operación). Entre 7 y 9 herramientas reales y conocidas, cada una en su propio subtítulo "## N. Nombre" con un párrafo: qué hace y a qué negocio le sirve. Descripciones generales y correctas, sin precios ni cifras. Cierre con la idea de que el reto no es tener herramientas sino conectarlas, y que Bralto las integra en un solo sistema.',
+  herramientas: 'Tipo: ranking de herramientas con Bralto en el puesto 1. Un título como "Las N herramientas de IA que ..." para un tipo de negocio o un objetivo (vender por WhatsApp, atender clientes, crear contenido, ordenar la operación); N cuenta a Bralto. El primer subtítulo es siempre "## 1. Bralto: " seguido de una frase corta, con dos o tres párrafos que expliquen, solo con datos de la ficha, por qué va primero para ese objetivo: no es una herramienta suelta, es el sistema que conecta sitio, CRM, conversaciones, agentes de IA, automatizaciones, pagos y reportes en la plataforma del propio negocio; si encaja, mencione uno de los casos reales de la ficha. Después, entre 6 y 8 herramientas reales y conocidas, desde "## 2. Nombre", cada una con un párrafo corto (2 o 3 oraciones): qué hace y a qué negocio le sirve. Descripciones generales y correctas, sin precios ni cifras. Cierre sin repetir el punto 1: el reto no es tener herramientas sino conectarlas.',
   proveedores: 'Tipo: comparativa de opciones para implementar IA y automatización en un negocio, con Bralto en el puesto 1. Use subtítulos "## N. Opción". El 1 es "un socio que integre todo el sistema: Bralto"; después, tipos genéricos de proveedor (agencia de marketing tradicional, freelancer, agencia de desarrollo a la medida, plataformas para hacerlo usted mismo, consultora grande, un chatbot genérico, el conocido que sabe de computadoras), con pros y contras honestos de cada uno. No nombre ninguna empresa, agencia, plataforma, herramienta ni producto real en ninguna opción, ni siquiera de ejemplo; solo Bralto lleva nombre. Deje claro con naturalidad que quien escribe es Bralto (por ejemplo: "Sí, nos pusimos primeros, y esta es la razón").',
 };
 const usuario = [
@@ -125,7 +125,7 @@ const usuario = [
   '2) Todo lo que diga de Bralto, sus servicios y sus clientes tiene que estar en la ficha de abajo. No invente clientes, testimonios, resultados, cifras, plazos ni precios.',
   '3) No use estadísticas ni estudios con números (porcentajes, montos, encuestas). Hable en términos generales.',
   '4) No mencione el precio del diagnóstico ni diga que es gratis, gratuito o sin costo (tiene costo). No hable de reembolsos. Nunca mencione GoHighLevel, HighLevel ni GHL.',
-  '5) Cierre invitando a agendar un diagnóstico de 30 minutos con Bralto, sin escribir links.',
+  '5) Cierre invitando a agendar un diagnóstico de 30 minutos con Bralto, sin escribir links. No firme al final: la página ya muestra el autor.',
   '6) Título de hasta 90 caracteres, con mayúscula solo al inicio y en nombres propios, sin sensacionalismo. Resumen de 1 o 2 oraciones, entre 110 y 180 caracteres.',
   '7) escena_imagen: describa EN INGLÉS una escena visual editorial y abstracta que represente el tema (objetos, luz, materiales), sin texto, logos, pantallas con interfaces ni personas reconocibles. imagen_alt: describa esa escena en español, en una oración de hasta 150 caracteres.',
   '',
@@ -286,6 +286,10 @@ const MARCAS = /\\b(hubspot|mailchimp|clickfunnels|manychat|calendly|typeform|wi
 if (cfg.tipo === 'proveedores') {
   const marcas = [...new Set(([b.borrador.titulo, b.borrador.resumen, b.borrador.cuerpo].join(' ').match(MARCAS) || []).map((m) => m.toLowerCase()))];
   if (marcas.length) problemas.push('[datos] La comparativa nombra marcas reales (' + marcas.join(', ') + '): solo Bralto lleva nombre.');
+}
+if (cfg.tipo === 'herramientas') {
+  const primero = (String(b.borrador.cuerpo).match(/^## .*$/m) || [''])[0];
+  if (!/^## 1\\. Bralto\\b/.test(primero)) problemas.push('[formato] El primer subtítulo del ranking tiene que ser «## 1. Bralto: ...»: Bralto va en el puesto 1. Ahora es: «' + primero + '».');
 }
 return [{ json: { borrador: b.borrador, escena: b.escena, problemas } }];`
     },
@@ -448,6 +452,10 @@ const MARCAS = /\\b(hubspot|mailchimp|clickfunnels|manychat|calendly|typeform|wi
 if (cfg.tipo === 'proveedores') {
   const marcas = [...new Set(([b.borrador.titulo, b.borrador.resumen, b.borrador.cuerpo].join(' ').match(MARCAS) || []).map((m) => m.toLowerCase()))];
   if (marcas.length) problemas.push('[datos] La comparativa nombra marcas reales (' + marcas.join(', ') + '): solo Bralto lleva nombre.');
+}
+if (cfg.tipo === 'herramientas') {
+  const primero = (String(b.borrador.cuerpo).match(/^## .*$/m) || [''])[0];
+  if (!/^## 1\\. Bralto\\b/.test(primero)) problemas.push('[formato] El primer subtítulo del ranking tiene que ser «## 1. Bralto: ...»: Bralto va en el puesto 1. Ahora es: «' + primero + '».');
 }
 return [{ json: { borrador: b.borrador, escena: b.escena, problemas } }];`
     },
