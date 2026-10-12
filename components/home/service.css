@@ -122,18 +122,63 @@
   gap: clamp(36px, 5vw, 56px);
 }
 
-.sv-video {
+/* Hoja de vidrio grueso, como la consola del inicio: etiqueta mono arriba y el video adentro,
+   con el radio concéntrico al de la hoja */
+.sv-video.hm-glass {
+  --pad: 10px;
   margin: 0;
+  padding: 0 var(--pad) var(--pad);
+  border-radius: var(--r-lg);
 }
 
-/* Marco 4:3 (el formato de los videos), oscuro como el propio video */
+.sv-video__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 8px 13px;
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.sv-video__head span:last-child {
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* El video, oscuro como su contenido, con un canto fino de luz */
 .sv-video__frame {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border-radius: var(--r-lg);
+  border-radius: calc(var(--r-lg) - var(--pad));
   background: #050505;
-  box-shadow: 0 0 0 1px var(--rule-2), 0 40px 90px -40px rgba(0, 0, 0, .55);
+}
+
+.sv-video__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .06);
+}
+
+@media (min-width: 640px) {
+  .sv-video.hm-glass {
+    --pad: 14px;
+    border-radius: var(--r-xl);
+  }
+
+  .sv-video__frame {
+    border-radius: calc(var(--r-xl) - var(--pad));
+  }
+
+  .sv-video__head {
+    padding: 19px 10px 17px;
+  }
 }
 
 .sv-video__media {
@@ -141,74 +186,128 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  cursor: pointer;
+  /* Desenfocado hasta que la persona aprieta play (la escala tapa el borde que deja el blur) */
+  filter: blur(9px) brightness(.85);
+  transform: scale(1.06);
 }
 
-/* Arriba a la derecha: abajo van los subtítulos del video y arriba a la izquierda el logo */
-.sv-video__controls {
+.sv-video.is-playing .sv-video__media {
+  filter: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sv-video__media {
+    transition: filter .6s var(--ease), transform .8s var(--ease);
+  }
+}
+
+/* Botón de play: el switch de tema en grande. La pista negra en píldora, la perilla brillante
+   con el play y, al lado, el texto; la perilla se corre un poco al pasar y se hunde al presionar */
+.sv-video__play {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  gap: 8px;
-}
-
-.sv-video__btn {
+  z-index: 2;
+  top: 50%;
+  left: 50%;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, .16);
+  gap: 12px;
+  height: 60px;
+  padding: 0 24px 0 6px;
+  border: 0;
   border-radius: var(--r-pill);
-  background: rgba(8, 8, 8, .58);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  font: 500 13px/1 var(--font-display);
-  color: #f4f4f4;
+  transform: translate(-50%, -50%);
+  font: 500 15px/1 var(--font-display);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, .92);
   cursor: pointer;
-  transition: background-color .2s var(--ease);
+  background: linear-gradient(180deg, #1d1d1d, #020202);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    inset 0 -2px 5px rgba(0, 0, 0, .9),
+    0 0 0 1px rgba(255, 255, 255, .12),
+    0 16px 34px -12px rgba(0, 0, 0, .85);
 }
 
-.sv-video__btn--icon {
-  justify-content: center;
-  width: 38px;
-  padding: 0;
+.sv-video__knob {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #6c6c6c, #1e1e1e 58%, #070707);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .45),
+    inset 0 -2px 4px rgba(0, 0, 0, .65),
+    0 3px 8px rgba(0, 0, 0, .75);
 }
 
-.sv-video__btn:hover {
-  background: rgba(8, 8, 8, .8);
+/* El reflejo de arriba, en la misma proporción que el de la perilla del switch */
+.sv-video__knob::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 11px;
+  right: 13px;
+  height: 15px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0));
+  pointer-events: none;
 }
 
-.sv-video__btn:focus-visible {
+/* El triángulo se corre un poco a la derecha para verse centrado */
+.sv-video__icon {
+  position: relative;
+  margin-left: 3px;
+  color: #f4f4f4;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .6));
+}
+
+.sv-video__play:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: 4px;
 }
 
-/* En teléfonos los controles tapan menos del video */
+@media (prefers-reduced-motion: no-preference) {
+  .sv-video__knob {
+    transition: transform .45s var(--ease-liquid), box-shadow .2s var(--ease);
+  }
+
+  .sv-video__play:hover .sv-video__knob {
+    transform: translateX(3px);
+  }
+}
+
+.sv-video__play:active .sv-video__knob {
+  transform: translateY(1px) scale(.96);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .35),
+    inset 0 -1px 3px rgba(0, 0, 0, .6),
+    0 1px 4px rgba(0, 0, 0, .75);
+}
+
 @media (max-width: 640px) {
-  .sv-video__controls {
-    top: 10px;
-    right: 10px;
-    gap: 6px;
+  .sv-video__play {
+    gap: 10px;
+    height: 52px;
+    padding: 0 20px 0 5px;
+    font-size: 14px;
   }
 
-  .sv-video__btn {
-    height: 34px;
-    padding: 0 12px;
-    font-size: 12px;
+  .sv-video__knob {
+    width: 42px;
+    height: 42px;
   }
 
-  .sv-video__btn--icon {
-    width: 34px;
-    padding: 0;
+  .sv-video__knob::after {
+    top: 4px;
+    left: 10px;
+    right: 11px;
+    height: 13px;
   }
-}
-
-.sv-video__note {
-  margin: 10px 0 0;
-  font-size: 13px;
-  color: var(--ink-3);
 }
 
 @media (min-width: 1024px) {
@@ -219,7 +318,13 @@
 
   /* En media columna el título baja de tamaño y el texto y los botones van uno debajo del otro */
   .sv-hero--video .hm-page-title {
-    font-size: clamp(38px, 4.1vw, 62px);
+    font-size: clamp(38px, 3.8vw, 56px);
+  }
+
+  /* Cada línea del título puede partirse: en media columna no siempre cabe entera */
+  .sv-hero--video .hm-hero__l1,
+  .sv-hero--video .hm-hero__l2 {
+    white-space: normal;
   }
 
   .sv-hero--video .sv-hero__row {

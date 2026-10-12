@@ -1,120 +1,85 @@
 'use client'
 
-import { Pause, Play, Volume2, VolumeX } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { LINE } from './icons'
 
-export type ServiceVideoLabels = { label: string; sound: string; mute: string; play: string; pause: string }
+export type ServiceVideoLabels = { label: string; play: string; cta: string; heading: string }
 
-type Props = { src: string; srcMobile: string; poster: string; labels: ServiceVideoLabels; note?: string }
+type Props = { src: string; srcMobile: string; poster: string; duration: string; labels: ServiceVideoLabels; note?: string }
 
-// Video del héroe de cada servicio. Arranca solo, en silencio y en bucle: los subtítulos van
-// dentro del video, así que se entiende sin audio. "Activar sonido" lo reinicia con audio.
-// No arranca solo si el visitante pausó las animaciones del sitio, pide menos movimiento o
-// ahorra datos; fuera de la pantalla se pausa y vuelve al aparecer.
-export function ServiceVideo({ src, srcMobile, poster, labels, note }: Props) {
+// Video del héroe de cada servicio (decisión de Alejandro): se ve desenfocado hasta que la
+// persona aprieta el botón, y entonces arranca desde el principio, siempre con sonido. Sin
+// controles de pausa ni volumen: o lo ve, o no. Fuera de la pantalla se pausa y sigue al
+// volver; al terminar vuelve al estado inicial para verlo otra vez.
+// Va en una hoja de vidrio grueso, como la consola del inicio, con su etiqueta mono arriba.
+export function ServiceVideo({ src, srcMobile, poster, duration, labels, note }: Props) {
   const ref = useRef<HTMLVideoElement>(null)
-  const pausedByUser = useRef(false)
+  const started = useRef(false)
   const [playing, setPlaying] = useState(false)
-  const [muted, setMuted] = useState(true)
 
   useEffect(() => {
     const video = ref.current
     if (!video) return
-    video.muted = true
-    const motionPaused = () => document.documentElement.dataset.motion === 'paused'
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || motionPaused() || saveData) {
-      pausedByUser.current = true
-    }
-
     const visible = new IntersectionObserver(
       ([entry]) => {
+        if (!started.current) return
         if (!entry.isIntersecting) video.pause()
-        else if (!pausedByUser.current) video.play().catch(() => {})
+        else video.play().catch(() => reset())
       },
       { threshold: 0.25 },
     )
     visible.observe(video)
-
-    // "Pausar animaciones" del pie también lo detiene
-    const motion = new MutationObserver(() => {
-      if (motionPaused()) {
-        pausedByUser.current = true
-        video.pause()
-      }
-    })
-    motion.observe(document.documentElement, { attributes: true, attributeFilter: ['data-motion'] })
-
-    return () => {
-      visible.disconnect()
-      motion.disconnect()
-    }
+    return () => visible.disconnect()
   }, [])
 
-  const togglePlay = () => {
-    const video = ref.current
-    if (!video) return
-    if (video.paused) {
-      pausedByUser.current = false
-      video.play().catch(() => {})
-    } else {
-      pausedByUser.current = true
-      video.pause()
-    }
+  // Si el navegador no deja seguir con sonido (o el video terminó), vuelve al botón
+  function reset() {
+    started.current = false
+    setPlaying(false)
   }
 
-  // Al activar el sonido arranca desde el principio, para escuchar la explicación completa
-  const toggleSound = () => {
+  function start() {
     const video = ref.current
     if (!video) return
-    if (video.muted) {
-      video.muted = false
-      video.currentTime = 0
-      pausedByUser.current = false
-      video.play().catch(() => {})
-    } else {
-      video.muted = true
-    }
-    setMuted(video.muted)
+    video.muted = false
+    video.volume = 1
+    video.currentTime = 0
+    started.current = true
+    setPlaying(true)
+    video.play().catch(() => reset())
   }
 
   return (
-    <figure className="sv-video">
+    <figure className={`sv-video hm-glass hm-glass--thick${playing ? ' is-playing' : ''}`}>
+      <figcaption className="sv-video__head">
+        <span>{labels.heading}</span>
+        <span>{note ? `${note} · ${duration}` : duration}</span>
+      </figcaption>
       <div className="sv-video__frame">
         <video
           ref={ref}
           className="sv-video__media"
-          muted
-          loop
           playsInline
           preload="metadata"
           poster={poster}
           aria-label={labels.label}
-          onClick={togglePlay}
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
+          onEnded={reset}
         >
           <source src={srcMobile} type="video/mp4" media="(max-width: 767px)" />
           <source src={src} type="video/mp4" />
         </video>
-        <div className="sv-video__controls">
-          <button
-            type="button"
-            className="sv-video__btn sv-video__btn--icon"
-            onClick={togglePlay}
-            aria-label={playing ? labels.pause : labels.play}
-          >
-            {playing ? <Pause size={16} {...LINE} /> : <Play size={16} {...LINE} />}
+        {/* El switch de tema en grande: la pista negra en píldora y la perilla brillante con el play */}
+        {!playing && (
+          <button type="button" className="sv-video__play" onClick={start} aria-label={labels.play}>
+            <span className="sv-video__knob" aria-hidden="true">
+              <Play className="sv-video__icon" size={18} strokeWidth={1.5} absoluteStrokeWidth fill="currentColor" />
+            </span>
+            <span className="sv-video__cta" aria-hidden="true">
+              {labels.cta}
+            </span>
           </button>
-          <button type="button" className="sv-video__btn" onClick={toggleSound}>
-            {muted ? <VolumeX size={16} {...LINE} /> : <Volume2 size={16} {...LINE} />}
-            <span>{muted ? labels.sound : labels.mute}</span>
-          </button>
-        </div>
+        )}
       </div>
-      {note && <figcaption className="sv-video__note">{note}</figcaption>}
     </figure>
   )
 }

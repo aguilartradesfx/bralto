@@ -599,11 +599,10 @@
       "illustrative": "Illustrative figures",
       "video": {
         "label": "Video: {service}",
-        "sound": "Turn sound on",
-        "mute": "Mute",
-        "play": "Play the video",
-        "pause": "Pause the video",
-        "note": "Video in Spanish"
+        "play": "Watch the video with sound",
+        "cta": "Watch with sound",
+        "heading": "How it works",
+        "note": "In Spanish"
       }
     },
     "footer": {
