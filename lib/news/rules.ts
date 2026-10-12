@@ -66,6 +66,9 @@ export function bodyFormatProblems(body: string): string[] {
   if (lines.some((l) => /^([-*+•]|\d+[.)])\s/.test(l))) problems.push('El cuerpo no lleva listas.')
   if (/[*`]/.test(body)) problems.push('El cuerpo no lleva negritas, cursivas ni código.')
   if (lines.some((l) => l.startsWith('#') && !/^## \S/.test(l))) problems.push('Solo se permiten subtítulos con «## ».')
+  // La página ya muestra el autor: una firma al final del cuerpo sale repetida
+  if (/(?:^|\n)\s*(?:(?:Por|By|—|-)\s+)?Alejandro Aguilar(?:[\s,]*CEO (?:de|of) Bralto)?[\s.]*$/i.test(body))
+    problems.push('El cuerpo no termina con la firma: la página ya muestra el autor.')
   const paragraphs = body
     .split(/\n\s*\n/)
     .map((b) => b.trim())

@@ -90,6 +90,16 @@ test('el cuerpo no lleva HTML, links, listas, negritas ni otros títulos', () =>
   assert.deepEqual(bodyFormatProblems('Uno.\n\n## Dos\n\nTres.\n\nCuatro.'), [])
 })
 
+test('el cuerpo no termina con la firma: ya aparece en la página', () => {
+  const base = 'Uno.\n\nDos.\n\nTres.\n\n'
+  assert.match(bodyFormatProblems(base + 'Alejandro Aguilar\nCEO de Bralto').join(), /firma/)
+  assert.match(bodyFormatProblems(base + 'Alejandro Aguilar\nCEO of Bralto\n').join(), /firma/)
+  assert.match(bodyFormatProblems(base + 'Por Alejandro Aguilar').join(), /firma/)
+  assert.match(bodyFormatProblems(base + 'By Alejandro Aguilar.').join(), /firma/)
+  assert.match(bodyFormatProblems(base + '— Alejandro Aguilar, CEO de Bralto').join(), /firma/)
+  assert.deepEqual(bodyFormatProblems('Alejandro Aguilar, CEO de Bralto, lo explica así.\n\nDos.\n\nTres.'), [])
+})
+
 test('el cuerpo necesita al menos 3 párrafos', () => {
   assert.match(bodyFormatProblems('Uno solo.\n\n## Sub\n\nDos.').join(), /párrafos/)
 })

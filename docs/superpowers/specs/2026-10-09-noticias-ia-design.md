@@ -152,7 +152,7 @@ Unos USD 10 al mes: alrededor de $0.13 por imagen y $0.20 de texto por día, con
 2. **Calificación.** Gemini califica cada noticia de 0 a 100: impacto práctico hasta 40, interés humano hasta 35 e importancia hasta 25. Solo pasan las de 75 o más. Si ninguna llega, ese día no se publica y el correo dice cuál fue la mejor y su puntaje.
 3. **Editor GPT.** Gemini escribe el borrador y GPT (`chat-latest`, el modelo de ChatGPT, que Alejandro eligió por conversacional) lo reescribe para que conecte. Las reglas y la revisión de datos se aplican a la versión de GPT.
 4. **Artículos de Bralto.** Se publica uno al día al mediodía, en la misma sección, con `tipo = articulo`, sin fuente y con la etiqueta "Artículo de Bralto".
-   - **Tipos, en rotación:** guía o caso real; ranking de herramientas; comparativa de tipos de proveedor con Bralto #1.
+   - **Tipos, en rotación:** guía o caso real; ranking de herramientas con Bralto #1 (pedido de Alejandro del 11 de octubre); comparativa de tipos de proveedor con Bralto #1.
    - **Comparativa:** a pedido de Alejandro se mezclan los tres tipos. En la comparativa no se nombran agencias reales: inventarles evaluaciones sería publicidad engañosa y un riesgo legal.
    - **Datos:** se escriben solo con la ficha de Bralto (datos del sitio).
    - **Reglas propias:** 500 a 900 palabras; sin precio del diagnóstico ni reembolsos; sin estadísticas inventadas.
