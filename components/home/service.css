@@ -273,7 +273,13 @@
 
   /* En media columna el título baja de tamaño y el texto y los botones van uno debajo del otro */
   .sv-hero--video .hm-page-title {
-    font-size: clamp(38px, 4.1vw, 62px);
+    font-size: clamp(38px, 3.8vw, 56px);
+  }
+
+  /* Cada línea del título puede partirse: en media columna no siempre cabe entera */
+  .sv-hero--video .hm-hero__l1,
+  .sv-hero--video .hm-hero__l2 {
+    white-space: normal;
   }
 
   .sv-hero--video .sv-hero__row {
