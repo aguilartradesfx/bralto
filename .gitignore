@@ -41,3 +41,6 @@ scripts/social/assets/_*
 
 # Worktrees locales de Claude Code
 .claude/worktrees/
+
+# Fuente del Plan Q4: contenido interno, no va al repo (público). Se carga con npm run plan:seed
+/plan-q4-admin.md
