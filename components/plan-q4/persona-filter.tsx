@@ -18,7 +18,7 @@ export function PersonaFilterBar({ tab, persona }: { tab: string; persona: Perso
             href={planHref(tab, value)}
             aria-current={active ? 'true' : undefined}
             className={`px-3 py-2 text-xs font-medium rounded-md transition-colors ${
-              active ? 'bg-[#5bb6ff]/10 text-[#5bb6ff]' : 'text-white/50 hover:text-white/80'
+              active ? 'pn-chip-on text-white' : 'text-white/50 hover:text-white/80'
             }`}
           >
             {label}
