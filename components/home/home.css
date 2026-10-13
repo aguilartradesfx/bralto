@@ -10,7 +10,8 @@
   initial-value: -45deg;
 }
 
-/* Tokens: components/home/tokens.css (compartidos con el panel) */
+/* Tokens: components/home/tokens.css (compartidos con el panel). Un token se cambia según la pantalla
+   ahí, no aquí: tokens.css se carga después y lo que se redefina sobre .hm en este archivo pierde. */
 
 /* ---------- Base ---------- */
 .hm {
@@ -2835,13 +2836,8 @@ html[data-motion='paused'] :is(.hm-orb, .hm-hubmap__glow, .hm-hubmap__beam, .hm-
   }
 }
 
-/* Móvil: menos blur (rinde mejor) */
+/* Móvil (el --gutter y el --blur de esta medida viven en tokens.css) */
 @media (max-width: 767px) {
-  .hm {
-    --gutter: 16px;
-    --blur: 18px;
-  }
-
   .hm-console {
     border-radius: var(--r-lg);
   }

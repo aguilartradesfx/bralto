@@ -85,12 +85,6 @@
   }
 }
 
-@media (max-width: 639px) {
-  .pn {
-    --blur: 18px;
-  }
-}
-
 /* Superficie sólida: listas, tablas y desplegables */
 .pn-solid {
   background: var(--solid);
