@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 
-// Fuentes del panel, el login, la firma de contratos y el funnel viejo (Tailwind: font-sans,
-// font-mono y font-serif). El sitio público usa Sora y JetBrains Mono (components/home/fonts.ts):
-// si este módulo lo importara su layout, cada página precargaría estas tres sin usarlas.
+// Fuentes de la firma de contratos y el funnel viejo (Tailwind: font-sans, font-mono y font-serif).
+// El sitio público, el panel y el login usan Sora y JetBrains Mono (components/home/fonts.ts):
+// si este módulo lo importaran sus layouts, cada página precargaría estas tres sin usarlas.
 
 const geist = Geist({
   subsets: ['latin'],

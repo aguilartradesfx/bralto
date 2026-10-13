@@ -15,6 +15,10 @@ const config: Config = {
         serif: ['var(--font-instrument-serif)', 'Georgia', 'serif'],
       },
       colors: {
+        // Tokens del sistema del sitio (components/home/tokens.css), para el panel (.pn)
+        ink: { DEFAULT: 'var(--ink)', 2: 'var(--ink-2)', 3: 'var(--ink-3)' },
+        rule: { DEFAULT: 'var(--rule)', 2: 'var(--rule-2)' },
+        solid: 'var(--solid)',
         // Brand accents — Dark Bento system
         cyan: {
           DEFAULT: '#5bb6ff',

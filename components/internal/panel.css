@@ -1,0 +1,166 @@
+/* Panel interno (admin.bralto.io) y login: el sistema liquid glass del sitio en versión de trabajo.
+   Tokens en components/home/tokens.css. Solo tema oscuro. */
+
+:root:has(.pn) body {
+  background-color: #050505;
+}
+
+.pn {
+  /* font-sans y font-mono de Tailwind apuntan a Geist: dentro del panel, a las fuentes del sitio */
+  --font-geist: var(--font-sora);
+  --font-geist-mono: var(--font-jbmono);
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fondo: brillo fijo (sin orbes animados) y el grano del sitio */
+.pn::before,
+.pn::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.pn::before {
+  background:
+    radial-gradient(70vmax 45vmax at 88% -12%, var(--orb-1), transparent 70%),
+    radial-gradient(55vmax 40vmax at -12% 108%, var(--orb-2), transparent 70%);
+  opacity: .55;
+}
+
+.pn::after {
+  opacity: var(--grain);
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
+.pn :focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+/* Los campos marcan el foco con su borde */
+.pn :is(input, select, textarea):focus-visible {
+  outline: none;
+}
+
+/* Vidrio ahumado. Con backdrop-filter: nunca en un contenedor que tenga adentro un modal fixed */
+.pn-glass {
+  position: relative;
+  background: var(--glass-sheen), var(--glass-tint);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(165%);
+  backdrop-filter: blur(var(--blur)) saturate(165%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -1px 0 var(--glass-lo),
+    inset 0 0 0 1px var(--glass-edge),
+    var(--glass-shadow);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .pn-glass {
+    background: var(--glass-sheen), var(--solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .pn-glass {
+    background: var(--glass-sheen), var(--solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .pn {
+    --blur: 18px;
+  }
+}
+
+/* Superficie sólida: listas, tablas y desplegables */
+.pn-solid {
+  background: var(--solid);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+/* Botón principal: blanco con degradado, como el del sitio */
+.pn-btn-solid {
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 1px 0 var(--btn-hi), inset 0 -1px 0 var(--btn-lo), 0 10px 24px -12px var(--btn-shadow);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), opacity .2s;
+}
+
+.pn-btn-solid:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 var(--btn-hi), inset 0 -1px 0 var(--btn-lo), 0 16px 30px -14px var(--btn-shadow);
+}
+
+.pn-btn-solid:active:not(:disabled) {
+  transform: scale(.98);
+  transition-duration: .12s;
+}
+
+/* Botón secundario: vidrio interno */
+.pn-btn-glass {
+  background: var(--inset-fill);
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 1px 0 var(--inset-hi), inset 0 0 0 1px var(--inset-edge);
+  transition: box-shadow .2s, opacity .2s;
+}
+
+.pn-btn-glass:hover:not(:disabled) {
+  box-shadow: inset 0 1px 0 var(--inset-hi), inset 0 0 0 1px var(--rule-2);
+}
+
+/* Activo: chips, filtros, pestañas e ítem del menú */
+.pn-chip-on {
+  background: var(--inset-fill);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 var(--inset-hi), inset 0 0 0 1px var(--inset-edge);
+}
+
+/* La señal: el único naranja (ítem activo del menú) */
+.pn-signal {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(255, 109, 40, .6);
+}
+
+/* Plan Q4: Contexto de cada bloque (markdown renderizado con marked) */
+.plan-md { color: rgb(255 255 255 / 0.72); font-size: 0.875rem; line-height: 1.65; }
+.plan-md > * + * { margin-top: 0.85rem; }
+.plan-md p, .plan-md li { max-width: 75ch; }
+.plan-md h3, .plan-md h4 { color: #fff; font-weight: 600; margin-top: 1.75rem; }
+.plan-md h3 { font-size: 1rem; }
+.plan-md h4 { font-size: 0.9375rem; }
+.plan-md > :first-child { margin-top: 0; }
+.plan-md strong { color: rgb(255 255 255 / 0.92); font-weight: 600; }
+.plan-md a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+.plan-md ul { list-style: disc; padding-left: 1.25rem; }
+.plan-md ol { list-style: decimal; padding-left: 1.25rem; }
+.plan-md li + li { margin-top: 0.3rem; }
+.plan-md blockquote { border-left: 2px solid rgb(255 255 255 / 0.25); background: rgb(255 255 255 / 0.04); padding: 0.75rem 1rem; border-radius: 0 0.75rem 0.75rem 0; }
+.plan-md blockquote > * + * { margin-top: 0.5rem; }
+.plan-md code { font-family: var(--font-mono); font-size: 0.8em; background: rgb(255 255 255 / 0.06); padding: 0.1rem 0.3rem; border-radius: 0.25rem; }
+.plan-md hr { border-color: rgb(255 255 255 / 0.06); }
+.plan-table { overflow-x: auto; border: 1px solid rgb(255 255 255 / 0.07); border-radius: 0.75rem; }
+.plan-table table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.plan-table th { text-align: left; font-weight: 500; color: rgb(255 255 255 / 0.5); background: rgb(255 255 255 / 0.03); }
+.plan-table th, .plan-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgb(255 255 255 / 0.06); vertical-align: top; }
+.plan-table tr:last-child td { border-bottom: 0; }
