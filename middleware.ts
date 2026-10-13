@@ -52,7 +52,7 @@ function markConsentRegion(request: NextRequest, response: NextResponse): NextRe
   return response
 }
 
-const PERMISSION_COLUMNS ='is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals'
+const PERMISSION_COLUMNS ='is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals, can_view_plan'
 
 // Session + section permission check for panel routes
 async function guardPanel(request: NextRequest): Promise<NextResponse> {
