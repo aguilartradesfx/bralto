@@ -38,7 +38,7 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
       <div className="px-5 py-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <Image src="/logo-white.svg" alt="Bralto" width={90} height={22} className="h-5 w-auto object-contain" />
-          <span className="text-[#5bb6ff] text-[10px] font-medium uppercase tracking-widest mt-0.5">
+          <span className="font-mono text-white/40 text-[10px] uppercase tracking-widest mt-0.5">
             interno
           </span>
         </div>
@@ -53,14 +53,14 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
               key={href}
               href={href}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                active
-                  ? 'bg-[#5bb6ff]/10 text-[#5bb6ff]'
-                  : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'
+              aria-current={active ? 'page' : undefined}
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                active ? 'pn-chip-on text-white' : 'text-white/55 hover:text-white hover:bg-white/[0.05]'
               }`}
             >
-              <Icon size={15} strokeWidth={active ? 2 : 1.5} />
+              <Icon size={15} strokeWidth={1.5} absoluteStrokeWidth />
               {label}
+              {active && <span className="pn-signal ml-auto" aria-hidden />}
             </Link>
           )
         })}
@@ -70,9 +70,9 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
       <div className="px-3 pb-4 border-t border-white/[0.06] pt-3">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors w-full"
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-white/40 hover:text-white/70 hover:bg-white/[0.05] transition-colors w-full"
         >
-          <LogOut size={15} strokeWidth={1.5} />
+          <LogOut size={15} strokeWidth={1.5} absoluteStrokeWidth />
           Cerrar sesión
         </button>
       </div>
@@ -82,15 +82,15 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-full w-56 bg-[#0c0c0f] border-r border-white/[0.06] flex-col z-40">
+      <aside className="hidden md:flex fixed left-3 top-3 bottom-3 w-56 pn-glass rounded-[20px] flex-col z-40">
         {navContent}
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-[#0c0c0f] border-b border-white/[0.06] flex items-center justify-between px-4 z-40">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 pn-glass flex items-center justify-between px-4 z-40">
         <div className="flex items-center gap-2">
           <Image src="/logo-white.svg" alt="Bralto" width={80} height={20} className="h-5 w-auto object-contain" />
-          <span className="text-[#5bb6ff] text-[10px] font-medium uppercase tracking-widest">interno</span>
+          <span className="font-mono text-white/40 text-[10px] uppercase tracking-widest">interno</span>
         </div>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -105,7 +105,7 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
         <div className="md:hidden fixed inset-0 z-50" onClick={() => setMobileOpen(false)}>
           <div className="absolute inset-0 bg-black/60" />
           <aside
-            className="absolute left-0 top-0 h-full w-64 bg-[#0c0c0f] border-r border-white/[0.06] flex flex-col"
+            className="absolute left-0 top-0 h-full w-64 pn-glass rounded-r-[20px] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {navContent}
