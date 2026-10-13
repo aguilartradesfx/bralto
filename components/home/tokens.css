@@ -1,6 +1,8 @@
-/* Tokens del sistema liquid glass: sitio (.hm) y panel interno (.pn). El tema claro es solo del sitio. */
+/* Tokens del sistema liquid glass: sitio (.hm) y panel interno (.pn). El tema claro es solo del sitio.
+   :root:has(.pn) lleva los tokens del panel a los modales que se montan en <body> con createPortal. */
 .hm,
-.pn {
+.pn,
+:root:has(.pn) {
   --accent: #ff6d28;
   --ease: cubic-bezier(.2, .8, .2, 1);
   --ease-io: cubic-bezier(.65, 0, .35, 1);
@@ -21,7 +23,8 @@
 
 .hm,
 .hm[data-theme='dark'],
-.pn {
+.pn,
+:root:has(.pn) {
   color-scheme: dark;
   --bg: #050505;
   --ink: #f4f4f4;

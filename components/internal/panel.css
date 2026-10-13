@@ -1,14 +1,18 @@
 /* Panel interno (admin.bralto.io) y login: el sistema liquid glass del sitio en versión de trabajo.
    Tokens en components/home/tokens.css. Solo tema oscuro. */
 
+:root:has(.pn) {
+  /* font-sans, font-mono de Tailwind y el body apuntan a Geist: en el panel (y sus modales
+     montados en <body>), a las fuentes del sitio */
+  --font-geist: var(--font-sora);
+  --font-geist-mono: var(--font-jbmono);
+}
+
 :root:has(.pn) body {
   background-color: #050505;
 }
 
 .pn {
-  /* font-sans y font-mono de Tailwind apuntan a Geist: dentro del panel, a las fuentes del sitio */
-  --font-geist: var(--font-sora);
-  --font-geist-mono: var(--font-jbmono);
   position: relative;
   isolation: isolate;
   min-height: 100vh;
@@ -44,13 +48,13 @@
   background-size: 220px 220px;
 }
 
-.pn :focus-visible {
+:root:has(.pn) :focus-visible {
   outline: 2px solid var(--accent-ink);
   outline-offset: 2px;
 }
 
 /* Los campos marcan el foco con su borde */
-.pn :is(input, select, textarea):focus-visible {
+:root:has(.pn) :is(input, select, textarea):focus-visible {
   outline: none;
 }
 
