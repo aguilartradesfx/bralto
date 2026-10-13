@@ -1,8 +1,9 @@
 /* Tokens del sistema liquid glass: sitio (.hm) y panel interno (.pn). El tema claro es solo del sitio.
-   :root:has(.pn) lleva los tokens del panel a los modales que se montan en <body> con createPortal. */
+   :where(:root:has(.pn)) lleva los tokens del panel a los modales que se montan en <body> con createPortal;
+   va dentro de :where() para que un navegador sin :has() no descarte la regla entera (y el sitio sus tokens). */
 .hm,
 .pn,
-:root:has(.pn) {
+:where(:root:has(.pn)) {
   --accent: #ff6d28;
   --ease: cubic-bezier(.2, .8, .2, 1);
   --ease-io: cubic-bezier(.65, 0, .35, 1);
@@ -24,7 +25,7 @@
 .hm,
 .hm[data-theme='dark'],
 .pn,
-:root:has(.pn) {
+:where(:root:has(.pn)) {
   color-scheme: dark;
   --bg: #050505;
   --ink: #f4f4f4;
@@ -66,7 +67,7 @@
 @media (max-width: 767px) {
   .hm,
   .pn,
-  :root:has(.pn) {
+  :where(:root:has(.pn)) {
     --gutter: 16px;
     --blur: 18px;
   }

@@ -111,7 +111,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/50" onClick={onClose} />
-      <div className="w-full max-w-[520px] pn-glass rounded-l-[24px] flex flex-col h-full overflow-hidden">
+      <div className="w-full max-w-[520px] pn-glass pn-glass--dense rounded-l-[24px] flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-white/[0.08] flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">
@@ -200,7 +200,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
           <div>
             <label className="block text-xs text-white/40 mb-1.5">Notas internas (solo equipo Bralto)</label>
             <textarea
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 resize-none h-24 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 resize-none h-24 transition-colors"
               placeholder="Agrega notas internas sobre esta solicitud..."
               value={internalNotes}
               onChange={(e) => setInternalNotes(e.target.value)}
@@ -253,7 +253,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
                 value={status}
                 onChange={(e) => { const s = e.target.value as ProposalStatus; setStatus(s); save({ status: s }) }}
                 disabled={saving}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/30 disabled:opacity-50 pr-7"
+                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/50 disabled:opacity-50 pr-7"
               >
                 {Object.entries(STATUS_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
@@ -266,7 +266,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
                 value={priority}
                 onChange={(e) => { const p = e.target.value as ProposalPriority; setPriority(p); save({ priority: p }) }}
                 disabled={saving}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/30 disabled:opacity-50 pr-7"
+                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/50 disabled:opacity-50 pr-7"
               >
                 {Object.entries(PRIORITY_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>

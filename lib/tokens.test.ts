@@ -12,3 +12,13 @@ test('home.css no redefine los tokens compartidos de tokens.css', () => {
     .flatMap((line, i) => declared(line).filter((name) => shared.has(name)).map((name) => `home.css:${i + 1}: ${name}`))
   assert.deepEqual(offenders, [])
 })
+
+// Un navegador sin :has() descarta la regla entera si :has() va en la misma lista que .hm:
+// el sitio se quedaría sin tokens. :has() solo dentro de :where() (lista tolerante) o en su propia regla.
+test('tokens.css no pone :has() suelto en la misma lista de selectores que .hm', () => {
+  const css = readFileSync('components/home/tokens.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+  const offenders = [...css.matchAll(/([^{}]+)\{/g)]
+    .map((m) => m[1].trim())
+    .filter((selector) => /\.hm\b/.test(selector) && /:has\(/.test(selector.replace(/:where\((?:[^()]|\([^()]*\))*\)/g, '')))
+  assert.deepEqual(offenders, [])
+})

@@ -190,7 +190,7 @@ export function ContractForm({ clients, initialData }: Props) {
   }
 
   const fieldClass =
-    'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/10 transition-colors'
+    'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 transition-colors'
   const labelClass = 'block text-xs text-white/50 mb-1.5'
   const errorClass = 'text-red-400 text-xs mt-1'
   const sectionClass = 'bg-solid rounded-xl p-5 space-y-4'
@@ -464,7 +464,7 @@ export function ContractForm({ clients, initialData }: Props) {
         </form>
 
         {/* ── Sticky bottom bar ────────────────────────────────── */}
-        <div className="fixed bottom-0 left-0 md:left-[248px] right-0 pn-glass px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 z-30">
+        <div className="fixed bottom-0 left-0 md:left-[248px] right-0 pn-glass pn-glass--dense px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 z-30">
           {publicUrl ? (
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <Link2 size={14} className="text-green-400 shrink-0" />

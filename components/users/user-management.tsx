@@ -6,7 +6,7 @@ import type { UserWithProfile } from '@/types/user-profiles'
 import { PERMISSION_LABELS } from '@/types/user-profiles'
 
 const INPUT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 transition-colors'
 const LABEL = 'block text-xs font-medium text-white/50 mb-1.5'
 
 type PermissionKey = keyof typeof PERMISSION_LABELS

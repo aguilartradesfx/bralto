@@ -14,10 +14,10 @@ import {
 import { Loader2, CheckSquare, Square } from 'lucide-react'
 
 const INPUT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 transition-colors'
 const LABEL = 'block text-xs font-medium text-white/50 mb-1.5'
 const SELECT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/50 transition-colors'
 
 export function ProposalForm() {
   const router = useRouter()

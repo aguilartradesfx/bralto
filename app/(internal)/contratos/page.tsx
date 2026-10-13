@@ -84,7 +84,7 @@ export default async function ContratosPage({ searchParams }: Props) {
             name="q"
             defaultValue={q}
             placeholder="Buscar..."
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 w-full md:w-56"
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 w-full md:w-56"
           />
         </form>
       </div>

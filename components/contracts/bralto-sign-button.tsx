@@ -128,7 +128,7 @@ export function BraltoSignButton({ contractId }: Props) {
           <button
             disabled={isEmpty || loading}
             onClick={handleSign}
-            className="pn-btn-solid px-5 py-2 disabled:bg-white/10 disabled:text-white/30 text-sm font-semibold"
+            className="pn-btn-solid px-5 py-2 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold"
           >
             {loading ? 'Firmando...' : 'Confirmar firma'}
           </button>

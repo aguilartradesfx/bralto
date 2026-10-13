@@ -94,7 +94,7 @@ export function ServicesSection({ form }: Props) {
             {...register('servicios.otros_descripcion')}
             rows={3}
             placeholder="Describe los servicios adicionales..."
-            className="mt-2 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/10 transition-colors resize-none"
+            className="mt-2 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 transition-colors resize-none"
           />
         )}
       </div>

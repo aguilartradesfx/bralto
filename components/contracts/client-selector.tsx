@@ -46,7 +46,7 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
             const client = clients.find((c) => c.id === id)
             if (client) handleSelectClient(client)
           }}
-          className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/10 transition-colors pr-10"
+          className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 transition-colors pr-10"
         >
           <option value="">— Seleccionar cliente existente —</option>
           {clients.map((c) => (
@@ -146,7 +146,7 @@ function NewClientQuickForm({ onCreated }: { onCreated: (client: ClientRow) => v
           <input
             name={name}
             required={required}
-            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/50 transition-colors"
           />
         </div>
       ))}

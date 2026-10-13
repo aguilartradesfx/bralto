@@ -53,8 +53,8 @@
   outline-offset: 2px;
 }
 
-/* Los campos marcan el foco con su borde */
-:root:has(.pn) :is(input, select, textarea):focus-visible {
+/* Los campos de texto marcan el foco con su borde; checkbox y radio conservan el anillo */
+:root:has(.pn) :is(input:not([type='checkbox']):not([type='radio']), select, textarea):focus-visible {
   outline: none;
 }
 
@@ -69,6 +69,11 @@
     inset 0 -1px 0 var(--glass-lo),
     inset 0 0 0 1px var(--glass-edge),
     var(--glass-shadow);
+}
+
+/* Barras y paneles que flotan sobre contenido (también sobre la hoja blanca del contrato): tinte casi opaco */
+.pn-glass--dense {
+  --glass-tint: rgba(10, 10, 10, .9);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

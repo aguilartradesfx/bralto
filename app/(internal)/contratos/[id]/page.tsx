@@ -54,7 +54,7 @@ export default async function ContratoDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen" id="print-contract">
       {/* Top bar — offset below mobile nav (h-14) */}
-      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 pn-glass z-10 no-print">
+      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 pn-glass pn-glass--dense z-10 no-print">
         <div className="flex items-center gap-3">
           <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors shrink-0">
             ← Contratos

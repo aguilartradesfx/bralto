@@ -87,7 +87,7 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 pn-glass flex items-center justify-between px-4 z-40">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 pn-glass pn-glass--dense flex items-center justify-between px-4 z-40">
         <div className="flex items-center gap-2">
           <Image src="/logo-white.svg" alt="Bralto" width={80} height={20} className="h-5 w-auto object-contain" />
           <span className="font-mono text-white/40 text-[10px] uppercase tracking-widest">interno</span>
@@ -105,7 +105,7 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
         <div className="md:hidden fixed inset-0 z-50" onClick={() => setMobileOpen(false)}>
           <div className="absolute inset-0 bg-black/60" />
           <aside
-            className="absolute left-0 top-0 h-full w-64 pn-glass rounded-r-[20px] flex flex-col"
+            className="absolute left-0 top-0 h-full w-64 pn-glass pn-glass--dense rounded-r-[20px] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {navContent}
