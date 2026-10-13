@@ -6,6 +6,8 @@ const config: Config = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Colores de estado de contratos y solicitudes (STATUS_COLORS)
+    './types/**/*.{ts,tsx}',
   ],
   theme: {
     extend: {
