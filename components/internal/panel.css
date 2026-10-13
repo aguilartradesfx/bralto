@@ -58,9 +58,9 @@
   outline: none;
 }
 
-/* Vidrio ahumado. Con backdrop-filter: nunca en un contenedor que tenga adentro un modal fixed */
+/* Vidrio ahumado. Con backdrop-filter: nunca en un contenedor que tenga adentro un modal fixed.
+   Sin position: la pone cada uso (fixed, sticky, relative) con Tailwind */
 .pn-glass {
-  position: relative;
   background: var(--glass-sheen), var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--blur)) saturate(165%);
   backdrop-filter: blur(var(--blur)) saturate(165%);
