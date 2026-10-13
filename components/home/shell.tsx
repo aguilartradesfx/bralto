@@ -1,3 +1,4 @@
+import './tokens.css'
 import './home.css'
 import type { ReactNode } from 'react'
 import { getTranslations } from 'next-intl/server'

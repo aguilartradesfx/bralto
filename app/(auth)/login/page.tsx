@@ -8,18 +8,16 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, null)
 
   return (
-    <div className="min-h-screen bg-[#060607] flex items-center justify-center p-4">
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(91,182,255,0.04),transparent)]" />
-
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
             <Image src="/logo-white.svg" alt="Bralto" width={130} height={32} className="h-8 w-auto object-contain" />
           </div>
-          <p className="text-white/35 text-sm">Panel de administración</p>
+          <p className="text-white/45 text-sm">Panel de administración</p>
         </div>
 
-        <div className="rounded-card border border-white/[0.06] bg-[#131316] p-6">
+        <div className="pn-glass rounded-[28px] p-6">
           <form action={formAction} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-white/40 mb-1.5" htmlFor="email">
@@ -31,7 +29,7 @@ export default function LoginPage() {
                 type="email"
                 required
                 autoComplete="email"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/[0.03] transition-all"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/50 focus:bg-white/[0.06] transition-all"
                 placeholder="tu@bralto.io"
               />
             </div>
@@ -46,7 +44,7 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="current-password"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#5bb6ff]/40 focus:bg-[#5bb6ff]/[0.03] transition-all"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/50 focus:bg-white/[0.06] transition-all"
                 placeholder="••••••••"
               />
             </div>
@@ -60,7 +58,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full bg-[#5bb6ff] hover:bg-[#7cc5ff] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-full px-4 py-2.5 text-sm transition-colors"
+              className="pn-btn-solid w-full font-semibold px-4 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {pending ? 'Ingresando...' : 'Ingresar'}
             </button>

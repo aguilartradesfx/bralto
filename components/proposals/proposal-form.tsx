@@ -14,10 +14,10 @@ import {
 import { Loader2, CheckSquare, Square } from 'lucide-react'
 
 const INPUT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#5bb6ff]/60 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 transition-colors'
 const LABEL = 'block text-xs font-medium text-white/50 mb-1.5'
 const SELECT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#5bb6ff]/60 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/50 transition-colors'
 
 export function ProposalForm() {
   const router = useRouter()
@@ -88,7 +88,7 @@ export function ProposalForm() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label className={LABEL}>Nombre del cliente <span className="text-[#5bb6ff]">*</span></label>
+            <label className={LABEL}>Nombre del cliente <span className="text-white">*</span></label>
             <input
               className={INPUT}
               placeholder="Ej. Juan Pérez"
@@ -139,7 +139,7 @@ export function ProposalForm() {
       {/* Services */}
       <section>
         <h2 className="text-sm font-semibold text-white/80 mb-1 pb-2 border-b border-white/[0.06]">
-          Servicios requeridos <span className="text-[#5bb6ff]">*</span>
+          Servicios requeridos <span className="text-white">*</span>
         </h2>
         <p className="text-xs text-white/30 mb-4">Marca todo lo que el cliente necesita o mencionó</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -152,7 +152,7 @@ export function ProposalForm() {
                 onClick={() => toggleService(id)}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-sm text-left transition-all ${
                   active
-                    ? 'border-[#5bb6ff]/40 bg-[#5bb6ff]/10 text-[#5bb6ff]'
+                    ? 'pn-chip-on border-transparent text-white'
                     : 'border-white/[0.08] bg-white/[0.02] text-white/50 hover:text-white/70 hover:border-white/20'
                 }`}
               >
@@ -233,7 +233,7 @@ export function ProposalForm() {
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+          className="pn-btn-solid flex items-center gap-2 px-5 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
         >
           {loading && <Loader2 size={14} className="animate-spin" />}
           {loading ? 'Enviando...' : 'Enviar solicitud'}

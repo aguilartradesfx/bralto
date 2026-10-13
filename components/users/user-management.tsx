@@ -6,7 +6,7 @@ import type { UserWithProfile } from '@/types/user-profiles'
 import { PERMISSION_LABELS } from '@/types/user-profiles'
 
 const INPUT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#5bb6ff]/60 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 transition-colors'
 const LABEL = 'block text-xs font-medium text-white/50 mb-1.5'
 
 type PermissionKey = keyof typeof PERMISSION_LABELS
@@ -26,12 +26,12 @@ function Toggle({
       onClick={() => !disabled && onChange(!checked)}
       disabled={disabled}
       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ${
-        checked ? 'bg-[#5bb6ff]' : 'bg-white/10'
+        checked ? 'bg-white/90' : 'bg-white/10'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
-        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-          checked ? 'translate-x-4.5' : 'translate-x-0.5'
+        className={`inline-block h-3.5 w-3.5 transform rounded-full transition-transform ${
+          checked ? 'translate-x-4.5 bg-[#0a0a0a]' : 'translate-x-0.5 bg-white'
         }`}
       />
     </button>
@@ -118,7 +118,7 @@ function AddUserModal({ onClose, onCreated }: AddUserModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="relative bg-[#131316] border border-white/[0.1] rounded-xl w-full max-w-md overflow-hidden">
+      <div className="relative pn-glass rounded-[24px] w-full max-w-md overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
           <h2 className="text-base font-semibold text-white">Agregar usuario</h2>
           <button onClick={onClose} className="text-white/30 hover:text-white/70 p-1 transition-colors">
@@ -133,7 +133,7 @@ function AddUserModal({ onClose, onCreated }: AddUserModalProps) {
               <input className={INPUT} placeholder="Juan Pérez" value={fullName} onChange={(e) => setFullName(e.target.value)} />
             </div>
             <div>
-              <label className={LABEL}>Email <span className="text-[#5bb6ff]">*</span></label>
+              <label className={LABEL}>Email <span className="text-white">*</span></label>
               <input type="email" className={INPUT} placeholder="juan@empresa.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
           </div>
@@ -157,7 +157,7 @@ function AddUserModal({ onClose, onCreated }: AddUserModalProps) {
             <div className="space-y-2 bg-white/[0.02] border border-white/[0.06] rounded-lg p-3">
               {/* Admin toggle at the top */}
               <div className="flex items-center justify-between gap-3 pb-2 mb-1 border-b border-white/[0.06]">
-                <span className="text-xs text-[#5bb6ff]/80 font-medium">Administrador</span>
+                <span className="text-xs text-white/80 font-medium">Administrador</span>
                 <Toggle checked={isAdmin} onChange={setIsAdmin} />
               </div>
               {(Object.entries(PERMISSION_LABELS) as [PermissionKey, string][]).map(([key, label]) => (
@@ -180,7 +180,7 @@ function AddUserModal({ onClose, onCreated }: AddUserModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              className="pn-btn-solid flex-1 flex items-center justify-center gap-2 py-2.5 disabled:opacity-50 text-sm font-medium"
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
               {loading ? 'Creando...' : 'Crear usuario'}
@@ -246,7 +246,7 @@ function EditUserModal({ user, onClose, onUpdated }: EditUserModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="relative bg-[#131316] border border-white/[0.1] rounded-xl w-full max-w-sm overflow-hidden">
+      <div className="relative pn-glass rounded-[24px] w-full max-w-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
           <h2 className="text-base font-semibold text-white">Editar usuario</h2>
           <button onClick={onClose} className="text-white/30 hover:text-white/70 p-1 transition-colors">
@@ -276,7 +276,7 @@ function EditUserModal({ user, onClose, onUpdated }: EditUserModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              className="pn-btn-solid flex-1 flex items-center justify-center gap-2 py-2.5 disabled:opacity-50 text-sm font-medium"
             >
               {loading && <Loader2 size={14} className="animate-spin" />}
               {loading ? 'Guardando...' : 'Guardar cambios'}
@@ -305,7 +305,7 @@ function PasswordModal({ email, password, onClose }: { email: string; password: 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80" />
-      <div className="relative bg-[#131316] border border-emerald-500/30 rounded-xl w-full max-w-sm p-6 text-center">
+      <div className="relative pn-glass rounded-[24px] w-full max-w-sm p-6 text-center">
         <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-3">
           <Shield size={18} className="text-emerald-400" />
         </div>
@@ -373,8 +373,8 @@ function UserPermissionsRow({ user, onUpdated, onDeleted, onEdit }: {
       <tr className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
         <td className="px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-[#5bb6ff]/15 border border-[#5bb6ff]/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-semibold text-[#5bb6ff]">{initials}</span>
+            <div className="w-7 h-7 rounded-full bg-white/[0.08] border border-white/15 flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-semibold text-white">{initials}</span>
             </div>
             <div>
               <p className="text-sm text-white font-medium">{profile?.full_name ?? '—'}</p>
@@ -384,7 +384,7 @@ function UserPermissionsRow({ user, onUpdated, onDeleted, onEdit }: {
         </td>
         <td className="px-4 py-3">
           {profile?.is_admin ? (
-            <span className="text-xs px-2 py-0.5 bg-[#5bb6ff]/10 text-[#5bb6ff] border border-[#5bb6ff]/20 rounded-full">Admin</span>
+            <span className="text-xs px-2 py-0.5 bg-white/[0.08] text-white border border-white/15 rounded-full">Admin</span>
           ) : (
             <span className="text-xs text-white/30">Estándar</span>
           )}
@@ -396,7 +396,7 @@ function UserPermissionsRow({ user, onUpdated, onDeleted, onEdit }: {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setExpanded((v) => !v)}
-              className="text-xs text-[#5bb6ff]/70 hover:text-[#5bb6ff] transition-colors"
+              className="text-xs text-white/70 hover:text-white transition-colors"
             >
               {expanded ? 'Ocultar' : 'Permisos'}
             </button>
@@ -425,7 +425,7 @@ function UserPermissionsRow({ user, onUpdated, onDeleted, onEdit }: {
             <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
               {/* Admin toggle */}
               <div className="flex items-center justify-between gap-3 col-span-full pb-2 mb-1 border-b border-white/[0.06]">
-                <span className="text-xs text-[#5bb6ff]/80 font-medium">Administrador</span>
+                <span className="text-xs text-white/80 font-medium">Administrador</span>
                 <Toggle
                   checked={!!profile?.is_admin}
                   onChange={(v) => togglePermission('is_admin', v)}
@@ -483,7 +483,7 @@ export function UserManagement({ isAdmin, initialUsers }: UserManagementProps) {
     setUsers((prev) => prev.filter((u) => u.id !== id))
   }
 
-  const centered = 'fixed inset-0 md:left-56 flex flex-col items-center justify-center text-center px-4'
+  const centered = 'fixed inset-0 md:left-[248px] flex flex-col items-center justify-center text-center px-4'
 
   if (!isAdmin) {
     return (
@@ -507,7 +507,7 @@ export function UserManagement({ isAdmin, initialUsers }: UserManagementProps) {
           </button>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white text-sm font-medium rounded-lg transition-colors"
+            className="pn-btn-solid flex items-center gap-2 px-4 py-2 text-sm font-medium"
           >
             <Plus size={15} />
             Agregar usuario

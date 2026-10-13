@@ -66,9 +66,9 @@ export const STATUS_LABELS: Record<ProposalStatus, string> = {
 }
 
 export const STATUS_COLORS: Record<ProposalStatus, string> = {
-  pendiente:         'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
-  en_revision:       'bg-blue-500/10 text-blue-300 border-blue-500/20',
-  propuesta_enviada: 'bg-orange-500/10 text-orange-300 border-orange-500/20',
+  pendiente:         'bg-white/[0.06] text-white/70 border-white/15',
+  en_revision:       'bg-amber-500/10 text-amber-300 border-amber-500/20',
+  propuesta_enviada: 'bg-white/[0.08] text-white border-white/20',
   aceptada:          'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
   ganado:            'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
   perdido:           'bg-red-500/10 text-red-300 border-red-500/20',

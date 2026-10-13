@@ -54,7 +54,7 @@ export default async function ContratoDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen" id="print-contract">
       {/* Top bar — offset below mobile nav (h-14) */}
-      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 bg-[#131316]/95 backdrop-blur z-10 no-print">
+      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 pn-glass pn-glass--dense z-10 no-print">
         <div className="flex items-center gap-3">
           <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors shrink-0">
             ← Contratos
@@ -71,7 +71,7 @@ export default async function ContratoDetailPage({ params }: Props) {
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] rounded-lg text-xs text-white/50 min-w-0">
               <span className="truncate max-w-[140px] md:max-w-[200px]">{publicUrl}</span>
               <CopyButton text={publicUrl} />
-              <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-[#5bb6ff] transition-colors">
+              <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white transition-colors">
                 <ExternalLink size={12} />
               </a>
             </div>
@@ -81,7 +81,7 @@ export default async function ContratoDetailPage({ params }: Props) {
 
           <Link
             href={`/contratos/nuevo?from=${id}`}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm border border-white/15 text-white/70 hover:border-white/30 hover:text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-white/80 hover:text-white transition-colors"
           >
             <Copy size={13} />
             Duplicar
@@ -90,7 +90,7 @@ export default async function ContratoDetailPage({ params }: Props) {
           {['draft', 'sent'].includes(c.status) && (
             <Link
               href={`/contratos/${id}/editar`}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm border border-white/15 text-white/70 hover:border-white/30 hover:text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-white/80 hover:text-white transition-colors"
             >
               <Pencil size={13} />
               Editar
@@ -136,8 +136,8 @@ export default async function ContratoDetailPage({ params }: Props) {
         )}
 
         {c.status === 'signed_by_client' && (
-          <div className="mb-8 p-4 bg-[#5bb6ff]/10 border border-[#5bb6ff]/20 rounded-xl no-print">
-            <p className="text-sm font-medium text-[#5bb6ff]">
+          <div className="mb-8 p-4 bg-white/[0.08] border border-white/15 rounded-xl no-print">
+            <p className="text-sm font-medium text-white">
               Esperando tu firma — usá el botón &quot;Firmar como Bralto&quot; para completar el contrato.
             </p>
           </div>
@@ -158,7 +158,7 @@ export default async function ContratoDetailPage({ params }: Props) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-[#111111] rounded-xl p-4 border border-white/[0.06]">
+    <div className="bg-solid rounded-xl p-4 border border-white/[0.06]">
       <p className="text-xs text-white/30 mb-1">{label}</p>
       <p className="text-sm text-white font-medium truncate">{value}</p>
     </div>

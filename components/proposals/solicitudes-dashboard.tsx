@@ -22,7 +22,7 @@ const ROW = 'hover:bg-white/[0.03] cursor-pointer transition-colors border-b bor
 function ServiceChip({ id }: { id: string }) {
   const svc = BRALTO_SERVICES.find((s) => s.id === id)
   return (
-    <span className="inline-block px-1.5 py-0.5 text-[10px] bg-[#5bb6ff]/10 text-[#5bb6ff]/70 rounded whitespace-nowrap">
+    <span className="inline-block px-1.5 py-0.5 text-[10px] bg-white/[0.08] text-white/70 rounded whitespace-nowrap">
       {svc?.label ?? id}
     </span>
   )
@@ -111,7 +111,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/50" onClick={onClose} />
-      <div className="w-full max-w-[520px] bg-[#0f0f0f] border-l border-white/[0.08] flex flex-col h-full overflow-hidden">
+      <div className="w-full max-w-[520px] pn-glass pn-glass--dense rounded-l-[24px] flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-white/[0.08] flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">
@@ -138,7 +138,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
             {proposal.client_email && (
               <div className="flex items-center gap-2 text-sm">
                 <Mail size={13} className="text-white/30 flex-shrink-0" />
-                <a href={`mailto:${proposal.client_email}`} className="text-white/70 hover:text-[#5bb6ff] transition-colors">
+                <a href={`mailto:${proposal.client_email}`} className="text-white/70 hover:text-white transition-colors">
                   {proposal.client_email}
                 </a>
               </div>
@@ -200,7 +200,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
           <div>
             <label className="block text-xs text-white/40 mb-1.5">Notas internas (solo equipo Bralto)</label>
             <textarea
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#5bb6ff]/60 resize-none h-24 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 resize-none h-24 transition-colors"
               placeholder="Agrega notas internas sobre esta solicitud..."
               value={internalNotes}
               onChange={(e) => setInternalNotes(e.target.value)}
@@ -208,7 +208,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
             <button
               onClick={() => save({ internal_notes: internalNotes })}
               disabled={saving}
-              className="mt-1.5 text-xs text-[#5bb6ff] hover:text-[#5bb6ff] disabled:opacity-50 transition-colors"
+              className="mt-1.5 text-xs text-white hover:text-white disabled:opacity-50 transition-colors"
             >
               {saving ? 'Guardando...' : 'Guardar notas'}
             </button>
@@ -225,7 +225,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
               <button onClick={handleCopyUrl} className="text-white/30 hover:text-white/60 transition-colors flex-shrink-0" title="Copiar enlace">
                 {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
               </button>
-              <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-[#5bb6ff] transition-colors flex-shrink-0" title="Abrir propuesta">
+              <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white transition-colors flex-shrink-0" title="Abrir propuesta">
                 <ExternalLink size={13} />
               </a>
             </div>
@@ -235,7 +235,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:bg-[#5bb6ff]/50 text-white rounded-lg transition-colors"
+            className="pn-btn-solid w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium disabled:opacity-50"
           >
             {generating ? (
               <><Loader2 size={14} className="animate-spin" />Enviando propuesta...</>
@@ -253,7 +253,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
                 value={status}
                 onChange={(e) => { const s = e.target.value as ProposalStatus; setStatus(s); save({ status: s }) }}
                 disabled={saving}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-[#5bb6ff]/60 disabled:opacity-50 pr-7"
+                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/50 disabled:opacity-50 pr-7"
               >
                 {Object.entries(STATUS_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
@@ -266,7 +266,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
                 value={priority}
                 onChange={(e) => { const p = e.target.value as ProposalPriority; setPriority(p); save({ priority: p }) }}
                 disabled={saving}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-[#5bb6ff]/60 disabled:opacity-50 pr-7"
+                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/50 disabled:opacity-50 pr-7"
               >
                 {Object.entries(PRIORITY_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
@@ -353,7 +353,7 @@ export function SolicitudesDashboard() {
         </div>
         <Link
           href="/solicitudes/nueva"
-          className="flex items-center gap-2 px-4 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white text-sm font-medium rounded-lg transition-colors"
+          className="pn-btn-solid flex items-center gap-2 px-4 py-2 text-sm font-medium"
         >
           <Plus size={15} />
           Nueva solicitud
@@ -376,12 +376,12 @@ export function SolicitudesDashboard() {
             onClick={() => setStatusFilter(val)}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
               statusFilter === val
-                ? 'bg-[#5bb6ff]/15 text-[#5bb6ff] border-[#5bb6ff]/30'
+                ? 'pn-chip-on border-transparent text-white'
                 : 'bg-white/[0.03] text-white/40 border-white/[0.08] hover:text-white/60'
             }`}
           >
             {label}
-            <span className={`text-[10px] px-1 rounded ${statusFilter === val ? 'bg-[#5bb6ff]/20' : 'bg-white/[0.06]'}`}>
+            <span className={`text-[10px] px-1 rounded ${statusFilter === val ? 'bg-white/[0.12]' : 'bg-white/[0.06]'}`}>
               {count}
             </span>
           </button>
@@ -401,7 +401,7 @@ export function SolicitudesDashboard() {
             {proposals.length === 0 ? 'Aún no hay solicitudes' : 'Sin resultados para este filtro'}
           </p>
           {proposals.length === 0 && (
-            <Link href="/solicitudes/nueva" className="text-[#5bb6ff] text-xs hover:text-[#5bb6ff] mt-1 transition-colors">
+            <Link href="/solicitudes/nueva" className="text-white text-xs hover:text-white mt-1 transition-colors">
               Crear primera solicitud →
             </Link>
           )}

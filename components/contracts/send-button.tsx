@@ -30,7 +30,7 @@ export function SendButton({ contractId }: { contractId: string }) {
       <button
         onClick={handleSend}
         disabled={loading}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+        className="pn-btn-solid flex items-center gap-2 px-3 py-1.5 text-sm font-medium disabled:opacity-50"
       >
         <Send size={13} />
         {loading ? 'Enviando...' : 'Firmar y enviar'}

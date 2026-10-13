@@ -19,7 +19,7 @@ export function TabSelect({ tabs, active, persona }: { tabs: PlanTab[]; active: 
       <select
         value={active}
         onChange={(e) => router.push(planHref(e.target.value, persona))}
-        className="w-full bg-[#0c0c0f] border border-white/[0.1] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#5bb6ff]/50"
+        className="w-full bg-solid border border-white/[0.1] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/50"
       >
         {tabs.map((t) => (
           <option key={t.key} value={t.key}>

@@ -1,6 +1,6 @@
 import { JetBrains_Mono, Sora } from 'next/font/google'
 
-// Solo el home usa estas fuentes; el resto del sitio sigue con Geist.
+// El sitio y el panel interno usan estas fuentes; la firma de contratos sigue con Geist.
 export const sora = Sora({
   subsets: ['latin'],
   variable: '--font-sora',
@@ -14,3 +14,6 @@ export const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
   preload: false,
 })
+
+// Variables de fuente del panel interno y el login (components/internal/panel.css)
+export const panelFonts = `${sora.variable} ${jetbrainsMono.variable}`

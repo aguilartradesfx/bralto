@@ -82,26 +82,3 @@ body {
 .contract-preview strong, .contract-document strong { font-weight: 700; color: #000 !important; }
 .contract-preview hr, .contract-document hr { border-color: #e5e7eb; margin: 1.5em 0; }
 .contract-document td { color: #111111 !important; }
-
-/* Plan Q4: Contexto de cada bloque (markdown renderizado con marked) */
-.plan-md { color: rgb(255 255 255 / 0.72); font-size: 0.875rem; line-height: 1.65; }
-.plan-md > * + * { margin-top: 0.85rem; }
-.plan-md p, .plan-md li { max-width: 75ch; }
-.plan-md h3, .plan-md h4 { color: #fff; font-weight: 600; margin-top: 1.75rem; }
-.plan-md h3 { font-size: 1rem; }
-.plan-md h4 { font-size: 0.9375rem; }
-.plan-md > :first-child { margin-top: 0; }
-.plan-md strong { color: rgb(255 255 255 / 0.92); font-weight: 600; }
-.plan-md a { color: #5bb6ff; text-decoration: underline; text-underline-offset: 2px; }
-.plan-md ul { list-style: disc; padding-left: 1.25rem; }
-.plan-md ol { list-style: decimal; padding-left: 1.25rem; }
-.plan-md li + li { margin-top: 0.3rem; }
-.plan-md blockquote { border-left: 2px solid rgb(91 182 255 / 0.5); background: rgb(91 182 255 / 0.05); padding: 0.75rem 1rem; border-radius: 0 0.75rem 0.75rem 0; }
-.plan-md blockquote > * + * { margin-top: 0.5rem; }
-.plan-md code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8em; background: rgb(255 255 255 / 0.06); padding: 0.1rem 0.3rem; border-radius: 0.25rem; }
-.plan-md hr { border-color: rgb(255 255 255 / 0.06); }
-.plan-table { overflow-x: auto; border: 1px solid rgb(255 255 255 / 0.07); border-radius: 0.75rem; }
-.plan-table table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
-.plan-table th { text-align: left; font-weight: 500; color: rgb(255 255 255 / 0.5); background: rgb(255 255 255 / 0.03); }
-.plan-table th, .plan-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgb(255 255 255 / 0.06); vertical-align: top; }
-.plan-table tr:last-child td { border-bottom: 0; }

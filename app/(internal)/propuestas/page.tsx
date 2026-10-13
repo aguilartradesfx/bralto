@@ -114,7 +114,7 @@ export default async function PropuestasPage() {
                       {request ? (
                         <div className="flex flex-wrap gap-1 max-w-[260px]">
                           {request.services.map((id) => (
-                            <span key={id} className="inline-block px-1.5 py-0.5 text-[10px] bg-[#5bb6ff]/10 text-[#5bb6ff]/80 rounded whitespace-nowrap">
+                            <span key={id} className="inline-block px-1.5 py-0.5 text-[10px] bg-white/[0.08] text-white/80 rounded whitespace-nowrap">
                               {serviceLabel(id)}
                             </span>
                           ))}
@@ -146,7 +146,7 @@ export default async function PropuestasPage() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/30 hover:text-[#5bb6ff] transition-colors"
+                            className="text-white/30 hover:text-white transition-colors"
                             title="Abrir propuesta"
                           >
                             <ExternalLink size={13} />

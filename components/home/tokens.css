@@ -1,0 +1,112 @@
+/* Tokens del sistema liquid glass: sitio (.hm) y panel interno (.pn). El tema claro es solo del sitio.
+   :where(:root:has(.pn)) lleva los tokens del panel a los modales que se montan en <body> con createPortal;
+   va dentro de :where() para que un navegador sin :has() no descarte la regla entera (y el sitio sus tokens). */
+.hm,
+.pn,
+:where(:root:has(.pn)) {
+  --accent: #ff6d28;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --ease-io: cubic-bezier(.65, 0, .35, 1);
+  --ease-liquid: cubic-bezier(.34, 1.4, .64, 1);
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 40px;
+  --r-pill: 999px;
+  --maxw: clamp(1180px, 75vw, 1560px);
+  --gutter: 24px;
+  --blur: 28px;
+  --nav-h: 60px;
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.hm,
+.hm[data-theme='dark'],
+.pn,
+:where(:root:has(.pn)) {
+  color-scheme: dark;
+  --bg: #050505;
+  --ink: #f4f4f4;
+  --ink-2: #b3b3b3;
+  --ink-3: #9c9c9c;
+  --accent-ink: #ff6d28;
+  --rule: rgba(255, 255, 255, .08);
+  --rule-2: rgba(255, 255, 255, .15);
+  --hover: rgba(255, 255, 255, .06);
+  --orb-1: rgba(255, 255, 255, .17);
+  --orb-2: rgba(255, 255, 255, .11);
+  --orb-3: rgba(210, 210, 210, .1);
+  --streak: rgba(255, 255, 255, .09);
+  --pool: rgba(255, 255, 255, .13);
+  --grain: .075;
+  --grain-blend: overlay;
+  /* Vidrio ahumado: el tinte oscuro garantiza contraste AA del texto gris sobre cualquier fondo */
+  --glass-sheen: linear-gradient(160deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .02) 55%, rgba(255, 255, 255, .04));
+  --glass-tint: rgba(10, 10, 10, .42);
+  --glass-hi: rgba(255, 255, 255, .26);
+  --glass-lo: rgba(255, 255, 255, .05);
+  --glass-edge: rgba(255, 255, 255, .07);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 30px 70px -30px rgba(0, 0, 0, .85);
+  --bevel-hi: rgba(255, 255, 255, .1);
+  --bevel-lo: rgba(0, 0, 0, .5);
+  --spec: rgba(255, 255, 255, .075);
+  --inset-fill: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .018));
+  --inset-hi: rgba(255, 255, 255, .1);
+  --inset-edge: rgba(255, 255, 255, .06);
+  --solid: #121212;
+  --btn-bg: linear-gradient(180deg, #ffffff, #d2d2d2);
+  --btn-ink: #0a0a0a;
+  --btn-hi: rgba(255, 255, 255, .9);
+  --btn-lo: rgba(0, 0, 0, .18);
+  --btn-shadow: rgba(0, 0, 0, .7);
+}
+
+/* Móvil: menos blur (rinde mejor) */
+@media (max-width: 767px) {
+  .hm,
+  .pn,
+  :where(:root:has(.pn)) {
+    --gutter: 16px;
+    --blur: 18px;
+  }
+}
+
+.hm[data-theme='light'] {
+  color-scheme: light;
+  --bg: #e8e8e8;
+  --ink: #0b0b0b;
+  --ink-2: #404040;
+  --ink-3: #575757;
+  /* El naranja de marca no llega a 3:1 sobre gris claro: foco y check usan uno más profundo */
+  --accent-ink: #c2410c;
+  --rule: rgba(0, 0, 0, .09);
+  --rule-2: rgba(0, 0, 0, .16);
+  --hover: rgba(0, 0, 0, .05);
+  --orb-1: rgba(0, 0, 0, .11);
+  --orb-2: rgba(255, 255, 255, .95);
+  --orb-3: rgba(0, 0, 0, .065);
+  --streak: rgba(0, 0, 0, .06);
+  --pool: rgba(0, 0, 0, .09);
+  --grain: .05;
+  --grain-blend: multiply;
+  --glass-sheen: linear-gradient(160deg, rgba(255, 255, 255, .86), rgba(255, 255, 255, .46) 55%, rgba(255, 255, 255, .62));
+  --glass-tint: rgba(255, 255, 255, .1);
+  --glass-hi: #ffffff;
+  --glass-lo: rgba(0, 0, 0, .07);
+  --glass-edge: rgba(0, 0, 0, .06);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 30px 60px -30px rgba(0, 0, 0, .3);
+  --bevel-hi: rgba(255, 255, 255, .9);
+  --bevel-lo: rgba(0, 0, 0, .06);
+  --spec: rgba(255, 255, 255, .85);
+  --inset-fill: linear-gradient(180deg, rgba(255, 255, 255, .75), rgba(255, 255, 255, .4));
+  --inset-hi: #ffffff;
+  --inset-edge: rgba(0, 0, 0, .06);
+  --solid: #f4f4f4;
+  --btn-bg: linear-gradient(180deg, #2b2b2b, #050505);
+  --btn-ink: #ffffff;
+  --btn-hi: rgba(255, 255, 255, .22);
+  --btn-lo: rgba(0, 0, 0, .6);
+  --btn-shadow: rgba(0, 0, 0, .45);
+}

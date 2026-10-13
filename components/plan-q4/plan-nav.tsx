@@ -23,16 +23,16 @@ export function PlanNav({ tabs, active, persona }: { tabs: PlanTab[]; active: st
               href={planHref(t.key, persona)}
               aria-current={isActive ? 'page' : undefined}
               className={`flex items-start gap-2 px-3 py-2 rounded-md transition-colors ${
-                isActive ? 'bg-[#5bb6ff]/10' : 'hover:bg-white/[0.04]'
+                isActive ? 'pn-chip-on' : 'hover:bg-white/[0.04]'
               }`}
             >
-              <span className={`w-7 shrink-0 pt-0.5 font-mono text-[11px] ${isActive ? 'text-[#5bb6ff]' : 'text-white/35'}`}>
+              <span className={`w-7 shrink-0 pt-0.5 font-mono text-[11px] ${isActive ? 'text-white/70' : 'text-white/35'}`}>
                 {t.code ?? ''}
               </span>
               <span className="min-w-0 flex-1">
-                <span className={`block text-sm leading-snug ${isActive ? 'text-[#5bb6ff]' : 'text-white/70'}`}>{t.titulo}</span>
+                <span className={`block text-sm leading-snug ${isActive ? 'text-white' : 'text-white/70'}`}>{t.titulo}</span>
                 {t.tipo && (
-                  <span className={`block mt-0.5 text-[10px] uppercase tracking-wider ${t.tipo === 'accion' ? 'text-[#5bb6ff]/70' : 'text-white/30'}`}>
+                  <span className={`block mt-0.5 text-[10px] uppercase tracking-wider ${t.tipo === 'accion' ? 'text-white/60' : 'text-white/30'}`}>
                     {t.tipo === 'accion' ? 'Acción' : 'Lectura'}
                   </span>
                 )}

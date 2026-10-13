@@ -32,7 +32,7 @@ export function TaskList({ tasks, today, week, doneIds, canEdit, emptyText, newT
       {newTask && canEdit && (adding ? (
         <NewTaskForm bloque={newTask.bloque} defaultResponsable={newTask.responsable} today={today} onClose={() => setAdding(false)} />
       ) : (
-        <button type="button" onClick={() => setAdding(true)} className="mt-3 inline-flex items-center gap-1.5 py-1 text-sm text-[#5bb6ff] hover:text-[#7cc5ff] transition-colors">
+        <button type="button" onClick={() => setAdding(true)} className="mt-3 inline-flex items-center gap-1.5 py-1 text-sm text-white hover:text-white/70 transition-colors">
           <Plus size={15} aria-hidden />
           Nueva tarea
         </button>

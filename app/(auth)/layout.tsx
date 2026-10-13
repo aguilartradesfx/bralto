@@ -1,6 +1,8 @@
+import '@/components/home/tokens.css'
+import '@/components/internal/panel.css'
 import type { Metadata } from 'next'
-import { appFonts } from '@/components/app-fonts'
 import { Document } from '@/components/document'
+import { panelFonts } from '@/components/home/fonts'
 
 export const metadata: Metadata = {
   title: 'Ingresar',
@@ -8,5 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <Document lang="es" fonts={appFonts}>{children}</Document>
+  return (
+    <Document lang="es" fonts={panelFonts}>
+      <div className="pn">{children}</div>
+    </Document>
+  )
 }

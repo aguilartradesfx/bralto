@@ -74,7 +74,7 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit }: Props) {
                 ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300'
                 : notStarted
                   ? 'border-dashed border-white/15'
-                  : 'border-white/25 hover:border-[#5bb6ff]/60'
+                  : 'border-white/25 hover:border-white/20'
             }`}
           >
             {working ? <Loader2 size={12} className="animate-spin" /> : done ? <Check size={13} strokeWidth={2.5} /> : null}
@@ -100,7 +100,7 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit }: Props) {
                 {formatFecha(task.fecha)}
               </span>
             )}
-            {task.estado === 'en_curso' && <span className="text-[#5bb6ff]">En curso</span>}
+            {task.estado === 'en_curso' && <span className="text-white">En curso</span>}
             {task.actualizado_por && task.actualizado_en && (
               <span>
                 {PERSONA_NAMES[task.actualizado_por]} · {formatStamp(task.actualizado_en)}
@@ -209,7 +209,7 @@ function TaskEditor({ task, canEdit, working, error, onCancel, onSave }: EditorP
         <button
           type="submit"
           disabled={!canEdit || working}
-          className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#5bb6ff] text-black hover:bg-[#7cc5ff] disabled:opacity-40 transition-colors"
+          className="pn-btn-solid px-4 py-2 text-sm font-semibold disabled:opacity-40"
         >
           {working ? 'Guardando…' : 'Guardar'}
         </button>
