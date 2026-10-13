@@ -9,6 +9,7 @@ function profile(overrides: Partial<Record<string, boolean>> = {}) {
     can_view_clients: false,
     can_submit_proposals: false,
     can_view_proposals: false,
+    can_view_plan: false,
     ...overrides,
   }
 }
@@ -22,6 +23,8 @@ test('requiredPermission por sección', () => {
   assert.equal(requiredPermission('/solicitudes/nueva'), 'can_submit_proposals')
   assert.equal(requiredPermission('/propuestas'), 'can_view_proposals')
   assert.equal(requiredPermission('/usuarios'), 'is_admin')
+  assert.equal(requiredPermission('/plan-q4'), 'can_view_plan')
+  assert.equal(requiredPermission('/plan-q4x'), null)
   assert.equal(requiredPermission('/contratosx'), null)
 })
 

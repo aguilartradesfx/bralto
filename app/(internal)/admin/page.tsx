@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { FileText, Users, ArrowRight, ClipboardList, ScrollText, UserCog } from 'lucide-react'
+import { FileText, Users, ArrowRight, ClipboardList, ScrollText, UserCog, Target } from 'lucide-react'
 import { getCurrentSession } from '@/lib/panel-session'
 import { hasPermission, requiredPermission } from '@/lib/panel-access'
 
 const sections = [
+  { href: '/plan-q4', icon: Target, label: 'Plan Q4', description: 'El plan del trimestre por pestañas y las tareas de cada uno.' },
   { href: '/contratos', icon: FileText, label: 'Contratos', description: 'Creá, enviá y gestioná contratos de clientes.' },
   { href: '/clientes', icon: Users, label: 'Clientes', description: 'Base de datos de clientes activos e históricos.' },
   { href: '/solicitudes', icon: ClipboardList, label: 'Solicitudes', description: 'Registrá clientes potenciales y generá sus propuestas.' },
