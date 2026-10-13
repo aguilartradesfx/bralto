@@ -12,7 +12,7 @@ export function PrintButton({ contractId }: Props) {
       href={`/api/contracts/${contractId}/print`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 px-3 py-1.5 text-sm border border-white/15 text-white/70 hover:border-white/30 hover:text-white rounded-lg transition-colors"
+      className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-white/80 hover:text-white transition-colors"
     >
       <Printer size={13} />
       Imprimir / PDF

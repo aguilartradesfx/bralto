@@ -23,7 +23,7 @@ export function DeleteButton({ contractId }: { contractId: string }) {
   const modal = open ? createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setOpen(false)}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-      <div className="relative bg-[#111111] border border-white/10 rounded-2xl w-full max-w-sm p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="relative pn-glass rounded-[24px] w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-semibold">Eliminar contrato</h3>
           <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white/70"><X size={16} /></button>

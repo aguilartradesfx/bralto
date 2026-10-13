@@ -73,7 +73,7 @@ export function BraltoSignButton({ contractId }: Props) {
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" />
 
       {/* Modal */}
-      <div className="relative bg-[#111111] border border-white/10 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl">
+      <div className="relative pn-glass rounded-[24px] w-full max-w-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-white font-semibold">Firma de Bralto</h3>
           <button onClick={closeModal} className="text-white/40 hover:text-white/70 transition-colors">
@@ -97,12 +97,12 @@ export function BraltoSignButton({ contractId }: Props) {
           </div>
           <div
             ref={containerRef}
-            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-[#5bb6ff]'}`}
+            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-white'}`}
           >
             <SignatureCanvas
               ref={sigRef}
               onEnd={() => setIsEmpty(sigRef.current?.isEmpty() ?? true)}
-              penColor="#111111"
+              penColor="#0a0a0a"
               canvasProps={{
                 width: canvasWidth,
                 height: 140,
@@ -128,7 +128,7 @@ export function BraltoSignButton({ contractId }: Props) {
           <button
             disabled={isEmpty || loading}
             onClick={handleSign}
-            className="px-5 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] disabled:bg-white/10 disabled:text-white/30 text-white text-sm font-semibold rounded-lg transition-colors"
+            className="pn-btn-solid px-5 py-2 disabled:bg-white/10 disabled:text-white/30 text-sm font-semibold"
           >
             {loading ? 'Firmando...' : 'Confirmar firma'}
           </button>
@@ -142,7 +142,7 @@ export function BraltoSignButton({ contractId }: Props) {
     <>
       <button
         onClick={openModal}
-        className="flex items-center gap-2 px-4 py-2 bg-[#5bb6ff] hover:bg-[#5bb6ff] text-white text-sm font-semibold rounded-lg transition-colors"
+        className="pn-btn-solid flex items-center gap-2 px-4 py-2 text-sm font-semibold"
       >
         <PenLine size={14} />
         Firmar como Bralto
