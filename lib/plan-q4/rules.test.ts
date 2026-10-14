@@ -114,7 +114,7 @@ test('diffTask: solo lo que cambió; delegar al apoyo lo deja vacío', () => {
 })
 
 test('buildUpdate: firma el cambio y limpia el apoyo al delegarle', () => {
-  const current = { tipo: 'unica' as const, responsable: 'ale' as const, apoyo: 'soshil' as const }
+  const current = { tipo: 'unica' as const, responsable: 'ale' as const, apoyo: 'soshil' as const, origen: 'plan' as const }
   assert.deepEqual(buildUpdate(current, { responsable: 'soshil' }, 'ale', '2026-10-13T20:00:00Z'), {
     ok: true,
     update: { responsable: 'soshil', apoyo: null, actualizado_por: 'ale', actualizado_en: '2026-10-13T20:00:00Z' },
@@ -124,7 +124,20 @@ test('buildUpdate: firma el cambio y limpia el apoyo al delegarle', () => {
 })
 
 test('buildUpdate: las semanales no tienen estado', () => {
-  assert.equal(buildUpdate({ tipo: 'semanal', responsable: 'soshil', apoyo: null }, { estado: 'hecho' }, 'soshil', 'x').ok, false)
+  assert.equal(buildUpdate({ tipo: 'semanal', responsable: 'soshil', apoyo: null, origen: 'plan' }, { estado: 'hecho' }, 'soshil', 'x').ok, false)
+})
+
+test('buildUpdate: qué es y cómo hacerlo solo se editan en las tareas creadas desde el panel', () => {
+  const patch = { descripcion: 'Nueva', instrucciones: '1. Paso' }
+  assert.equal(buildUpdate({ tipo: 'unica', responsable: 'ale', apoyo: null, origen: 'plan' }, patch, 'ale', 'x').ok, false)
+  assert.equal(buildUpdate({ tipo: 'unica', responsable: 'ale', apoyo: null, origen: 'panel' }, patch, 'ale', 'x').ok, true)
+})
+
+test('diffTask: en las tareas del panel también compara qué es y cómo hacerlo', () => {
+  const t = task({ origen: 'panel', descripcion: 'A', instrucciones: '1. B' })
+  const form = { estado: 'pendiente' as const, responsable: 'soshil' as const, apoyo: null, fecha: '2026-10-16', nota: '', descripcion: ' A ', instrucciones: '1. C' }
+  assert.deepEqual(diffTask(t, form), { instrucciones: '1. C' })
+  assert.deepEqual(diffTask(task({ origen: 'plan', descripcion: 'A' }), form), {})
 })
 
 test('weekToggleError: solo semanales y no antes de su inicio', () => {

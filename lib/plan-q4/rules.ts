@@ -109,6 +109,8 @@ export interface TaskPatch {
   apoyo?: Persona | null
   fecha?: string
   nota?: string | null
+  descripcion?: string // solo tareas creadas desde el panel
+  instrucciones?: string
 }
 
 export interface TaskForm {
@@ -117,6 +119,8 @@ export interface TaskForm {
   apoyo: Persona | null
   fecha: string
   nota: string
+  descripcion?: string // solo en tareas del panel
+  instrucciones?: string
 }
 
 // Solo lo que cambió en el formulario de edición. Delegar a quien era el apoyo deja la tarea sin apoyo.
@@ -129,18 +133,28 @@ export function diffTask(task: PlanTask, form: TaskForm): TaskPatch {
   if (form.fecha !== task.fecha) patch.fecha = form.fecha
   const nota = form.nota.trim() || null
   if (nota !== task.nota) patch.nota = nota
+  // Las del plan se editan en el archivo del plan; las del panel, acá
+  if (task.origen === 'panel') {
+    const descripcion = form.descripcion?.trim()
+    if (descripcion && descripcion !== task.descripcion) patch.descripcion = descripcion
+    const instrucciones = form.instrucciones?.trim()
+    if (instrucciones && instrucciones !== task.instrucciones) patch.instrucciones = instrucciones
+  }
   return patch
 }
 
 // Cambios a guardar en la base, firmados por quien los hizo
 export function buildUpdate(
-  current: Pick<PlanTask, 'tipo' | 'responsable' | 'apoyo'>,
+  current: Pick<PlanTask, 'tipo' | 'responsable' | 'apoyo' | 'origen'>,
   patch: TaskPatch,
   actor: Persona,
   now: string,
 ): { ok: true; update: Record<string, unknown> } | { ok: false; error: string } {
   if (patch.estado !== undefined && current.tipo === 'semanal') {
     return { ok: false, error: 'Las semanales no tienen estado: se marcan por semana' }
+  }
+  if ((patch.descripcion !== undefined || patch.instrucciones !== undefined) && current.origen !== 'panel') {
+    return { ok: false, error: 'Qué es y cómo hacerlo de las tareas del plan se editan en el archivo del plan' }
   }
   const update: Record<string, unknown> = { ...patch, actualizado_por: actor, actualizado_en: now }
   const responsable = patch.responsable ?? current.responsable

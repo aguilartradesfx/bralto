@@ -23,13 +23,23 @@ export interface PlanTask {
   tipo: Tipo
   estado: Estado | null // null en las semanales
   nota: string | null
+  descripcion: string | null // qué es (markdown)
+  instrucciones: string | null // cómo hacerlo (markdown, pasos)
   origen: Origen
   actualizado_por: Persona | null
   actualizado_en: string | null
 }
 
-// Lo que trae el archivo del plan para cada tarea
-export type SeedTask = Pick<PlanTask, 'id' | 'bloque' | 'titulo' | 'responsable' | 'apoyo' | 'fecha' | 'tipo' | 'estado'>
+// Lo que trae el archivo del plan para cada tarea. descripcion/instrucciones: solo si el archivo las trae
+export type SeedTask = Pick<PlanTask, 'id' | 'bloque' | 'titulo' | 'responsable' | 'apoyo' | 'fecha' | 'tipo' | 'estado'> & {
+  descripcion?: string
+  instrucciones?: string
+}
+
+export interface TextosTarea {
+  descripcion: string
+  instrucciones: string
+}
 
 export interface WeekCheck {
   task_id: string

@@ -11,28 +11,36 @@ export interface ExistingTask {
   id: string
   titulo: string
   origen: Origen
+  descripcion: string | null
+  instrucciones: string | null
 }
 
 export interface SeedChanges {
   nuevas: SeedTask[] // se insertan completas
-  renombradas: SeedTask[] // solo cambia el título
+  actualizadas: SeedTask[] // cambia el título o los textos (qué es / cómo hacerlo); nada más
   choques: string[] // el id ya lo usa una tarea creada desde el panel: no se toca
   soloEnBase: string[] // no se borran
   sinCambios: number
+  sinTextos: string[] // tareas del archivo sin "Qué es" / "Cómo hacerlo"
 }
 
 export function planSeedChanges(fileTasks: readonly SeedTask[], existing: readonly ExistingTask[]): SeedChanges {
   const byId = new Map(existing.map((t) => [t.id, t]))
-  const changes: SeedChanges = { nuevas: [], renombradas: [], choques: [], soloEnBase: [], sinCambios: 0 }
+  const changes: SeedChanges = { nuevas: [], actualizadas: [], choques: [], soloEnBase: [], sinCambios: 0, sinTextos: [] }
   for (const t of fileTasks) {
     const current = byId.get(t.id)
     if (!current) changes.nuevas.push(t)
     else if (current.origen === 'panel') changes.choques.push(t.id)
-    else if (current.titulo !== t.titulo) changes.renombradas.push(t)
+    else if (
+      current.titulo !== t.titulo ||
+      (t.descripcion !== undefined && current.descripcion !== t.descripcion) ||
+      (t.instrucciones !== undefined && current.instrucciones !== t.instrucciones)
+    ) changes.actualizadas.push(t)
     else changes.sinCambios += 1
   }
   const inFile = new Set(fileTasks.map((t) => t.id))
   changes.soloEnBase = existing.filter((t) => !inFile.has(t.id)).map((t) => t.id)
+  changes.sinTextos = fileTasks.filter((t) => t.descripcion === undefined || t.instrucciones === undefined).map((t) => t.id)
   return changes
 }
 
