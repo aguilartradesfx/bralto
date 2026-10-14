@@ -1,5 +1,6 @@
 // Carga el Plan Q4 en Supabase desde el archivo del plan (por defecto plan-q4-admin.md en la raíz, fuera de git).
-// Se puede correr las veces que haga falta: inserta las tareas nuevas y en las existentes solo actualiza el título.
+// Se puede correr las veces que haga falta: inserta las tareas nuevas y en las existentes solo actualiza el título
+// y, si el archivo los trae, qué es y cómo hacerlo ("# Instrucciones de las tareas").
 //   npm run plan:seed                  → carga
 //   npm run plan:seed -- --dry-run     → solo valida y muestra qué haría
 //   npm run plan:seed -- ruta/plan.md  → otro archivo
@@ -7,6 +8,8 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
+import { parseGuia } from '../lib/plan-q4/guia.ts'
+import { parseInstrucciones } from '../lib/plan-q4/instrucciones.ts'
 import { parsePlan, parseResumen, planBody, PlanParseError } from '../lib/plan-q4/parse.ts'
 import { PLAN_TEAM, parseTeamEmails, planSeedChanges, type ExistingTask } from '../lib/plan-q4/seed.ts'
 import { PERSONA_NAMES } from '../lib/plan-q4/types.ts'
@@ -19,20 +22,29 @@ async function main() {
   const source = readFileSync(file, 'utf8')
   const blocks = parsePlan(source)
   const resumen = parseResumen(source)
-  const tasks = blocks.flatMap((b) => b.tareas)
+  const guia = parseGuia(source)
+  const textos = parseInstrucciones(source)
+  // Qué es / cómo hacerlo de cada tarea: solo si el archivo los trae (si no, quedan como estaban en la base)
+  const tasks = blocks.flatMap((b) => b.tareas).map((t) => (textos?.[t.id] ? { ...t, ...textos[t.id] } : t))
+  const ids = new Set(tasks.map((t) => t.id))
+  const huerfanas = Object.keys(textos ?? {}).filter((id) => !ids.has(id))
+  if (huerfanas.length > 0) throw new PlanParseError(huerfanas.map((id) => `Instrucciones: ${id} no es una tarea del plan`))
   console.log(`${file}\n${blocks.length} bloques, ${tasks.length} tareas en el archivo.`)
   if (resumen) console.log(`Resumen: ${resumen.encabezado.length} datos de encabezado, ${resumen.hitos.length} hitos.`)
   else console.log('Aviso: no hay "### Pestaña Resumen"; el encabezado del Resumen queda como estaba.')
+  if (guia) console.log(`Guía: ${Object.keys(guia.etapas).length} etapas, ${Object.keys(guia.equipo).length} personas, ${guia.grupos.length} grupos, ${Object.keys(guia.areas).length} áreas.`)
+  else console.log('Aviso: no hay "# Guía para el equipo"; los textos de la guía quedan como estaban.')
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) throw new Error('Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en .env.local')
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
 
-  const { data: existing, error: existingError } = await db.from('plan_tasks').select('id, titulo, origen')
+  const { data: existing, error: existingError } = await db.from('plan_tasks').select('id, titulo, origen, nombre, descripcion, instrucciones')
   if (existingError) throw existingError
   const changes = planSeedChanges(tasks, (existing ?? []) as ExistingTask[])
-  console.log(`Tareas: ${changes.nuevas.length} nuevas, ${changes.renombradas.length} con título nuevo, ${changes.sinCambios} sin cambios.`)
+  console.log(`Tareas: ${changes.nuevas.length} nuevas, ${changes.actualizadas.length} con título, nombre o instrucciones nuevos, ${changes.sinCambios} sin cambios.`)
+  if (changes.sinTextos.length > 0) console.log(`Sin "Qué es" / "Cómo hacerlo" en el archivo (${changes.sinTextos.length}): ${changes.sinTextos.join(', ')}`)
   if (changes.choques.length > 0) {
     console.log(`Choques (el id ya lo usa una tarea creada en el panel; no se tocaron): ${changes.choques.join(', ')}. Renumerá esas filas en el archivo.`)
   }
@@ -62,11 +74,12 @@ async function main() {
     console.log(`· ${PERSONA_NAMES[slug]}: enlazado a su usuario`)
   }
 
-  // 2. Contenido de las pestañas y encabezado del Resumen
+  // 2. Contenido de las pestañas, encabezado del Resumen y guía para el equipo
   const { error: contentError } = await db.from('plan_content').upsert({
     id: 1,
     markdown: planBody(source),
     ...(resumen && { resumen }),
+    ...(guia && { guia }),
     actualizado_en: new Date().toISOString(),
   })
   if (contentError) throw contentError
@@ -76,8 +89,15 @@ async function main() {
     const { error } = await db.from('plan_tasks').insert(changes.nuevas)
     if (error) throw error
   }
-  for (const t of changes.renombradas) {
-    const { error } = await db.from('plan_tasks').update({ titulo: t.titulo }).eq('id', t.id)
+  for (const t of changes.actualizadas) {
+    const { nombre, descripcion, instrucciones } = t
+    const update = {
+      titulo: t.titulo,
+      ...(nombre !== undefined && { nombre }),
+      ...(descripcion !== undefined && { descripcion }),
+      ...(instrucciones !== undefined && { instrucciones }),
+    }
+    const { error } = await db.from('plan_tasks').update(update).eq('id', t.id)
     if (error) throw error
   }
   console.log('Listo.')

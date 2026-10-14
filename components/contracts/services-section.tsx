@@ -53,21 +53,21 @@ export function ServicesSection({ form }: Props) {
     <div className="space-y-5">
       {SERVICE_GROUPS.map((group) => (
         <div key={group.label}>
-          <p className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-2">
+          <p className="text-xs font-semibold text-fg/30 uppercase tracking-widest mb-2">
             {group.label}
           </p>
           <div className="space-y-1.5">
             {group.services.map(({ key, label }) => (
               <label
                 key={key}
-                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/[0.03] cursor-pointer group"
+                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-fg/[0.03] cursor-pointer group"
               >
                 <input
                   type="checkbox"
                   {...register(`servicios.${key as keyof ContractDataInput['servicios']}` as never)}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 accent-white focus:ring-white/10 focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 rounded border-fg/20 bg-fg/5 accent-fg focus:ring-fg/10 focus:ring-offset-0 cursor-pointer"
                 />
-                <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
+                <span className="text-sm text-fg/70 group-hover:text-fg/90 transition-colors">
                   {label}
                 </span>
               </label>
@@ -78,14 +78,14 @@ export function ServicesSection({ form }: Props) {
 
       {/* Otros */}
       <div>
-        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-2">Otros</p>
-        <label className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/[0.03] cursor-pointer group">
+        <p className="text-xs font-semibold text-fg/30 uppercase tracking-widest mb-2">Otros</p>
+        <label className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-fg/[0.03] cursor-pointer group">
           <input
             type="checkbox"
             {...register('servicios.otros')}
-            className="w-4 h-4 rounded border-white/20 bg-white/5 accent-white focus:ring-white/10 focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 rounded border-fg/20 bg-fg/5 accent-fg focus:ring-fg/10 focus:ring-offset-0 cursor-pointer"
           />
-          <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
+          <span className="text-sm text-fg/70 group-hover:text-fg/90 transition-colors">
             Otros servicios (especificar)
           </span>
         </label>
@@ -94,7 +94,7 @@ export function ServicesSection({ form }: Props) {
             {...register('servicios.otros_descripcion')}
             rows={3}
             placeholder="Describe los servicios adicionales..."
-            className="mt-2 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 transition-colors resize-none"
+            className="mt-2 w-full bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg placeholder-fg/30 focus:outline-none focus:border-fg/50 focus:ring-1 focus:ring-fg/10 transition-colors resize-none"
           />
         )}
       </div>

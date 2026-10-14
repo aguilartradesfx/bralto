@@ -17,19 +17,32 @@ export interface PlanTask {
   id: string // 'B8-04'
   bloque: string // 'b8'
   titulo: string
+  nombre: string | null // nombre corto para las listas (el título completo se ve al desplegar)
   responsable: Persona
   apoyo: Persona | null
   fecha: string // en las semanales, desde cuándo corren
   tipo: Tipo
   estado: Estado | null // null en las semanales
   nota: string | null
+  descripcion: string | null // qué es (markdown)
+  instrucciones: string | null // cómo hacerlo (markdown, pasos)
   origen: Origen
   actualizado_por: Persona | null
   actualizado_en: string | null
 }
 
-// Lo que trae el archivo del plan para cada tarea
-export type SeedTask = Pick<PlanTask, 'id' | 'bloque' | 'titulo' | 'responsable' | 'apoyo' | 'fecha' | 'tipo' | 'estado'>
+// Lo que trae el archivo del plan para cada tarea. descripcion/instrucciones: solo si el archivo las trae
+export type SeedTask = Pick<PlanTask, 'id' | 'bloque' | 'titulo' | 'responsable' | 'apoyo' | 'fecha' | 'tipo' | 'estado'> & {
+  nombre?: string
+  descripcion?: string
+  instrucciones?: string
+}
+
+export interface TextosTarea {
+  nombre?: string // nombre corto para las listas
+  descripcion: string
+  instrucciones: string
+}
 
 export interface WeekCheck {
   task_id: string
@@ -48,6 +61,36 @@ export interface Hito {
 export interface ResumenData {
   encabezado: { label: string; value: string }[]
   hitos: Hito[]
+}
+
+// Guía para el equipo: textos simples que muestra la página (sección "# Guía para el equipo" del archivo)
+export interface GuiaData {
+  queEs: string // markdown
+  queVamos: string // markdown
+  etapas: Record<string, string> // mes en minúscula ('octubre') → resumen en markdown
+  equipo: Partial<Record<Persona, string>> // qué hace cada persona
+  grupos: { titulo: string; bloques: string[] }[] // Estrategia: grupos de bloques ('b0', 'decisiones')
+  areas: Record<string, string> // bloque ('b8') → nombre corto del área ('Campañas')
+}
+
+// Etapas del trimestre (del calendario del plan: "#### Octubre — preparar y encender Bralto")
+export interface SemanaEtapa {
+  semana: string // '12–18 oct'
+  foco: string // markdown en una línea
+  hito: string | null
+}
+
+export interface Etapa {
+  mes: number // 1–12
+  nombreMes: string // 'Octubre'
+  titulo: string // 'preparar y encender Bralto'
+  semanas: SemanaEtapa[]
+}
+
+export interface PuntoDecision {
+  cuando: string
+  pregunta: string
+  accion: string
 }
 
 export function isPersona(value: unknown): value is Persona {

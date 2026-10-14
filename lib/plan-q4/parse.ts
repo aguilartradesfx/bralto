@@ -56,7 +56,7 @@ export function unescapeMd(text: string): string {
   return text.replace(/\\([\\`*_{}[\]()#+\-.!|$])/g, '$1')
 }
 
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 

@@ -21,6 +21,9 @@ const config: Config = {
         ink: { DEFAULT: 'var(--ink)', 2: 'var(--ink-2)', 3: 'var(--ink-3)' },
         rule: { DEFAULT: 'var(--rule)', 2: 'var(--rule-2)' },
         solid: 'var(--solid)',
+        // Panel: el blanco del tema oscuro, casi negro en el claro (components/internal/panel.css)
+        fg: 'rgb(var(--pn-fg) / <alpha-value>)',
+        canvas: 'var(--bg)',
         // Brand accents — Dark Bento system
         cyan: {
           DEFAULT: '#5bb6ff',

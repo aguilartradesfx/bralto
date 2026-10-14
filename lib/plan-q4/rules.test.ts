@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   blockProgress, buildUpdate, compareTasks, diffTask, isActiveWeekly, isDueThisWeek, isOverdue, isPending,
-  nextMilestone, nextTaskId, pendingByBlock, planHref, resolvePersona, resolveTab, weekSummary, weekToggleError,
+  nextMilestone, nextTaskId, pendingByBlock, resolvePersona, weekSummary, weekToggleError,
 } from './rules.ts'
 import type { PlanTask } from './types.ts'
 
@@ -97,15 +97,11 @@ test('nextTaskId: sigue el número más alto del bloque', () => {
   assert.equal(nextTaskId('B4', []), 'B4-01')
 })
 
-test('resolveTab, resolvePersona y planHref: lo inválido cae en Resumen y en el usuario', () => {
-  assert.equal(resolveTab('b8', ['resumen', 'b8']), 'b8')
-  assert.equal(resolveTab('b99', ['resumen', 'b8']), 'resumen')
-  assert.equal(resolveTab(undefined, ['resumen', 'b8']), 'resumen')
+test('resolvePersona: lo inválido cae en la persona del usuario', () => {
   assert.equal(resolvePersona('alina', 'ale'), 'alina')
   assert.equal(resolvePersona('todos', 'ale'), 'todos')
   assert.equal(resolvePersona('pedro', 'ale'), 'ale')
   assert.equal(resolvePersona(undefined, null), 'todos')
-  assert.equal(planHref('b8', 'alina'), '/plan-q4?tab=b8&persona=alina')
 })
 
 test('diffTask: solo lo que cambió; delegar al apoyo lo deja vacío', () => {
@@ -118,7 +114,7 @@ test('diffTask: solo lo que cambió; delegar al apoyo lo deja vacío', () => {
 })
 
 test('buildUpdate: firma el cambio y limpia el apoyo al delegarle', () => {
-  const current = { tipo: 'unica' as const, responsable: 'ale' as const, apoyo: 'soshil' as const }
+  const current = { tipo: 'unica' as const, responsable: 'ale' as const, apoyo: 'soshil' as const, origen: 'plan' as const }
   assert.deepEqual(buildUpdate(current, { responsable: 'soshil' }, 'ale', '2026-10-13T20:00:00Z'), {
     ok: true,
     update: { responsable: 'soshil', apoyo: null, actualizado_por: 'ale', actualizado_en: '2026-10-13T20:00:00Z' },
@@ -128,7 +124,20 @@ test('buildUpdate: firma el cambio y limpia el apoyo al delegarle', () => {
 })
 
 test('buildUpdate: las semanales no tienen estado', () => {
-  assert.equal(buildUpdate({ tipo: 'semanal', responsable: 'soshil', apoyo: null }, { estado: 'hecho' }, 'soshil', 'x').ok, false)
+  assert.equal(buildUpdate({ tipo: 'semanal', responsable: 'soshil', apoyo: null, origen: 'plan' }, { estado: 'hecho' }, 'soshil', 'x').ok, false)
+})
+
+test('buildUpdate: qué es y cómo hacerlo solo se editan en las tareas creadas desde el panel', () => {
+  const patch = { descripcion: 'Nueva', instrucciones: '1. Paso' }
+  assert.equal(buildUpdate({ tipo: 'unica', responsable: 'ale', apoyo: null, origen: 'plan' }, patch, 'ale', 'x').ok, false)
+  assert.equal(buildUpdate({ tipo: 'unica', responsable: 'ale', apoyo: null, origen: 'panel' }, patch, 'ale', 'x').ok, true)
+})
+
+test('diffTask: en las tareas del panel también compara qué es y cómo hacerlo', () => {
+  const t = task({ origen: 'panel', descripcion: 'A', instrucciones: '1. B' })
+  const form = { estado: 'pendiente' as const, responsable: 'soshil' as const, apoyo: null, fecha: '2026-10-16', nota: '', descripcion: ' A ', instrucciones: '1. C' }
+  assert.deepEqual(diffTask(t, form), { instrucciones: '1. C' })
+  assert.deepEqual(diffTask(task({ origen: 'plan', descripcion: 'A' }), form), {})
 })
 
 test('weekToggleError: solo semanales y no antes de su inicio', () => {

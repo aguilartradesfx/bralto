@@ -1,4 +1,4 @@
-/* Tokens del sistema liquid glass: sitio (.hm) y panel interno (.pn). El tema claro es solo del sitio.
+/* Tokens del sistema liquid glass: sitio (.hm) y panel interno (.pn), los dos con tema claro y oscuro.
    :where(:root:has(.pn)) lleva los tokens del panel a los modales que se montan en <body> con createPortal;
    va dentro de :where() para que un navegador sin :has() no descarte la regla entera (y el sitio sus tokens). */
 .hm,
@@ -73,7 +73,9 @@
   }
 }
 
-.hm[data-theme='light'] {
+.hm[data-theme='light'],
+.pn[data-theme='light'],
+:where(:root:has(.pn[data-theme='light'])) {
   color-scheme: light;
   --bg: #e8e8e8;
   --ink: #0b0b0b;

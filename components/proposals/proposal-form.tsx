@@ -14,10 +14,10 @@ import {
 import { Loader2, CheckSquare, Square } from 'lucide-react'
 
 const INPUT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 transition-colors'
-const LABEL = 'block text-xs font-medium text-white/50 mb-1.5'
+  'w-full bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg placeholder-fg/30 focus:outline-none focus:border-fg/50 transition-colors'
+const LABEL = 'block text-xs font-medium text-fg/50 mb-1.5'
 const SELECT =
-  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/50 transition-colors'
+  'w-full bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg focus:outline-none focus:border-fg/50 transition-colors'
 
 export function ProposalForm() {
   const router = useRouter()
@@ -83,12 +83,12 @@ export function ProposalForm() {
     <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl">
       {/* Client info */}
       <section>
-        <h2 className="text-sm font-semibold text-white/80 mb-4 pb-2 border-b border-white/[0.06]">
+        <h2 className="text-sm font-semibold text-fg/80 mb-4 pb-2 border-b border-fg/[0.06]">
           Información del cliente
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label className={LABEL}>Nombre del cliente <span className="text-white">*</span></label>
+            <label className={LABEL}>Nombre del cliente <span className="text-fg">*</span></label>
             <input
               className={INPUT}
               placeholder="Ej. Juan Pérez"
@@ -138,10 +138,10 @@ export function ProposalForm() {
 
       {/* Services */}
       <section>
-        <h2 className="text-sm font-semibold text-white/80 mb-1 pb-2 border-b border-white/[0.06]">
-          Servicios requeridos <span className="text-white">*</span>
+        <h2 className="text-sm font-semibold text-fg/80 mb-1 pb-2 border-b border-fg/[0.06]">
+          Servicios requeridos <span className="text-fg">*</span>
         </h2>
-        <p className="text-xs text-white/30 mb-4">Marca todo lo que el cliente necesita o mencionó</p>
+        <p className="text-xs text-fg/30 mb-4">Marca todo lo que el cliente necesita o mencionó</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {BRALTO_SERVICES.map(({ id, label }) => {
             const active = selectedServices.includes(id)
@@ -152,8 +152,8 @@ export function ProposalForm() {
                 onClick={() => toggleService(id)}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-sm text-left transition-all ${
                   active
-                    ? 'pn-chip-on border-transparent text-white'
-                    : 'border-white/[0.08] bg-white/[0.02] text-white/50 hover:text-white/70 hover:border-white/20'
+                    ? 'pn-chip-on border-transparent text-fg'
+                    : 'border-fg/[0.08] bg-fg/[0.02] text-fg/50 hover:text-fg/70 hover:border-fg/20'
                 }`}
               >
                 {active
@@ -169,7 +169,7 @@ export function ProposalForm() {
 
       {/* Context */}
       <section>
-        <h2 className="text-sm font-semibold text-white/80 mb-4 pb-2 border-b border-white/[0.06]">
+        <h2 className="text-sm font-semibold text-fg/80 mb-4 pb-2 border-b border-fg/[0.06]">
           Contexto adicional
         </h2>
         <div className="space-y-4">
@@ -241,7 +241,7 @@ export function ProposalForm() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-4 py-2.5 text-sm text-white/40 hover:text-white/70 transition-colors"
+          className="px-4 py-2.5 text-sm text-fg/40 hover:text-fg/70 transition-colors"
         >
           Cancelar
         </button>

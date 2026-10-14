@@ -54,13 +54,13 @@ export default async function ContratoDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen" id="print-contract">
       {/* Top bar — offset below mobile nav (h-14) */}
-      <div className="border-b border-white/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 pn-glass pn-glass--dense z-10 no-print">
+      <div className="border-b border-fg/[0.06] px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-14 md:top-0 pn-glass pn-glass--dense z-10 no-print">
         <div className="flex items-center gap-3">
-          <Link href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors shrink-0">
+          <Link href="/contratos" className="text-fg/30 hover:text-fg/60 text-sm transition-colors shrink-0">
             ← Contratos
           </Link>
-          <span className="text-white/20">/</span>
-          <span className="text-sm text-white/70 truncate">
+          <span className="text-fg/20">/</span>
+          <span className="text-sm text-fg/70 truncate">
             {c.data?.cliente?.empresa_nombre ?? id}
           </span>
           <StatusBadge status={c.status as ContractStatus} />
@@ -68,10 +68,10 @@ export default async function ContratoDetailPage({ params }: Props) {
 
         <div className="flex items-center gap-2 flex-wrap">
           {isShareable && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] rounded-lg text-xs text-white/50 min-w-0">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-fg/[0.04] rounded-lg text-xs text-fg/50 min-w-0">
               <span className="truncate max-w-[140px] md:max-w-[200px]">{publicUrl}</span>
               <CopyButton text={publicUrl} />
-              <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white transition-colors">
+              <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-fg/30 hover:text-fg transition-colors">
                 <ExternalLink size={12} />
               </a>
             </div>
@@ -81,7 +81,7 @@ export default async function ContratoDetailPage({ params }: Props) {
 
           <Link
             href={`/contratos/nuevo?from=${id}`}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-white/80 hover:text-white transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-fg/80 hover:text-fg transition-colors"
           >
             <Copy size={13} />
             Duplicar
@@ -90,7 +90,7 @@ export default async function ContratoDetailPage({ params }: Props) {
           {['draft', 'sent'].includes(c.status) && (
             <Link
               href={`/contratos/${id}/editar`}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-white/80 hover:text-white transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm pn-btn-glass text-fg/80 hover:text-fg transition-colors"
             >
               <Pencil size={13} />
               Editar
@@ -118,26 +118,26 @@ export default async function ContratoDetailPage({ params }: Props) {
         {(c.status === 'signed_by_client' || c.status === 'signed_fully') && (
           <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl no-print">
             <p className="text-sm font-medium text-green-400 mb-2">Firmado por el cliente</p>
-            <div className="grid grid-cols-2 gap-3 text-xs text-white/50">
+            <div className="grid grid-cols-2 gap-3 text-xs text-fg/50">
               <div>
-                <span className="text-white/30">Fecha:</span>{' '}
+                <span className="text-fg/30">Fecha:</span>{' '}
                 {c.signature_client_timestamp
                   ? new Date(c.signature_client_timestamp).toLocaleString('es-CR')
                   : '—'}
               </div>
               <div>
-                <span className="text-white/30">IP:</span> {c.signature_client_ip ?? '—'}
+                <span className="text-fg/30">IP:</span> {c.signature_client_ip ?? '—'}
               </div>
               <div className="col-span-2 truncate">
-                <span className="text-white/30">User-agent:</span> {c.signature_client_user_agent ?? '—'}
+                <span className="text-fg/30">User-agent:</span> {c.signature_client_user_agent ?? '—'}
               </div>
             </div>
           </div>
         )}
 
         {c.status === 'signed_by_client' && (
-          <div className="mb-8 p-4 bg-white/[0.08] border border-white/15 rounded-xl no-print">
-            <p className="text-sm font-medium text-white">
+          <div className="mb-8 p-4 bg-fg/[0.08] border border-fg/15 rounded-xl no-print">
+            <p className="text-sm font-medium text-fg">
               Esperando tu firma — usá el botón &quot;Firmar como Bralto&quot; para completar el contrato.
             </p>
           </div>
@@ -158,9 +158,9 @@ export default async function ContratoDetailPage({ params }: Props) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-solid rounded-xl p-4 border border-white/[0.06]">
-      <p className="text-xs text-white/30 mb-1">{label}</p>
-      <p className="text-sm text-white font-medium truncate">{value}</p>
+    <div className="bg-solid rounded-xl p-4 border border-fg/[0.06]">
+      <p className="text-xs text-fg/30 mb-1">{label}</p>
+      <p className="text-sm text-fg font-medium truncate">{value}</p>
     </div>
   )
 }

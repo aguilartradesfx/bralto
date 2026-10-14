@@ -48,8 +48,8 @@ export default async function ContratosPage({ searchParams }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 md:mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-white">Contratos</h1>
-          <p className="text-sm text-white/40 mt-0.5">{filtered.length} contrato(s)</p>
+          <h1 className="text-xl font-semibold text-fg">Contratos</h1>
+          <p className="text-sm text-fg/40 mt-0.5">{filtered.length} contrato(s)</p>
         </div>
         <Link
           href="/contratos/nuevo"
@@ -68,8 +68,8 @@ export default async function ContratosPage({ searchParams }: Props) {
             href={`/contratos?status=${value}${q ? `&q=${q}` : ''}`}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               (status ?? 'all') === value
-                ? 'pn-chip-on text-white'
-                : 'bg-white/5 text-white/50 hover:text-white/80 hover:bg-white/10'
+                ? 'pn-chip-on text-fg'
+                : 'bg-fg/5 text-fg/50 hover:text-fg/80 hover:bg-fg/10'
             }`}
           >
             {label}
@@ -84,7 +84,7 @@ export default async function ContratosPage({ searchParams }: Props) {
             name="q"
             defaultValue={q}
             placeholder="Buscar..."
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 w-full md:w-56"
+            className="bg-fg/5 border border-fg/10 rounded-lg px-3 py-1.5 text-sm text-fg placeholder-fg/30 focus:outline-none focus:border-fg/50 w-full md:w-56"
           />
         </form>
       </div>
@@ -92,51 +92,51 @@ export default async function ContratosPage({ searchParams }: Props) {
       {/* Table */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <FileText size={32} className="text-white/10 mb-3" />
-          <p className="text-white/30 text-sm">No hay contratos{status && status !== 'all' ? ' con este estado' : ''}</p>
-          <Link href="/contratos/nuevo" className="text-white hover:text-white text-sm mt-2">
+          <FileText size={32} className="text-fg/10 mb-3" />
+          <p className="text-fg/30 text-sm">No hay contratos{status && status !== 'all' ? ' con este estado' : ''}</p>
+          <Link href="/contratos/nuevo" className="text-fg hover:text-fg text-sm mt-2">
             Crear el primero →
           </Link>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.08] overflow-hidden overflow-x-auto">
+        <div className="rounded-xl border border-fg/[0.08] overflow-hidden overflow-x-auto">
           <table className="w-full min-w-[560px]">
-            <thead className="bg-white/[0.03] border-b border-white/[0.06]">
+            <thead className="bg-fg/[0.03] border-b border-fg/[0.06]">
               <tr>
-                <th className="text-left px-4 py-3 text-xs text-white/40 font-medium">Cliente</th>
-                <th className="text-left px-4 py-3 text-xs text-white/40 font-medium">Paquete</th>
-                <th className="text-left px-4 py-3 text-xs text-white/40 font-medium">Estado</th>
-                <th className="text-left px-4 py-3 text-xs text-white/40 font-medium">Fecha</th>
-                <th className="px-4 py-3 text-xs text-white/40 font-medium text-right">Acciones</th>
+                <th className="text-left px-4 py-3 text-xs text-fg/40 font-medium">Cliente</th>
+                <th className="text-left px-4 py-3 text-xs text-fg/40 font-medium">Paquete</th>
+                <th className="text-left px-4 py-3 text-xs text-fg/40 font-medium">Estado</th>
+                <th className="text-left px-4 py-3 text-xs text-fg/40 font-medium">Fecha</th>
+                <th className="px-4 py-3 text-xs text-fg/40 font-medium text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-fg/[0.04]">
               {filtered.map((contract) => (
                 <ClickableRow key={contract.id} href={`/contratos/${contract.id}`}>
                   <td className="px-4 py-3">
-                    <p className="text-sm text-white font-medium">
+                    <p className="text-sm text-fg font-medium">
                       {contract.data?.cliente?.empresa_nombre ?? '—'}
                     </p>
-                    <p className="text-xs text-white/30">
+                    <p className="text-xs text-fg/30">
                       {contract.data?.cliente?.representante_nombre ?? ''}
                     </p>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="text-sm text-white/70">
+                    <p className="text-sm text-fg/70">
                       {contract.data?.proyecto?.nombre_paquete ?? '—'}
                     </p>
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={contract.status as ContractStatus} />
                   </td>
-                  <td className="px-4 py-3 text-xs text-white/40">
+                  <td className="px-4 py-3 text-xs text-fg/40">
                     {new Date(contract.created_at).toLocaleDateString('es-CR')}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/contratos/${contract.id}`}
-                        className="text-xs text-white/40 hover:text-white/80 px-2 py-1 rounded transition-colors"
+                        className="text-xs text-fg/40 hover:text-fg/80 px-2 py-1 rounded transition-colors"
                       >
                         Ver
                       </Link>
@@ -146,7 +146,7 @@ export default async function ContratosPage({ searchParams }: Props) {
                             href={`${siteUrl}/c/${contract.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/30 hover:text-white transition-colors"
+                            className="text-fg/30 hover:text-fg transition-colors"
                             title="Abrir enlace público"
                           >
                             <ExternalLink size={13} />

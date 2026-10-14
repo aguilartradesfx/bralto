@@ -19,12 +19,12 @@ export default async function AdminPage() {
   return (
     <div className="p-6 md:p-10 max-w-3xl">
       <div className="mb-8">
-        <h1 className="text-xl font-semibold text-white">Panel interno</h1>
-        <p className="text-sm text-white/40 mt-1">{user?.email}</p>
+        <h1 className="text-xl font-semibold text-fg">Panel interno</h1>
+        <p className="text-sm text-fg/40 mt-1">{user?.email}</p>
       </div>
 
       {visible.length === 0 ? (
-        <p className="text-sm text-white/40">Todavía no tenés secciones asignadas. Pedile acceso a un administrador.</p>
+        <p className="text-sm text-fg/40">Todavía no tenés secciones asignadas. Pedile acceso a un administrador.</p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map(({ href, icon: Icon, label, description }) => (
@@ -34,17 +34,17 @@ export default async function AdminPage() {
               className="pn-glass group flex flex-col gap-3 p-5 rounded-[20px] transition-transform duration-300 hover:-translate-y-0.5"
             >
               <div className="flex items-center justify-between">
-                <div className="w-8 h-8 rounded-xl bg-white/[0.06] flex items-center justify-center">
-                  <Icon size={15} strokeWidth={1.5} absoluteStrokeWidth className="text-white/80" />
+                <div className="w-8 h-8 rounded-xl bg-fg/[0.06] flex items-center justify-center">
+                  <Icon size={15} strokeWidth={1.5} absoluteStrokeWidth className="text-fg/80" />
                 </div>
                 <ArrowRight
                   size={14}
-                  className="text-white/25 group-hover:text-white group-hover:translate-x-0.5 transition-all"
+                  className="text-fg/25 group-hover:text-fg group-hover:translate-x-0.5 transition-all"
                 />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">{label}</p>
-                <p className="text-xs text-white/40 mt-0.5 leading-relaxed">{description}</p>
+                <p className="text-sm font-medium text-fg">{label}</p>
+                <p className="text-xs text-fg/40 mt-0.5 leading-relaxed">{description}</p>
               </div>
             </Link>
           ))}

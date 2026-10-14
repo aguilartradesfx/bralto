@@ -15,13 +15,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const service = createServiceClient()
   const { data: current, error: readError } = await service
     .from('plan_tasks')
-    .select('tipo, responsable, apoyo')
+    .select('tipo, responsable, apoyo, origen')
     .eq('id', id)
     .maybeSingle()
   if (readError) return jsonError(readError.message, 500)
   if (!current) return jsonError('Tarea no encontrada', 404)
 
-  const result = buildUpdate(current as Pick<PlanTask, 'tipo' | 'responsable' | 'apoyo'>, parsed.value, slug, new Date().toISOString())
+  const result = buildUpdate(current as Pick<PlanTask, 'tipo' | 'responsable' | 'apoyo' | 'origen'>, parsed.value, slug, new Date().toISOString())
   if (!result.ok) return jsonError(result.error, 400)
   const { error } = await service.from('plan_tasks').update(result.update).eq('id', id)
   if (error) return jsonError(error.message, 500)

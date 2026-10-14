@@ -7,6 +7,8 @@ export type Parsed<T> = { ok: true; value: T } | { ok: false; error: string }
 
 export const MAX_TITULO = 300
 export const MAX_NOTA = 2000
+export const MAX_DESCRIPCION = 1000
+export const MAX_INSTRUCCIONES = 4000
 
 export interface NewTask {
   bloque: string
@@ -15,9 +17,19 @@ export interface NewTask {
   apoyo: Persona | null
   fecha: string
   tipo: Tipo
+  descripcion: string
+  instrucciones: string
 }
 
 const fail = (error: string): { ok: false; error: string } => ({ ok: false, error })
+
+// Texto obligatorio: recortado, no vacío y con largo máximo
+function requiredText(value: unknown, label: string, max: number): Parsed<string> {
+  const text = typeof value === 'string' ? value.trim() : ''
+  if (!text) return fail(`Escribí ${label}`)
+  if (text.length > max) return fail(`${label[0].toUpperCase()}${label.slice(1)} pasa de ${max} caracteres`)
+  return { ok: true, value: text }
+}
 
 function asObject(body: unknown): Record<string, unknown> | null {
   return body && typeof body === 'object' && !Array.isArray(body) ? (body as Record<string, unknown>) : null
@@ -51,6 +63,12 @@ export function parseTaskPatch(body: unknown): Parsed<TaskPatch> {
     if (nota.length > MAX_NOTA) return fail(`La nota pasa de ${MAX_NOTA} caracteres`)
     value.nota = nota || null
   }
+  for (const [key, label, max] of [['descripcion', 'qué es la tarea', MAX_DESCRIPCION], ['instrucciones', 'cómo hacerla', MAX_INSTRUCCIONES]] as const) {
+    if (!(key in o)) continue
+    const text = requiredText(o[key], label, max)
+    if (!text.ok) return text
+    value[key] = text.value
+  }
   if (Object.keys(value).length === 0) return fail('No hay cambios')
   return { ok: true, value }
 }
@@ -71,7 +89,11 @@ export function parseNewTask(body: unknown, bloques: readonly string[]): Parsed<
   }
   if (typeof fecha !== 'string' || !isValidDate(fecha)) return fail('Fecha inválida')
   if (tipo !== 'unica' && tipo !== 'semanal') return fail('Tipo inválido')
-  return { ok: true, value: { bloque, titulo, responsable, apoyo, fecha, tipo } }
+  const descripcion = requiredText(o.descripcion, 'qué es la tarea', MAX_DESCRIPCION)
+  if (!descripcion.ok) return descripcion
+  const instrucciones = requiredText(o.instrucciones, 'cómo hacerla', MAX_INSTRUCCIONES)
+  if (!instrucciones.ok) return instrucciones
+  return { ok: true, value: { bloque, titulo, responsable, apoyo, fecha, tipo, descripcion: descripcion.value, instrucciones: instrucciones.value } }
 }
 
 export function parseWeekToggle(body: unknown): Parsed<{ week_start: string; done: boolean }> {

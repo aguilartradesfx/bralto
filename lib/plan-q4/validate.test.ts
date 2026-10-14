@@ -23,17 +23,25 @@ test('parseTaskPatch: rechaza valores inválidos y cuerpos vacíos', () => {
 
 test('parseNewTask: limpia el título y descarta apoyo igual al responsable', () => {
   assert.deepEqual(
-    parseNewTask({ bloque: 'b8', titulo: '  Revisar EMQ ', responsable: 'soshil', apoyo: 'soshil', fecha: '2026-10-22', tipo: 'unica' }, ['b8']),
-    { ok: true, value: { bloque: 'b8', titulo: 'Revisar EMQ', responsable: 'soshil', apoyo: null, fecha: '2026-10-22', tipo: 'unica' } },
+    parseNewTask({ bloque: 'b8', titulo: '  Revisar EMQ ', responsable: 'soshil', apoyo: 'soshil', fecha: '2026-10-22', tipo: 'unica', descripcion: ' Qué es ', instrucciones: ' 1. Paso ' }, ['b8']),
+    { ok: true, value: { bloque: 'b8', titulo: 'Revisar EMQ', responsable: 'soshil', apoyo: null, fecha: '2026-10-22', tipo: 'unica', descripcion: 'Qué es', instrucciones: '1. Paso' } },
   )
 })
 
 test('parseNewTask: bloque que no es de acción, título vacío, tipo raro', () => {
-  const base = { bloque: 'b8', titulo: 'X', responsable: 'ale', fecha: '2026-10-22', tipo: 'unica' }
+  const base = { bloque: 'b8', titulo: 'X', responsable: 'ale', fecha: '2026-10-22', tipo: 'unica', descripcion: 'D', instrucciones: 'I' }
   assert.equal(parseNewTask({ ...base, bloque: 'b0' }, ['b8']).ok, false)
   assert.equal(parseNewTask({ ...base, titulo: '  ' }, ['b8']).ok, false)
   assert.equal(parseNewTask({ ...base, tipo: 'mensual' }, ['b8']).ok, false)
   assert.equal(parseNewTask({ ...base, apoyo: '' }, ['b8']).ok, true)
+  assert.equal(parseNewTask({ ...base, descripcion: '  ' }, ['b8']).ok, false)
+  assert.equal(parseNewTask({ ...base, instrucciones: undefined }, ['b8']).ok, false)
+})
+
+test('parseTaskPatch: qué es y cómo hacerlo se recortan y no pueden quedar vacíos', () => {
+  assert.deepEqual(parseTaskPatch({ descripcion: ' Nueva ', instrucciones: '1. A' }), { ok: true, value: { descripcion: 'Nueva', instrucciones: '1. A' } })
+  assert.equal(parseTaskPatch({ descripcion: '  ' }).ok, false)
+  assert.equal(parseTaskPatch({ instrucciones: 7 }).ok, false)
 })
 
 test('parseWeekToggle: semana en lunes y done booleano', () => {

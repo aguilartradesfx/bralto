@@ -1,5 +1,5 @@
-// Tema del home (el resto del sitio es solo oscuro). Vive en data-theme del
-// contenedor del home, no en <html>, para no afectar otras páginas al navegar.
+// Tema del home y del panel (el resto del sitio es solo oscuro). Vive en data-theme del
+// contenedor (.hm o .pn), no en <html>, para no afectar otras páginas al navegar.
 export type HomeTheme = 'light' | 'dark'
 
 export const THEME_STORAGE_KEY = 'bralto-home-theme'

@@ -75,29 +75,29 @@ export function BraltoSignButton({ contractId }: Props) {
       {/* Modal */}
       <div className="relative pn-glass rounded-[24px] w-full max-w-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-semibold">Firma de Bralto</h3>
-          <button onClick={closeModal} className="text-white/40 hover:text-white/70 transition-colors">
+          <h3 className="text-fg font-semibold">Firma de Bralto</h3>
+          <button onClick={closeModal} className="text-fg/40 hover:text-fg/70 transition-colors">
             <X size={18} />
           </button>
         </div>
 
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-fg/50">
           Tu firma cerrará el contrato como totalmente ejecutado.
         </p>
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-white/40">Firma</span>
+            <span className="text-xs text-fg/40">Firma</span>
             <button
               onClick={() => { sigRef.current?.clear(); setIsEmpty(true) }}
-              className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
+              className="flex items-center gap-1 text-xs text-fg/40 hover:text-fg/60 transition-colors"
             >
               <RotateCcw size={11} /> Limpiar
             </button>
           </div>
           <div
             ref={containerRef}
-            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-white'}`}
+            className={`border-2 rounded-xl overflow-hidden transition-colors ${isEmpty ? 'border-gray-300' : 'border-fg'}`}
           >
             <SignatureCanvas
               ref={sigRef}
@@ -112,7 +112,7 @@ export function BraltoSignButton({ contractId }: Props) {
             />
           </div>
           {isEmpty && (
-            <p className="text-xs text-white/30 mt-1">Dibujá tu firma en el recuadro</p>
+            <p className="text-xs text-fg/30 mt-1">Dibujá tu firma en el recuadro</p>
           )}
         </div>
 
@@ -121,7 +121,7 @@ export function BraltoSignButton({ contractId }: Props) {
         <div className="flex gap-3 justify-end">
           <button
             onClick={closeModal}
-            className="px-4 py-2 text-sm text-white/50 hover:text-white/80 transition-colors"
+            className="px-4 py-2 text-sm text-fg/50 hover:text-fg/80 transition-colors"
           >
             Cancelar
           </button>

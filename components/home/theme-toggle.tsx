@@ -3,9 +3,11 @@
 import { useLayoutEffect, useState } from 'react'
 import { resolveTheme, THEME_STORAGE_KEY, type HomeTheme } from '@/lib/home/theme'
 import { Moon, Sun } from './icons'
+import './theme-toggle.css'
 
-function homeRoot() {
-  return document.querySelector<HTMLElement>('.hm')
+// El contenedor con el tema: el del sitio (.hm) o el del panel (.pn)
+function themeRoot() {
+  return document.querySelector<HTMLElement>('.hm, .pn')
 }
 
 export function ThemeToggle({ label }: { label: string }) {
@@ -14,7 +16,7 @@ export function ThemeToggle({ label }: { label: string }) {
   // En la carga inicial ya lo fijó el script inline; al llegar navegando desde otra
   // página ese script no corre, así que se aplica aquí antes de pintar.
   useLayoutEffect(() => {
-    const root = homeRoot()
+    const root = themeRoot()
     if (!root) return
     let stored: string | null = null
     try {
@@ -33,7 +35,7 @@ export function ThemeToggle({ label }: { label: string }) {
   }, [])
 
   function toggle() {
-    const root = homeRoot()
+    const root = themeRoot()
     if (!root) return
     const next: HomeTheme = root.dataset.theme === 'light' ? 'dark' : 'light'
     try {

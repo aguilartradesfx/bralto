@@ -2,16 +2,16 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { isPrivateSurface } from '@/lib/host-routing'
+import { isContractSigningPath } from '@/lib/host-routing'
 
 // Fondo de partículas con scroll (fondo-particulas-handoff.md): comportamiento de la
 // implementación de referencia, montado una sola vez en el layout raíz.
 // Mejoras aplicadas (aprobadas): nitidez en retina, velocidad igual a 60 y 120 Hz,
 // sin saltos por el resize de la barra del navegador en móvil y 30 cuadros/s en
 // pantallas táctiles (el vidrio del home se recalcula con cada cuadro).
-// Adaptaciones: monocromo según el tema del home (en claro, negro y algo más opaco,
-// como indica el handoff), un frame quieto con prefers-reduced-motion y apagado en
-// superficies privadas (panel y firma de contratos), igual que GTM.
+// Adaptaciones: monocromo según el tema del home o del panel (en claro, negro y algo más
+// opaco, como indica el handoff), un frame quieto con prefers-reduced-motion y apagado en
+// la firma de contratos.
 
 interface Particle {
   x: number
@@ -50,14 +50,15 @@ export function ParticlesBackground() {
     const ctxRaw = canvas.getContext('2d')
     if (!ctxRaw) return
     const ctx: CanvasRenderingContext2D = ctxRaw
-    if (isPrivateSurface(window.location.hostname, pathname)) {
+    if (isContractSigningPath(pathname)) {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       return
     }
 
-    // Tinta según el tema del home (las demás páginas son oscuras)
+    // Tinta según el tema del home o del panel (las demás páginas son oscuras)
+    const themed = () => document.querySelector<HTMLElement>('.hm, .pn')
     const ink = () =>
-      document.querySelector<HTMLElement>('.hm')?.dataset.theme === 'light'
+      themed()?.dataset.theme === 'light'
         ? { rgb: '0,0,0', gain: 1.6 }
         : { rgb: '255,255,255', gain: 1 }
     const alpha = (value: number, gain: number) => Math.min(1, value * gain).toFixed(3)
@@ -224,7 +225,7 @@ export function ParticlesBackground() {
       for (const p of particles) drawParticle(p, p.opacityTarget * 0.7, rgb, gain)
     }
     let themeObserver: MutationObserver | null = null
-    const home = document.querySelector<HTMLElement>('.hm')
+    const home = themed()
     if (home) {
       themeObserver = new MutationObserver(() => {
         if (still()) drawStatic()

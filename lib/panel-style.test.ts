@@ -55,6 +55,49 @@ test('Tailwind escanea types/, donde viven los colores de estado', () => {
   assert.match(readFileSync('tailwind.config.ts', 'utf8'), /'\.\/types\/\*\*\/\*\.\{[^}]*ts[^}]*\}'/)
 })
 
+// Con tema claro y oscuro, el panel no usa blanco fijo: usa fg (blanco en oscuro, casi negro en claro).
+// Quedan blancos de verdad la hoja del contrato, su vista previa, el lienzo de la firma y el texto sobre rojo.
+const WHITE_UTILITY = /(?<![\w-])(?:[a-z-]+:)*(?:text|bg|border|divide|placeholder|ring|decoration|outline|accent|caret)-white(?![\w-])/
+const REAL_WHITE = ['bg-white rounded-2xl shadow-xl p-10', 'bg-white rounded-xl shadow-2xl p-8', 'touch-none bg-white', 'bg-red-500/90 hover:bg-red-500']
+
+test('el panel no usa blanco fijo (sigue el tema claro u oscuro)', () => {
+  const offenders = [...ROOTS.flatMap(walk), ...STATE_FILES]
+    .filter((file) => !EXCLUDE.has(file) && /\.tsx?$/.test(file))
+    .flatMap((file) =>
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .flatMap((line, i) =>
+          WHITE_UTILITY.test(line) && !REAL_WHITE.some((ok) => line.includes(ok)) ? [`${file}:${i + 1}: ${line.trim().slice(0, 90)}`] : [],
+        ),
+    )
+  assert.deepEqual(offenders, [])
+})
+
+// Los textos de estado (rojo, verde, ámbar) son tonos claros pensados para el fondo oscuro: en el tema claro
+// panel.css los cambia por uno oscuro. Cada clase que use el panel necesita su regla.
+test('los textos de color del panel tienen su tono para el tema claro', () => {
+  const used = new Set(
+    [...ROOTS.flatMap(walk), ...STATE_FILES]
+      .filter((file) => !EXCLUDE.has(file) && /\.tsx?$/.test(file))
+      .flatMap((file) => [...readFileSync(file, 'utf8').matchAll(/(?<![\w-])((?:hover:)?text-(?:red|green|emerald|amber|yellow|orange|lime|rose)-\d+(?:\/\d+)?)(?![\w-])/g)])
+      .map((m) => m[1]),
+  )
+  const css = readFileSync('components/internal/panel.css', 'utf8')
+  const light = [...css.matchAll(/([^{}]+)\{[^}]*\}/g)].map((m) => m[1]).filter((selector) => selector.includes("data-theme='light'"))
+  const escaped = (cls: string) => '.' + cls.replace(/[:/]/g, (c) => `\\${c}`)
+  const missing = [...used].filter((cls) => !light.some((selector) => selector.includes(escaped(cls))))
+  assert.ok(used.size > 0)
+  assert.deepEqual(missing, [])
+})
+
+test('el panel y el login arrancan con el tema guardado y tienen el fondo del sitio', () => {
+  for (const file of ['app/(internal)/layout.tsx', 'app/(auth)/layout.tsx']) {
+    const source = readFileSync(file, 'utf8')
+    assert.match(source, /themeBootScript/, file)
+    assert.match(source, /PanelAmbient/, file)
+  }
+})
+
 function panelFiles(): string[] {
   return ROOTS.flatMap(walk).filter((file) => !EXCLUDE.has(file) && file.endsWith('.tsx'))
 }
@@ -69,10 +112,10 @@ test('los botones principales deshabilitados se atenúan con opacidad', () => {
   assert.deepEqual(offenders, [])
 })
 
-// Los campos marcan el foco con el borde (sin outline): tiene que verse (al menos 50 % de blanco)
+// Los campos marcan el foco con el borde (sin outline): tiene que verse (al menos 50 % de fg)
 test('el borde de foco de los campos se ve', () => {
   const offenders = panelFiles().flatMap((file) =>
-    [...readFileSync(file, 'utf8').matchAll(/focus:border-white\/(\d+)/g)]
+    [...readFileSync(file, 'utf8').matchAll(/focus:border-(?:white|fg)\/(\d+)/g)]
       .filter((m) => Number(m[1]) < 50)
       .map((m) => `${file}: ${m[0]}`),
   )

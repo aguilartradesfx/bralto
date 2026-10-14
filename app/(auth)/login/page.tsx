@@ -1,7 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import { useActionState } from 'react'
+import { BraltoLogo } from '@/components/home/logo'
+import { ThemeToggle } from '@/components/home/theme-toggle'
 import { login } from './actions'
 
 export default function LoginPage() {
@@ -9,18 +10,22 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="fixed top-4 right-4 z-20">
+        <ThemeToggle label="Cambiar entre tema claro y oscuro" />
+      </div>
       <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <Image src="/logo-white.svg" alt="Bralto" width={130} height={32} className="h-8 w-auto object-contain" />
+            <BraltoLogo className="h-8 w-auto" />
+            <span className="sr-only">Bralto</span>
           </div>
-          <p className="text-white/45 text-sm">Panel de administración</p>
+          <p className="text-fg/45 text-sm">Panel de administración</p>
         </div>
 
         <div className="pn-glass rounded-[28px] p-6">
           <form action={formAction} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-white/40 mb-1.5" htmlFor="email">
+              <label className="block text-xs font-medium text-fg/40 mb-1.5" htmlFor="email">
                 Correo electrónico
               </label>
               <input
@@ -29,13 +34,13 @@ export default function LoginPage() {
                 type="email"
                 required
                 autoComplete="email"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/50 focus:bg-white/[0.06] transition-all"
+                className="w-full bg-fg/[0.04] border border-fg/[0.08] rounded-xl px-4 py-2.5 text-fg text-sm placeholder-fg/20 focus:outline-none focus:border-fg/50 focus:bg-fg/[0.06] transition-all"
                 placeholder="tu@bralto.io"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-white/40 mb-1.5" htmlFor="password">
+              <label className="block text-xs font-medium text-fg/40 mb-1.5" htmlFor="password">
                 Contraseña
               </label>
               <input
@@ -44,7 +49,7 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="current-password"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/50 focus:bg-white/[0.06] transition-all"
+                className="w-full bg-fg/[0.04] border border-fg/[0.08] rounded-xl px-4 py-2.5 text-fg text-sm placeholder-fg/20 focus:outline-none focus:border-fg/50 focus:bg-fg/[0.06] transition-all"
                 placeholder="••••••••"
               />
             </div>

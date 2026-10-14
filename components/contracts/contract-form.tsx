@@ -190,11 +190,11 @@ export function ContractForm({ clients, initialData }: Props) {
   }
 
   const fieldClass =
-    'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 transition-colors'
-  const labelClass = 'block text-xs text-white/50 mb-1.5'
+    'w-full bg-fg/5 border border-fg/10 rounded-lg px-3 py-2.5 text-sm text-fg placeholder-fg/25 focus:outline-none focus:border-fg/50 focus:ring-1 focus:ring-fg/10 transition-colors'
+  const labelClass = 'block text-xs text-fg/50 mb-1.5'
   const errorClass = 'text-red-400 text-xs mt-1'
   const sectionClass = 'bg-solid rounded-xl p-5 space-y-4'
-  const sectionTitle = 'text-sm font-semibold text-white mb-4 flex items-center gap-2'
+  const sectionTitle = 'text-sm font-semibold text-fg mb-4 flex items-center gap-2'
 
   return (
     <div className="flex gap-0 h-full">
@@ -208,7 +208,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 1. CLIENTE */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-white/[0.08] text-white text-xs flex items-center justify-center font-bold">1</span>
+              <span className="w-5 h-5 rounded-full bg-fg/[0.08] text-fg text-xs flex items-center justify-center font-bold">1</span>
               Cliente
             </h2>
             <ClientSelector
@@ -292,7 +292,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 2. PROYECTO */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-white/[0.08] text-white text-xs flex items-center justify-center font-bold">2</span>
+              <span className="w-5 h-5 rounded-full bg-fg/[0.08] text-fg text-xs flex items-center justify-center font-bold">2</span>
               Proyecto
             </h2>
             <div className="space-y-3">
@@ -338,9 +338,9 @@ export function ContractForm({ clients, initialData }: Props) {
                 <input
                   type="checkbox"
                   {...register('proyecto.tiene_referencias_visuales')}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 accent-white focus:ring-white/10 focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-fg/20 bg-fg/5 accent-fg focus:ring-fg/10 focus:ring-offset-0"
                 />
-                <span className="text-sm text-white/70">Incluye referencias visuales como anexo</span>
+                <span className="text-sm text-fg/70">Incluye referencias visuales como anexo</span>
               </label>
             </div>
           </section>
@@ -348,7 +348,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 3. SERVICIOS */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-white/[0.08] text-white text-xs flex items-center justify-center font-bold">3</span>
+              <span className="w-5 h-5 rounded-full bg-fg/[0.08] text-fg text-xs flex items-center justify-center font-bold">3</span>
               Servicios activados
             </h2>
             <ServicesSection form={form} />
@@ -357,8 +357,8 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 4. ENTREGABLES */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-white/[0.08] text-white text-xs flex items-center justify-center font-bold">4</span>
-              Entregables <span className="text-white/30 font-normal text-xs">(opcional)</span>
+              <span className="w-5 h-5 rounded-full bg-fg/[0.08] text-fg text-xs flex items-center justify-center font-bold">4</span>
+              Entregables <span className="text-fg/30 font-normal text-xs">(opcional)</span>
             </h2>
             <DeliverablesTable form={form} />
           </section>
@@ -366,7 +366,7 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 5. PRECIO */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-white/[0.08] text-white text-xs flex items-center justify-center font-bold">5</span>
+              <span className="w-5 h-5 rounded-full bg-fg/[0.08] text-fg text-xs flex items-center justify-center font-bold">5</span>
               Precio y pago
             </h2>
             <div className="space-y-4">
@@ -404,9 +404,9 @@ export function ContractForm({ clients, initialData }: Props) {
                 <input
                   type="checkbox"
                   {...register('pago.tiene_mensualidad')}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 accent-white focus:ring-white/10 focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-fg/20 bg-fg/5 accent-fg focus:ring-fg/10 focus:ring-offset-0"
                 />
-                <span className="text-sm text-white/70">Incluye mensualidad</span>
+                <span className="text-sm text-fg/70">Incluye mensualidad</span>
               </label>
 
               {tieneMensualidad && (
@@ -446,8 +446,8 @@ export function ContractForm({ clients, initialData }: Props) {
           {/* 6. ENLACE DE PAGO */}
           <section className={sectionClass}>
             <h2 className={sectionTitle}>
-              <span className="w-5 h-5 rounded-full bg-white/[0.08] text-white text-xs flex items-center justify-center font-bold">6</span>
-              Enlace de pago <span className="text-white/30 font-normal text-xs">(opcional)</span>
+              <span className="w-5 h-5 rounded-full bg-fg/[0.08] text-fg text-xs flex items-center justify-center font-bold">6</span>
+              Enlace de pago <span className="text-fg/30 font-normal text-xs">(opcional)</span>
             </h2>
             <div>
               <label className={labelClass}>URL de pago (Stripe, etc.)</label>
@@ -457,7 +457,7 @@ export function ContractForm({ clients, initialData }: Props) {
                 className={fieldClass}
                 placeholder="https://buy.stripe.com/..."
               />
-              <p className="text-xs text-white/30 mt-1.5">Si se completa, el cliente será redirigido aquí después de firmar.</p>
+              <p className="text-xs text-fg/30 mt-1.5">Si se completa, el cliente será redirigido aquí después de firmar.</p>
               {errors.payment_link && <p className={errorClass}>{errors.payment_link.message}</p>}
             </div>
           </section>
@@ -468,18 +468,18 @@ export function ContractForm({ clients, initialData }: Props) {
           {publicUrl ? (
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <Link2 size={14} className="text-green-400 shrink-0" />
-              <span className="text-sm text-white/60 truncate">Enlace generado:</span>
+              <span className="text-sm text-fg/60 truncate">Enlace generado:</span>
               <a
                 href={publicUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-white hover:text-white truncate"
+                className="text-sm text-fg hover:text-fg truncate"
               >
                 {publicUrl}
               </a>
               <button
                 onClick={() => navigator.clipboard.writeText(publicUrl)}
-                className="text-xs text-white/40 hover:text-white/70 shrink-0 px-2 py-1 border border-white/10 rounded"
+                className="text-xs text-fg/40 hover:text-fg/70 shrink-0 px-2 py-1 border border-fg/10 rounded"
               >
                 Copiar
               </button>
@@ -492,7 +492,7 @@ export function ContractForm({ clients, initialData }: Props) {
             <button
               type="button"
               onClick={() => setShowPreview((v) => !v)}
-              className="flex items-center gap-2 text-sm text-white/40 hover:text-white/70 transition-colors"
+              className="flex items-center gap-2 text-sm text-fg/40 hover:text-fg/70 transition-colors"
             >
               {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
               {showPreview ? 'Ocultar preview' : 'Ver preview'}
@@ -502,7 +502,7 @@ export function ContractForm({ clients, initialData }: Props) {
               type="button"
               disabled={saving}
               onClick={saveDraft}
-              className="flex items-center gap-2 px-4 py-2 text-sm pn-btn-glass text-white/80 hover:text-white transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm pn-btn-glass text-fg/80 hover:text-fg transition-colors disabled:opacity-50"
             >
               <Save size={14} />
               {saving ? 'Guardando...' : 'Guardar borrador'}
@@ -535,10 +535,10 @@ export function ContractForm({ clients, initialData }: Props) {
 
       {/* ── Live preview panel ───────────────────────────────────── */}
       {showPreview && (
-        <div className="flex-1 md:w-[45%] md:flex-none border-l border-white/[0.06] overflow-y-auto bg-[#0a0a0a]">
-          <div className="sticky top-0 bg-[#0a0a0a] px-4 py-3 border-b border-white/[0.04] flex items-center justify-between z-10">
-            <span className="text-xs text-white/30 font-medium uppercase tracking-wider">Vista previa</span>
-            <span className="text-xs text-white/20">Se actualiza automáticamente</span>
+        <div className="flex-1 md:w-[45%] md:flex-none border-l border-fg/[0.06] overflow-y-auto bg-canvas">
+          <div className="sticky top-0 bg-canvas px-4 py-3 border-b border-fg/[0.04] flex items-center justify-between z-10">
+            <span className="text-xs text-fg/30 font-medium uppercase tracking-wider">Vista previa</span>
+            <span className="text-xs text-fg/20">Se actualiza automáticamente</span>
           </div>
           <div className="p-6">
             <div className="bg-white rounded-xl shadow-2xl p-8 max-w-none">

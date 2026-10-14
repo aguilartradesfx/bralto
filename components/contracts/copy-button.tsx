@@ -16,7 +16,7 @@ export function CopyButton({ text, className }: { text: string; className?: stri
     <button
       onClick={handleCopy}
       title="Copiar enlace"
-      className={className ?? 'text-white/30 hover:text-white/70 transition-colors'}
+      className={className ?? 'text-fg/30 hover:text-fg/70 transition-colors'}
     >
       {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
     </button>

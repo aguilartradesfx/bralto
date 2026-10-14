@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { PERSONAS, PERSONA_NAMES, type Persona, type Tipo } from '@/lib/plan-q4/types'
-import { MAX_TITULO } from '@/lib/plan-q4/validate'
+import { MAX_DESCRIPCION, MAX_INSTRUCCIONES, MAX_TITULO } from '@/lib/plan-q4/validate'
 import { Field, FIELD_CLASS } from '@/components/plan-q4/field'
 import { sendJson } from '@/components/plan-q4/send-json'
 
@@ -21,6 +21,8 @@ export function NewTaskForm({ bloque, defaultResponsable, today, onClose }: Prop
   const [fecha, setFecha] = useState(today)
   const [responsable, setResponsable] = useState<Persona>(defaultResponsable)
   const [apoyo, setApoyo] = useState<Persona | ''>('')
+  const [descripcion, setDescripcion] = useState('')
+  const [instrucciones, setInstrucciones] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [, startRefresh] = useTransition()
@@ -29,7 +31,7 @@ export function NewTaskForm({ bloque, defaultResponsable, today, onClose }: Prop
     e.preventDefault()
     setBusy(true)
     setError(null)
-    const err = await sendJson('/api/plan-q4/tasks', 'POST', { bloque, titulo, responsable, apoyo: apoyo || null, fecha, tipo })
+    const err = await sendJson('/api/plan-q4/tasks', 'POST', { bloque, titulo, responsable, apoyo: apoyo || null, fecha, tipo, descripcion, instrucciones })
     setBusy(false)
     if (err) return setError(err)
     startRefresh(() => router.refresh())
@@ -37,9 +39,15 @@ export function NewTaskForm({ bloque, defaultResponsable, today, onClose }: Prop
   }
 
   return (
-    <form onSubmit={submit} className="mt-3 p-4 grid gap-3 sm:grid-cols-2 border border-white/[0.07] rounded-xl bg-white/[0.02]">
+    <form onSubmit={submit} className="mt-3 grid gap-3 sm:grid-cols-2 border-t border-fg/[0.06] pt-4">
       <Field label="Tarea" className="sm:col-span-2">
         <input autoFocus required maxLength={MAX_TITULO} value={titulo} onChange={(e) => setTitulo(e.target.value)} className={FIELD_CLASS} />
+      </Field>
+      <Field label="Qué es" className="sm:col-span-2">
+        <textarea rows={2} required maxLength={MAX_DESCRIPCION} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Para qué es esta tarea, en una o dos frases" className={FIELD_CLASS} />
+      </Field>
+      <Field label="Cómo hacerlo" className="sm:col-span-2">
+        <textarea rows={4} required maxLength={MAX_INSTRUCCIONES} value={instrucciones} onChange={(e) => setInstrucciones(e.target.value)} placeholder={'1. Primer paso\n2. Segundo paso'} className={FIELD_CLASS} />
       </Field>
       <Field label="Tipo">
         <select value={tipo} onChange={(e) => setTipo(e.target.value as Tipo)} className={FIELD_CLASS}>
@@ -78,7 +86,7 @@ export function NewTaskForm({ bloque, defaultResponsable, today, onClose }: Prop
         <button type="submit" disabled={busy} className="pn-btn-solid px-4 py-2 text-sm font-semibold disabled:opacity-40">
           {busy ? 'Creando…' : 'Crear tarea'}
         </button>
-        <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-lg text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors">
+        <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-lg text-fg/60 hover:text-fg hover:bg-fg/[0.05] transition-colors">
           Cancelar
         </button>
       </div>

@@ -7,3 +7,8 @@ export function contextoHtml(markdown: string): string {
     .replaceAll('<table>', '<div class="plan-table"><table>')
     .replaceAll('</table>', '</table></div>')
 }
+
+// Markdown de una línea (foco de una semana, hito, punto de decisión) en HTML, sin párrafo
+export function inlineHtml(markdown: string): string {
+  return String(marked.parseInline(markdown, { async: false }))
+}

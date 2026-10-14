@@ -3,7 +3,7 @@ import { cache } from 'react'
 import { createServiceClient } from '@/lib/supabase/service'
 import { getCurrentSession } from '@/lib/panel-session'
 import { parsePlan, type PlanBlock } from '@/lib/plan-q4/parse'
-import type { Persona, PlanTask, ResumenData, WeekCheck } from '@/lib/plan-q4/types'
+import type { GuiaData, Persona, PlanTask, ResumenData, WeekCheck } from '@/lib/plan-q4/types'
 
 export interface PlanActor {
   userId: string
@@ -20,6 +20,7 @@ export const getPlanActor = cache(async (): Promise<PlanActor | null> => {
 export interface PlanContent {
   blocks: PlanBlock[]
   resumen: ResumenData
+  guia: GuiaData | null // null hasta que el archivo traiga la guía
   actualizadoEn: string
 }
 
@@ -27,15 +28,21 @@ export interface PlanContent {
 export const getPlanContent = cache(async (): Promise<PlanContent | null> => {
   const { data, error } = await createServiceClient()
     .from('plan_content')
-    .select('markdown, resumen, actualizado_en')
+    .select('markdown, resumen, guia, actualizado_en')
     .eq('id', 1)
     .maybeSingle()
   if (error) throw error
   if (!data) return null
-  return { blocks: parsePlan(data.markdown), resumen: data.resumen as ResumenData, actualizadoEn: data.actualizado_en }
+  return {
+    blocks: parsePlan(data.markdown),
+    resumen: data.resumen as ResumenData,
+    guia: (data.guia as GuiaData | null) ?? null,
+    actualizadoEn: data.actualizado_en,
+  }
 })
 
-const TASK_COLUMNS = 'id, bloque, titulo, responsable, apoyo, fecha, tipo, estado, nota, origen, actualizado_por, actualizado_en'
+const TASK_COLUMNS =
+  'id, bloque, titulo, nombre, responsable, apoyo, fecha, tipo, estado, nota, descripcion, instrucciones, origen, actualizado_por, actualizado_en'
 
 export async function getPlanTasks(week: string): Promise<{ tasks: PlanTask[]; checks: WeekCheck[] }> {
   const service = createServiceClient()
