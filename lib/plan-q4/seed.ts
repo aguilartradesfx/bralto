@@ -11,13 +11,14 @@ export interface ExistingTask {
   id: string
   titulo: string
   origen: Origen
+  nombre: string | null
   descripcion: string | null
   instrucciones: string | null
 }
 
 export interface SeedChanges {
   nuevas: SeedTask[] // se insertan completas
-  actualizadas: SeedTask[] // cambia el título o los textos (qué es / cómo hacerlo); nada más
+  actualizadas: SeedTask[] // cambia el título, el nombre corto o los textos (qué es / cómo hacerlo); nada más
   choques: string[] // el id ya lo usa una tarea creada desde el panel: no se toca
   soloEnBase: string[] // no se borran
   sinCambios: number
@@ -33,6 +34,7 @@ export function planSeedChanges(fileTasks: readonly SeedTask[], existing: readon
     else if (current.origen === 'panel') changes.choques.push(t.id)
     else if (
       current.titulo !== t.titulo ||
+      (t.nombre !== undefined && current.nombre !== t.nombre) ||
       (t.descripcion !== undefined && current.descripcion !== t.descripcion) ||
       (t.instrucciones !== undefined && current.instrucciones !== t.instrucciones)
     ) changes.actualizadas.push(t)

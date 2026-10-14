@@ -10,10 +10,10 @@ const seedTask = (id: string, titulo: string): SeedTask => ({
 test('planSeedChanges: nuevas, títulos, choques con tareas del panel y las que solo están en la base', () => {
   const file = [seedTask('B8-01', 'Tarea uno'), seedTask('B8-02', 'Tarea dos v2'), seedTask('B8-13', 'Nueva del plan'), seedTask('B8-14', 'Otra')]
   const existing: ExistingTask[] = [
-    { id: 'B8-01', titulo: 'Tarea uno', origen: 'plan', descripcion: null, instrucciones: null },
-    { id: 'B8-02', titulo: 'Tarea dos', origen: 'plan', descripcion: null, instrucciones: null },
-    { id: 'B8-13', titulo: 'Creada en el panel', origen: 'panel', descripcion: null, instrucciones: null },
-    { id: 'B8-09', titulo: 'Quitada del plan', origen: 'plan', descripcion: null, instrucciones: null },
+    { id: 'B8-01', titulo: 'Tarea uno', origen: 'plan', nombre: null, descripcion: null, instrucciones: null },
+    { id: 'B8-02', titulo: 'Tarea dos', origen: 'plan', nombre: null, descripcion: null, instrucciones: null },
+    { id: 'B8-13', titulo: 'Creada en el panel', origen: 'panel', nombre: null, descripcion: null, instrucciones: null },
+    { id: 'B8-09', titulo: 'Quitada del plan', origen: 'plan', nombre: null, descripcion: null, instrucciones: null },
   ]
   const c = planSeedChanges(file, existing)
   assert.deepEqual(c.nuevas.map((t) => t.id), ['B8-14'])
@@ -30,14 +30,25 @@ test('planSeedChanges: qué es y cómo hacerlo cuentan como cambio solo si el ar
     { ...seedTask('B8-03', 'Tres'), descripcion: 'Igual', instrucciones: '1. Igual' },
   ]
   const existing: ExistingTask[] = [
-    { id: 'B8-01', titulo: 'Uno', origen: 'plan', descripcion: 'Vieja', instrucciones: '1. Paso' },
-    { id: 'B8-02', titulo: 'Dos', origen: 'plan', descripcion: 'Algo', instrucciones: 'x' },
-    { id: 'B8-03', titulo: 'Tres', origen: 'plan', descripcion: 'Igual', instrucciones: '1. Igual' },
+    { id: 'B8-01', titulo: 'Uno', origen: 'plan', nombre: null, descripcion: 'Vieja', instrucciones: '1. Paso' },
+    { id: 'B8-02', titulo: 'Dos', origen: 'plan', nombre: null, descripcion: 'Algo', instrucciones: 'x' },
+    { id: 'B8-03', titulo: 'Tres', origen: 'plan', nombre: null, descripcion: 'Igual', instrucciones: '1. Igual' },
   ]
   const c = planSeedChanges(file, existing)
   assert.deepEqual(c.actualizadas.map((t) => t.id), ['B8-01'])
   assert.equal(c.sinCambios, 2)
   assert.deepEqual(c.sinTextos, ['B8-02'])
+})
+
+test('planSeedChanges: el nombre corto cuenta como cambio si el archivo lo trae', () => {
+  const file = [{ ...seedTask('B8-01', 'Título largo'), nombre: 'Corto' }, seedTask('B8-02', 'Dos')]
+  const existing: ExistingTask[] = [
+    { id: 'B8-01', titulo: 'Título largo', origen: 'plan', nombre: null, descripcion: null, instrucciones: null },
+    { id: 'B8-02', titulo: 'Dos', origen: 'plan', nombre: 'Viejo', descripcion: null, instrucciones: null },
+  ]
+  const c = planSeedChanges(file, existing)
+  assert.deepEqual(c.actualizadas.map((t) => t.id), ['B8-01'])
+  assert.equal(c.sinCambios, 1)
 })
 
 test('parseTeamEmails: slug:correo separados por coma, ignora lo inválido', () => {

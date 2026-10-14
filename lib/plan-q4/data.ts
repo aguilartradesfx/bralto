@@ -42,7 +42,7 @@ export const getPlanContent = cache(async (): Promise<PlanContent | null> => {
 })
 
 const TASK_COLUMNS =
-  'id, bloque, titulo, responsable, apoyo, fecha, tipo, estado, nota, descripcion, instrucciones, origen, actualizado_por, actualizado_en'
+  'id, bloque, titulo, nombre, responsable, apoyo, fecha, tipo, estado, nota, descripcion, instrucciones, origen, actualizado_por, actualizado_en'
 
 export async function getPlanTasks(week: string): Promise<{ tasks: PlanTask[]; checks: WeekCheck[] }> {
   const service = createServiceClient()

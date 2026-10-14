@@ -40,10 +40,10 @@ async function main() {
   if (!url || !key) throw new Error('Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en .env.local')
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
 
-  const { data: existing, error: existingError } = await db.from('plan_tasks').select('id, titulo, origen, descripcion, instrucciones')
+  const { data: existing, error: existingError } = await db.from('plan_tasks').select('id, titulo, origen, nombre, descripcion, instrucciones')
   if (existingError) throw existingError
   const changes = planSeedChanges(tasks, (existing ?? []) as ExistingTask[])
-  console.log(`Tareas: ${changes.nuevas.length} nuevas, ${changes.actualizadas.length} con título o instrucciones nuevos, ${changes.sinCambios} sin cambios.`)
+  console.log(`Tareas: ${changes.nuevas.length} nuevas, ${changes.actualizadas.length} con título, nombre o instrucciones nuevos, ${changes.sinCambios} sin cambios.`)
   if (changes.sinTextos.length > 0) console.log(`Sin "Qué es" / "Cómo hacerlo" en el archivo (${changes.sinTextos.length}): ${changes.sinTextos.join(', ')}`)
   if (changes.choques.length > 0) {
     console.log(`Choques (el id ya lo usa una tarea creada en el panel; no se tocaron): ${changes.choques.join(', ')}. Renumerá esas filas en el archivo.`)
@@ -90,8 +90,13 @@ async function main() {
     if (error) throw error
   }
   for (const t of changes.actualizadas) {
-    const { descripcion, instrucciones } = t
-    const update = { titulo: t.titulo, ...(descripcion !== undefined && { descripcion }), ...(instrucciones !== undefined && { instrucciones }) }
+    const { nombre, descripcion, instrucciones } = t
+    const update = {
+      titulo: t.titulo,
+      ...(nombre !== undefined && { nombre }),
+      ...(descripcion !== undefined && { descripcion }),
+      ...(instrucciones !== undefined && { instrucciones }),
+    }
     const { error } = await db.from('plan_tasks').update(update).eq('id', t.id)
     if (error) throw error
   }

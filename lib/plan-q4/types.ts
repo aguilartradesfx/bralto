@@ -17,6 +17,7 @@ export interface PlanTask {
   id: string // 'B8-04'
   bloque: string // 'b8'
   titulo: string
+  nombre: string | null // nombre corto para las listas (el título completo se ve al desplegar)
   responsable: Persona
   apoyo: Persona | null
   fecha: string // en las semanales, desde cuándo corren
@@ -32,11 +33,13 @@ export interface PlanTask {
 
 // Lo que trae el archivo del plan para cada tarea. descripcion/instrucciones: solo si el archivo las trae
 export type SeedTask = Pick<PlanTask, 'id' | 'bloque' | 'titulo' | 'responsable' | 'apoyo' | 'fecha' | 'tipo' | 'estado'> & {
+  nombre?: string
   descripcion?: string
   instrucciones?: string
 }
 
 export interface TextosTarea {
+  nombre?: string // nombre corto para las listas
   descripcion: string
   instrucciones: string
 }

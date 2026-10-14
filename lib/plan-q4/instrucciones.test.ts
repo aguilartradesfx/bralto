@@ -38,9 +38,10 @@ Publicar los videos de la semana.
 ## B1 — Campañas · Acción
 `
 
-test('parseInstrucciones: qué es y cómo hacerlo de cada tarea', () => {
+test('parseInstrucciones: nombre corto (opcional), qué es y cómo hacerlo de cada tarea', () => {
   assert.deepEqual(parseInstrucciones(FIXTURE), {
     'B1-01': {
+      nombre: 'Armar la campaña',
       descripcion: 'La campaña de prueba, con **un solo** conjunto.',
       instrucciones: '1. Entrar al administrador de anuncios.\n2. Crear la campaña.',
     },

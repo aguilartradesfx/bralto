@@ -76,8 +76,12 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
     : overdue ? `Venció el ${formatFecha(task.fecha)}` : thisWeek ? `Para el ${formatFecha(task.fecha)}, esta semana` : `Para el ${formatFecha(task.fecha)}`
 
   return (
-    <li>
-      <div className="flex items-start gap-3 rounded-[10px] px-2 -mx-2 transition-colors hover:bg-white/[0.03]">
+    <li
+      className={`rounded-[14px] transition-[background-color,box-shadow,margin,padding] duration-300 ease-out motion-reduce:transition-none ${
+        open ? 'pn-chip-on -mx-3 my-2 px-3 pb-1' : ''
+      }`}
+    >
+      <div className={`flex items-start gap-3 rounded-[10px] px-2 -mx-2 transition-colors ${open ? '' : 'hover:bg-white/[0.03]'}`}>
         <button
           type="button"
           onClick={toggleDone}
@@ -99,8 +103,16 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
           </span>
         </button>
 
-        <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-w-0 flex-1 items-baseline gap-3 py-2 text-left">
-          <span className={`min-w-0 flex-1 text-sm leading-snug ${done ? 'text-white/30 line-through' : 'text-white/85'}`}>{task.titulo}</span>
+        <button
+          type="button"
+          onClick={() => {
+            if (open) setEditing(false)
+            setOpen(!open)
+          }}
+          aria-expanded={open} className="flex min-w-0 flex-1 items-baseline gap-3 py-2 text-left">
+          <span className={`min-w-0 flex-1 text-sm leading-snug ${done ? 'text-white/30 line-through' : open ? 'text-white font-medium' : 'text-white/85'}`}>
+            {task.nombre ?? task.titulo}
+          </span>
           <span className={`shrink-0 text-xs tabular-nums ${overdue ? 'text-red-300' : 'text-white/35'}`}>
             {showPersona && `${PERSONA_NAMES[task.responsable]} · `}
             {fechaCorta}
@@ -110,61 +122,71 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
 
       {error && !open && <p className="mb-2 ml-7 text-xs text-red-300">{error}</p>}
 
-      {open && (
-        <div className="mb-4 mt-1 ml-7 space-y-4">
-          <p className="text-xs text-white/45">
-            {[area, `${PERSONA_NAMES[task.responsable]}${task.apoyo ? ` con ${PERSONA_NAMES[task.apoyo]}` : ''}`, fechaLarga, task.estado === 'en_curso' ? 'En curso' : null]
-              .filter(Boolean)
-              .join(' · ')}
-          </p>
-          {html?.descripcionHtml && (
-            <div>
-              <p className={label}>Qué es</p>
-              <div className="plan-md" dangerouslySetInnerHTML={{ __html: html.descripcionHtml }} />
-            </div>
-          )}
-          {html?.instruccionesHtml && (
-            <div>
-              <p className={label}>Cómo hacerlo</p>
-              <div className="plan-md" dangerouslySetInnerHTML={{ __html: html.instruccionesHtml }} />
-            </div>
-          )}
-          {!html?.descripcionHtml && !html?.instruccionesHtml && <p className="text-xs text-white/40">Esta tarea todavía no tiene instrucciones.</p>}
-          {task.nota && !editing && (
-            <div>
-              <p className={label}>Nota</p>
-              <p className="text-sm text-white/70 whitespace-pre-line">{task.nota}</p>
-            </div>
-          )}
-
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-[11px] text-white/30">
-              <span className="font-mono">{task.id}</span>
-              {task.actualizado_por && task.actualizado_en && ` · ${PERSONA_NAMES[task.actualizado_por]}, ${formatStamp(task.actualizado_en)}`}
+      {/* Se abre con una animación de alto y opacidad; cerrado queda fuera del foco y de los lectores de pantalla */}
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+        inert={!open}
+        aria-hidden={!open}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="mb-3 mt-1 ml-7 space-y-4">
+            {task.nombre && task.nombre !== task.titulo && <p className="text-[13px] leading-relaxed text-white/75">{task.titulo}</p>}
+            <p className="text-xs text-white/45">
+              {[area, `${PERSONA_NAMES[task.responsable]}${task.apoyo ? ` con ${PERSONA_NAMES[task.apoyo]}` : ''}`, fechaLarga, task.estado === 'en_curso' ? 'En curso' : null]
+                .filter(Boolean)
+                .join(' · ')}
             </p>
-            {canEdit && !editing && (
-              <button type="button" onClick={() => setEditing(true)} className="text-xs text-white/55 underline-offset-4 hover:text-white hover:underline">
-                Editar
-              </button>
+            {html?.descripcionHtml && (
+              <div>
+                <p className={label}>Qué es</p>
+                <div className="plan-md" dangerouslySetInnerHTML={{ __html: html.descripcionHtml }} />
+              </div>
+            )}
+            {html?.instruccionesHtml && (
+              <div>
+                <p className={label}>Cómo hacerlo</p>
+                <div className="plan-md" dangerouslySetInnerHTML={{ __html: html.instruccionesHtml }} />
+              </div>
+            )}
+            {!html?.descripcionHtml && !html?.instruccionesHtml && <p className="text-xs text-white/40">Esta tarea todavía no tiene instrucciones.</p>}
+            {task.nota && !editing && (
+              <div>
+                <p className={label}>Nota</p>
+                <p className="text-sm text-white/70 whitespace-pre-line">{task.nota}</p>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-[11px] text-white/30">
+                <span className="font-mono">{task.id}</span>
+                {task.actualizado_por && task.actualizado_en && ` · ${PERSONA_NAMES[task.actualizado_por]}, ${formatStamp(task.actualizado_en)}`}
+              </p>
+              {canEdit && !editing && (
+                <button type="button" onClick={() => setEditing(true)} className="text-xs text-white/55 underline-offset-4 hover:text-white hover:underline">
+                  Editar
+                </button>
+              )}
+            </div>
+
+            {open && editing && (
+              <TaskEditor
+                task={task}
+                working={working}
+                error={error}
+                onCancel={() => {
+                  setEditing(false)
+                  setError(null)
+                }}
+                onSave={async (patch) => {
+                  if (await save(() => sendJson(url, 'PATCH', patch))) setEditing(false)
+                }}
+              />
             )}
           </div>
-
-          {editing && (
-            <TaskEditor
-              task={task}
-              working={working}
-              error={error}
-              onCancel={() => {
-                setEditing(false)
-                setError(null)
-              }}
-              onSave={async (patch) => {
-                if (await save(() => sendJson(url, 'PATCH', patch))) setEditing(false)
-              }}
-            />
-          )}
         </div>
-      )}
+      </div>
     </li>
   )
 }

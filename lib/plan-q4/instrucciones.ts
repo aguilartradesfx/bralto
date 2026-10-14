@@ -2,14 +2,14 @@
 // Va antes de "# Parte 2" y el seed lo guarda en plan_tasks.descripcion / plan_tasks.instrucciones.
 //
 // # Instrucciones de las tareas
-// ## B8-04 · título opcional (solo para quien edita)
+// ## B8-04 · nombre corto (opcional: es el que se ve en las listas)
 // ### Qué es          → una o dos frases
 // ### Cómo hacerlo    → pasos en markdown
 import { PlanParseError } from './parse.ts'
 import type { TextosTarea } from './types.ts'
 
 const HEADING = /^# Instrucciones de las tareas\s*$/
-const TASK_HEADING = /^## (\S+)(?:\s+·.*)?$/
+const TASK_HEADING = /^## (\S+)(?:\s+·\s*(.+?))?\s*$/
 const ID = /^B\d+-\d{2,}$/
 
 export function parseInstrucciones(source: string): Record<string, TextosTarea> | null {
@@ -20,17 +20,18 @@ export function parseInstrucciones(source: string): Record<string, TextosTarea> 
   const body = all.slice(start + 1, end < 0 ? undefined : end)
 
   const problems: string[] = []
-  const entries: { id: string; lines: string[] }[] = []
+  const entries: { id: string; nombre: string | null; lines: string[] }[] = []
   for (const line of body) {
     if (line.startsWith('## ')) {
-      const id = TASK_HEADING.exec(line)?.[1] ?? ''
+      const m = TASK_HEADING.exec(line)
+      const id = m?.[1] ?? ''
       if (!ID.test(id)) problems.push(`Instrucciones: "${line}" no empieza con el id de una tarea (## B8-04)`)
-      entries.push({ id, lines: [] })
+      entries.push({ id, nombre: m?.[2]?.trim() || null, lines: [] })
     } else if (entries.length > 0) entries[entries.length - 1].lines.push(line)
   }
 
   const out: Record<string, TextosTarea> = {}
-  for (const { id, lines } of entries) {
+  for (const { id, nombre, lines } of entries) {
     if (!ID.test(id)) continue
     if (out[id]) problems.push(`Instrucciones: ${id} está repetida`)
     const parts = new Map<string, string[]>()
@@ -52,7 +53,7 @@ export function parseInstrucciones(source: string): Record<string, TextosTarea> 
     const instrucciones = text('Cómo hacerlo')
     if (!descripcion) problems.push(`Instrucciones → ${id}: falta "### Qué es"`)
     if (!instrucciones) problems.push(`Instrucciones → ${id}: falta "### Cómo hacerlo"`)
-    out[id] = { descripcion, instrucciones }
+    out[id] = { ...(nombre && { nombre }), descripcion, instrucciones }
   }
 
   if (problems.length > 0) throw new PlanParseError(problems)
