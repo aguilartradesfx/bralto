@@ -7,6 +7,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
+import { parseGuia } from '../lib/plan-q4/guia.ts'
 import { parsePlan, parseResumen, planBody, PlanParseError } from '../lib/plan-q4/parse.ts'
 import { PLAN_TEAM, parseTeamEmails, planSeedChanges, type ExistingTask } from '../lib/plan-q4/seed.ts'
 import { PERSONA_NAMES } from '../lib/plan-q4/types.ts'
@@ -19,10 +20,13 @@ async function main() {
   const source = readFileSync(file, 'utf8')
   const blocks = parsePlan(source)
   const resumen = parseResumen(source)
+  const guia = parseGuia(source)
   const tasks = blocks.flatMap((b) => b.tareas)
   console.log(`${file}\n${blocks.length} bloques, ${tasks.length} tareas en el archivo.`)
   if (resumen) console.log(`Resumen: ${resumen.encabezado.length} datos de encabezado, ${resumen.hitos.length} hitos.`)
   else console.log('Aviso: no hay "### Pestaña Resumen"; el encabezado del Resumen queda como estaba.')
+  if (guia) console.log(`Guía: ${Object.keys(guia.etapas).length} etapas, ${Object.keys(guia.equipo).length} personas, ${guia.grupos.length} grupos, ${Object.keys(guia.areas).length} áreas.`)
+  else console.log('Aviso: no hay "# Guía para el equipo"; los textos de la guía quedan como estaban.')
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -62,11 +66,12 @@ async function main() {
     console.log(`· ${PERSONA_NAMES[slug]}: enlazado a su usuario`)
   }
 
-  // 2. Contenido de las pestañas y encabezado del Resumen
+  // 2. Contenido de las pestañas, encabezado del Resumen y guía para el equipo
   const { error: contentError } = await db.from('plan_content').upsert({
     id: 1,
     markdown: planBody(source),
     ...(resumen && { resumen }),
+    ...(guia && { guia }),
     actualizado_en: new Date().toISOString(),
   })
   if (contentError) throw contentError
