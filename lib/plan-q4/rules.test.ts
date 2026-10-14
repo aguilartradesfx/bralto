@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   blockProgress, buildUpdate, compareTasks, diffTask, isActiveWeekly, isDueThisWeek, isOverdue, isPending,
-  nextMilestone, nextTaskId, pendingByBlock, planHref, resolvePersona, resolveTab, weekSummary, weekToggleError,
+  nextMilestone, nextTaskId, pendingByBlock, resolvePersona, weekSummary, weekToggleError,
 } from './rules.ts'
 import type { PlanTask } from './types.ts'
 
@@ -97,15 +97,11 @@ test('nextTaskId: sigue el número más alto del bloque', () => {
   assert.equal(nextTaskId('B4', []), 'B4-01')
 })
 
-test('resolveTab, resolvePersona y planHref: lo inválido cae en Resumen y en el usuario', () => {
-  assert.equal(resolveTab('b8', ['resumen', 'b8']), 'b8')
-  assert.equal(resolveTab('b99', ['resumen', 'b8']), 'resumen')
-  assert.equal(resolveTab(undefined, ['resumen', 'b8']), 'resumen')
+test('resolvePersona: lo inválido cae en la persona del usuario', () => {
   assert.equal(resolvePersona('alina', 'ale'), 'alina')
   assert.equal(resolvePersona('todos', 'ale'), 'todos')
   assert.equal(resolvePersona('pedro', 'ale'), 'ale')
   assert.equal(resolvePersona(undefined, null), 'todos')
-  assert.equal(planHref('b8', 'alina'), '/plan-q4?tab=b8&persona=alina')
 })
 
 test('diffTask: solo lo que cambió; delegar al apoyo lo deja vacío', () => {

@@ -3,7 +3,6 @@ import { daysBetween, weekEnd, weekStart } from './fechas.ts'
 import { PERSONAS, isPersona, type Estado, type Hito, type Persona, type PlanTask } from './types.ts'
 
 export type PersonaFilter = Persona | 'todos'
-export const RESUMEN_TAB = 'resumen'
 
 type Fechada = Pick<PlanTask, 'tipo' | 'estado' | 'fecha'>
 
@@ -97,19 +96,11 @@ export function nextTaskId(code: string, existingIds: readonly string[]): string
   return `${prefix}${String(max + 1).padStart(2, '0')}`
 }
 
-// Pestaña y persona de la URL; lo inválido cae en Resumen y en la persona del usuario
-export function resolveTab(raw: string | undefined, keys: readonly string[]): string {
-  return raw && keys.includes(raw) ? raw : RESUMEN_TAB
-}
-
+// Persona de la URL; lo inválido cae en la persona del usuario
 export function resolvePersona(raw: string | undefined, actor: Persona | null): PersonaFilter {
   if (raw === 'todos') return 'todos'
   if (isPersona(raw)) return raw
   return actor ?? 'todos'
-}
-
-export function planHref(tab: string, persona: PersonaFilter): string {
-  return `/plan-q4?tab=${encodeURIComponent(tab)}&persona=${persona}`
 }
 
 export interface TaskPatch {

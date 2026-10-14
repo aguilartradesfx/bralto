@@ -14,9 +14,10 @@ export interface TaskListProps {
   canEdit: boolean
   emptyText?: string
   newTask?: { bloque: string; responsable: Persona }
+  areas?: Record<string, string> // bloque → nombre corto del área, para listas que mezclan bloques
 }
 
-export function TaskList({ tasks, today, week, doneIds, canEdit, emptyText, newTask }: TaskListProps) {
+export function TaskList({ tasks, today, week, doneIds, canEdit, emptyText, newTask, areas }: TaskListProps) {
   const [adding, setAdding] = useState(false)
   const done = new Set(doneIds)
   return (
@@ -25,7 +26,7 @@ export function TaskList({ tasks, today, week, doneIds, canEdit, emptyText, newT
       {tasks.length > 0 && (
         <ul className="divide-y divide-white/[0.05] border border-white/[0.07] rounded-xl bg-white/[0.02]">
           {tasks.map((t) => (
-            <TaskItem key={t.id} task={t} today={today} week={week} doneThisWeek={done.has(t.id)} canEdit={canEdit} />
+            <TaskItem key={t.id} task={t} today={today} week={week} doneThisWeek={done.has(t.id)} canEdit={canEdit} area={areas?.[t.bloque]} />
           ))}
         </ul>
       )}

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { etapaActual, parseEtapas, progresoEtapa } from './etapas.ts'
+import { decisionesDelMes, etapaActual, parseEtapas, progresoEtapa, semanaContiene } from './etapas.ts'
 import type { PlanBlock } from './parse.ts'
 import type { PlanTask } from './types.ts'
 
@@ -54,6 +54,27 @@ test('etapaActual: el mes de hoy; antes del plan la primera y después la últim
   assert.equal(etapaActual(etapas, '2026-09-20')?.mes, 10)
   assert.equal(etapaActual(etapas, '2026-12-20')?.mes, 11)
   assert.equal(etapaActual([], '2026-10-13'), null)
+})
+
+test('semanaContiene: rangos del calendario, también los que cruzan de mes', () => {
+  assert.equal(semanaContiene('12–18 oct', '2026-10-13'), true)
+  assert.equal(semanaContiene('12–18 oct', '2026-10-19'), false)
+  assert.equal(semanaContiene('26 oct–1 nov', '2026-11-01'), true)
+  assert.equal(semanaContiene('26 oct–1 nov', '2026-10-25'), false)
+  assert.equal(semanaContiene('30 nov–6 dic', '2026-12-03'), true)
+  assert.equal(semanaContiene('texto raro', '2026-10-13'), false)
+})
+
+test('decisionesDelMes: las que tienen fecha en el mes y las que no tienen fecha', () => {
+  const decisiones = [
+    { cuando: '26 oct', pregunta: 'A', accion: '' },
+    { cuando: 'Día 7 de pauta', pregunta: 'B', accion: '' },
+    { cuando: '20 nov', pregunta: 'C', accion: '' },
+  ]
+  const oct = decisionesDelMes(decisiones, 10)
+  assert.deepEqual(oct.delMes.map((d) => d.pregunta), ['A'])
+  assert.deepEqual(oct.sinFecha.map((d) => d.pregunta), ['B'])
+  assert.deepEqual(decisionesDelMes(decisiones, 11).delMes.map((d) => d.pregunta), ['C'])
 })
 
 test('progresoEtapa: únicas del mes, hechas sobre total', () => {

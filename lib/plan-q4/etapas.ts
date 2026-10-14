@@ -62,6 +62,33 @@ export function etapaActual(etapas: readonly Etapa[], today: string): Etapa | nu
   return etapas.find((e) => e.mes === mes) ?? (mes < etapas[0].mes ? etapas[0] : etapas[etapas.length - 1])
 }
 
+const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+const mesCorto = (texto: string | undefined) => (texto ? MESES_CORTOS.indexOf(texto.slice(0, 3).toLowerCase()) + 1 : 0)
+const iso = (year: number, mes: number, dia: number) => `${year}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
+
+// "12–18 oct", "26 oct–1 nov": ¿hoy cae en esa semana del calendario? (mismo año que hoy)
+export function semanaContiene(semana: string, today: string): boolean {
+  const m = /^(\d{1,2})(?:\s+(\p{L}{3,}))?\s*[–-]\s*(\d{1,2})\s+(\p{L}{3,})$/u.exec(semana.trim())
+  if (!m) return false
+  const mesFin = mesCorto(m[4])
+  const mesInicio = m[2] ? mesCorto(m[2]) : mesFin
+  if (!mesInicio || !mesFin) return false
+  const year = Number(today.slice(0, 4))
+  return today >= iso(year, mesInicio, Number(m[1])) && today <= iso(year, mesFin, Number(m[3]))
+}
+
+// Puntos de decisión con fecha ("26 oct") en el mes, y los que no tienen fecha fija ("Día 7 de pauta")
+export function decisionesDelMes(decisiones: readonly PuntoDecision[], mes: number): { delMes: PuntoDecision[]; sinFecha: PuntoDecision[] } {
+  const mesDecision = (d: PuntoDecision) => {
+    const m = /^(\d{1,2})\s+(\p{L}{3,})/u.exec(d.cuando.trim())
+    return m ? mesCorto(m[2]) : 0
+  }
+  return {
+    delMes: decisiones.filter((d) => mesDecision(d) === mes),
+    sinFecha: decisiones.filter((d) => mesDecision(d) === 0),
+  }
+}
+
 // Avance de las únicas con fecha en el mes de la etapa
 export function progresoEtapa(tasks: readonly PlanTask[], mes: number): { hechas: number; total: number } {
   const delMes = tasks.filter((t) => t.tipo === 'unica' && mesDe(t.fecha) === mes)

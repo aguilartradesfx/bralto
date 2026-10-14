@@ -16,9 +16,10 @@ interface Props {
   week: string
   doneThisWeek: boolean
   canEdit: boolean
+  area?: string // nombre corto del área ('Campañas') en listas que mezclan bloques
 }
 
-export function TaskItem({ task, today, week, doneThisWeek, canEdit }: Props) {
+export function TaskItem({ task, today, week, doneThisWeek, canEdit, area }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -84,6 +85,7 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit }: Props) {
         <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="min-w-0 flex-1 text-left">
           <span className={`block text-sm leading-snug ${done ? 'text-white/40 line-through' : 'text-white'}`}>{task.titulo}</span>
           <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/40">
+            {area && <span className="text-white/60">{area}</span>}
             <span className="font-mono">{task.id}</span>
             <span>
               {PERSONA_NAMES[task.responsable]}
