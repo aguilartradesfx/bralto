@@ -9,7 +9,7 @@ import { Markdown } from '@/components/plan-q4/markdown'
 import { TaskList, type TaskListProps } from '@/components/plan-q4/task-list'
 import { TipoBadge } from '@/components/plan-q4/tipo-badge'
 
-type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit'>
+type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit' | 'textos'>
 
 interface Props {
   blocks: PlanBlock[]
@@ -72,10 +72,7 @@ export function EstrategiaView({ blocks, guia, tasks, pending, bloque, persona, 
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-white">Estrategia</h2>
-        <p className="mt-0.5 text-sm text-white/45">El porqué de cada decisión del plan. Para consultar cuando haga falta.</p>
-      </div>
+      <p className="-mt-4 text-sm text-white/45">El porqué de cada decisión del plan. Para consultar cuando haga falta.</p>
       {grupos(blocks, guia).map((g) => (
         <section key={g.titulo}>
           <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{g.titulo}</h3>

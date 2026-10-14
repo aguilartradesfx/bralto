@@ -8,10 +8,7 @@ import { Markdown } from '@/components/plan-q4/markdown'
 export function EquipoView({ resumen, guia, actor }: { resumen: ResumenPersona[]; guia: GuiaData | null; actor: Persona | null }) {
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold text-white">El equipo</h2>
-        <p className="mt-0.5 text-sm text-white/45">Qué hace cada quien y cómo va su semana.</p>
-      </div>
+      <p className="-mt-4 text-sm text-white/45">Qué hace cada quien y cómo va su semana.</p>
       <div className="grid gap-3 md:grid-cols-3">
         {resumen.map((r) => {
           const pct = r.total ? Math.round((r.hechas / r.total) * 100) : 0

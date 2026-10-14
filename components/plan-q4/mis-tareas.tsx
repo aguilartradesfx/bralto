@@ -6,7 +6,7 @@ import { PersonaFilterBar } from '@/components/plan-q4/persona-filter'
 import { TaskList, type TaskListProps } from '@/components/plan-q4/task-list'
 import { sentence } from '@/components/plan-q4/inicio'
 
-type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit' | 'areas'>
+type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit' | 'areas' | 'textos'>
 
 function Group({ title, tone, tasks, list, hint }: { title: string; tone?: string; tasks: PlanTask[]; list: ListContext; hint?: string }) {
   if (tasks.length === 0) return null

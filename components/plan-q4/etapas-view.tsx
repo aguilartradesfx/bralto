@@ -8,7 +8,7 @@ import { Markdown } from '@/components/plan-q4/markdown'
 import { TaskList, type TaskListProps } from '@/components/plan-q4/task-list'
 import { sentence } from '@/components/plan-q4/inicio'
 
-type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit' | 'areas'>
+type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit' | 'areas' | 'textos'>
 
 const heading = 'text-xs font-medium uppercase tracking-wide text-white/40'
 

@@ -147,6 +147,9 @@
 
 /* Plan Q4: Contexto de cada bloque (markdown renderizado con marked) */
 .plan-md { color: rgb(255 255 255 / 0.72); font-size: 0.875rem; line-height: 1.65; }
+/* Texto corrido de introducción (Inicio del plan): más grande y legible */
+.plan-md.plan-md--lead { font-size: 0.9375rem; line-height: 1.7; color: rgb(255 255 255 / 0.75); }
+.plan-md.plan-md--lead p, .plan-md.plan-md--lead li { max-width: 68ch; }
 .plan-md > * + * { margin-top: 0.85rem; }
 .plan-md p, .plan-md li { max-width: 75ch; }
 .plan-md h3, .plan-md h4 { color: #fff; font-weight: 600; margin-top: 1.75rem; }

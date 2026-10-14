@@ -7,6 +7,7 @@ import { FileText, Users, LogOut, Menu, X, LayoutDashboard, ScrollText, Clipboar
 import { createClient } from '@/lib/supabase/client'
 import { hasPermission, requiredPermission } from '@/lib/panel-access'
 import type { UserProfile } from '@/types/user-profiles'
+import { PlanNavItem } from '@/components/internal/plan-subnav'
 import { useState } from 'react'
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
@@ -48,6 +49,7 @@ export function InternalNav({ profile }: { profile: UserProfile | null }) {
       <nav className="flex-1 px-3 py-4 space-y-0.5">
         {visibleItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`)
+          if (href === '/plan-q4') return <PlanNavItem key={href} active={active} onNavigate={() => setMobileOpen(false)} />
           return (
             <Link
               key={href}
