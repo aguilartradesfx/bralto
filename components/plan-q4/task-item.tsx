@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, ChevronDown, Loader2, StickyNote } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
 import { formatFecha, formatStamp } from '@/lib/plan-q4/fechas'
 import { diffTask, isActiveWeekly, isDueThisWeek, isOverdue } from '@/lib/plan-q4/rules'
 import { ESTADOS, ESTADO_LABELS, PERSONAS, PERSONA_NAMES, type Estado, type Persona, type PlanTask } from '@/lib/plan-q4/types'
@@ -22,14 +22,14 @@ interface Props {
   week: string
   doneThisWeek: boolean
   canEdit: boolean
-  area?: string // nombre corto del área ('Campañas') en listas que mezclan bloques
+  area?: string // nombre corto del área ('Campañas')
   html?: TaskHtml
+  showPersona?: boolean // listas de todo el equipo: el nombre va en la línea
 }
 
-const Dot = () => <span aria-hidden className="text-white/20">·</span>
 const label = 'mb-1.5 text-[11px] font-medium uppercase tracking-wide text-white/40'
 
-export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html }: Props) {
+export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html, showPersona }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -69,68 +69,54 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html 
     ? done ? 'Desmarcar esta semana' : 'Marcar hecha esta semana'
     : done ? 'Marcar como pendiente' : 'Marcar como hecha'
 
-  const fecha = semanal
+  // En la línea, corta; adentro, con contexto
+  const fechaCorta = semanal ? (notStarted ? `desde ${formatFecha(task.fecha)}` : 'semanal') : formatFecha(task.fecha)
+  const fechaLarga = semanal
     ? notStarted ? `Cada semana desde el ${formatFecha(task.fecha)}` : 'Cada semana'
-    : overdue ? `Vencida · ${formatFecha(task.fecha)}` : formatFecha(task.fecha)
+    : overdue ? `Venció el ${formatFecha(task.fecha)}` : thisWeek ? `Para el ${formatFecha(task.fecha)}, esta semana` : `Para el ${formatFecha(task.fecha)}`
 
   return (
-    <li className="py-2.5">
-      <div className="flex items-start gap-3">
+    <li>
+      <div className="flex items-start gap-3 rounded-[10px] px-2 -mx-2 transition-colors hover:bg-white/[0.03]">
         <button
           type="button"
           onClick={toggleDone}
           disabled={!canEdit || working || editing || notStarted}
           aria-label={checkLabel}
           aria-pressed={done}
-          className="-m-1.5 p-1.5 shrink-0 disabled:cursor-not-allowed"
+          className="-m-1 mt-[5px] p-1 shrink-0 disabled:cursor-not-allowed"
         >
           <span
-            className={`flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border transition-colors ${
+            className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
               done
-                ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300'
+                ? 'border-white/25 bg-white/15 text-white/80'
                 : notStarted
-                  ? 'border-dashed border-white/15'
-                  : 'border-white/30 hover:border-white/70'
+                  ? 'border-dashed border-white/20'
+                  : 'border-white/35 hover:border-white/80'
             }`}
           >
-            {working ? <Loader2 size={11} className="animate-spin" /> : done ? <Check size={12} strokeWidth={2.5} /> : null}
+            {working ? <Loader2 size={10} className="animate-spin" /> : done ? <Check size={10} strokeWidth={3} /> : null}
           </span>
         </button>
 
-        <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="group min-w-0 flex-1 text-left">
-          <span className={`block text-sm leading-snug transition-colors ${done ? 'text-white/35 line-through' : 'text-white/90 group-hover:text-white'}`}>
-            {task.titulo}
-          </span>
-          <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-white/40">
-            {area && (
-              <>
-                <span>{area}</span>
-                <Dot />
-              </>
-            )}
-            <span className={overdue ? 'text-red-300' : thisWeek ? 'text-amber-300' : ''}>{fecha}</span>
-            <Dot />
-            <span>
-              {PERSONA_NAMES[task.responsable]}
-              {task.apoyo && ` con ${PERSONA_NAMES[task.apoyo]}`}
-            </span>
-            {task.estado === 'en_curso' && (
-              <>
-                <Dot />
-                <span className="text-white/80">En curso</span>
-              </>
-            )}
-            {task.nota && <StickyNote size={11} className="ml-1" aria-label="Tiene nota" />}
+        <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-w-0 flex-1 items-baseline gap-3 py-2 text-left">
+          <span className={`min-w-0 flex-1 text-sm leading-snug ${done ? 'text-white/30 line-through' : 'text-white/85'}`}>{task.titulo}</span>
+          <span className={`shrink-0 text-xs tabular-nums ${overdue ? 'text-red-300' : 'text-white/35'}`}>
+            {showPersona && `${PERSONA_NAMES[task.responsable]} · `}
+            {fechaCorta}
           </span>
         </button>
-
-        <ChevronDown size={14} aria-hidden className={`mt-1 shrink-0 text-white/25 transition-transform ${open ? 'rotate-180' : ''}`} />
       </div>
 
-      {error && !open && <p className="mt-2 ml-8 text-xs text-red-300">{error}</p>}
+      {error && !open && <p className="mb-2 ml-7 text-xs text-red-300">{error}</p>}
 
       {open && (
-        <div className="mt-3 mb-1 ml-8 space-y-4">
+        <div className="mb-4 mt-1 ml-7 space-y-4">
+          <p className="text-xs text-white/45">
+            {[area, `${PERSONA_NAMES[task.responsable]}${task.apoyo ? ` con ${PERSONA_NAMES[task.apoyo]}` : ''}`, fechaLarga, task.estado === 'en_curso' ? 'En curso' : null]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
           {html?.descripcionHtml && (
             <div>
               <p className={label}>Qué es</p>
@@ -151,14 +137,13 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html 
             </div>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] pt-3">
-            <p className="text-[11px] text-white/35">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-[11px] text-white/30">
               <span className="font-mono">{task.id}</span>
-              {task.estado && ` · ${ESTADO_LABELS[task.estado]}`}
               {task.actualizado_por && task.actualizado_en && ` · ${PERSONA_NAMES[task.actualizado_por]}, ${formatStamp(task.actualizado_en)}`}
             </p>
             {canEdit && !editing && (
-              <button type="button" onClick={() => setEditing(true)} className="pn-btn-glass px-3.5 py-1.5 text-xs">
+              <button type="button" onClick={() => setEditing(true)} className="text-xs text-white/55 underline-offset-4 hover:text-white hover:underline">
                 Editar
               </button>
             )}

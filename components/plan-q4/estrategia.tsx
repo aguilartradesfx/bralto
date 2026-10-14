@@ -54,6 +54,7 @@ export function EstrategiaView({ blocks, guia, tasks, pending, bloque, persona, 
             <TaskList
               tasks={tasks.filter((t) => t.bloque === block.key && matchesPersona(t, persona)).sort(compareTasks)}
               {...list}
+              showPersona={persona === 'todos'}
               emptyText={persona === 'todos' ? 'Este bloque no tiene tareas.' : `${PERSONA_NAMES[persona]} no tiene tareas en este bloque.`}
               newTask={{ bloque: block.key, responsable: persona === 'todos' ? (actor ?? 'ale') : persona }}
             />
