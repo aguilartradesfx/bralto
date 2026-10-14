@@ -50,6 +50,36 @@ export interface ResumenData {
   hitos: Hito[]
 }
 
+// Guía para el equipo: textos simples que muestra la página (sección "# Guía para el equipo" del archivo)
+export interface GuiaData {
+  queEs: string // markdown
+  queVamos: string // markdown
+  etapas: Record<string, string> // mes en minúscula ('octubre') → resumen en markdown
+  equipo: Partial<Record<Persona, string>> // qué hace cada persona
+  grupos: { titulo: string; bloques: string[] }[] // Estrategia: grupos de bloques ('b0', 'decisiones')
+  areas: Record<string, string> // bloque ('b8') → nombre corto del área ('Campañas')
+}
+
+// Etapas del trimestre (del calendario del plan: "#### Octubre — preparar y encender Bralto")
+export interface SemanaEtapa {
+  semana: string // '12–18 oct'
+  foco: string // markdown en una línea
+  hito: string | null
+}
+
+export interface Etapa {
+  mes: number // 1–12
+  nombreMes: string // 'Octubre'
+  titulo: string // 'preparar y encender Bralto'
+  semanas: SemanaEtapa[]
+}
+
+export interface PuntoDecision {
+  cuando: string
+  pregunta: string
+  accion: string
+}
+
 export function isPersona(value: unknown): value is Persona {
   return typeof value === 'string' && (PERSONAS as readonly string[]).includes(value)
 }
