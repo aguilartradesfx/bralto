@@ -10,14 +10,14 @@ import { sentence } from '@/components/plan-q4/inicio'
 
 type ListContext = Pick<TaskListProps, 'today' | 'week' | 'doneIds' | 'canEdit' | 'areas' | 'textos'>
 
-const heading = 'text-xs font-medium uppercase tracking-wide text-white/40'
+const heading = 'text-xs font-medium uppercase tracking-wide text-fg/40'
 
 function Decision({ d }: { d: PuntoDecision }) {
   return (
     <li className="pn-solid rounded-[14px] p-3.5">
-      <p className="font-mono text-[11px] uppercase tracking-wide text-white/45">{d.cuando}</p>
-      <p className="mt-1 text-sm text-white" dangerouslySetInnerHTML={{ __html: inlineHtml(d.pregunta) }} />
-      {d.accion && <p className="mt-1 text-sm text-white/60" dangerouslySetInnerHTML={{ __html: inlineHtml(d.accion) }} />}
+      <p className="font-mono text-[11px] uppercase tracking-wide text-fg/45">{d.cuando}</p>
+      <p className="mt-1 text-sm text-fg" dangerouslySetInnerHTML={{ __html: inlineHtml(d.pregunta) }} />
+      {d.accion && <p className="mt-1 text-sm text-fg/60" dangerouslySetInnerHTML={{ __html: inlineHtml(d.accion) }} />}
     </li>
   )
 }
@@ -36,7 +36,7 @@ interface Props {
 export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, actor, list }: Props) {
   const actual = etapaActual(etapas, list.today)
   const etapa = etapas.find((e) => e.mes === mes) ?? actual
-  if (!etapa) return <p className="text-sm text-white/50">El plan no tiene calendario por etapas.</p>
+  if (!etapa) return <p className="text-sm text-fg/50">El plan no tiene calendario por etapas.</p>
 
   const { hechas, total } = progresoEtapa(tasks, etapa.mes)
   const pct = total ? Math.round((hechas / total) * 100) : 0
@@ -46,7 +46,7 @@ export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, acto
 
   return (
     <div className="space-y-6">
-      <nav aria-label="Etapas" className="flex flex-wrap gap-1 p-1 w-fit bg-white/[0.03] border border-white/[0.07] rounded-[14px]">
+      <nav aria-label="Etapas" className="flex flex-wrap gap-1 p-1 w-fit bg-fg/[0.03] border border-fg/[0.07] rounded-[14px]">
         {etapas.map((e) => {
           const on = e.mes === etapa.mes
           return (
@@ -55,7 +55,7 @@ export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, acto
               href={viewHref({ vista: 'etapas', etapa: e.mes }, persona)}
               aria-current={on ? 'true' : undefined}
               className={`inline-flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-[10px] transition-colors ${
-                on ? 'pn-chip-on text-white' : 'text-white/50 hover:text-white/80'
+                on ? 'pn-chip-on text-fg' : 'text-fg/50 hover:text-fg/80'
               }`}
             >
               {e.nombreMes}
@@ -66,20 +66,20 @@ export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, acto
       </nav>
 
       <section className="pn-glass rounded-[20px] p-5">
-        <p className="font-mono text-[11px] uppercase tracking-widest text-white/45">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-fg/45">
           {etapa.nombreMes}
           {actual?.mes === etapa.mes && ' · estamos acá'}
         </p>
-        <h2 className="mt-1 text-lg font-semibold text-white">{sentence(etapa.titulo)}</h2>
+        <h2 className="mt-1 text-lg font-semibold text-fg">{sentence(etapa.titulo)}</h2>
         {resumen && <Markdown html={contextoHtml(resumen)} className="mt-3" />}
-        <div className="mt-4 flex items-center justify-between text-xs text-white/50">
+        <div className="mt-4 flex items-center justify-between text-xs text-fg/50">
           <span>Tareas hechas de la etapa</span>
           <span className="tabular-nums">
             {hechas}/{total}
           </span>
         </div>
-        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/[0.06]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Avance de la etapa">
-          <div className="h-full rounded-full bg-white/80" style={{ width: `${pct}%` }} />
+        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-fg/[0.06]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Avance de la etapa">
+          <div className="h-full rounded-full bg-fg/80" style={{ width: `${pct}%` }} />
         </div>
       </section>
 
@@ -92,23 +92,23 @@ export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, acto
               return (
                 <li key={s.semana} className={`rounded-[14px] p-3.5 ${now ? 'pn-chip-on' : 'pn-solid'}`}>
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide text-white/55">
+                    <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide text-fg/55">
                       {s.semana}
                       {now && (
                         <>
                           <span className="pn-signal" aria-hidden />
-                          <span className="text-white">esta semana</span>
+                          <span className="text-fg">esta semana</span>
                         </>
                       )}
                     </span>
                     {s.hito && (
                       <span
-                        className="rounded-full border border-white/15 bg-white/[0.06] px-2 py-0.5 text-[11px] text-white"
+                        className="rounded-full border border-fg/15 bg-fg/[0.06] px-2 py-0.5 text-[11px] text-fg"
                         dangerouslySetInnerHTML={{ __html: inlineHtml(`Hito: ${s.hito}`) }}
                       />
                     )}
                   </div>
-                  <p className="mt-1.5 text-sm leading-relaxed text-white/75" dangerouslySetInnerHTML={{ __html: inlineHtml(s.foco) }} />
+                  <p className="mt-1.5 text-sm leading-relaxed text-fg/75" dangerouslySetInnerHTML={{ __html: inlineHtml(s.foco) }} />
                 </li>
               )
             })}
@@ -136,10 +136,10 @@ export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, acto
             const pendientes = suyas.filter((t) => t.tipo === 'semanal' || t.estado !== 'hecho').length
             return (
               <details key={p} open={p === actor} className="group">
-                <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-sm font-medium text-white hover:text-white/80 [&::-webkit-details-marker]:hidden">
-                  <span className="text-white/45 transition-transform group-open:rotate-90" aria-hidden>›</span>
+                <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-sm font-medium text-fg hover:text-fg/80 [&::-webkit-details-marker]:hidden">
+                  <span className="text-fg/45 transition-transform group-open:rotate-90" aria-hidden>›</span>
                   {PERSONA_NAMES[p]}
-                  <span className="text-xs font-normal text-white/45">
+                  <span className="text-xs font-normal text-fg/45">
                     {pendientes} {pendientes === 1 ? 'pendiente' : 'pendientes'} · {suyas.length} en total
                   </span>
                 </summary>
@@ -154,7 +154,7 @@ export function EtapasView({ etapas, decisiones, guia, tasks, mes, persona, acto
 
       {sinFecha.length > 0 && (
         <details className="group">
-          <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/45 hover:text-white/70 [&::-webkit-details-marker]:hidden">
+          <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-xs font-medium uppercase tracking-wide text-fg/45 hover:text-fg/70 [&::-webkit-details-marker]:hidden">
             <span className="transition-transform group-open:rotate-90" aria-hidden>›</span>
             Decisiones sin fecha fija · {sinFecha.length}
           </summary>

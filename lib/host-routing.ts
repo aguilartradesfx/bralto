@@ -48,8 +48,12 @@ export function resolveHostRouting(host: string | null, pathname: string, search
 // Ahí no se cargan analítica ni banner de cookies, ni se indexan.
 const CLIENT_PRIVATE_PREFIX = '/c/'
 
+export function isContractSigningPath(pathname: string): boolean {
+  return pathname.startsWith(CLIENT_PRIVATE_PREFIX)
+}
+
 export function isPrivateSurface(host: string | null, pathname: string): boolean {
-  return hostKind(host) === 'admin' || isPanelPath(pathname) || pathname.startsWith(CLIENT_PRIVATE_PREFIX)
+  return hostKind(host) === 'admin' || isPanelPath(pathname) || isContractSigningPath(pathname)
 }
 
 // La misma regla como expresión JS para scripts inline (lee `location` del navegador)

@@ -19,7 +19,7 @@ export function PersonaFilterBar({ persona, hrefFor }: { persona: PersonaFilter;
             href={hrefFor(value)}
             aria-current={active ? 'true' : undefined}
             className={`py-1 text-sm transition-colors ${
-              active ? 'text-white underline decoration-white/40 underline-offset-[6px]' : 'text-white/40 hover:text-white/75'
+              active ? 'text-fg underline decoration-fg/40 underline-offset-[6px]' : 'text-fg/40 hover:text-fg/75'
             }`}
           >
             {label}

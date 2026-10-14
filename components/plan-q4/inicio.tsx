@@ -8,7 +8,7 @@ import { PERSONA_NAMES, type Etapa, type GuiaData, type Persona, type PlanTask, 
 import { viewHref, type ResumenPersona } from '@/lib/plan-q4/vistas'
 import { Markdown } from '@/components/plan-q4/markdown'
 
-const h2 = 'text-xl font-semibold text-white tracking-tight'
+const h2 = 'text-xl font-semibold text-fg tracking-tight'
 export const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
 
 interface Props {
@@ -36,9 +36,9 @@ export function Inicio({ guia, resumen, etapas, tasks, today, actor, persona, mi
       )}
 
       {actor && miSemana && (
-        <section className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-y border-white/[0.06] py-4">
-          <p className="text-[15px] text-white/80">
-            <span className="font-medium text-white">{PERSONA_NAMES[actor]}</span>
+        <section className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-y border-fg/[0.06] py-4">
+          <p className="text-[15px] text-fg/80">
+            <span className="font-medium text-fg">{PERSONA_NAMES[actor]}</span>
             {', '}
             {miSemana.semana === 0 && miSemana.vencidas === 0
               ? 'no tenés nada pendiente esta semana.'
@@ -51,7 +51,7 @@ export function Inicio({ guia, resumen, etapas, tasks, today, actor, persona, mi
             )}
             {(miSemana.semana > 0 || miSemana.vencidas > 0) && '.'}
           </p>
-          <Link href={viewHref({ vista: 'tareas' }, actor)} className="inline-flex items-center gap-1.5 text-sm font-medium text-white hover:text-white/70 transition-colors">
+          <Link href={viewHref({ vista: 'tareas' }, actor)} className="inline-flex items-center gap-1.5 text-sm font-medium text-fg hover:text-fg/70 transition-colors">
             Ver mis tareas
             <ArrowRight size={14} strokeWidth={1.5} absoluteStrokeWidth aria-hidden />
           </Link>
@@ -68,7 +68,7 @@ export function Inicio({ guia, resumen, etapas, tasks, today, actor, persona, mi
       {etapas.length > 0 && (
         <section>
           <h2 className={h2}>Las etapas</h2>
-          <p className="mt-1 text-sm text-white/45">Un mes cada una. Tocá una para ver su semana a semana.</p>
+          <p className="mt-1 text-sm text-fg/45">Un mes cada una. Tocá una para ver su semana a semana.</p>
           <ol className="mt-5 grid gap-6 sm:grid-cols-3">
             {etapas.map((etapa) => {
               const now = actual?.mes === etapa.mes
@@ -77,22 +77,22 @@ export function Inicio({ guia, resumen, etapas, tasks, today, actor, persona, mi
               return (
                 <li key={etapa.mes}>
                   <Link href={viewHref({ vista: 'etapas', etapa: etapa.mes }, persona)} className="group block">
-                    <span className="block h-px overflow-hidden bg-white/[0.12]" aria-hidden>
-                      <span className="block h-full bg-white" style={{ width: `${pct}%` }} />
+                    <span className="block h-px overflow-hidden bg-fg/[0.12]" aria-hidden>
+                      <span className="block h-full bg-fg" style={{ width: `${pct}%` }} />
                     </span>
-                    <span className="mt-3 flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-white/45">
+                    <span className="mt-3 flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-fg/45">
                       {etapa.nombreMes}
                       {now && (
-                        <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-white">
+                        <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-fg">
                           <span className="pn-signal" aria-hidden />
                           estamos acá
                         </span>
                       )}
                     </span>
-                    <span className="mt-1.5 block text-[15px] font-medium leading-snug text-white group-hover:text-white/80 transition-colors">
+                    <span className="mt-1.5 block text-[15px] font-medium leading-snug text-fg group-hover:text-fg/80 transition-colors">
                       {sentence(etapa.titulo)}
                     </span>
-                    <span className="mt-1 block text-xs text-white/40 tabular-nums">
+                    <span className="mt-1 block text-xs text-fg/40 tabular-nums">
                       {hechas} de {total} tareas hechas
                     </span>
                   </Link>
@@ -108,26 +108,26 @@ export function Inicio({ guia, resumen, etapas, tasks, today, actor, persona, mi
         <dl className="mt-5 grid gap-6 sm:grid-cols-2">
           {resumen.encabezado.map(({ label, value }) => (
             <div key={label}>
-              <dt className="text-[11px] uppercase tracking-wide text-white/40">{label}</dt>
-              <dd className="mt-1 text-lg font-medium leading-snug text-white">{value}</dd>
+              <dt className="text-[11px] uppercase tracking-wide text-fg/40">{label}</dt>
+              <dd className="mt-1 text-lg font-medium leading-snug text-fg">{value}</dd>
             </div>
           ))}
         </dl>
 
         {resumen.hitos.length > 0 && (
           <div className="mt-8">
-            <h3 className="text-sm font-medium text-white">Hitos</h3>
+            <h3 className="text-sm font-medium text-fg">Hitos</h3>
             {proximo && (
-              <p className="mt-0.5 text-sm text-white/50">
-                El próximo es <span className="text-white">{proximo.hito.titulo}</span>, {diasTexto(proximo.dias)}.
+              <p className="mt-0.5 text-sm text-fg/50">
+                El próximo es <span className="text-fg">{proximo.hito.titulo}</span>, {diasTexto(proximo.dias)}.
               </p>
             )}
-            <ol className="mt-3 divide-y divide-white/[0.06]">
+            <ol className="mt-3 divide-y divide-fg/[0.06]">
               {resumen.hitos.map((h) => {
                 const next = proximo?.hito === h
                 const past = h.fecha < today
                 return (
-                  <li key={`${h.fecha}-${h.titulo}`} className={`flex items-center gap-4 py-2 text-sm ${next ? 'text-white' : past ? 'text-white/30' : 'text-white/65'}`}>
+                  <li key={`${h.fecha}-${h.titulo}`} className={`flex items-center gap-4 py-2 text-sm ${next ? 'text-fg' : past ? 'text-fg/30' : 'text-fg/65'}`}>
                     <span className="w-14 shrink-0 font-mono text-xs tabular-nums">{formatFecha(h.fecha)}</span>
                     <span className="flex-1">{h.titulo}</span>
                     {next && <span className="pn-signal" aria-label="el próximo" />}

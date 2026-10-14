@@ -46,7 +46,7 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
             const client = clients.find((c) => c.id === id)
             if (client) handleSelectClient(client)
           }}
-          className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 transition-colors pr-10"
+          className="w-full appearance-none bg-fg/5 border border-fg/10 rounded-lg px-4 py-2.5 text-sm text-fg focus:outline-none focus:border-fg/50 focus:ring-1 focus:ring-fg/10 transition-colors pr-10"
         >
           <option value="">— Seleccionar cliente existente —</option>
           {clients.map((c) => (
@@ -57,19 +57,19 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
         </select>
         <ChevronDown
           size={14}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-fg/30 pointer-events-none"
         />
       </div>
 
       {selectedClient && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-white/[0.08] rounded-lg">
-          <span className="text-xs text-white flex-1">
+        <div className="flex items-center gap-2 px-3 py-2 bg-fg/[0.08] rounded-lg">
+          <span className="text-xs text-fg flex-1">
             Datos precargados desde <strong>{selectedClient.empresa_nombre}</strong>. Podés editar los campos abajo.
           </span>
           <button
             type="button"
             onClick={() => onClientSelect(null)}
-            className="text-white/60 hover:text-white"
+            className="text-fg/60 hover:text-fg"
           >
             <X size={13} />
           </button>
@@ -80,7 +80,7 @@ export function ClientSelector({ form, clients, selectedClientId, onClientSelect
       <button
         type="button"
         onClick={() => setShowNew((v) => !v)}
-        className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors"
+        className="flex items-center gap-1.5 text-xs text-fg/40 hover:text-fg transition-colors"
       >
         <Plus size={12} />
         {showNew ? 'Ocultar formulario de nuevo cliente' : 'Nuevo cliente (guardar en lista)'}
@@ -129,9 +129,9 @@ function NewClientQuickForm({ onCreated }: { onCreated: (client: ClientRow) => v
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-lg space-y-3"
+      className="p-4 bg-fg/[0.02] border border-fg/[0.06] rounded-lg space-y-3"
     >
-      <p className="text-xs text-white/40 font-medium uppercase tracking-wider">Nuevo cliente</p>
+      <p className="text-xs text-fg/40 font-medium uppercase tracking-wider">Nuevo cliente</p>
 
       {[
         { name: 'empresa_nombre', label: 'Nombre de empresa', required: true },
@@ -140,13 +140,13 @@ function NewClientQuickForm({ onCreated }: { onCreated: (client: ClientRow) => v
         { name: 'correo_notificaciones', label: 'Correo de notificaciones' },
       ].map(({ name, label, required }) => (
         <div key={name}>
-          <label className="block text-xs text-white/50 mb-1">
-            {label} {required && <span className="text-white">*</span>}
+          <label className="block text-xs text-fg/50 mb-1">
+            {label} {required && <span className="text-fg">*</span>}
           </label>
           <input
             name={name}
             required={required}
-            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/50 transition-colors"
+            className="w-full bg-fg/5 border border-fg/10 rounded-md px-3 py-2 text-sm text-fg placeholder-fg/20 focus:outline-none focus:border-fg/50 transition-colors"
           />
         </div>
       ))}

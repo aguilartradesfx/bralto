@@ -25,12 +25,12 @@ export function DeleteButton({ contractId }: { contractId: string }) {
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div className="relative pn-glass rounded-[24px] w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold">Eliminar contrato</h3>
-          <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white/70"><X size={16} /></button>
+          <h3 className="text-fg font-semibold">Eliminar contrato</h3>
+          <button onClick={() => setOpen(false)} className="text-fg/40 hover:text-fg/70"><X size={16} /></button>
         </div>
-        <p className="text-sm text-white/60 mb-6">Esta acción no se puede deshacer. El contrato y todos sus eventos serán eliminados permanentemente.</p>
+        <p className="text-sm text-fg/60 mb-6">Esta acción no se puede deshacer. El contrato y todos sus eventos serán eliminados permanentemente.</p>
         <div className="flex gap-3 justify-end">
-          <button onClick={() => setOpen(false)} className="px-4 py-2 text-sm text-white/50 hover:text-white/80 transition-colors">
+          <button onClick={() => setOpen(false)} className="px-4 py-2 text-sm text-fg/50 hover:text-fg/80 transition-colors">
             Cancelar
           </button>
           <button

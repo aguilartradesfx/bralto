@@ -26,7 +26,7 @@ interface RequestRow {
   generated_url: string | null
 }
 
-const TH = 'text-left px-4 py-3 text-xs text-white/40 font-medium'
+const TH = 'text-left px-4 py-3 text-xs text-fg/40 font-medium'
 
 function formatDate(dt: string) {
   return new Date(dt).toLocaleDateString('es-CR', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -70,19 +70,19 @@ export default async function PropuestasPage() {
   return (
     <div className="p-4 md:p-8 max-w-6xl">
       <div className="mb-6 md:mb-8">
-        <h1 className="text-xl font-semibold text-white">Propuestas</h1>
-        <p className="text-sm text-white/40 mt-0.5">{rows.length} propuesta(s) publicada(s)</p>
+        <h1 className="text-xl font-semibold text-fg">Propuestas</h1>
+        <p className="text-sm text-fg/40 mt-0.5">{rows.length} propuesta(s) publicada(s)</p>
       </div>
 
       {rows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <FileText size={32} className="text-white/10 mb-3" />
-          <p className="text-white/30 text-sm">No hay propuestas publicadas</p>
+          <FileText size={32} className="text-fg/10 mb-3" />
+          <p className="text-fg/30 text-sm">No hay propuestas publicadas</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.08] overflow-hidden overflow-x-auto">
+        <div className="rounded-xl border border-fg/[0.08] overflow-hidden overflow-x-auto">
           <table className="w-full min-w-[860px]">
-            <thead className="bg-white/[0.03] border-b border-white/[0.06]">
+            <thead className="bg-fg/[0.03] border-b border-fg/[0.06]">
               <tr>
                 <th className={TH}>Cliente</th>
                 <th className={TH}>Servicios</th>
@@ -90,10 +90,10 @@ export default async function PropuestasPage() {
                 <th className={TH}>Estado</th>
                 <th className={TH}>Creada</th>
                 <th className={TH}>Vence</th>
-                <th className="px-4 py-3 text-xs text-white/40 font-medium text-right">Acciones</th>
+                <th className="px-4 py-3 text-xs text-fg/40 font-medium text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-fg/[0.04]">
               {rows.map((p) => {
                 const request = requestBySlug.get(p.slug)
                 const expired = new Date(p.expires_at) < now
@@ -103,39 +103,39 @@ export default async function PropuestasPage() {
                   : p.created_by
 
                 return (
-                  <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={p.id} className="hover:bg-fg/[0.02] transition-colors">
                     <td className="px-4 py-3">
-                      <p className="text-sm text-white font-medium">{p.client_name}</p>
+                      <p className="text-sm text-fg font-medium">{p.client_name}</p>
                       {p.project_name !== p.client_name && (
-                        <p className="text-xs text-white/40 mt-0.5">{p.project_name}</p>
+                        <p className="text-xs text-fg/40 mt-0.5">{p.project_name}</p>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {request ? (
                         <div className="flex flex-wrap gap-1 max-w-[260px]">
                           {request.services.map((id) => (
-                            <span key={id} className="inline-block px-1.5 py-0.5 text-[10px] bg-white/[0.08] text-white/80 rounded whitespace-nowrap">
+                            <span key={id} className="inline-block px-1.5 py-0.5 text-[10px] bg-fg/[0.08] text-fg/80 rounded whitespace-nowrap">
                               {serviceLabel(id)}
                             </span>
                           ))}
                         </div>
                       ) : (
-                        <span className="text-xs text-white/20">—</span>
+                        <span className="text-xs text-fg/20">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs text-white/40">{author}</td>
+                    <td className="px-4 py-3 text-xs text-fg/40">{author}</td>
                     <td className="px-4 py-3">
                       {request ? (
                         <span className={`inline-block px-2 py-0.5 text-xs rounded-full border ${STATUS_COLORS[request.status]}`}>
                           {STATUS_LABELS[request.status]}
                         </span>
                       ) : (
-                        <span className="text-xs text-white/30">Manual</span>
+                        <span className="text-xs text-fg/30">Manual</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs text-white/40">{formatDate(p.created_at)}</td>
+                    <td className="px-4 py-3 text-xs text-fg/40">{formatDate(p.created_at)}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs ${expired ? 'text-red-400' : 'text-white/40'}`}>
+                      <span className={`text-xs ${expired ? 'text-red-400' : 'text-fg/40'}`}>
                         {expired ? 'Expirada' : formatDate(p.expires_at)}
                       </span>
                     </td>
@@ -146,7 +146,7 @@ export default async function PropuestasPage() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/30 hover:text-white transition-colors"
+                            className="text-fg/30 hover:text-fg transition-colors"
                             title="Abrir propuesta"
                           >
                             <ExternalLink size={13} />

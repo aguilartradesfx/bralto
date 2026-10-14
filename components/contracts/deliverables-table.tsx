@@ -31,13 +31,13 @@ export function DeliverablesTable({ form }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-fg/50">
           {fields.length === 0 ? 'Sin entregables definidos' : `${fields.length} entregable(s)`}
         </p>
         <button
           type="button"
           onClick={handleGenerateDefaults}
-          className="flex items-center gap-1.5 text-xs text-white hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs text-fg hover:text-fg transition-colors"
         >
           <Sparkles size={12} />
           Generar por defecto
@@ -45,45 +45,45 @@ export function DeliverablesTable({ form }: Props) {
       </div>
 
       {fields.length > 0 && (
-        <div className="rounded-lg border border-white/[0.08] overflow-hidden">
+        <div className="rounded-lg border border-fg/[0.08] overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-white/[0.03]">
+            <thead className="bg-fg/[0.03]">
               <tr>
-                <th className="text-left px-3 py-2 text-xs text-white/40 font-medium">Servicio</th>
-                <th className="text-left px-3 py-2 text-xs text-white/40 font-medium">Descripción</th>
-                <th className="text-left px-3 py-2 text-xs text-white/40 font-medium w-20">Cant.</th>
-                <th className="text-left px-3 py-2 text-xs text-white/40 font-medium w-24">Unidad</th>
+                <th className="text-left px-3 py-2 text-xs text-fg/40 font-medium">Servicio</th>
+                <th className="text-left px-3 py-2 text-xs text-fg/40 font-medium">Descripción</th>
+                <th className="text-left px-3 py-2 text-xs text-fg/40 font-medium w-20">Cant.</th>
+                <th className="text-left px-3 py-2 text-xs text-fg/40 font-medium w-24">Unidad</th>
                 <th className="w-8" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-fg/[0.04]">
               {fields.map((field, index) => (
                 <tr key={field.id}>
                   <td className="px-3 py-1.5">
                     <input
                       {...form.register(`entregables.${index}.servicio`)}
-                      className="w-full bg-transparent text-white/80 text-xs focus:outline-none focus:text-white"
+                      className="w-full bg-transparent text-fg/80 text-xs focus:outline-none focus:text-fg"
                       placeholder="Servicio"
                     />
                   </td>
                   <td className="px-3 py-1.5">
                     <input
                       {...form.register(`entregables.${index}.descripcion`)}
-                      className="w-full bg-transparent text-white/80 text-xs focus:outline-none focus:text-white"
+                      className="w-full bg-transparent text-fg/80 text-xs focus:outline-none focus:text-fg"
                       placeholder="Descripción del entregable"
                     />
                   </td>
                   <td className="px-3 py-1.5">
                     <input
                       {...form.register(`entregables.${index}.cantidad`)}
-                      className="w-full bg-transparent text-white/80 text-xs focus:outline-none focus:text-white"
+                      className="w-full bg-transparent text-fg/80 text-xs focus:outline-none focus:text-fg"
                       placeholder="—"
                     />
                   </td>
                   <td className="px-3 py-1.5">
                     <input
                       {...form.register(`entregables.${index}.unidad`)}
-                      className="w-full bg-transparent text-white/80 text-xs focus:outline-none focus:text-white"
+                      className="w-full bg-transparent text-fg/80 text-xs focus:outline-none focus:text-fg"
                       placeholder="unidad"
                     />
                   </td>
@@ -91,7 +91,7 @@ export function DeliverablesTable({ form }: Props) {
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="text-white/20 hover:text-red-400 transition-colors"
+                      className="text-fg/20 hover:text-red-400 transition-colors"
                     >
                       <Trash2 size={13} />
                     </button>
@@ -106,7 +106,7 @@ export function DeliverablesTable({ form }: Props) {
       <button
         type="button"
         onClick={() => append({ servicio: '', descripcion: '', cantidad: null, unidad: null })}
-        className="flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors"
+        className="flex items-center gap-2 text-xs text-fg/40 hover:text-fg/70 transition-colors"
       >
         <Plus size={13} />
         Agregar entregable

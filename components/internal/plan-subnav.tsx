@@ -36,7 +36,7 @@ function Items({ onNavigate }: { onNavigate: () => void }) {
             onClick={onNavigate}
             aria-current={on ? 'page' : undefined}
             className={`flex items-center gap-2.5 px-3 py-1.5 rounded-[10px] text-[13px] transition-colors ${
-              on ? 'pn-chip-on text-white' : 'text-white/50 hover:text-white hover:bg-white/[0.05]'
+              on ? 'pn-chip-on text-fg' : 'text-fg/50 hover:text-fg hover:bg-fg/[0.05]'
             }`}
           >
             <Icon size={14} strokeWidth={1.5} absoluteStrokeWidth aria-hidden />
@@ -59,7 +59,7 @@ export function PlanNavItem({ active, onNavigate }: { active: boolean; onNavigat
           onClick={onNavigate}
           aria-current={active ? 'true' : undefined}
           className={`flex flex-1 items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
-            active ? 'text-white' : 'text-white/55 hover:text-white hover:bg-white/[0.05]'
+            active ? 'text-fg' : 'text-fg/55 hover:text-fg hover:bg-fg/[0.05]'
           }`}
         >
           <Target size={15} strokeWidth={1.5} absoluteStrokeWidth />
@@ -71,13 +71,13 @@ export function PlanNavItem({ active, onNavigate }: { active: boolean; onNavigat
           onClick={() => setOpen(!open)}
           aria-expanded={open}
           aria-label={open ? 'Plegar las secciones del plan' : 'Desplegar las secciones del plan'}
-          className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/[0.05] transition-colors"
+          className="p-2 rounded-lg text-fg/40 hover:text-fg hover:bg-fg/[0.05] transition-colors"
         >
           <ChevronDown size={14} strokeWidth={1.5} absoluteStrokeWidth className={`transition-transform ${open ? '' : '-rotate-90'}`} />
         </button>
       </div>
       {open && (
-        <div className="ml-[21px] mt-0.5 mb-1 border-l border-white/[0.08] pl-2 space-y-0.5">
+        <div className="ml-[21px] mt-0.5 mb-1 border-l border-fg/[0.08] pl-2 space-y-0.5">
           {active ? (
             <Suspense fallback={null}>
               <Items onNavigate={onNavigate} />
@@ -90,7 +90,7 @@ export function PlanNavItem({ active, onNavigate }: { active: boolean; onNavigat
                   key={vista}
                   href={`/plan-q4?vista=${vista}`}
                   onClick={onNavigate}
-                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-[10px] text-[13px] text-white/50 hover:text-white hover:bg-white/[0.05] transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-[10px] text-[13px] text-fg/50 hover:text-fg hover:bg-fg/[0.05] transition-colors"
                 >
                   <Icon size={14} strokeWidth={1.5} absoluteStrokeWidth aria-hidden />
                   {VISTA_LABELS[vista]}

@@ -27,7 +27,7 @@ interface Props {
   showPersona?: boolean // listas de todo el equipo: el nombre va en la línea
 }
 
-const label = 'mb-1.5 text-[11px] font-medium uppercase tracking-wide text-white/40'
+const label = 'mb-1.5 text-[11px] font-medium uppercase tracking-wide text-fg/40'
 
 export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html, showPersona }: Props) {
   const router = useRouter()
@@ -81,7 +81,7 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
         open ? 'pn-chip-on -mx-3 my-2 px-3 pb-1' : ''
       }`}
     >
-      <div className={`flex items-start gap-3 rounded-[10px] px-2 -mx-2 transition-colors ${open ? '' : 'hover:bg-white/[0.03]'}`}>
+      <div className={`flex items-start gap-3 rounded-[10px] px-2 -mx-2 transition-colors ${open ? '' : 'hover:bg-fg/[0.03]'}`}>
         <button
           type="button"
           onClick={toggleDone}
@@ -93,10 +93,10 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
           <span
             className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
               done
-                ? 'border-white/25 bg-white/15 text-white/80'
+                ? 'border-fg/25 bg-fg/15 text-fg/80'
                 : notStarted
-                  ? 'border-dashed border-white/20'
-                  : 'border-white/35 hover:border-white/80'
+                  ? 'border-dashed border-fg/20'
+                  : 'border-fg/35 hover:border-fg/80'
             }`}
           >
             {working ? <Loader2 size={10} className="animate-spin" /> : done ? <Check size={10} strokeWidth={3} /> : null}
@@ -110,10 +110,10 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
             setOpen(!open)
           }}
           aria-expanded={open} className="flex min-w-0 flex-1 items-baseline gap-3 py-2 text-left">
-          <span className={`min-w-0 flex-1 text-sm leading-snug ${done ? 'text-white/30 line-through' : open ? 'text-white font-medium' : 'text-white/85'}`}>
+          <span className={`min-w-0 flex-1 text-sm leading-snug ${done ? 'text-fg/30 line-through' : open ? 'text-fg font-medium' : 'text-fg/85'}`}>
             {task.nombre ?? task.titulo}
           </span>
-          <span className={`shrink-0 text-xs tabular-nums ${overdue ? 'text-red-300' : 'text-white/35'}`}>
+          <span className={`shrink-0 text-xs tabular-nums ${overdue ? 'text-red-300' : 'text-fg/35'}`}>
             {showPersona && `${PERSONA_NAMES[task.responsable]} · `}
             {fechaCorta}
           </span>
@@ -132,8 +132,8 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
       >
         <div className="min-h-0 overflow-hidden">
           <div className="mb-3 mt-1 ml-7 space-y-4">
-            {task.nombre && task.nombre !== task.titulo && <p className="text-[13px] leading-relaxed text-white/75">{task.titulo}</p>}
-            <p className="text-xs text-white/45">
+            {task.nombre && task.nombre !== task.titulo && <p className="text-[13px] leading-relaxed text-fg/75">{task.titulo}</p>}
+            <p className="text-xs text-fg/45">
               {[area, `${PERSONA_NAMES[task.responsable]}${task.apoyo ? ` con ${PERSONA_NAMES[task.apoyo]}` : ''}`, fechaLarga, task.estado === 'en_curso' ? 'En curso' : null]
                 .filter(Boolean)
                 .join(' · ')}
@@ -150,21 +150,21 @@ export function TaskItem({ task, today, week, doneThisWeek, canEdit, area, html,
                 <div className="plan-md" dangerouslySetInnerHTML={{ __html: html.instruccionesHtml }} />
               </div>
             )}
-            {!html?.descripcionHtml && !html?.instruccionesHtml && <p className="text-xs text-white/40">Esta tarea todavía no tiene instrucciones.</p>}
+            {!html?.descripcionHtml && !html?.instruccionesHtml && <p className="text-xs text-fg/40">Esta tarea todavía no tiene instrucciones.</p>}
             {task.nota && !editing && (
               <div>
                 <p className={label}>Nota</p>
-                <p className="text-sm text-white/70 whitespace-pre-line">{task.nota}</p>
+                <p className="text-sm text-fg/70 whitespace-pre-line">{task.nota}</p>
               </div>
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-[11px] text-white/30">
+              <p className="text-[11px] text-fg/30">
                 <span className="font-mono">{task.id}</span>
                 {task.actualizado_por && task.actualizado_en && ` · ${PERSONA_NAMES[task.actualizado_por]}, ${formatStamp(task.actualizado_en)}`}
               </p>
               {canEdit && !editing && (
-                <button type="button" onClick={() => setEditing(true)} className="text-xs text-white/55 underline-offset-4 hover:text-white hover:underline">
+                <button type="button" onClick={() => setEditing(true)} className="text-xs text-fg/55 underline-offset-4 hover:text-fg hover:underline">
                   Editar
                 </button>
               )}
@@ -268,13 +268,13 @@ function TaskEditor({ task, working, error, onCancel, onSave }: EditorProps) {
       <Field label="Nota" className="sm:col-span-2">
         <textarea rows={3} maxLength={MAX_NOTA} value={nota} onChange={(e) => setNota(e.target.value)} className={FIELD_CLASS} />
       </Field>
-      {!delPanel && <p className="sm:col-span-2 text-[11px] text-white/35">Qué es y cómo hacerlo de las tareas del plan se cambian en el archivo del plan.</p>}
+      {!delPanel && <p className="sm:col-span-2 text-[11px] text-fg/35">Qué es y cómo hacerlo de las tareas del plan se cambian en el archivo del plan.</p>}
       {error && <p className="sm:col-span-2 text-xs text-red-300">{error}</p>}
       <div className="sm:col-span-2 flex gap-2">
         <button type="submit" disabled={working} className="pn-btn-solid px-4 py-2 text-sm font-semibold disabled:opacity-40">
           {working ? 'Guardando…' : 'Guardar'}
         </button>
-        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm rounded-lg text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors">
+        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm rounded-lg text-fg/60 hover:text-fg hover:bg-fg/[0.05] transition-colors">
           Cancelar
         </button>
       </div>

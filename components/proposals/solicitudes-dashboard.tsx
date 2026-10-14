@@ -15,14 +15,14 @@ import {
   BUDGET_LABELS, TIMELINE_LABELS,
 } from '@/types/proposals'
 
-const TH = 'text-left px-4 py-3 text-xs text-white/40 font-medium'
+const TH = 'text-left px-4 py-3 text-xs text-fg/40 font-medium'
 const TD = 'px-4 py-3'
-const ROW = 'hover:bg-white/[0.03] cursor-pointer transition-colors border-b border-white/[0.04] last:border-0'
+const ROW = 'hover:bg-fg/[0.03] cursor-pointer transition-colors border-b border-fg/[0.04] last:border-0'
 
 function ServiceChip({ id }: { id: string }) {
   const svc = BRALTO_SERVICES.find((s) => s.id === id)
   return (
-    <span className="inline-block px-1.5 py-0.5 text-[10px] bg-white/[0.08] text-white/70 rounded whitespace-nowrap">
+    <span className="inline-block px-1.5 py-0.5 text-[10px] bg-fg/[0.08] text-fg/70 rounded whitespace-nowrap">
       {svc?.label ?? id}
     </span>
   )
@@ -113,11 +113,11 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
       <div className="flex-1 bg-black/50" onClick={onClose} />
       <div className="w-full max-w-[520px] pn-glass pn-glass--dense rounded-l-[24px] flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-white/[0.08] flex-shrink-0">
+        <div className="flex items-start justify-between p-5 border-b border-fg/[0.08] flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">
-            <h2 className="text-base font-semibold text-white truncate">{proposal.client_name}</h2>
+            <h2 className="text-base font-semibold text-fg truncate">{proposal.client_name}</h2>
             {proposal.client_company && (
-              <p className="text-xs text-white/40 mt-0.5">{proposal.client_company}</p>
+              <p className="text-xs text-fg/40 mt-0.5">{proposal.client_company}</p>
             )}
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               <StatusBadge status={status} />
@@ -126,7 +126,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
               </span>
             </div>
           </div>
-          <button onClick={onClose} className="text-white/30 hover:text-white/70 transition-colors p-1 flex-shrink-0">
+          <button onClick={onClose} className="text-fg/30 hover:text-fg/70 transition-colors p-1 flex-shrink-0">
             <X size={18} />
           </button>
         </div>
@@ -137,29 +137,29 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
           <div className="space-y-2">
             {proposal.client_email && (
               <div className="flex items-center gap-2 text-sm">
-                <Mail size={13} className="text-white/30 flex-shrink-0" />
-                <a href={`mailto:${proposal.client_email}`} className="text-white/70 hover:text-white transition-colors">
+                <Mail size={13} className="text-fg/30 flex-shrink-0" />
+                <a href={`mailto:${proposal.client_email}`} className="text-fg/70 hover:text-fg transition-colors">
                   {proposal.client_email}
                 </a>
               </div>
             )}
             {proposal.client_phone && (
               <div className="flex items-center gap-2 text-sm">
-                <Phone size={13} className="text-white/30 flex-shrink-0" />
-                <span className="text-white/70">{proposal.client_phone}</span>
+                <Phone size={13} className="text-fg/30 flex-shrink-0" />
+                <span className="text-fg/70">{proposal.client_phone}</span>
               </div>
             )}
             {proposal.client_industry && (
               <div className="flex items-center gap-2 text-sm">
-                <Building2 size={13} className="text-white/30 flex-shrink-0" />
-                <span className="text-white/60">{proposal.client_industry}</span>
+                <Building2 size={13} className="text-fg/30 flex-shrink-0" />
+                <span className="text-fg/60">{proposal.client_industry}</span>
               </div>
             )}
           </div>
 
           {/* Services */}
           <div>
-            <p className="text-xs text-white/40 mb-2">Servicios solicitados</p>
+            <p className="text-xs text-fg/40 mb-2">Servicios solicitados</p>
             <div className="flex flex-wrap gap-1.5">
               {proposal.services.map((s) => <ServiceChip key={s} id={s} />)}
             </div>
@@ -167,40 +167,40 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
 
           {/* Notes */}
           {proposal.notes && (
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+            <div className="bg-fg/[0.03] border border-fg/[0.06] rounded-lg p-3">
               <div className="flex items-center gap-1.5 mb-1.5">
-                <MessageSquare size={12} className="text-white/30" />
-                <span className="text-xs text-white/40">Notas del vendedor</span>
+                <MessageSquare size={12} className="text-fg/30" />
+                <span className="text-xs text-fg/40">Notas del vendedor</span>
               </div>
-              <p className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">{proposal.notes}</p>
+              <p className="text-sm text-fg/70 leading-relaxed whitespace-pre-wrap">{proposal.notes}</p>
             </div>
           )}
 
           {/* Budget & Timeline */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
-              <p className="text-xs text-white/30 mb-1">Presupuesto</p>
-              <p className="text-sm text-white/80">{BUDGET_LABELS[proposal.budget_range]}</p>
+            <div className="bg-fg/[0.03] border border-fg/[0.06] rounded-lg p-3">
+              <p className="text-xs text-fg/30 mb-1">Presupuesto</p>
+              <p className="text-sm text-fg/80">{BUDGET_LABELS[proposal.budget_range]}</p>
             </div>
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
-              <p className="text-xs text-white/30 mb-1">Timeline</p>
-              <p className="text-sm text-white/80">{TIMELINE_LABELS[proposal.timeline]}</p>
+            <div className="bg-fg/[0.03] border border-fg/[0.06] rounded-lg p-3">
+              <p className="text-xs text-fg/30 mb-1">Timeline</p>
+              <p className="text-sm text-fg/80">{TIMELINE_LABELS[proposal.timeline]}</p>
             </div>
           </div>
 
           {/* Dates */}
-          <div className="text-xs text-white/25 space-y-1 pt-2 border-t border-white/[0.06]">
+          <div className="text-xs text-fg/25 space-y-1 pt-2 border-t border-fg/[0.06]">
             <div>Enviada: {formatDate(proposal.created_at)}</div>
             {(proposal as ProposalRequest & { submitted_by_name?: string }).submitted_by_name && (
-              <div>Por: <span className="text-white/40">{(proposal as ProposalRequest & { submitted_by_name?: string }).submitted_by_name}</span></div>
+              <div>Por: <span className="text-fg/40">{(proposal as ProposalRequest & { submitted_by_name?: string }).submitted_by_name}</span></div>
             )}
           </div>
 
           {/* Internal notes */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">Notas internas (solo equipo Bralto)</label>
+            <label className="block text-xs text-fg/40 mb-1.5">Notas internas (solo equipo Bralto)</label>
             <textarea
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/50 resize-none h-24 transition-colors"
+              className="w-full bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg placeholder-fg/30 focus:outline-none focus:border-fg/50 resize-none h-24 transition-colors"
               placeholder="Agrega notas internas sobre esta solicitud..."
               value={internalNotes}
               onChange={(e) => setInternalNotes(e.target.value)}
@@ -208,7 +208,7 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
             <button
               onClick={() => save({ internal_notes: internalNotes })}
               disabled={saving}
-              className="mt-1.5 text-xs text-white hover:text-white disabled:opacity-50 transition-colors"
+              className="mt-1.5 text-xs text-fg hover:text-fg disabled:opacity-50 transition-colors"
             >
               {saving ? 'Guardando...' : 'Guardar notas'}
             </button>
@@ -216,16 +216,16 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 border-t border-white/[0.08] space-y-2.5 flex-shrink-0">
+        <div className="p-4 border-t border-fg/[0.08] space-y-2.5 flex-shrink-0">
           {/* Generated URL pill */}
           {generatedUrl && (
             <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/5 border border-emerald-500/15 rounded-lg">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
               <span className="text-xs text-emerald-300/80 truncate flex-1 min-w-0">{generatedUrl}</span>
-              <button onClick={handleCopyUrl} className="text-white/30 hover:text-white/60 transition-colors flex-shrink-0" title="Copiar enlace">
+              <button onClick={handleCopyUrl} className="text-fg/30 hover:text-fg/60 transition-colors flex-shrink-0" title="Copiar enlace">
                 {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
               </button>
-              <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white transition-colors flex-shrink-0" title="Abrir propuesta">
+              <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="text-fg/30 hover:text-fg transition-colors flex-shrink-0" title="Abrir propuesta">
                 <ExternalLink size={13} />
               </a>
             </div>
@@ -253,26 +253,26 @@ function DetailPanel({ proposal, onClose, onUpdated, onDeleted }: DetailPanelPro
                 value={status}
                 onChange={(e) => { const s = e.target.value as ProposalStatus; setStatus(s); save({ status: s }) }}
                 disabled={saving}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/50 disabled:opacity-50 pr-7"
+                className="w-full appearance-none bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg/80 focus:outline-none focus:border-fg/50 disabled:opacity-50 pr-7"
               >
                 {Object.entries(STATUS_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
               </select>
-              <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+              <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg/30 pointer-events-none" />
             </div>
             <div className="relative">
               <select
                 value={priority}
                 onChange={(e) => { const p = e.target.value as ProposalPriority; setPriority(p); save({ priority: p }) }}
                 disabled={saving}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-white/50 disabled:opacity-50 pr-7"
+                className="w-full appearance-none bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg/80 focus:outline-none focus:border-fg/50 disabled:opacity-50 pr-7"
               >
                 {Object.entries(PRIORITY_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
               </select>
-              <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+              <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg/30 pointer-events-none" />
             </div>
           </div>
           <button
@@ -346,8 +346,8 @@ export function SolicitudesDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-white">Solicitudes de propuesta</h1>
-          <p className="text-sm text-white/40 mt-0.5">
+          <h1 className="text-xl font-semibold text-fg">Solicitudes de propuesta</h1>
+          <p className="text-sm text-fg/40 mt-0.5">
             {loading ? 'Cargando...' : `${proposals.length} solicitud(es)`}
           </p>
         </div>
@@ -376,12 +376,12 @@ export function SolicitudesDashboard() {
             onClick={() => setStatusFilter(val)}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
               statusFilter === val
-                ? 'pn-chip-on border-transparent text-white'
-                : 'bg-white/[0.03] text-white/40 border-white/[0.08] hover:text-white/60'
+                ? 'pn-chip-on border-transparent text-fg'
+                : 'bg-fg/[0.03] text-fg/40 border-fg/[0.08] hover:text-fg/60'
             }`}
           >
             {label}
-            <span className={`text-[10px] px-1 rounded ${statusFilter === val ? 'bg-white/[0.12]' : 'bg-white/[0.06]'}`}>
+            <span className={`text-[10px] px-1 rounded ${statusFilter === val ? 'bg-fg/[0.12]' : 'bg-fg/[0.06]'}`}>
               {count}
             </span>
           </button>
@@ -390,26 +390,26 @@ export function SolicitudesDashboard() {
 
       {/* Table */}
       {loading ? (
-        <div className="flex items-center gap-2 text-white/30 text-sm py-10">
+        <div className="flex items-center gap-2 text-fg/30 text-sm py-10">
           <Loader2 size={14} className="animate-spin" />
           Cargando...
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center py-20">
-          <ClipboardList size={32} className="text-white/10 mb-3" />
-          <p className="text-white/30 text-sm mb-1">
+          <ClipboardList size={32} className="text-fg/10 mb-3" />
+          <p className="text-fg/30 text-sm mb-1">
             {proposals.length === 0 ? 'Aún no hay solicitudes' : 'Sin resultados para este filtro'}
           </p>
           {proposals.length === 0 && (
-            <Link href="/solicitudes/nueva" className="text-white text-xs hover:text-white mt-1 transition-colors">
+            <Link href="/solicitudes/nueva" className="text-fg text-xs hover:text-fg mt-1 transition-colors">
               Crear primera solicitud →
             </Link>
           )}
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.08] overflow-hidden overflow-x-auto">
+        <div className="rounded-xl border border-fg/[0.08] overflow-hidden overflow-x-auto">
           <table className="w-full min-w-[640px]">
-            <thead className="bg-white/[0.03] border-b border-white/[0.06]">
+            <thead className="bg-fg/[0.03] border-b border-fg/[0.06]">
               <tr>
                 <th className={TH}>Cliente</th>
                 <th className={TH}>Servicios</th>
@@ -423,21 +423,21 @@ export function SolicitudesDashboard() {
               {filtered.map((p) => (
                 <tr key={p.id} className={ROW} onClick={() => setSelected(p)}>
                   <td className={TD}>
-                    <p className="text-sm text-white font-medium">{p.client_name}</p>
+                    <p className="text-sm text-fg font-medium">{p.client_name}</p>
                     {p.client_company && (
-                      <p className="text-xs text-white/40 mt-0.5">{p.client_company}</p>
+                      <p className="text-xs text-fg/40 mt-0.5">{p.client_company}</p>
                     )}
                   </td>
                   <td className={TD}>
                     <div className="flex flex-wrap gap-1 max-w-[200px]">
                       {p.services.slice(0, 3).map((s) => <ServiceChip key={s} id={s} />)}
                       {p.services.length > 3 && (
-                        <span className="text-[10px] text-white/30">+{p.services.length - 3}</span>
+                        <span className="text-[10px] text-fg/30">+{p.services.length - 3}</span>
                       )}
                     </div>
                   </td>
                   <td className={TD}>
-                    <span className="text-xs text-white/60">
+                    <span className="text-xs text-fg/60">
                       {(p as ProposalRequest & { submitted_by_name?: string }).submitted_by_name ?? '—'}
                     </span>
                   </td>
@@ -450,7 +450,7 @@ export function SolicitudesDashboard() {
                     <StatusBadge status={p.status} />
                   </td>
                   <td className={TD}>
-                    <span className="text-xs text-white/30">{formatDate(p.created_at)}</span>
+                    <span className="text-xs text-fg/30">{formatDate(p.created_at)}</span>
                   </td>
                 </tr>
               ))}

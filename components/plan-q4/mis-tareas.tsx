@@ -12,8 +12,8 @@ function Group({ title, tone, tasks, list }: { title: string; tone?: string; tas
   if (tasks.length === 0) return null
   return (
     <section>
-      <h2 className={`mb-1 text-[13px] font-medium ${tone ?? 'text-white/55'}`}>
-        {title} <span className="ml-1 font-normal text-white/25">{tasks.length}</span>
+      <h2 className={`mb-1 text-[13px] font-medium ${tone ?? 'text-fg/55'}`}>
+        {title} <span className="ml-1 font-normal text-fg/25">{tasks.length}</span>
       </h2>
       <TaskList tasks={tasks} {...list} />
     </section>
@@ -24,9 +24,9 @@ function Folded({ title, tasks, list }: { title: string; tasks: PlanTask[]; list
   if (tasks.length === 0) return null
   return (
     <details className="group">
-      <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-[13px] text-white/40 hover:text-white/70 [&::-webkit-details-marker]:hidden">
+      <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-[13px] text-fg/40 hover:text-fg/70 [&::-webkit-details-marker]:hidden">
         <span className="transition-transform group-open:rotate-90" aria-hidden>›</span>
-        {title} <span className="text-white/25">{tasks.length}</span>
+        {title} <span className="text-fg/25">{tasks.length}</span>
       </summary>
       <div className="mt-1">
         <TaskList tasks={tasks} {...list} />
@@ -44,7 +44,7 @@ export function MisTareasView({ tasks, persona, list }: { tasks: PlanTask[]; per
     <div className="space-y-8 max-w-3xl">
       <PersonaFilterBar persona={persona} hrefFor={(p) => viewHref({ vista: 'tareas' }, p)} />
 
-      {nada && <p className="text-sm text-white/40">Nada pendiente para estas semanas.</p>}
+      {nada && <p className="text-sm text-fg/40">Nada pendiente para estas semanas.</p>}
       <Group title="Vencidas" tone="text-red-300" tasks={m.vencidas} list={withPersona} />
       <Group title="Esta semana" tasks={m.semana} list={withPersona} />
       <Group title="Cada semana" tasks={m.semanales} list={withPersona} />

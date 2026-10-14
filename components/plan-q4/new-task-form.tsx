@@ -39,7 +39,7 @@ export function NewTaskForm({ bloque, defaultResponsable, today, onClose }: Prop
   }
 
   return (
-    <form onSubmit={submit} className="mt-3 grid gap-3 sm:grid-cols-2 border-t border-white/[0.06] pt-4">
+    <form onSubmit={submit} className="mt-3 grid gap-3 sm:grid-cols-2 border-t border-fg/[0.06] pt-4">
       <Field label="Tarea" className="sm:col-span-2">
         <input autoFocus required maxLength={MAX_TITULO} value={titulo} onChange={(e) => setTitulo(e.target.value)} className={FIELD_CLASS} />
       </Field>
@@ -86,7 +86,7 @@ export function NewTaskForm({ bloque, defaultResponsable, today, onClose }: Prop
         <button type="submit" disabled={busy} className="pn-btn-solid px-4 py-2 text-sm font-semibold disabled:opacity-40">
           {busy ? 'Creando…' : 'Crear tarea'}
         </button>
-        <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-lg text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors">
+        <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-lg text-fg/60 hover:text-fg hover:bg-fg/[0.05] transition-colors">
           Cancelar
         </button>
       </div>

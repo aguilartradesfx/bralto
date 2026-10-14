@@ -26,7 +26,7 @@ export function DeleteProposalButton({ slug }: Props) {
       onClick={handleDelete}
       disabled={pending}
       title="Eliminar propuesta"
-      className="text-white/30 hover:text-red-400 disabled:opacity-40 transition-colors"
+      className="text-fg/30 hover:text-red-400 disabled:opacity-40 transition-colors"
     >
       <Trash2 size={14} />
     </button>

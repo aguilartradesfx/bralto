@@ -38,13 +38,13 @@ export function EstrategiaView({ blocks, guia, tasks, pending, bloque, persona, 
   if (block) {
     return (
       <div className="space-y-5">
-        <Link href={viewHref({ vista: 'estrategia' }, persona)} className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-white">
+        <Link href={viewHref({ vista: 'estrategia' }, persona)} className="inline-flex items-center gap-1.5 text-sm text-fg/55 hover:text-fg">
           <ArrowLeft size={14} strokeWidth={1.5} absoluteStrokeWidth aria-hidden />
           Estrategia
         </Link>
         <div className="flex flex-wrap items-center gap-2">
-          {block.code && <span className="font-mono text-xs text-white/40">{block.code}</span>}
-          <h2 className="text-lg font-semibold text-white">{block.titulo}</h2>
+          {block.code && <span className="font-mono text-xs text-fg/40">{block.code}</span>}
+          <h2 className="text-lg font-semibold text-fg">{block.titulo}</h2>
           <TipoBadge tipo={block.tipo} />
         </div>
         {block.tipo === 'lectura' ? (
@@ -58,8 +58,8 @@ export function EstrategiaView({ blocks, guia, tasks, pending, bloque, persona, 
               emptyText={persona === 'todos' ? 'Este bloque no tiene tareas.' : `${PERSONA_NAMES[persona]} no tiene tareas en este bloque.`}
               newTask={{ bloque: block.key, responsable: persona === 'todos' ? (actor ?? 'ale') : persona }}
             />
-            <details open className="group border-t border-white/[0.06] pt-5">
-              <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-white/40 hover:text-white/60 [&::-webkit-details-marker]:hidden">
+            <details open className="group border-t border-fg/[0.06] pt-5">
+              <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-fg/40 hover:text-fg/60 [&::-webkit-details-marker]:hidden">
                 <ChevronRight size={14} aria-hidden className="transition-transform group-open:rotate-90" />
                 Por qué y cómo
               </summary>
@@ -73,10 +73,10 @@ export function EstrategiaView({ blocks, guia, tasks, pending, bloque, persona, 
 
   return (
     <div className="space-y-6">
-      <p className="-mt-4 text-sm text-white/45">El porqué de cada decisión del plan. Para consultar cuando haga falta.</p>
+      <p className="-mt-4 text-sm text-fg/45">El porqué de cada decisión del plan. Para consultar cuando haga falta.</p>
       {grupos(blocks, guia).map((g) => (
         <section key={g.titulo}>
-          <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{g.titulo}</h3>
+          <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-fg/40">{g.titulo}</h3>
           <div className="grid gap-2 sm:grid-cols-2">
             {g.bloques.map((b) => {
               const n = pending.get(b.key) ?? 0
@@ -84,16 +84,16 @@ export function EstrategiaView({ blocks, guia, tasks, pending, bloque, persona, 
                 <Link
                   key={b.key}
                   href={viewHref({ vista: 'estrategia', bloque: b.key }, persona)}
-                  className="pn-solid flex items-center gap-3 rounded-[14px] p-3.5 transition-colors hover:bg-white/[0.05]"
+                  className="pn-solid flex items-center gap-3 rounded-[14px] p-3.5 transition-colors hover:bg-fg/[0.05]"
                 >
-                  <span className="w-8 shrink-0 font-mono text-[11px] text-white/40">{b.code ?? ''}</span>
+                  <span className="w-8 shrink-0 font-mono text-[11px] text-fg/40">{b.code ?? ''}</span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-white leading-snug">{b.titulo}</span>
-                    <span className="mt-0.5 block text-[11px] text-white/40">
+                    <span className="block text-sm text-fg leading-snug">{b.titulo}</span>
+                    <span className="mt-0.5 block text-[11px] text-fg/40">
                       {b.tipo === 'accion' ? (n > 0 ? `${n} ${n === 1 ? 'tarea pendiente' : 'tareas pendientes'}` : 'Sin pendientes') : 'Para leer'}
                     </span>
                   </span>
-                  <ChevronRight size={15} strokeWidth={1.5} absoluteStrokeWidth className="shrink-0 text-white/30" aria-hidden />
+                  <ChevronRight size={15} strokeWidth={1.5} absoluteStrokeWidth className="shrink-0 text-fg/30" aria-hidden />
                 </Link>
               )
             })}

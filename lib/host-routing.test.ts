@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { hostKind, isPanelPath, isPrivateSurface, PRIVATE_SURFACE_JS, resolveHostRouting } from './host-routing.ts'
+import { hostKind, isContractSigningPath, isPanelPath, isPrivateSurface, PRIVATE_SURFACE_JS, resolveHostRouting } from './host-routing.ts'
 
 test('hostKind reconoce hosts con mayúsculas y puerto', () => {
   assert.equal(hostKind('Admin.Bralto.io:443'), 'admin')
@@ -82,6 +82,15 @@ test('isPrivateSurface: panel y firma de contratos, sin analítica ni banner de 
   for (const [host, pathname, expected] of SURFACES) {
     assert.equal(isPrivateSurface(host, pathname), expected, `${host}${pathname}`)
   }
+})
+
+// Las partículas se ven en el panel (mismo fondo que el sitio), no en la firma de contratos
+test('isContractSigningPath: solo la firma de contratos', () => {
+  assert.equal(isContractSigningPath('/c/abc123'), true)
+  assert.equal(isContractSigningPath('/admin'), false)
+  assert.equal(isContractSigningPath('/plan-q4'), false)
+  assert.equal(isContractSigningPath('/contratos/1'), false)
+  assert.equal(isContractSigningPath('/es'), false)
 })
 
 test('PRIVATE_SURFACE_JS (snippet inline de GTM) decide igual que isPrivateSurface', () => {

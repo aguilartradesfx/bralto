@@ -179,9 +179,9 @@ export const STATUS_LABELS: Record<ContractStatus, string> = {
 }
 
 export const STATUS_COLORS: Record<ContractStatus, string> = {
-  draft: 'bg-white/10 text-white/60',
-  sent: 'bg-white/[0.08] text-white/80',
-  viewed: 'bg-white/[0.12] text-white',
+  draft: 'bg-fg/10 text-fg/60',
+  sent: 'bg-fg/[0.08] text-fg/80',
+  viewed: 'bg-fg/[0.12] text-fg',
   signed_by_client: 'bg-amber-500/15 text-amber-300',
   signed_fully: 'bg-green-500/15 text-green-400',
   cancelled: 'bg-red-500/15 text-red-400',

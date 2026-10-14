@@ -66,9 +66,9 @@ export const STATUS_LABELS: Record<ProposalStatus, string> = {
 }
 
 export const STATUS_COLORS: Record<ProposalStatus, string> = {
-  pendiente:         'bg-white/[0.06] text-white/70 border-white/15',
+  pendiente:         'bg-fg/[0.06] text-fg/70 border-fg/15',
   en_revision:       'bg-amber-500/10 text-amber-300 border-amber-500/20',
-  propuesta_enviada: 'bg-white/[0.08] text-white border-white/20',
+  propuesta_enviada: 'bg-fg/[0.08] text-fg border-fg/20',
   aceptada:          'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
   ganado:            'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
   perdido:           'bg-red-500/10 text-red-300 border-red-500/20',
@@ -82,8 +82,8 @@ export const PRIORITY_LABELS: Record<ProposalPriority, string> = {
 }
 
 export const PRIORITY_COLORS: Record<ProposalPriority, string> = {
-  baja:    'text-white/30',
-  normal:  'text-white/50',
+  baja:    'text-fg/30',
+  normal:  'text-fg/50',
   alta:    'text-amber-400',
   urgente: 'text-red-400',
 }

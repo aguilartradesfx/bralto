@@ -24,7 +24,7 @@ export function TaskList({ tasks, today, week, doneIds, canEdit, emptyText, newT
   const done = new Set(doneIds)
   return (
     <div>
-      {tasks.length === 0 && emptyText && <p className="text-sm text-white/40">{emptyText}</p>}
+      {tasks.length === 0 && emptyText && <p className="text-sm text-fg/40">{emptyText}</p>}
       {tasks.length > 0 && (
         <ul>
           {tasks.map((t) => (
@@ -45,7 +45,7 @@ export function TaskList({ tasks, today, week, doneIds, canEdit, emptyText, newT
       {newTask && canEdit && (adding ? (
         <NewTaskForm bloque={newTask.bloque} defaultResponsable={newTask.responsable} today={today} onClose={() => setAdding(false)} />
       ) : (
-        <button type="button" onClick={() => setAdding(true)} className="mt-2 inline-flex items-center gap-1.5 py-1 text-[13px] text-white/45 hover:text-white transition-colors">
+        <button type="button" onClick={() => setAdding(true)} className="mt-2 inline-flex items-center gap-1.5 py-1 text-[13px] text-fg/45 hover:text-fg transition-colors">
           <Plus size={14} aria-hidden />
           Nueva tarea
         </button>

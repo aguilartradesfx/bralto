@@ -27,12 +27,12 @@ export default async function NuevoContratoPage({ searchParams }: Props) {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="border-b border-white/[0.06] px-6 py-4 flex items-center gap-3 shrink-0">
-        <a href="/contratos" className="text-white/30 hover:text-white/60 text-sm transition-colors">
+      <div className="border-b border-fg/[0.06] px-6 py-4 flex items-center gap-3 shrink-0">
+        <a href="/contratos" className="text-fg/30 hover:text-fg/60 text-sm transition-colors">
           ← Contratos
         </a>
-        <span className="text-white/20">/</span>
-        <span className="text-sm text-white/70">{title}</span>
+        <span className="text-fg/20">/</span>
+        <span className="text-sm text-fg/70">{title}</span>
       </div>
       <div className="flex-1 overflow-hidden">
         <ContractForm clients={(clientsData ?? []) as ClientRow[]} initialData={prefill} />
