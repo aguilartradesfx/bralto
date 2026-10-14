@@ -21,6 +21,7 @@ test('misTareas: vencidas, esta semana, semanales, próximas, después por mes y
     task({ id: 'SH', fecha: '2026-10-15', estado: 'hecho' }),
     semanal({ id: 'W' }),
     task({ id: 'P', fecha: '2026-10-30' }), // dentro de las 2 semanas siguientes (hasta el 1 nov)
+    semanal({ id: 'WP', fecha: '2026-10-19' }), // semanal que arranca la semana que viene
     task({ id: 'D1', fecha: '2026-11-03' }),
     semanal({ id: 'WF', fecha: '2026-11-09' }), // semanal que todavía no empieza
     task({ id: 'D2', fecha: '2026-12-02' }),
@@ -30,7 +31,7 @@ test('misTareas: vencidas, esta semana, semanales, próximas, después por mes y
   assert.deepEqual(m.vencidas.map((t) => t.id), ['V'])
   assert.deepEqual(m.semana.map((t) => t.id), ['S'])
   assert.deepEqual(m.semanales.map((t) => t.id), ['W'])
-  assert.deepEqual(m.proximas.map((t) => t.id), ['P'])
+  assert.deepEqual(m.proximas.map((t) => t.id), ['P', 'WP'])
   assert.deepEqual(m.despues.map((g) => [g.mes, g.tareas.map((t) => t.id)]), [[11, ['D1', 'WF']], [12, ['D2']]])
   assert.deepEqual(m.hechas.map((t) => t.id), ['SH'])
   assert.equal(misTareas(tasks, TODAY, 'todos').semana.length, 2)

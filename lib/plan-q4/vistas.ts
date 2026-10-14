@@ -68,15 +68,15 @@ export function misTareas(tasks: readonly PlanTask[], today: string, persona: Pe
   const finSemana = weekEnd(today)
   const limite = addDays(finSemana, PROXIMAS_SEMANAS * 7)
   const abierta = (t: PlanTask) => t.tipo === 'unica' && t.estado !== 'hecho'
-  const despues = mine.filter(
-    (t) => (abierta(t) && t.fecha > limite) || (t.tipo === 'semanal' && !isActiveWeekly(t, today)),
-  )
+  // semanales que todavía no arrancan: van por su fecha de inicio, como una única
+  const porArrancar = (t: PlanTask) => t.tipo === 'semanal' && !isActiveWeekly(t, today)
+  const despues = mine.filter((t) => (abierta(t) || porArrancar(t)) && t.fecha > limite)
   const meses = [...new Set(despues.map((t) => mesDe(t.fecha)))].sort((a, b) => a - b)
   return {
     vencidas: mine.filter((t) => isOverdue(t, today)),
     semana: mine.filter((t) => abierta(t) && isDueThisWeek(t, today) && !isOverdue(t, today)),
     semanales: mine.filter((t) => isActiveWeekly(t, today)),
-    proximas: mine.filter((t) => abierta(t) && t.fecha > finSemana && t.fecha <= limite),
+    proximas: mine.filter((t) => (abierta(t) || porArrancar(t)) && t.fecha > finSemana && t.fecha <= limite),
     despues: meses.map((mes) => ({ mes, tareas: despues.filter((t) => mesDe(t.fecha) === mes) })),
     hechas: mine
       .filter((t) => t.tipo === 'unica' && t.estado === 'hecho')
