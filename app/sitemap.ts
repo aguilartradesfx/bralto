@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { clients } from '@/app/servicios/sitios-web/clients'
 import { LEGAL_REVIEWED } from '@/lib/legal'
+import { listarPublicadas } from '@/lib/guias/servidor'
 import { listForSitemap } from '@/lib/news/store'
 import { SITE_URL } from '@/lib/seo'
 
@@ -78,6 +79,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       })
     }
+  }
+
+  // Las guías publicadas, solo en español (la parte abierta sirve para Google)
+  const guias = await listarPublicadas().catch(() => [])
+  for (const g of guias) {
+    entries.push({
+      url: `${SITE_URL}/es/guias/${g.slug}`,
+      lastModified: new Date(g.actualizada_en),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    })
   }
 
   return entries
