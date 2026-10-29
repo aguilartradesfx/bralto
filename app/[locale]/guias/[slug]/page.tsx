@@ -5,7 +5,7 @@ import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { GuiaArticulo } from '@/components/guias/guia-articulo'
 import { COOKIE_GUIAS, leerAcceso, secretoGuias } from '@/lib/guias/acceso'
-import { bloquesVisibles } from '@/lib/guias/contenido'
+import { bloquesVisibles, secciones } from '@/lib/guias/contenido'
 import { obtenerGuia } from '@/lib/guias/servidor'
 import { SITE_URL, buildPageMetadata } from '@/lib/seo'
 
@@ -41,12 +41,14 @@ export default async function GuiaPage({ params, searchParams }: Props) {
   if (!guia) notFound()
   const conAcceso = leerAcceso(secretoGuias(process.env), (await cookies()).get(COOKIE_GUIAS)?.value) !== null
 
-  // Los componentes reciben solo los bloques visibles: la guía entera nunca baja por props
+  // Los componentes reciben solo los bloques visibles: la guía entera nunca baja por props.
+  // Los títulos de las secciones sí se muestran a todos («Ir directo a»): dicen qué trae, no el contenido.
   const { abierto: _abierto, bloqueado: _bloqueado, ...datos } = guia
   return (
     <GuiaArticulo
       guia={datos}
       visibles={bloquesVisibles(guia, conAcceso)}
+      secciones={secciones(guia)}
       conAcceso={conAcceso}
       recienAbierta={conAcceso && abierta === '1'}
       origen={o}

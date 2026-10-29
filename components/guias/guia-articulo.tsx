@@ -5,45 +5,60 @@ import authorPhoto from '../../app/[locale]/sobre-nosotros/alejandro-aguilar.web
 import { Bloques } from './bloques'
 import { Candado } from './candado'
 import { IrAGuia } from './ir-a-guia'
+import { IrDirecto } from './ir-directo'
 import '../news/news.css'
 import './guias.css'
 
 type Props = {
   guia: Omit<Guia, 'abierto' | 'bloqueado'> // los bloques llegan ya filtrados en `visibles`
   visibles: { abierto: Visible[]; bloqueado: Visible[] }
+  secciones: { id: string; texto: string }[]
   conAcceso: boolean
   recienAbierta: boolean
   origen?: string
 }
 
-// Una guía: firmada por Alejandro, lo abierto primero y después el candado o el resto.
-// Cierra con la invitación de siempre del sitio (el diagnóstico).
-export function GuiaArticulo({ guia, visibles, conAcceso, recienAbierta, origen }: Props) {
+// Una guía: arriba el título con la foto del post; después unas líneas abiertas que se difuminan
+// hasta el «Ver todo» (o, con acceso, la guía completa en tarjetas). Cierra con la invitación del sitio.
+export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbierta, origen }: Props) {
   return (
-    <main>
+    <main className="gu">
       <section className="hm-hero hm-hero--page hm-hero--fit" aria-labelledby="gu-titulo">
-        <div className="hm-wrap nw-head">
-          <p className="hm-eyebrow">{guia.etiqueta}</p>
-          <h1 id="gu-titulo" className="nw-title">
-            {guia.titulo}
-          </h1>
-          <p className="hm-lead">{guia.resumen}</p>
-          <div className="nw-byline">
-            <Image src={authorPhoto} alt="" width={44} height={44} className="nw-byline__photo" />
-            <span>
-              <a href="/es/sobre-nosotros" className="nw-byline__name">
-                Alejandro Aguilar
-              </a>
-              <span className="nw-byline__meta">CEO Bralto</span>
-            </span>
+        <div className="hm-wrap gu-hero">
+          <div className="gu-hero__texto">
+            <p className="hm-eyebrow">{guia.etiqueta}</p>
+            <h1 id="gu-titulo" className="nw-title">
+              {guia.titulo}
+            </h1>
+            <p className="hm-lead">{guia.resumen}</p>
+            <div className="nw-byline">
+              <Image src={authorPhoto} alt="" width={44} height={44} className="nw-byline__photo" />
+              <span>
+                <a href="/es/sobre-nosotros" className="nw-byline__name">
+                  Alejandro Aguilar
+                </a>
+                <span className="nw-byline__meta">CEO Bralto</span>
+              </span>
+            </div>
           </div>
+          {guia.imagenUrl && (
+            <figure className="gu-hero__foto">
+              <Image src={guia.imagenUrl} alt="" width={1080} height={1350} sizes="(min-width: 960px) 360px, 80vw" priority />
+            </figure>
+          )}
         </div>
       </section>
 
-      <section className="hm-section hm-section--tight nw-main">
-        <div className="hm-wrap">
-          <article className="nw-body gu-cuerpo">
-            <Bloques bloques={visibles.abierto} />
+      <section className="hm-section hm-section--tight gu-main">
+        <div className="hm-wrap gu-col">
+          {/* Cerrada, el texto empieza enseguida (en el teléfono el índice empujaba todo hacia abajo);
+              lo que trae la guía se ve en la ventana del candado */}
+          {conAcceso && secciones.length > 1 && <IrDirecto secciones={secciones} conAcceso={conAcceso} />}
+
+          <article className="gu-cuerpo">
+            <div className={conAcceso ? 'gu-abierto' : 'gu-abierto gu-abierto--cortado'}>
+              <Bloques bloques={visibles.abierto} />
+            </div>
             {conAcceso ? (
               <div id="guia" className="gu-completa">
                 {recienAbierta && <IrAGuia />}
@@ -55,8 +70,8 @@ export function GuiaArticulo({ guia, visibles, conAcceso, recienAbierta, origen 
             )}
           </article>
 
-          {guia.fuenteUrl && (
-            <aside className="nw-source hm-glass" aria-label="Fuente">
+          {conAcceso && guia.fuenteUrl && (
+            <aside className="nw-source hm-glass gu-fuente" aria-label="Fuente">
               <span className="hm-eyebrow">Fuente</span>
               <a href={guia.fuenteUrl} target="_blank" rel="noopener">
                 {guia.fuenteNombre ?? guia.fuenteUrl}

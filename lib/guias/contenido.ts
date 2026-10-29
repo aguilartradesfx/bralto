@@ -6,7 +6,20 @@ import { z } from 'zod'
 
 const https = z.string().refine((u) => /^https:\/\/\S+$/.test(u), 'Solo enlaces https')
 
+// Las imágenes de las guías viven en el bucket público social-images, carpeta guias/ (next.config.mjs la permite)
+export const IMAGENES_GUIAS = 'https://pjwmfllnyauobityaile.supabase.co/storage/v1/object/public/social-images/guias/'
+const imagenGuia = z.string().refine((u) => u.startsWith(IMAGENES_GUIAS) && !/\s|\.\./.test(u), 'Imagen fuera de la carpeta de guías')
+
 const BloqueSchema = z.discriminatedUnion('tipo', [
+  // ancho y alto: el tamaño real del archivo, para reservar su lugar y que la página no salte al cargar
+  z.object({
+    tipo: z.literal('imagen'),
+    src: imagenGuia,
+    alt: z.string().min(1),
+    ancho: z.number().int().positive(),
+    alto: z.number().int().positive(),
+    pie: z.string().optional(),
+  }),
   z.object({ tipo: z.literal('subtitulo'), texto: z.string().min(1) }),
   z.object({ tipo: z.literal('parrafo'), texto: z.string().min(1) }),
   z.object({ tipo: z.literal('nota'), texto: z.string().min(1) }),
@@ -77,6 +90,57 @@ export function bloquesVisibles(g: Guia, conAcceso: boolean): { abierto: Visible
   const numerar = (b: Bloque): Visible => (b.tipo === 'paso' ? { ...b, numero: ++n } : b)
   const abierto = g.abierto.map(numerar)
   return { abierto, bloqueado: conAcceso ? g.bloqueado.map(numerar) : [] }
+}
+
+// El id de una sección para «Ir directo a»: sin acentos ni signos, con guiones
+export function idSeccion(texto: string): string {
+  return texto
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/[\s-]+/g, '-')
+}
+
+// Las secciones de la guía (sus subtítulos) para «Ir directo a». El id es el mismo que lleva el
+// subtítulo en la página (idSeccion); si dos se llaman igual, el botón lleva al primero.
+export function secciones(g: Pick<Guia, 'abierto' | 'bloqueado'>): { id: string; texto: string }[] {
+  const vistos = new Set<string>()
+  const salida: { id: string; texto: string }[] = []
+  for (const b of [...g.abierto, ...g.bloqueado]) {
+    if (b.tipo !== 'subtitulo') continue
+    const id = idSeccion(b.texto)
+    if (!id || vistos.has(id)) continue
+    vistos.add(id)
+    salida.push({ id, texto: b.texto })
+  }
+  return salida
+}
+
+export type Grupo =
+  | { tipo: 'bloque'; bloque: Visible }
+  | { tipo: 'paso'; paso: Visible; cuerpo: Visible[]; imagenes: Visible[] }
+
+// Cada paso se lleva lo que viene después (texto, comandos e imágenes) hasta el próximo paso o subtítulo:
+// así la página lo arma como una tarjeta, con la imagen al lado en pantallas anchas
+export function agrupar(bloques: Visible[]): Grupo[] {
+  const grupos: Grupo[] = []
+  let actual: Extract<Grupo, { tipo: 'paso' }> | null = null
+  for (const b of bloques) {
+    if (b.tipo === 'paso') {
+      actual = { tipo: 'paso', paso: b, cuerpo: [], imagenes: [] }
+      grupos.push(actual)
+    } else if (b.tipo === 'subtitulo' || !actual) {
+      actual = null
+      grupos.push({ tipo: 'bloque', bloque: b })
+    } else if (b.tipo === 'imagen') {
+      actual.imagenes.push(b)
+    } else {
+      actual.cuerpo.push(b)
+    }
+  }
+  return grupos
 }
 
 export type Trozo = { t: 'texto' | 'negrita' | 'codigo'; v: string } | { t: 'enlace'; v: string; url: string }

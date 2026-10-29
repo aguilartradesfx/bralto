@@ -1,6 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { bloquesVisibles, filaAGuia, trozos, type Guia } from './contenido.ts'
+import { agrupar, bloquesVisibles, filaAGuia, idSeccion, secciones, trozos, type Guia, type Visible } from './contenido.ts'
+
+const IMG = 'https://pjwmfllnyauobityaile.supabase.co/storage/v1/object/public/social-images/guias/jarvis/paso-1.webp'
 
 const guia: Guia = {
   slug: 'prueba',
@@ -60,6 +62,50 @@ test('filaAGuia arma la guía desde la fila de Supabase', () => {
   })
   assert.equal(g?.fuenteNombre, 'GitHub')
   assert.equal(g?.bloqueado.length, 1)
+})
+
+test('una imagen se acepta solo desde la carpeta de guías de Supabase y con su tamaño', () => {
+  const fila = { slug: 'x', palabra: 'X', titulo: 'T', resumen: 'R', etiqueta: 'E', incluye: [], abierto: [] }
+  const imagen = { tipo: 'imagen', src: IMG, alt: 'El paso 1', ancho: 1080, alto: 1350 }
+  assert.ok(filaAGuia({ ...fila, bloqueado: [imagen] }))
+  assert.equal(filaAGuia({ ...fila, bloqueado: [{ ...imagen, src: 'https://otro-sitio.com/a.webp' }] }), null)
+  assert.equal(filaAGuia({ ...fila, bloqueado: [{ ...imagen, alt: '' }] }), null)
+  assert.equal(filaAGuia({ ...fila, bloqueado: [{ ...imagen, ancho: undefined }] }), null)
+})
+
+test('secciones salen de los subtítulos, con un id estable para «Ir directo a»', () => {
+  const g: Guia = {
+    ...guia,
+    abierto: [{ tipo: 'parrafo', texto: 'Intro' }],
+    bloqueado: [
+      { tipo: 'subtitulo', texto: 'Lo que necesita' },
+      { tipo: 'parrafo', texto: 'x' },
+      { tipo: 'subtitulo', texto: '¿Cuánto cuesta?' },
+    ],
+  }
+  assert.deepEqual(secciones(g), [
+    { id: 'lo-que-necesita', texto: 'Lo que necesita' },
+    { id: 'cuanto-cuesta', texto: '¿Cuánto cuesta?' },
+  ])
+  assert.equal(idSeccion('01 · El diseñador ($3,000): frontend-design'), '01-el-disenador-3000-frontend-design')
+})
+
+test('agrupar junta cada paso con lo que sigue hasta el próximo paso o subtítulo', () => {
+  const bloques: Visible[] = [
+    { tipo: 'subtitulo', texto: 'Instálelo' },
+    { tipo: 'paso', titulo: 'Uno', numero: 1 },
+    { tipo: 'codigo', codigo: 'git clone' },
+    { tipo: 'imagen', src: IMG, alt: 'a', ancho: 1080, alto: 1350 },
+    { tipo: 'paso', titulo: 'Dos', numero: 2 },
+    { tipo: 'subtitulo', texto: 'Después' },
+    { tipo: 'parrafo', texto: 'suelto' },
+  ]
+  const g = agrupar(bloques)
+  assert.deepEqual(g.map((x) => x.tipo), ['bloque', 'paso', 'paso', 'bloque', 'bloque'])
+  const uno = g[1]
+  assert.ok(uno.tipo === 'paso' && uno.cuerpo.length === 1 && uno.imagenes.length === 1)
+  const dos = g[2]
+  assert.ok(dos.tipo === 'paso' && dos.cuerpo.length === 0 && dos.imagenes.length === 0)
 })
 
 test('filaAGuia rechaza un slug que no sea minúsculas, números y guiones', () => {
