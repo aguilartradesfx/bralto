@@ -32,8 +32,11 @@ export type Guia = {
   bloqueado: Bloque[]
 }
 
+// El slug va en la URL y en el redirect del candado: solo minúsculas, números y guiones
+export const SLUG_GUIA = /^[a-z0-9-]{1,80}$/
+
 const FilaSchema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().regex(SLUG_GUIA),
   palabra: z.string().min(1),
   titulo: z.string().min(1),
   resumen: z.string().min(1),

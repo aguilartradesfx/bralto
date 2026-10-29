@@ -62,6 +62,13 @@ test('filaAGuia arma la guía desde la fila de Supabase', () => {
   assert.equal(g?.bloqueado.length, 1)
 })
 
+test('filaAGuia rechaza un slug que no sea minúsculas, números y guiones', () => {
+  const fila = { palabra: 'X', titulo: 'T', resumen: 'R', etiqueta: 'E', incluye: [], abierto: [], bloqueado: [] }
+  assert.equal(filaAGuia({ ...fila, slug: 'Claude_Code' }), null)
+  assert.equal(filaAGuia({ ...fila, slug: '../evil' }), null)
+  assert.ok(filaAGuia({ ...fila, slug: 'herramientas-que-valen' }))
+})
+
 test('filaAGuia rechaza un bloque desconocido o un enlace que no es https', () => {
   const base = { slug: 'x', palabra: 'X', titulo: 'T', resumen: 'R', etiqueta: 'E', incluye: [], abierto: [] }
   assert.equal(filaAGuia({ ...base, bloqueado: [{ tipo: 'html', texto: '<b>' }] }), null)

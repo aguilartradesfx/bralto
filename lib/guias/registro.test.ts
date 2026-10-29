@@ -4,12 +4,12 @@ import { ingresar, registrar, validarRegistro, type Datos, type Deps } from './r
 
 const base = { nombre: 'Ana Pérez', correo: 'Ana@Correo.com', whatsapp: '+506 8888-8888', acepta: 'on', guia: 'jarvis', origen: 'ig' }
 
-test('el WhatsApp se acepta escrito de varias formas y se guarda limpio', () => {
+test('el WhatsApp con código de país se acepta escrito de varias formas y se guarda siempre con +', () => {
   const casos: [string, string][] = [
     ['+506 8888-8888', '+50688888888'],
-    ['(506) 8888 8888', '50688888888'],
     ['00506 88888888', '+50688888888'],
-    ['8888.8888', '88888888'],
+    ['+1 (213) 261-0301', '+12132610301'],
+    ['+52 1 55.1234.5678', '+5215512345678'],
   ]
   for (const [entra, sale] of casos) {
     const r = validarRegistro({ ...base, whatsapp: entra })
@@ -17,8 +17,8 @@ test('el WhatsApp se acepta escrito de varias formas y se guarda limpio', () => 
   }
 })
 
-test('un WhatsApp muy corto o muy largo pide el código de país', () => {
-  for (const malo of ['1234', '+1234567890123456', 'abc']) {
+test('un WhatsApp sin código de país, muy corto o muy largo pide el código de país', () => {
+  for (const malo of ['8888 8888', '(506) 8888 8888', '07911 123456', '1234', '+1234567890123456', 'abc']) {
     const r = validarRegistro({ ...base, whatsapp: malo })
     assert.equal(r.ok, false)
     assert.match(!r.ok ? r.errores.whatsapp ?? '' : '', /código de país/)
@@ -31,11 +31,18 @@ test('sin la casilla de privacidad no se abre', () => {
   assert.ok(!r.ok && r.errores.acepta)
 })
 
-test('el correo se guarda en minúsculas y un correo inválido da error', () => {
+test('el correo se guarda en minúsculas y un correo inválido o gigante da error', () => {
   const r = validarRegistro(base)
   assert.equal(r.ok && r.datos.correo, 'ana@correo.com')
   const malo = validarRegistro({ ...base, correo: 'ana@' })
   assert.ok(!malo.ok && malo.errores.correo)
+  const gigante = validarRegistro({ ...base, correo: `${'a'.repeat(250)}@correo.com` })
+  assert.ok(!gigante.ok && gigante.errores.correo)
+})
+
+test('el nombre se guarda en una sola línea, sin espacios de más', () => {
+  const r = validarRegistro({ ...base, nombre: '  Ana \n Pérez\tGómez  ' })
+  assert.equal(r.ok && r.datos.nombre, 'Ana Pérez Gómez')
 })
 
 test('el campo trampa lleno marca un bot y un origen raro pasa a web', () => {
@@ -44,13 +51,18 @@ test('el campo trampa lleno marca un bot y un origen raro pasa a web', () => {
   assert.equal(r.ok && r.datos.origen, 'web')
 })
 
-function deps(over: Partial<Deps> = {}): Deps & { guardados: Datos[]; avisos: string[] } {
+function deps(over: Partial<Deps> = {}): Deps & { guardados: Datos[]; avisos: string[]; limites: string[] } {
   const guardados: Datos[] = []
   const avisos: string[] = []
+  const limites: string[] = []
   return {
     guardados,
     avisos,
-    limite: async () => true,
+    limites,
+    limite: async (clave, max) => {
+      limites.push(`${clave}/${max}`)
+      return true
+    },
     buscar: async (correo) => (correo === 'ana@correo.com' ? 'id-ana' : null),
     guardar: async (d) => {
       guardados.push(d)
@@ -73,6 +85,8 @@ test('registrar guarda, avisa con los datos y devuelve el contacto', async () =>
   const d = deps()
   assert.deepEqual(await registrar(datos, 'ip', d), { ok: true, contactoId: 'id-nuevo' })
   assert.equal(d.guardados.length, 1)
+  // Un tope alto: detrás de la misma IP del celular puede haber mucha gente real
+  assert.deepEqual(d.limites, ['registro:ip/60'])
   assert.match(d.avisos[0], /Ana Pérez/)
   assert.match(d.avisos[0], /wa\.me\/50688888888/)
   assert.match(d.avisos[0], /Instagram/)
@@ -102,9 +116,16 @@ test('un registro repetido (mismo correo y guía) no vuelve a avisar', async () 
   assert.equal(d.avisos.length, 0)
 })
 
-test('ingresar con el correo abre si ya se registró, y respeta el límite', async () => {
-  assert.equal(await ingresar('  ANA@correo.com ', 'ip', deps()), 'id-ana')
-  assert.equal(await ingresar('otra@correo.com', 'ip', deps()), null)
-  assert.equal(await ingresar('ana@', 'ip', deps()), null)
-  assert.equal(await ingresar('ana@correo.com', 'ip', deps({ limite: async () => false })), null)
+test('ingresar con el correo abre si ya se registró y dice por qué no cuando no', async () => {
+  const d = deps()
+  assert.deepEqual(await ingresar('  ANA@correo.com ', 'ip', d), { ok: true, contactoId: 'id-ana' })
+  assert.deepEqual(d.limites, ['correo:ip/20'])
+  assert.deepEqual(await ingresar('otra@correo.com', 'ip', deps()), { ok: false, error: 'no-existe' })
+  assert.deepEqual(await ingresar('ana@', 'ip', deps()), { ok: false, error: 'invalido' })
+  assert.deepEqual(await ingresar('ana@correo.com', 'ip', deps({ limite: async () => false })), { ok: false, error: 'demasiados' })
+})
+
+test('ingresar devuelve fallo si la base no responde', async () => {
+  const d = deps({ buscar: async () => { throw new Error('supabase caído') } })
+  assert.deepEqual(await ingresar('ana@correo.com', 'ip', d), { ok: false, error: 'fallo' })
 })

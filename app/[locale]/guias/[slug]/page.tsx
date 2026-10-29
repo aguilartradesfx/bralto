@@ -12,7 +12,7 @@ import { SITE_URL, buildPageMetadata } from '@/lib/seo'
 // Cada visita se arma en el servidor: la parte bloqueada solo viaja si la cookie es válida
 export const dynamic = 'force-dynamic'
 
-type Props = { params: Promise<{ locale: string; slug: string }>; searchParams: Promise<{ o?: string }> }
+type Props = { params: Promise<{ locale: string; slug: string }>; searchParams: Promise<{ o?: string; abierta?: string }> }
 
 const cargar = cache((slug: string) => obtenerGuia(slug))
 
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GuiaPage({ params, searchParams }: Props) {
   const { locale, slug } = await params
-  const { o } = await searchParams
+  const { o, abierta } = await searchParams
   if (locale !== 'es') redirect(`/es/guias/${slug}${o ? `?o=${encodeURIComponent(o)}` : ''}`)
   setRequestLocale('es')
 
@@ -41,5 +41,15 @@ export default async function GuiaPage({ params, searchParams }: Props) {
   if (!guia) notFound()
   const conAcceso = leerAcceso(secretoGuias(process.env), (await cookies()).get(COOKIE_GUIAS)?.value) !== null
 
-  return <GuiaArticulo guia={guia} visibles={bloquesVisibles(guia, conAcceso)} conAcceso={conAcceso} origen={o} />
+  // Los componentes reciben solo los bloques visibles: la guía entera nunca baja por props
+  const { abierto: _abierto, bloqueado: _bloqueado, ...datos } = guia
+  return (
+    <GuiaArticulo
+      guia={datos}
+      visibles={bloquesVisibles(guia, conAcceso)}
+      conAcceso={conAcceso}
+      recienAbierta={conAcceso && abierta === '1'}
+      origen={o}
+    />
+  )
 }

@@ -4,19 +4,21 @@ import type { Guia, Visible } from '@/lib/guias/contenido'
 import authorPhoto from '../../app/[locale]/sobre-nosotros/alejandro-aguilar.webp'
 import { Bloques } from './bloques'
 import { Candado } from './candado'
+import { IrAGuia } from './ir-a-guia'
 import '../news/news.css'
 import './guias.css'
 
 type Props = {
-  guia: Guia
+  guia: Omit<Guia, 'abierto' | 'bloqueado'> // los bloques llegan ya filtrados en `visibles`
   visibles: { abierto: Visible[]; bloqueado: Visible[] }
   conAcceso: boolean
+  recienAbierta: boolean
   origen?: string
 }
 
 // Una guía: firmada por Alejandro, lo abierto primero y después el candado o el resto.
 // Cierra con la invitación de siempre del sitio (el diagnóstico).
-export function GuiaArticulo({ guia, visibles, conAcceso, origen }: Props) {
+export function GuiaArticulo({ guia, visibles, conAcceso, recienAbierta, origen }: Props) {
   return (
     <main>
       <section className="hm-hero hm-hero--page hm-hero--fit" aria-labelledby="gu-titulo">
@@ -44,6 +46,7 @@ export function GuiaArticulo({ guia, visibles, conAcceso, origen }: Props) {
             <Bloques bloques={visibles.abierto} />
             {conAcceso ? (
               <div id="guia" className="gu-completa">
+                {recienAbierta && <IrAGuia />}
                 <p className="gu-sello">Guía completa</p>
                 <Bloques bloques={visibles.bloqueado} />
               </div>

@@ -49,7 +49,7 @@ export const PRIVACY: LegalDoc = {
         [
           'Tilopay (Costa Rica): procesamiento de pagos.',
           'Nuestra plataforma de CRM y agenda (proveedor en Estados Unidos): contactos, citas y seguimiento.',
-          'Supabase y Upstash (Estados Unidos): base de datos y reservas temporales de horarios.',
+          'Supabase y Upstash (Estados Unidos): base de datos, reservas temporales de horarios y control de intentos en el formulario de las guías (con una huella de su IP, nunca la IP).',
           'Resend (Estados Unidos): envío de correos de contratos y propuestas.',
           'Zernio: mensajes automáticos en Instagram y Facebook cuando usted pide una guía.',
           'Telegram: avisos internos a nuestro equipo cuando alguien desbloquea una guía.',
@@ -79,7 +79,7 @@ export const PRIVACY: LegalDoc = {
       body: [
         'Usamos dos tipos de cookies y de almacenamiento del navegador:',
         [
-          'Esenciales, que el sitio necesita para funcionar: su elección de cookies, el tema claro u oscuro, la sesión mientras agenda y una cookie que indica si su visita viene de la Unión Europea, el Espacio Económico Europeo o el Reino Unido. No requieren consentimiento.',
+          'Esenciales, que el sitio necesita para funcionar: su elección de cookies, el tema claro u oscuro, la sesión mientras agenda, una cookie que indica si su visita viene de la Unión Europea, el Espacio Económico Europeo o el Reino Unido y, si desbloqueó una guía, una cookie que lo recuerda durante un año para que no tenga que registrarse de nuevo. No requieren consentimiento.',
           'De medición y publicidad: Google Tag Manager, Google Analytics, el píxel de Meta y Adsmurai. En visitas desde la Unión Europea, el Espacio Económico Europeo o el Reino Unido solo se activan si usted elige «Aceptar todo». En el resto de los países se activan al entrar y se desactivan si usted elige «Solo esenciales».',
         ],
         'Puede cambiar su elección cuando quiera desde «Preferencias de cookies», al pie de cada página.',

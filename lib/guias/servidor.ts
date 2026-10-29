@@ -10,12 +10,14 @@ import type { Deps } from './registro'
 
 const GUIAS = 'guias'
 const CONTACTOS = 'guias_contactos'
-const MAX_POR_HORA = 8 // registros o ingresos por IP; alcanza para una familia detrás del mismo router
 
 export async function obtenerGuia(slug: string): Promise<Guia | null> {
   const { data, error } = await createServiceClient().from(GUIAS).select('*').eq('slug', slug).eq('publicada', true).maybeSingle()
   if (error) throw new Error(`guias: ${error.message}`)
-  return data ? filaAGuia(data) : null
+  if (!data) return null
+  const guia = filaAGuia(data)
+  if (!guia) console.error(`guias: «${slug}» está publicada pero su contenido no pasa la validación (da 404)`)
+  return guia
 }
 
 export async function listarPublicadas(): Promise<{ slug: string; actualizada_en: string }[]> {
@@ -39,14 +41,15 @@ function redis(): Redis | null {
 export function depsReales(avisarDespues: (tarea: () => Promise<void>) => void): Deps {
   const db = createServiceClient()
   return {
-    async limite(clave) {
+    // Ventana fija de una hora. incr y expire van juntos: si el expire se perdiera, la IP quedaría bloqueada para siempre
+    async limite(clave, max) {
       const r = redis()
       if (!r) return true // sin Redis no hay límite (igual que la agenda)
       try {
         const k = `bralto:guias:intentos:${clave}`
-        const n = await r.incr(k)
-        if (n === 1) await r.expire(k, 3600)
-        return n <= MAX_POR_HORA
+        const [n] = await r.multi().incr(k).expire(k, 3600, 'NX').exec<[number, number]>()
+        if (n > max) console.warn(`guias: tope de ${max} intentos por hora alcanzado (${clave.split(':')[0]})`)
+        return n <= max
       } catch {
         return true
       }
@@ -80,11 +83,12 @@ export function depsReales(avisarDespues: (tarea: () => Promise<void>) => void):
       if (!token || !chat) return
       avisarDespues(async () => {
         try {
-          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: chat, text: texto, disable_web_page_preview: true }),
           })
+          if (!res.ok) console.error(`guias: Telegram rechazó el aviso (HTTP ${res.status})`)
         } catch (err) {
           console.error('guias: no salió el aviso a Telegram', err)
         }

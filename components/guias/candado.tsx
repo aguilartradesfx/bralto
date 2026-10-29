@@ -63,11 +63,12 @@ export function Candado({ slug, incluye, origen }: Props) {
         <form action={enviar} className="gu-form" noValidate>
           <p className="gu-form__nota">Le pedimos sus datos una sola vez: con ellos se abren todas las guías de Bralto.</p>
           <input type="hidden" name="origen" value={origen ?? 'web'} />
-          {/* Campo trampa para bots: una persona no lo ve ni lo llena */}
+          {/* Campo trampa para bots: una persona no lo ve ni lo llena. Nombre neutro para que
+              ningún gestor de contraseñas lo autocomplete y deje fuera a alguien real */}
           <div className="gu-trampa" aria-hidden="true">
             <label>
-              Sitio web
-              <input name="sitio" tabIndex={-1} autoComplete="off" />
+              Deje este campo vacío
+              <input name="hp_extra" tabIndex={-1} autoComplete="off" />
             </label>
           </div>
           <Campo name="nombre" label="Nombre" autoComplete="name" defaultValue={estado.valores?.nombre} error={estado.errores?.nombre} />
@@ -97,6 +98,7 @@ export function Candado({ slug, incluye, origen }: Props) {
               name="acepta"
               defaultChecked={estado.valores?.acepta}
               aria-invalid={estado.errores?.acepta ? true : undefined}
+              aria-describedby={estado.errores?.acepta ? 'gu-acepta-error' : undefined}
             />
             <label htmlFor="gu-acepta">
               Acepto la{' '}
@@ -106,7 +108,11 @@ export function Candado({ slug, incluye, origen }: Props) {
               y que Bralto me escriba por correo o WhatsApp.
             </label>
           </div>
-          {estado.errores?.acepta && <p className="gu-error">{estado.errores.acepta}</p>}
+          {estado.errores?.acepta && (
+            <p id="gu-acepta-error" className="gu-error">
+              {estado.errores.acepta}
+            </p>
+          )}
           {estado.error && (
             <p className="gu-error" role="alert">
               {estado.error}
