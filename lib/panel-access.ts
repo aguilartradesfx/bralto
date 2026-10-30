@@ -16,6 +16,7 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
   ['/propuestas', 'can_view_proposals'],
   ['/usuarios', 'is_admin'],
   ['/plan-q4', 'can_view_plan'],
+  ['/calendario', 'is_admin'],
 ]
 
 export function requiredPermission(pathname: string): PanelPermission | null {
