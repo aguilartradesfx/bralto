@@ -3,6 +3,9 @@ import type { Publicacion } from '../redes/publicacion/tipos.ts'
 // Una fila completa de redes_publicaciones, como la lee el panel
 export type Fila = Publicacion & { ultimo_error: string | null }
 
+// Lo que muestra el mes de cada publicación
+export type Resumen = Pick<Publicacion, 'id' | 'titulo' | 'tipo' | 'estado' | 'publicar_en'>
+
 // Lo que necesita la página de una publicación. Campo por campo: lo interno (los mensajes del «Comenta»,
 // los pasos de la publicación) no viaja al navegador
 export type Vista = Pick<
