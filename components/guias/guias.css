@@ -45,12 +45,32 @@
   }
 }
 
-/* ---------- La columna de la guía ---------- */
+/* ---------- La columna de la guía ----------
+   El mismo ancho y el mismo borde izquierdo que el bloque del título: el texto ocupa lo que ocupa el
+   título (todo menos la columna de la foto) y las tarjetas de los pasos, el ancho completo. */
+.gu {
+  --gu-texto: 100%;
+}
+
+@media (min-width: 960px) {
+  .gu {
+    --gu-texto: calc(100% - 396px); /* 340 de la foto + 56 de separación, como .gu-hero */
+  }
+}
+
 .gu-col {
   display: grid;
   gap: 26px;
-  max-width: 880px;
+  max-width: 1080px;
   margin-inline: auto;
+}
+
+.gu-abierto,
+.gu-candado,
+.gu-indice,
+.gu-fuente,
+.gu-completa > :not(.gu-paso) {
+  max-width: var(--gu-texto);
 }
 
 .gu-cuerpo p {
@@ -624,9 +644,6 @@
   color: var(--accent-ink) !important;
 }
 
-.gu-fuente {
-  max-width: none;
-}
 
 /* ---------- Teléfono ---------- */
 @media (max-width: 640px) {

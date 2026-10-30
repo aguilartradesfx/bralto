@@ -52,6 +52,8 @@ export function Candado({ slug, incluye, origen }: Props) {
   const [estadoCorreo, entrar, entrando] = useActionState(ingresarConCorreo.bind(null, slug), {} as EstadoCandado)
   const [conCorreo, setConCorreo] = useState(false)
 
+  const cta = useRef<HTMLDivElement>(null)
+
   const abrir = () => {
     if (!dialogo.current?.open) dialogo.current?.showModal()
   }
@@ -59,6 +61,44 @@ export function Candado({ slug, incluye, origen }: Props) {
   useEffect(() => {
     window.addEventListener(ABRIR_CANDADO, abrir)
     return () => window.removeEventListener(ABRIR_CANDADO, abrir)
+  }, [])
+
+  // La ventana se abre sola cuando la persona baja hasta el «Ver todo». Solo si de verdad bajó
+  // (no al cargar en una pantalla alta) y una sola vez: si la cierra, queda el botón.
+  useEffect(() => {
+    const d = dialogo.current
+    const objetivo = cta.current
+    if (!d || !objetivo) return
+    let visible = false
+    let bajo = false
+    let cerrada = false
+    const intentar = () => {
+      if (visible && bajo && !cerrada && !d.open) d.showModal()
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting
+        intentar()
+      },
+      { threshold: 0.6 },
+    )
+    io.observe(objetivo)
+    const alBajar = () => {
+      if (window.scrollY > 40) {
+        bajo = true
+        intentar()
+      }
+    }
+    const alCerrar = () => {
+      cerrada = true
+    }
+    window.addEventListener('scroll', alBajar, { passive: true })
+    d.addEventListener('close', alCerrar)
+    return () => {
+      io.disconnect()
+      window.removeEventListener('scroll', alBajar)
+      d.removeEventListener('close', alCerrar)
+    }
   }, [])
 
   return (
@@ -77,7 +117,7 @@ export function Candado({ slug, incluye, origen }: Props) {
         <span className="gu-velo__linea" style={{ width: '66%' }} />
       </div>
 
-      <div className="gu-candado__cta">
+      <div ref={cta} className="gu-candado__cta">
         <button type="button" className="hm-btn hm-btn--solid gu-ver-todo" onClick={abrir}>
           Ver todo
         </button>
