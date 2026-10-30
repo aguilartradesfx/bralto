@@ -36,9 +36,9 @@ export type Lead = { nombre: string; origen: string; en: string }
 export type Cita = { titulo: string; inicio: string }
 
 export type Conversaciones = {
-  sinLeer: number
-  porCanal: Record<string, number> // «WhatsApp», «correo», «Messenger»…
-  ultimas: { nombre: string; canal: string; texto: string }[]
+  sinLeer: number // conversaciones que esperan respuesta, de los últimos 7 días
+  porCanal: Record<string, number> // «Instagram», «Messenger», «WhatsApp»…
+  ultimas: { nombre: string; canal: string; texto: string; en?: string }[]
 }
 
 export type ContenidoDelDia = {

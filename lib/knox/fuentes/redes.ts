@@ -79,13 +79,17 @@ async function comentariosNuevos(m: Medio, token: string, desde: Date, propias: 
     .map((c) => ({ usuario: c.username!, texto: (c.text ?? '').slice(0, 200), en: fecha(c.timestamp).toISOString(), publicacion: tituloDe(m.caption) }))
 }
 
-// Conversaciones con mensajes sin leer en una página (Messenger, o Instagram con platform=instagram)
-async function conSinLeer(pagina: string, token: string, extra = ''): Promise<number> {
-  const j = await graph<{ data: { unread_count?: number }[] }>(`${pagina}/conversations?fields=unread_count&limit=20${extra}`, token)
-  return j.data.filter((c) => (c.unread_count ?? 0) > 0).length
+// Conversaciones con mensajes sin leer desde `desde` en una página (Messenger, o Instagram con platform=instagram).
+// Las más viejas no cuentan: después de 7 días Meta ya no deja contestarlas
+async function conSinLeer(pagina: string, token: string, desde: Date, extra = ''): Promise<number> {
+  const j = await graph<{ data: { unread_count?: number; updated_time?: string }[] }>(
+    `${pagina}/conversations?fields=unread_count,updated_time&limit=20${extra}`,
+    token,
+  )
+  return j.data.filter((c) => (c.unread_count ?? 0) > 0 && fecha(c.updated_time ?? '') >= desde).length
 }
 
-async function paginas(token: string): Promise<{ facebook: PaginaFb[]; mensajesIgSinLeer: number | null }> {
+async function paginas(token: string, desde: Date): Promise<{ facebook: PaginaFb[]; mensajesIgSinLeer: number | null }> {
   const mias = new Set([process.env.META_FB_PAGE_ID, process.env.META_FB_BRALTO_PAGE_ID ?? PAGINA_BRALTO].filter(Boolean))
   const cuentas = await graph<{ data: { id: string; name: string; access_token?: string; followers_count?: number }[] }>(
     'me/accounts?fields=id,name,access_token,followers_count&limit=25',
@@ -94,9 +98,9 @@ async function paginas(token: string): Promise<{ facebook: PaginaFb[]; mensajesI
   let mensajesIgSinLeer: number | null = null
   const facebook: PaginaFb[] = []
   for (const p of cuentas.data.filter((c) => mias.has(c.id))) {
-    const sinLeer = p.access_token ? await conSinLeer(p.id, p.access_token).catch(() => null) : null
+    const sinLeer = p.access_token ? await conSinLeer(p.id, p.access_token, desde).catch(() => null) : null
     if (p.access_token) {
-      const ig = await conSinLeer(p.id, p.access_token, '&platform=instagram').catch(() => null)
+      const ig = await conSinLeer(p.id, p.access_token, desde, '&platform=instagram').catch(() => null)
       if (ig !== null) mensajesIgSinLeer = (mensajesIgSinLeer ?? 0) + ig
     }
     facebook.push({ nombre: p.name.trim(), seguidores: p.followers_count ?? 0, sinLeer })
@@ -139,7 +143,7 @@ export async function redes(ahora: Date): Promise<Redes> {
     Promise.all(recientes.map(({ m }) => comentariosNuevos(m, token, ayer, propias).catch(() => []))).then((l) =>
       l.flat().sort((a, b) => b.en.localeCompare(a.en)),
     ),
-    paginas(token).catch(() => ({ facebook: [], mensajesIgSinLeer: null })),
+    paginas(token, semana).catch(() => ({ facebook: [], mensajesIgSinLeer: null })),
   ])
 
   return {
