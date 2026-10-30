@@ -2,8 +2,10 @@ import type { LegalDoc } from '@/components/home/legal-page'
 
 // Revisada por el abogado (octubre de 2026). Describe lo que hace hoy el sitio: agenda y cobro del diagnóstico, firma de contratos y
 // propuestas, y las cookies de medición que carga GTM según el consentimiento (lib/consent.ts).
+// El 29/10 se sumaron las guías con candado (/guias): falta que el abogado revise ese agregado.
 export const PRIVACY: LegalDoc = {
   title: 'Política de privacidad',
+  updated: { es: 'Actualizado el 29 de octubre de 2026', en: 'Updated October 29, 2026' },
   intro:
     'En Bralto cuidamos los datos que usted nos confía. Esta política explica qué datos recopilamos en bralto.io, para qué los usamos, con quién los compartimos y cómo puede ejercer sus derechos.',
   sections: [
@@ -21,6 +23,7 @@ export const PRIVACY: LegalDoc = {
           'Al agendar un diagnóstico: nombre, apellido, teléfono, correo electrónico, sus respuestas sobre el negocio (tamaño del equipo, ingreso mensual aproximado, principal desafío, industria y plazo) y la fecha y hora que elige.',
           'Al pagar: el pago lo procesa Tilopay. Los datos de su tarjeta van directo a Tilopay y no pasan por nuestros servidores; nosotros recibimos el resultado del pago y su referencia.',
           'Al firmar un contrato o aceptar una propuesta en línea: los datos del documento, su nombre, su firma y la fecha.',
+          'Al desbloquear una guía: su nombre, correo electrónico y WhatsApp, la guía que abrió y la red social de la que llegó. Si nos escribe o comenta en Instagram o Facebook para pedir una guía, también su usuario y su mensaje o comentario.',
           'Al navegar: datos técnicos del navegador y, solo si usted lo permite o según su región (vea «Cookies»), datos de uso para medir las visitas y los anuncios.',
         ],
       ],
@@ -32,6 +35,7 @@ export const PRIVACY: LegalDoc = {
           'Preparar y realizar el diagnóstico, confirmarle la cita y enviarle recordatorios.',
           'Cobrar el diagnóstico y, si decide avanzar con un proyecto, descontarlo de su precio.',
           'Dar seguimiento a su solicitud y preparar propuestas y contratos.',
+          'Darle acceso a las guías y escribirle por correo o WhatsApp con contenido y ofertas de Bralto. Puede pedirnos que dejemos de hacerlo cuando quiera.',
           'Medir y mejorar el sitio y nuestros anuncios, solo con las cookies que usted acepta.',
           'Cumplir obligaciones legales, contables y fiscales.',
         ],
@@ -45,8 +49,10 @@ export const PRIVACY: LegalDoc = {
         [
           'Tilopay (Costa Rica): procesamiento de pagos.',
           'Nuestra plataforma de CRM y agenda (proveedor en Estados Unidos): contactos, citas y seguimiento.',
-          'Supabase y Upstash (Estados Unidos): base de datos y reservas temporales de horarios.',
+          'Supabase y Upstash (Estados Unidos): base de datos, reservas temporales de horarios y control de intentos en el formulario de las guías (con una huella de su IP, nunca la IP).',
           'Resend (Estados Unidos): envío de correos de contratos y propuestas.',
+          'Zernio: mensajes automáticos en Instagram y Facebook cuando usted pide una guía.',
+          'Telegram: avisos internos a nuestro equipo cuando alguien desbloquea una guía.',
           'Vercel (Estados Unidos): alojamiento del sitio.',
           'Google (Google Tag Manager y Google Analytics), Meta (píxel de Meta) y Adsmurai: medición de visitas y anuncios, solo con su consentimiento o según su región.',
         ],
@@ -73,7 +79,7 @@ export const PRIVACY: LegalDoc = {
       body: [
         'Usamos dos tipos de cookies y de almacenamiento del navegador:',
         [
-          'Esenciales, que el sitio necesita para funcionar: su elección de cookies, el tema claro u oscuro, la sesión mientras agenda y una cookie que indica si su visita viene de la Unión Europea, el Espacio Económico Europeo o el Reino Unido. No requieren consentimiento.',
+          'Esenciales, que el sitio necesita para funcionar: su elección de cookies, el tema claro u oscuro, la sesión mientras agenda, una cookie que indica si su visita viene de la Unión Europea, el Espacio Económico Europeo o el Reino Unido y, si desbloqueó una guía, una cookie que lo recuerda durante un año para que no tenga que registrarse de nuevo. No requieren consentimiento.',
           'De medición y publicidad: Google Tag Manager, Google Analytics, el píxel de Meta y Adsmurai. En visitas desde la Unión Europea, el Espacio Económico Europeo o el Reino Unido solo se activan si usted elige «Aceptar todo». En el resto de los países se activan al entrar y se desactivan si usted elige «Solo esenciales».',
         ],
         'Puede cambiar su elección cuando quiera desde «Preferencias de cookies», al pie de cada página.',

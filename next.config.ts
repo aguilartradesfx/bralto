@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
         hostname: 'pjwmfllnyauobityaile.supabase.co',
         pathname: '/storage/v1/object/public/noticias/**',
       },
+      // Fotos y capturas de las guías (/guias)
+      {
+        protocol: 'https',
+        hostname: 'pjwmfllnyauobityaile.supabase.co',
+        pathname: '/storage/v1/object/public/social-images/guias/**',
+      },
     ],
   },
   // La fuente de la firma de las portadas viaja con la función que publica las noticias

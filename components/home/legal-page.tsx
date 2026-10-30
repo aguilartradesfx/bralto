@@ -12,6 +12,7 @@ export type LegalDoc = {
   title: string
   intro: string
   sections: { heading: string; body: LegalBlock[] }[]
+  updated?: Record<Locale, string> // si el documento cambió después que el otro
 }
 
 const COPY = {
@@ -55,7 +56,7 @@ export function LegalPage({ locale, doc }: { locale: Locale; doc: LegalDoc }) {
           <h1 id="lg-title" className="hm-page-title lg-title" lang="es">
             {doc.title}
           </h1>
-          <p className="hm-lead">{LEGAL_REVIEWED ? c.updated : c.draft}</p>
+          <p className="hm-lead">{LEGAL_REVIEWED ? (doc.updated?.[locale] ?? c.updated) : c.draft}</p>
         </div>
       </section>
 
