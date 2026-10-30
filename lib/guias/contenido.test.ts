@@ -14,6 +14,7 @@ const guia: Guia = {
   fuenteNombre: null,
   fuenteUrl: null,
   imagenUrl: null,
+  boton: null,
   abierto: [
     { tipo: 'parrafo', texto: 'Intro' },
     { tipo: 'paso', titulo: 'Clónelo' },
@@ -78,6 +79,14 @@ test('la portada también tiene que venir de la carpeta de guías (next/image so
   assert.equal(filaAGuia({ ...fila, imagen_url: IMG })?.imagenUrl, IMG)
   assert.equal(filaAGuia({ ...fila, imagen_url: null })?.imagenUrl, null)
   assert.equal(filaAGuia({ ...fila, imagen_url: 'https://otro-sitio.com/portada.webp' }), null)
+})
+
+test('el botón final de la ventana es propio de cada guía, corto, y si falta queda vacío', () => {
+  const fila = { slug: 'x', palabra: 'X', titulo: 'T', resumen: 'R', etiqueta: 'E', incluye: [], abierto: [], bloqueado: [] }
+  assert.equal(filaAGuia({ ...fila, boton: 'Aprender a instalar Jarvis' })?.boton, 'Aprender a instalar Jarvis')
+  assert.equal(filaAGuia({ ...fila, boton: null })?.boton, null)
+  assert.equal(filaAGuia(fila)?.boton, null)
+  assert.equal(filaAGuia({ ...fila, boton: 'x'.repeat(41) }), null)
 })
 
 test('secciones salen de los subtítulos, con un id estable para «Ir directo a»', () => {

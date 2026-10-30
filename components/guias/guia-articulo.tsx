@@ -68,7 +68,14 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
                 <Bloques bloques={visibles.bloqueado} />
               </div>
             ) : (
-              <Candado slug={guia.slug} titulo={guia.titulo} incluye={guia.incluye} imagen={guia.imagenUrl} origen={origen} />
+              <Candado
+                slug={guia.slug}
+                titulo={guia.titulo}
+                incluye={guia.incluye}
+                imagen={guia.imagenUrl}
+                boton={guia.boton}
+                origen={origen}
+              />
             )}
           </article>
 

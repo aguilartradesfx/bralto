@@ -1,5 +1,8 @@
 import { z } from 'zod'
+import { MENSAJES, limpiarNombre, limpiarWhatsapp, nombreValido, type Campo } from './campos.ts'
 import { SLUG_GUIA } from './contenido.ts'
+
+export { limpiarWhatsapp, type Campo }
 
 // Quien abre una guía: se valida lo que manda el formulario y se guarda con las conexiones
 // reales inyectadas (lib/guias/servidor.ts), así la lógica se prueba sin Supabase ni Telegram.
@@ -12,28 +15,12 @@ export const MAX_INGRESOS_POR_HORA = 20
 
 export type Origen = 'ig' | 'fb' | 'web'
 export type Datos = { nombre: string; correo: string; whatsapp: string; origen: Origen; guia: string }
-export type Campo = 'nombre' | 'correo' | 'whatsapp' | 'acepta'
 
 const ORIGENES: readonly Origen[] = ['ig', 'fb', 'web']
 const NOMBRE_ORIGEN: Record<Origen, string> = { ig: 'Instagram', fb: 'Facebook', web: 'la web' }
 
-const MENSAJES: Record<Campo, string> = {
-  nombre: 'Escriba su nombre.',
-  correo: 'Revise su correo: parece que le falta algo.',
-  whatsapp: 'Escriba su WhatsApp con el código de país, por ejemplo +506 8888 8888.',
-  acepta: 'Para abrir la guía, acepte la política de privacidad.',
-}
-
 const CORREO = z.email().max(254)
 const texto = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
-
-// Con código de país («+» o «00» al inicio) y sin espacios, guiones, paréntesis ni puntos.
-// Siempre se guarda con «+»: así el enlace wa.me del aviso funciona y no hay dos formatos.
-export function limpiarWhatsapp(v: string): string | null {
-  let s = v.trim().replace(/[\s\-().]/g, '')
-  if (s.startsWith('00')) s = `+${s.slice(2)}`
-  return /^\+\d{8,15}$/.test(s) ? s : null
-}
 
 export function validarRegistro(
   input: Record<string, unknown>,
@@ -42,8 +29,8 @@ export function validarRegistro(
   if (!SLUG_GUIA.test(guia)) throw new Error(`Guía inválida: ${guia}`) // la pone la página, no la persona
 
   const errores: Partial<Record<Campo, string>> = {}
-  const nombre = texto(input.nombre).replace(/\s+/g, ' ') // una sola línea: así no se cuelan renglones en el aviso
-  if (nombre.length < 2 || nombre.length > 80) errores.nombre = MENSAJES.nombre
+  const nombre = limpiarNombre(texto(input.nombre))
+  if (!nombreValido(nombre)) errores.nombre = MENSAJES.nombre
   const correo = texto(input.correo).toLowerCase()
   if (!CORREO.safeParse(correo).success) errores.correo = MENSAJES.correo
   const whatsapp = limpiarWhatsapp(texto(input.whatsapp))

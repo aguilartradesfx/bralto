@@ -41,6 +41,7 @@ export type Guia = {
   fuenteNombre: string | null
   fuenteUrl: string | null
   imagenUrl: string | null
+  boton: string | null // el botón final de la ventana («Aprender a instalar Jarvis»); sin él, «Ver la guía completa»
   abierto: Bloque[]
   bloqueado: Bloque[]
 }
@@ -58,6 +59,7 @@ const FilaSchema = z.object({
   fuente_nombre: z.string().nullish(),
   fuente_url: https.nullish(),
   imagen_url: imagenGuia.nullish(), // la portada, de la misma carpeta que las imágenes de los pasos
+  boton: z.string().min(1).max(40).nullish(),
   abierto: z.array(BloqueSchema),
   bloqueado: z.array(BloqueSchema),
 })
@@ -77,6 +79,7 @@ export function filaAGuia(fila: Record<string, unknown>): Guia | null {
     fuenteNombre: f.fuente_nombre ?? null,
     fuenteUrl: f.fuente_url ?? null,
     imagenUrl: f.imagen_url ?? null,
+    boton: f.boton ?? null,
     abierto: f.abierto,
     bloqueado: f.bloqueado,
   }

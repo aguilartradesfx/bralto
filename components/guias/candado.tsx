@@ -2,12 +2,13 @@
 
 import Image from 'next/image'
 import { unstable_isUnrecognizedActionError, unstable_rethrow } from 'next/navigation'
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { useActionState, useEffect, useRef, useState, type FormEvent } from 'react'
 import { desbloquear, ingresarConCorreo, type EstadoCandado } from '@/app/[locale]/guias/[slug]/actions'
+import { errorDelPaso, limpiarNombre, pasoConError, type Paso } from '@/lib/guias/campos'
 import { deGolpe } from './de-golpe'
 import { TAMANOS_PORTADA } from './portada'
 
-type Props = { slug: string; titulo: string; incluye: string[]; imagen: string | null; origen?: string }
+type Props = { slug: string; titulo: string; incluye: string[]; imagen: string | null; boton: string | null; origen?: string }
 
 // Lo que dispara la ventana desde fuera (los botones de «Ir directo a» con la guía cerrada)
 export const ABRIR_CANDADO = 'gu:abrir-candado'
@@ -37,37 +38,47 @@ function aSalvo(accion: (prev: EstadoCandado, form: FormData) => Promise<EstadoC
   }
 }
 
-function Campo(props: {
+// Un dato por paso: la pregunta es la etiqueta del campo
+function Pregunta(props: {
   name: string
-  label: string
+  id?: string
+  pregunta: string
+  detalle?: string
   type?: string
   autoComplete: string
   inputMode?: 'email' | 'tel' | 'text'
+  enterKeyHint: 'next' | 'go'
   placeholder?: string
   defaultValue?: string
-  error?: string
+  error?: string | null
+  onChange?: () => void
 }) {
-  const id = `gu-${props.name}`
+  const id = props.id ?? `gu-${props.name}`
+  const describe = [props.detalle && `${id}-detalle`, props.error && `${id}-error`].filter(Boolean).join(' ')
   return (
-    <div className="gu-campo">
-      {/* En el teléfono la etiqueta va dentro de la caja del campo (más compacto); en la computadora
-          esta caja no existe para el diseño (display: contents) y la etiqueta va arriba */}
-      <div className="gu-campo__caja">
-        <label htmlFor={id}>{props.label}</label>
-        <input
-          id={id}
-          name={props.name}
-          type={props.type ?? 'text'}
-          className="gu-input"
-          autoComplete={props.autoComplete}
-          inputMode={props.inputMode}
-          placeholder={props.placeholder}
-          defaultValue={props.defaultValue}
-          aria-invalid={props.error ? true : undefined}
-          aria-describedby={props.error ? `${id}-error` : undefined}
-          required
-        />
-      </div>
+    <div className="gu-pregunta">
+      <label htmlFor={id} className="gu-pregunta__texto">
+        {props.pregunta}
+      </label>
+      {props.detalle && (
+        <p id={`${id}-detalle`} className="gu-pregunta__detalle">
+          {props.detalle}
+        </p>
+      )}
+      <input
+        id={id}
+        name={props.name}
+        type={props.type ?? 'text'}
+        className="gu-input"
+        autoComplete={props.autoComplete}
+        inputMode={props.inputMode}
+        enterKeyHint={props.enterKeyHint}
+        placeholder={props.placeholder}
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+        aria-invalid={props.error ? true : undefined}
+        aria-describedby={describe || undefined}
+      />
       {props.error && (
         <p id={`${id}-error`} className="gu-error">
           {props.error}
@@ -77,28 +88,64 @@ function Campo(props: {
   )
 }
 
-// El final de lo abierto: bloques borrosos de lo que sigue, el botón «Ver todo» y la ventana con
-// el formulario. Lo de atrás es de mentira: el texto real no está en la página hasta registrarse.
-export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
+const CAMPO_DEL_PASO = { 1: 'gu-nombre', 2: 'gu-whatsapp', 3: 'gu-correo' } as const
+
+// El final de lo abierto: bloques borrosos de lo que sigue, el botón «Ver todo» y la ventana con el
+// registro. Lo de atrás es de mentira: el texto real no está en la página hasta registrarse.
+// La ventana pide un dato a la vez (pedido de Alejandro: todo junto asustaba): 1) el nombre, con la foto
+// y lo que trae la guía; 2) el WhatsApp; 3) el correo y la aceptación, con el botón propio de la guía.
+// Los tres campos viven en el mismo formulario (los pasos ocultos también se envían) y solo el último
+// va al servidor; los dos primeros se revisan aquí antes de seguir.
+export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props) {
   const dialogo = useRef<HTMLDialogElement>(null)
   const [estado, enviar, enviando] = useActionState(aSalvo(desbloquear.bind(null, slug)), {} as EstadoCandado)
   const [estadoCorreo, entrar, entrando] = useActionState(aSalvo(ingresarConCorreo.bind(null, slug)), {} as EstadoCandado)
   const [conCorreo, setConCorreo] = useState(false)
+  const [paso, setPaso] = useState<Paso>(1)
+  const [aviso, setAviso] = useState<string | null>(null) // el error del paso 1 o 2, revisado aquí
+  const [primerNombre, setPrimerNombre] = useState('')
 
-  // El botón que cambia de formulario desaparece al tocarlo: el foco pasa al primer campo del otro
-  const cambiarFormulario = (aCorreo: boolean) => {
-    setConCorreo(aCorreo)
-    requestAnimationFrame(() => document.getElementById(aCorreo ? 'gu-correo' : 'gu-nombre')?.focus())
+  const irAPaso = (p: Paso) => {
+    setPaso(p)
+    setAviso(null)
+    requestAnimationFrame(() => document.getElementById(CAMPO_DEL_PASO[p])?.focus())
   }
 
-  // Si algo no pasó la revisión, el foco va al primer campo con error (el lector de pantalla lo lee)
+  // Enter o «Siguiente» en los pasos 1 y 2: se revisa el dato y se sigue, sin ir al servidor
+  const alEnviar = (e: FormEvent<HTMLFormElement>) => {
+    if (paso === 3) return
+    e.preventDefault()
+    const campo = paso === 1 ? 'nombre' : 'whatsapp'
+    const valor = String(new FormData(e.currentTarget).get(campo) ?? '')
+    const error = errorDelPaso(paso, valor)
+    if (error) {
+      setAviso(error)
+      document.getElementById(`gu-${campo}`)?.focus()
+      return
+    }
+    if (paso === 1) setPrimerNombre(limpiarNombre(valor).split(' ')[0])
+    irAPaso(paso === 1 ? 2 : 3)
+  }
+
+  // El botón que cambia de formulario desaparece al tocarlo: el foco pasa al campo del otro
+  const cambiarFormulario = (aCorreo: boolean) => {
+    setConCorreo(aCorreo)
+    requestAnimationFrame(() => document.getElementById(aCorreo ? 'gu-correo-ingreso' : CAMPO_DEL_PASO[paso])?.focus())
+  }
+
+  // Si el servidor devuelve errores, la ventana vuelve al primer paso que tenga uno y el foco va a ese
+  // campo (el lector de pantalla lo lee)
   useEffect(() => {
-    const primero = (['nombre', 'correo', 'whatsapp', 'acepta'] as const).find((c) => estado.errores?.[c])
-    if (primero) document.getElementById(`gu-${primero}`)?.focus()
+    const p = pasoConError(estado.errores)
+    if (!p) return
+    setPaso(p)
+    setAviso(null)
+    const primero = (['nombre', 'whatsapp', 'correo', 'acepta'] as const).find((c) => estado.errores?.[c])
+    requestAnimationFrame(() => document.getElementById(`gu-${primero}`)?.focus())
   }, [estado])
 
   useEffect(() => {
-    if (estadoCorreo.error) document.getElementById('gu-correo')?.focus()
+    if (estadoCorreo.error) document.getElementById('gu-correo-ingreso')?.focus()
   }, [estadoCorreo])
 
   const cta = useRef<HTMLDivElement>(null)
@@ -106,6 +153,7 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
   const restaurando = useRef(false) // el salto de soltar el bloqueo no cuenta como scroll de la persona
   const enFondo = useRef(false)
   const encabezado = useRef<HTMLHeadingElement>(null)
+  const pasos = useRef<HTMLParagraphElement>(null)
 
   // Con la ventana abierta la página de atrás no se mueve.
   // - Computadora: overflow: hidden en el body y nada más, así la página se queda donde estaba (fijar el
@@ -142,9 +190,11 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
         restaurando.current = false
       }, 400)
     }
-    // El foco va al título y no a la X: así no sale el anillo de foco sobre la X al abrirse sola, y
+    // El foco va al título (o, si en el teléfono no se ve porque va en otro paso, a «Paso 2 de 3») y
+    // no a la X: así no sale el anillo de foco sobre la X al abrirse sola, no se abre el teclado, y
     // quien usa lector de pantalla oye primero de qué se trata
-    encabezado.current?.focus({ preventScroll: true })
+    const titulo = encabezado.current
+    ;(titulo && titulo.offsetParent !== null ? titulo : pasos.current)?.focus({ preventScroll: true })
   }
 
   useEffect(() => {
@@ -216,6 +266,7 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
       <dialog
         ref={dialogo}
         className="gu-dialogo"
+        data-paso={conCorreo ? 'correo' : paso}
         aria-labelledby="gu-dialogo-titulo"
         onPointerDown={(e) => {
           enFondo.current = e.target === dialogo.current
@@ -229,115 +280,155 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
           <button type="button" className="gu-cerrar" aria-label="Cerrar" onClick={() => dialogo.current?.close()}>
             ×
           </button>
-          {/* En la computadora son dos columnas: lo que trae la guía (con su foto) y el formulario. La
-              foto es la misma de arriba con el mismo sizes (y priority, igual que arriba: Next las
-              distingue por la dirección): sale de la caché, no se descarga dos veces */}
+          {/* La foto va pegada arriba (solo la caja tiene las esquinas redondeadas). En la computadora
+              son dos columnas: la foto con lo que trae la guía, y los pasos. La foto es la misma de
+              arriba con el mismo sizes (y priority, igual que arriba: Next las distingue por la
+              dirección): sale de la caché, no se descarga dos veces */}
           <div className="gu-dialogo__info">
             {imagen && (
               <div className="gu-dialogo__foto">
                 <Image src={imagen} alt="" width={1080} height={1350} sizes={TAMANOS_PORTADA} priority />
               </div>
             )}
-            <p className="hm-eyebrow">Guía completa · gratis</p>
-            <h2 id="gu-dialogo-titulo" ref={encabezado} tabIndex={-1}>
-              Vea la guía completa
-            </h2>
-            <p className="gu-dialogo__guia">{titulo}</p>
-            {incluye.length > 0 && (
-              <ul className="gu-incluye">
-                {incluye.map((i) => (
-                  <li key={i}>{i}</li>
-                ))}
-              </ul>
-            )}
+            <div className="gu-dialogo__presenta">
+              <p className="hm-eyebrow">Guía completa · gratis</p>
+              <h2 id="gu-dialogo-titulo" ref={encabezado} tabIndex={-1}>
+                Vea la guía completa
+              </h2>
+              <p className="gu-dialogo__guia">{titulo}</p>
+              {incluye.length > 0 && (
+                <ul className="gu-incluye">
+                  {incluye.map((i) => (
+                    <li key={i}>{i}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <div className="gu-dialogo__form">
-          {!conCorreo ? (
-            <form action={enviar} className="gu-form" noValidate>
-              <input type="hidden" name="origen" value={origen ?? 'web'} />
-              {/* Campo trampa para bots: una persona no lo ve ni lo llena. Nombre neutro para que
-                  ningún gestor de contraseñas lo autocomplete y deje fuera a alguien real */}
-              <div className="gu-trampa" aria-hidden="true">
-                <label>
-                  Deje este campo vacío
-                  <input name="hp_extra" tabIndex={-1} autoComplete="off" />
-                </label>
-              </div>
-              <Campo name="nombre" label="Nombre" autoComplete="name" defaultValue={estado.valores?.nombre} error={estado.errores?.nombre} />
-              <Campo
-                name="correo"
-                label="Correo"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                defaultValue={estado.valores?.correo}
-                error={estado.errores?.correo}
-              />
-              <Campo
-                name="whatsapp"
-                label="WhatsApp"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder="+506 8888 8888"
-                defaultValue={estado.valores?.whatsapp}
-                error={estado.errores?.whatsapp}
-              />
-              <div className="gu-acepta">
-                <input
-                  id="gu-acepta"
-                  type="checkbox"
-                  name="acepta"
-                  defaultChecked={estado.valores?.acepta}
-                  aria-invalid={estado.errores?.acepta ? true : undefined}
-                  aria-describedby={estado.errores?.acepta ? 'gu-acepta-error' : undefined}
+            {!conCorreo ? (
+              <form action={enviar} onSubmit={alEnviar} className="gu-form" noValidate>
+                <input type="hidden" name="origen" value={origen ?? 'web'} />
+                {/* Campo trampa para bots: una persona no lo ve ni lo llena. Nombre neutro para que
+                    ningún gestor de contraseñas lo autocomplete y deje fuera a alguien real */}
+                <div className="gu-trampa" aria-hidden="true">
+                  <label>
+                    Deje este campo vacío
+                    <input name="hp_extra" tabIndex={-1} autoComplete="off" />
+                  </label>
+                </div>
+                <p ref={pasos} className="gu-pasos" tabIndex={-1} aria-live="polite">
+                  Paso {paso} de 3
+                </p>
+
+                <div className="gu-paso-form" hidden={paso !== 1}>
+                  <Pregunta
+                    name="nombre"
+                    pregunta="¿Cuál es su nombre?"
+                    autoComplete="name"
+                    enterKeyHint="next"
+                    defaultValue={estado.valores?.nombre}
+                    error={paso === 1 && aviso ? aviso : estado.errores?.nombre}
+                    onChange={() => setAviso(null)}
+                  />
+                </div>
+
+                <div className="gu-paso-form" hidden={paso !== 2}>
+                  {primerNombre && <p className="gu-saludo">Mucho gusto, {primerNombre}.</p>}
+                  <Pregunta
+                    name="whatsapp"
+                    pregunta="¿Le enviamos por WhatsApp las novedades de IA y de los flujos que estamos armando?"
+                    detalle="Déjenos su número con el código de país."
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    enterKeyHint="next"
+                    placeholder="+506 8888 8888"
+                    defaultValue={estado.valores?.whatsapp}
+                    error={paso === 2 && aviso ? aviso : estado.errores?.whatsapp}
+                    onChange={() => setAviso(null)}
+                  />
+                </div>
+
+                <div className="gu-paso-form" hidden={paso !== 3}>
+                  <Pregunta
+                    name="correo"
+                    pregunta="Último paso: ¿cuál es su correo?"
+                    detalle="Con él entra a todas las guías de Bralto, desde cualquier aparato."
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    enterKeyHint="go"
+                    defaultValue={estado.valores?.correo}
+                    error={estado.errores?.correo}
+                  />
+                  <div className="gu-acepta">
+                    <input
+                      id="gu-acepta"
+                      type="checkbox"
+                      name="acepta"
+                      defaultChecked={estado.valores?.acepta}
+                      aria-invalid={estado.errores?.acepta ? true : undefined}
+                      aria-describedby={estado.errores?.acepta ? 'gu-acepta-error' : undefined}
+                    />
+                    <label htmlFor="gu-acepta">
+                      Acepto la{' '}
+                      <a href="/es/privacidad" target="_blank" rel="noopener">
+                        política de privacidad
+                      </a>{' '}
+                      y que Bralto me escriba por correo o WhatsApp.
+                    </label>
+                  </div>
+                  {estado.errores?.acepta && (
+                    <p id="gu-acepta-error" className="gu-error">
+                      {estado.errores.acepta}
+                    </p>
+                  )}
+                  {estado.error && (
+                    <p className="gu-error" role="alert">
+                      {estado.error}
+                    </p>
+                  )}
+                </div>
+
+                <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={enviando}>
+                  {paso < 3 ? 'Siguiente' : enviando ? 'Abriendo la guía…' : (boton ?? 'Ver la guía completa')}
+                </button>
+                {paso === 1 ? (
+                  <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(true)}>
+                    ¿Ya se registró? Entre con su correo
+                  </button>
+                ) : (
+                  <button type="button" className="gu-cambiar" onClick={() => irAPaso(paso === 3 ? 2 : 1)}>
+                    ← Volver
+                  </button>
+                )}
+              </form>
+            ) : (
+              <form action={entrar} className="gu-form" noValidate>
+                <p ref={pasos} className="gu-pasos" tabIndex={-1}>
+                  Ya registrado
+                </p>
+                <Pregunta
+                  name="correo"
+                  id="gu-correo-ingreso"
+                  pregunta="¿Con qué correo se registró?"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="go"
+                  defaultValue={estadoCorreo.valores?.correo}
+                  error={estadoCorreo.error}
                 />
-                <label htmlFor="gu-acepta">
-                  Acepto la{' '}
-                  <a href="/es/privacidad" target="_blank" rel="noopener">
-                    política de privacidad
-                  </a>{' '}
-                  y que Bralto me escriba por correo o WhatsApp.
-                </label>
-              </div>
-              {estado.errores?.acepta && (
-                <p id="gu-acepta-error" className="gu-error">
-                  {estado.errores.acepta}
-                </p>
-              )}
-              {estado.error && (
-                <p className="gu-error" role="alert">
-                  {estado.error}
-                </p>
-              )}
-              <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={enviando}>
-                {enviando ? 'Abriendo la guía…' : 'Ver la guía completa'}
-              </button>
-              <p className="gu-form__nota">Con este registro se abren todas las guías de Bralto.</p>
-              <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(true)}>
-                ¿Ya se registró? Entre con su correo
-              </button>
-            </form>
-          ) : (
-            <form action={entrar} className="gu-form" noValidate>
-              <Campo
-                name="correo"
-                label="Su correo"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                defaultValue={estadoCorreo.valores?.correo}
-                error={estadoCorreo.error}
-              />
-              <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={entrando}>
-                {entrando ? 'Buscando…' : 'Entrar'}
-              </button>
-              <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(false)}>
-                Es mi primera vez
-              </button>
-            </form>
-          )}
+                <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={entrando}>
+                  {entrando ? 'Buscando…' : 'Entrar'}
+                </button>
+                <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(false)}>
+                  Es mi primera vez
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </dialog>

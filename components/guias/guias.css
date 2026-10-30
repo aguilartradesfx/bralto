@@ -460,12 +460,15 @@
 
 /* ---------- La ventana del candado ----------
    El reset global (* { margin: 0 }, app/globals.css) le quita al <dialog> el margin: auto que lo
-   centra (por eso salía arriba a la izquierda): aquí va explícito. En el teléfono es una columna; en
-   la computadora, dos: lo que trae la guía con su foto, y el formulario. */
+   centra (por eso salía arriba a la izquierda): aquí va explícito.
+   Pide un dato a la vez (pedido de Alejandro: todo junto asustaba). Arriba la foto, pegada a los
+   bordes: solo la caja tiene las esquinas redondeadas. En el teléfono, una columna angosta y lo que
+   trae la guía solo en el primer paso; en la computadora, dos: la foto con lo que trae la guía, y los
+   pasos. Lo que se escribe queda en 16 px: con menos, iOS hace zoom al tocar el campo. */
 .gu-dialogo {
   position: fixed;
   inset: 0;
-  width: min(460px, calc(100vw - 32px));
+  width: min(380px, calc(100vw - 40px));
   height: fit-content;
   max-width: none;
   max-height: none;
@@ -485,12 +488,10 @@
 .gu-dialogo__caja {
   position: relative;
   display: grid;
-  gap: 14px;
   max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   overscroll-behavior: contain; /* el scroll dentro de la ventana no pasa a la página */
-  padding: 28px 24px 24px;
   border-radius: var(--r-lg);
   background: var(--bg);
   box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .6), inset 0 0 0 1px var(--glass-edge);
@@ -498,13 +499,38 @@
 
 .gu-dialogo__info {
   display: grid;
-  gap: 14px;
+  padding: 16px 18px 0;
+}
+
+.gu-dialogo__foto {
+  margin: -16px -18px 12px; /* a sangre arriba y a los lados, sobre el relleno */
+  aspect-ratio: 12 / 5;
+  overflow: hidden;
+  background: var(--inset-fill);
+}
+
+.gu-dialogo__foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
+.gu-dialogo__presenta {
+  display: grid;
+  gap: 6px;
+}
+
+.gu-dialogo__caja .hm-eyebrow {
+  font-size: 10px;
 }
 
 .gu-dialogo__caja h2 {
   margin: 0;
-  font-size: 23px;
+  font-size: 19px;
   font-weight: 600;
+  line-height: 1.2;
   letter-spacing: -.02em;
 }
 
@@ -512,10 +538,12 @@
   outline: none; /* recibe el foco al abrir (para el lector de pantalla), no es un control */
 }
 
-/* La foto y el nombre de la guía solo en la computadora: en el teléfono la ventana va al grano */
-.gu-dialogo__foto,
 .gu-dialogo__guia {
-  display: none;
+  display: none; /* el nombre de la guía solo en la computadora */
+}
+
+.gu-dialogo__form {
+  padding: 14px 18px 16px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -525,6 +553,10 @@
 
   .gu-dialogo[open]::backdrop {
     animation: gu-aparece .24s ease-out;
+  }
+
+  .gu-paso-form:not([hidden]) {
+    animation: gu-aparece .2s ease-out;
   }
 }
 
@@ -541,80 +573,21 @@
   }
 }
 
-@media (min-width: 760px) {
-  .gu-dialogo {
-    width: min(880px, calc(100vw - 64px));
-  }
-
-  .gu-dialogo__caja {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0;
-    max-height: calc(100vh - 48px);
-    max-height: calc(100dvh - 48px);
-    padding: 0;
-  }
-
-  .gu-dialogo__info {
-    align-content: start;
-    gap: 12px;
-    padding: 32px;
-    background: var(--inset-fill);
-    box-shadow: inset -1px 0 0 var(--inset-edge);
-  }
-
-  .gu-dialogo__foto {
-    display: block;
-    margin: -32px -32px 10px; /* a sangre arriba y a los lados, sobre el relleno de la columna */
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background: var(--inset-fill);
-  }
-
-  .gu-dialogo__foto img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 30%;
-  }
-
-  .gu-dialogo__guia {
-    display: block;
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--ink-2);
-    text-wrap: pretty;
-  }
-
-  .gu-dialogo__info .gu-incluye {
-    margin-top: 6px;
-  }
-
-  .gu-dialogo__form {
-    align-self: center;
-    padding: 60px 32px 32px;
-  }
-
-  .gu-dialogo__form .gu-form {
-    margin-top: 0;
-  }
-}
-
+/* La X va sobre la foto: oscura y sólida para que se vea sobre cualquier imagen */
 .gu-cerrar {
   position: absolute;
   z-index: 1;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 0;
   border-radius: 50%;
-  background: var(--inset-fill);
-  color: var(--ink);
-  font-size: 22px;
+  background: rgba(10, 10, 10, .55);
+  color: #fff;
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
 }
@@ -626,17 +599,17 @@
 
 .gu-incluye {
   display: grid;
-  gap: 8px;
-  margin: 0;
+  gap: 3px;
+  margin: 2px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .gu-incluye li {
   position: relative;
-  padding-left: 26px;
-  font-size: 15px;
-  line-height: 1.45;
+  padding-left: 19px;
+  font-size: 12.5px;
+  line-height: 1.35;
   color: var(--ink-2);
 }
 
@@ -649,33 +622,63 @@
   color: var(--accent-ink);
 }
 
+/* Los pasos */
 .gu-form {
   display: grid;
-  gap: 14px;
-  margin-top: 4px;
+  gap: 10px;
 }
 
-.gu-form__nota {
+.gu-form [hidden] {
+  display: none !important; /* el paso que no toca: sus campos siguen en el formulario y se envían */
+}
+
+.gu-paso-form {
+  display: grid;
+  gap: 10px;
+}
+
+.gu-pasos {
+  margin: 0;
+  font: 500 10.5px/1.3 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.gu-pasos:focus {
+  outline: none; /* recibe el foco al abrir en el paso 2 o 3, no es un control */
+}
+
+.gu-saludo {
   margin: 0;
   font-size: 13px;
-  color: var(--ink-3);
-  text-align: center;
+  color: var(--ink-2);
 }
 
-.gu-campo__caja {
-  display: contents; /* en la computadora no cuenta: la etiqueta va arriba del campo */
+.gu-pregunta {
+  display: grid;
+  gap: 6px;
 }
 
-.gu-campo label {
-  display: block;
-  margin-bottom: 7px;
-  font-size: 13px;
+.gu-pregunta__texto {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.gu-pregunta__detalle {
+  margin: -3px 0 0;
+  font-size: 12.5px;
+  line-height: 1.4;
   color: var(--ink-2);
 }
 
 .gu-input {
   width: 100%;
-  height: 48px;
+  height: 44px;
   padding: 0 14px;
   border: 0;
   border-radius: var(--r-sm);
@@ -701,18 +704,18 @@
 
 .gu-acepta {
   display: grid;
-  grid-template-columns: 22px 1fr;
-  gap: 10px;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
   align-items: start;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: 11.5px;
+  line-height: 1.4;
   color: var(--ink-2);
 }
 
 .gu-acepta input {
-  width: 20px;
-  height: 20px;
-  margin: 1px 0 0;
+  width: 17px;
+  height: 17px;
+  margin: 0;
   accent-color: var(--accent);
 }
 
@@ -724,15 +727,18 @@
 }
 
 .gu-error {
-  margin: 6px 0 0;
-  font-size: 13px;
-  line-height: 1.45;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
   color: var(--accent-ink);
 }
 
 .gu-enviar {
   width: 100%;
+  height: 46px;
+  margin-top: 2px;
   justify-content: center;
+  font-size: 15px;
 }
 
 .gu-enviar:disabled {
@@ -746,7 +752,7 @@
   border: 0;
   background: none;
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: 13px;
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-color: var(--ink-3);
@@ -764,6 +770,126 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* En el teléfono, lo que trae la guía solo en el primer paso: los otros dos son un cuadro chico */
+@media (max-width: 759px) {
+  .gu-dialogo:not([data-paso='1']) .gu-dialogo__presenta {
+    display: none;
+  }
+}
+
+/* En la computadora: dos columnas, más aire y letra más grande */
+@media (min-width: 760px) {
+  .gu-dialogo {
+    width: min(820px, calc(100vw - 64px));
+  }
+
+  .gu-dialogo__caja {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+  }
+
+  .gu-dialogo__info {
+    align-content: start;
+    padding: 32px;
+    background: var(--inset-fill);
+    box-shadow: inset -1px 0 0 var(--inset-edge);
+  }
+
+  .gu-dialogo__foto {
+    margin: -32px -32px 18px;
+    aspect-ratio: 16 / 10;
+  }
+
+  .gu-dialogo__presenta {
+    gap: 12px;
+  }
+
+  .gu-dialogo__caja .hm-eyebrow {
+    font-size: 11.5px;
+  }
+
+  .gu-dialogo__caja h2 {
+    font-size: 23px;
+  }
+
+  .gu-dialogo__guia {
+    display: block;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  .gu-incluye {
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .gu-incluye li {
+    padding-left: 26px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .gu-dialogo__form {
+    align-self: center;
+    padding: 56px 36px 36px;
+  }
+
+  .gu-form,
+  .gu-paso-form {
+    gap: 14px;
+  }
+
+  .gu-pregunta {
+    gap: 8px;
+  }
+
+  .gu-pregunta__texto {
+    font-size: 19px;
+  }
+
+  .gu-pregunta__detalle {
+    font-size: 14px;
+  }
+
+  .gu-saludo {
+    font-size: 14px;
+  }
+
+  .gu-input {
+    height: 48px;
+  }
+
+  .gu-acepta {
+    grid-template-columns: 22px 1fr;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .gu-acepta input {
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+  }
+
+  .gu-error {
+    font-size: 13px;
+  }
+
+  .gu-enviar {
+    height: 52px;
+    font-size: 15.5px;
+  }
+
+  .gu-cambiar {
+    font-size: 14px;
+  }
 }
 
 /* La fuente al pie: el ancho de la columna, como las tarjetas (news.css la limita a 68ch) */
@@ -808,124 +934,5 @@
 
   .gu-velo__tarjeta {
     grid-template-columns: minmax(0, 1fr) 90px;
-  }
-}
-
-/* ---------- La ventana en el teléfono: compacta ----------
-   Pedido de Alejandro (29/10): no cabía en la pantalla de su teléfono y había que bajar dentro de ella
-   para llegar al botón. Todo más chico y más junto, y la etiqueta de cada campo va dentro de su caja.
-   Lo que se escribe queda en 16 px: con menos, iOS hace zoom al tocar el campo. */
-@media (max-width: 759px) {
-  .gu-dialogo {
-    width: min(400px, calc(100vw - 40px));
-  }
-
-  .gu-dialogo__caja {
-    gap: 10px;
-    padding: 16px 16px 14px;
-    border-radius: var(--r-md);
-  }
-
-  .gu-dialogo__info {
-    gap: 6px;
-  }
-
-  .gu-dialogo__caja .hm-eyebrow {
-    font-size: 10px;
-  }
-
-  .gu-dialogo__caja h2 {
-    font-size: 18px;
-  }
-
-  .gu-cerrar {
-    top: 8px;
-    right: 8px;
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
-  }
-
-  .gu-incluye {
-    gap: 3px;
-    margin-top: 2px;
-  }
-
-  .gu-incluye li {
-    padding-left: 19px;
-    font-size: 12.5px;
-    line-height: 1.35;
-  }
-
-  .gu-form {
-    gap: 8px;
-    margin-top: 2px;
-  }
-
-  .gu-campo__caja {
-    display: grid;
-    padding: 6px 12px 3px;
-    border-radius: var(--r-sm);
-    background: var(--inset-fill);
-    box-shadow: inset 0 0 0 1px var(--inset-edge), inset 0 1px 0 var(--inset-hi);
-  }
-
-  .gu-campo__caja:focus-within {
-    outline: 2px solid var(--accent-ink);
-    outline-offset: 2px;
-  }
-
-  .gu-campo__caja:has([aria-invalid='true']) {
-    box-shadow: inset 0 0 0 1px var(--accent-ink), inset 0 1px 0 var(--inset-hi);
-  }
-
-  .gu-campo label {
-    margin: 0;
-    font-size: 10.5px;
-    line-height: 1.2;
-    color: var(--ink-3);
-  }
-
-  .gu-campo .gu-input {
-    height: 28px;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-  }
-
-  .gu-campo .gu-input:focus-visible {
-    outline: none; /* el anillo lo lleva la caja */
-  }
-
-  .gu-acepta {
-    grid-template-columns: 18px 1fr;
-    gap: 8px;
-    font-size: 11.5px;
-    line-height: 1.4;
-  }
-
-  .gu-acepta input {
-    width: 17px;
-    height: 17px;
-    margin: 0;
-  }
-
-  .gu-error {
-    margin-top: 3px;
-    font-size: 11.5px;
-  }
-
-  .gu-enviar {
-    height: 44px;
-    font-size: 15px;
-  }
-
-  .gu-form__nota {
-    font-size: 11px;
-  }
-
-  .gu-cambiar {
-    font-size: 12.5px;
   }
 }
