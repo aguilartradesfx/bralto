@@ -18,12 +18,13 @@ type Props = {
   conAcceso: boolean
   recienAbierta: boolean
   origen?: string
+  pais?: string | null // el país que detecta Vercel por la IP: el selector del WhatsApp arranca en él
 }
 
 // Una guía en una sola columna centrada: arriba el título centrado y la foto del post a lo ancho;
 // después unas líneas abiertas que se difuminan hasta el «Ver todo» (o, con acceso, la guía completa
 // en tarjetas). Todo comparte el mismo ancho y los mismos bordes. Cierra con la invitación del sitio.
-export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbierta, origen }: Props) {
+export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbierta, origen, pais }: Props) {
   return (
     <main className="gu">
       <FondoQuieto />
@@ -75,6 +76,7 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
                 imagen={guia.imagenUrl}
                 boton={guia.boton}
                 origen={origen}
+                pais={pais}
               />
             )}
           </article>

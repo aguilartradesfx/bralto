@@ -480,7 +480,9 @@
   color: var(--ink);
 }
 
-/* Sin difuminar lo de atrás: un blur de pantalla completa es caro en el teléfono */
+/* En la computadora, lo de atrás oscurecido; en el teléfono además difuminado (pedido de Alejandro,
+   ver abajo). El difuminado no calienta el teléfono: la página de atrás está quieta (body fijo y el
+   fondo animado en pausa), así que se calcula una vez y no en cada cuadro */
 .gu-dialogo::backdrop {
   background: rgba(8, 8, 8, .66);
 }
@@ -702,6 +704,52 @@
   outline-offset: 2px;
 }
 
+/* El WhatsApp: el país (bandera y código) a la izquierda y el número. El <select> nativo va invisible
+   encima de la bandera: se ve corto y al tocarlo sale la lista completa del teléfono */
+.gu-telefono {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+}
+
+.gu-telefono__pais {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 96px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--r-sm);
+  background: var(--inset-fill);
+  box-shadow: inset 0 0 0 1px var(--inset-edge), inset 0 1px 0 var(--inset-hi);
+  font: 500 15px/1 var(--font-display);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.gu-telefono__pais span::after {
+  content: '▾';
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.gu-telefono__pais select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  font-size: 16px; /* con menos, iOS hace zoom al tocarlo */
+  cursor: pointer;
+}
+
+.gu-telefono__pais:focus-within {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
 .gu-acepta {
   display: grid;
   grid-template-columns: 18px 1fr;
@@ -772,10 +820,17 @@
   overflow: hidden;
 }
 
-/* En el teléfono, lo que trae la guía solo en el primer paso: los otros dos son un cuadro chico */
+/* En el teléfono, lo que trae la guía solo en el primer paso (los otros dos son un cuadro chico), y lo
+   de atrás difuminado mientras la ventana está abierta */
 @media (max-width: 759px) {
   .gu-dialogo:not([data-paso='1']) .gu-dialogo__presenta {
     display: none;
+  }
+
+  .gu-dialogo::backdrop {
+    background: rgba(8, 8, 8, .45);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
 }
 
@@ -861,7 +916,8 @@
     font-size: 14px;
   }
 
-  .gu-input {
+  .gu-input,
+  .gu-telefono__pais {
     height: 48px;
   }
 

@@ -16,8 +16,9 @@ export type EstadoCandado = {
   valores?: { nombre?: string; correo?: string; whatsapp?: string; acepta?: boolean }
 }
 
-const NO_SE_PUDO = 'No pudimos abrir la guía en este momento. Intente de nuevo en un minuto.'
-const DEMASIADOS = 'Hubo demasiados intentos seguidos. Espere unos minutos y vuelva a intentarlo.'
+// La ventana tutea (pedido de Alejandro); el texto de las guías sigue de usted
+const NO_SE_PUDO = 'No pudimos abrir la guía en este momento. Intenta de nuevo en un minuto.'
+const DEMASIADOS = 'Hubo demasiados intentos seguidos. Espera unos minutos y vuelve a intentarlo.'
 
 async function clave(): Promise<string> {
   const h = await headers()
@@ -82,9 +83,9 @@ export async function ingresarConCorreo(slug: string, _prev: EstadoCandado, form
   }
   if (r.ok) return abrir(slug, r.contactoId)
   const error = {
-    invalido: 'Revise su correo: parece que le falta algo.',
+    invalido: 'Revisa tu correo: parece que le falta algo.',
     demasiados: DEMASIADOS,
-    'no-existe': 'No encontramos ese correo. Si es su primera vez, deje sus datos en el formulario.',
+    'no-existe': 'No encontramos ese correo. Si es tu primera vez, deja tus datos en el formulario.',
     fallo: NO_SE_PUDO,
   }[r.error]
   return { error, valores: { correo } }

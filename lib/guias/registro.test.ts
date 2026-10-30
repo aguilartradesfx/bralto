@@ -17,11 +17,11 @@ test('el WhatsApp con código de país se acepta escrito de varias formas y se g
   }
 })
 
-test('un WhatsApp sin código de país, muy corto o muy largo pide el código de país', () => {
+test('un WhatsApp sin código de país, muy corto o muy largo pide revisar el número', () => {
   for (const malo of ['8888 8888', '(506) 8888 8888', '07911 123456', '1234', '+1234567890123456', 'abc']) {
     const r = validarRegistro({ ...base, whatsapp: malo })
     assert.equal(r.ok, false)
-    assert.match(!r.ok ? r.errores.whatsapp ?? '' : '', /código de país/)
+    assert.match(!r.ok ? r.errores.whatsapp ?? '' : '', /número de WhatsApp/)
   }
 })
 

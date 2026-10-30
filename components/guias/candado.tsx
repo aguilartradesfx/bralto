@@ -4,17 +4,27 @@ import Image from 'next/image'
 import { unstable_isUnrecognizedActionError, unstable_rethrow } from 'next/navigation'
 import { useActionState, useEffect, useRef, useState, type FormEvent } from 'react'
 import { desbloquear, ingresarConCorreo, type EstadoCandado } from '@/app/[locale]/guias/[slug]/actions'
-import { errorDelPaso, limpiarNombre, pasoConError, type Paso } from '@/lib/guias/campos'
+import { MENSAJES, errorDelNombre, limpiarNombre, pasoConError, type Paso } from '@/lib/guias/campos'
+import { OTRO, PAISES, bandera, pais as datosPais, paisPorDefecto, whatsappCompleto } from '@/lib/guias/paises'
 import { deGolpe } from './de-golpe'
 import { TAMANOS_PORTADA } from './portada'
 
-type Props = { slug: string; titulo: string; incluye: string[]; imagen: string | null; boton: string | null; origen?: string }
+type Props = {
+  slug: string
+  titulo: string
+  incluye: string[]
+  imagen: string | null
+  boton: string | null
+  origen?: string
+  pais?: string | null // el país detectado por la IP: el selector del WhatsApp arranca en él
+}
 
 // Lo que dispara la ventana desde fuera (los botones de «Ir directo a» con la guía cerrada)
 export const ABRIR_CANDADO = 'gu:abrir-candado'
 
-const SIN_CONEXION = 'No pudimos enviar sus datos. Revise su conexión e intente de nuevo.'
-const SITIO_NUEVO = 'El sitio se acaba de actualizar. Recargue la página e intente de nuevo.'
+// La ventana tutea (pedido de Alejandro); el texto de las guías sigue de usted
+const SIN_CONEXION = 'No pudimos enviar tus datos. Revisa tu conexión e intenta de nuevo.'
+const SITIO_NUEVO = 'El sitio se acaba de actualizar. Recarga la página e intenta de nuevo.'
 
 // Si la petición se cae (señal débil, el navegador de Instagram) o el servidor falla, la server action
 // lanza un error en vez de devolver uno, y la página entera se cambiaba por la pantalla de error de Next.
@@ -88,15 +98,68 @@ function Pregunta(props: {
   )
 }
 
+// El WhatsApp: el país (con su bandera; arranca en el de la persona y se puede cambiar) y el número.
+// El selector es el nativo del teléfono, invisible sobre la bandera y el código: así en la caja se ve
+// corto y al tocarlo sale la lista completa con los nombres.
+function Telefono(props: {
+  pais: string
+  numero: string
+  ejemplo?: string
+  error?: string | null
+  alCambiarPais: (iso: string) => void
+  alCambiarNumero: (v: string) => void
+}) {
+  const p = datosPais(props.pais)
+  return (
+    <div className="gu-pregunta">
+      <label htmlFor="gu-whatsapp" className="gu-pregunta__texto">
+        ¿Te gustaría recibir por WhatsApp info y herramientas de IA?
+      </label>
+      <div className="gu-telefono">
+        <div className="gu-telefono__pais">
+          <span aria-hidden="true">{p ? `${bandera(p.iso)} +${p.codigo}` : '🌐 +'}</span>
+          <select aria-label="País de tu WhatsApp" value={props.pais} onChange={(e) => props.alCambiarPais(e.target.value)}>
+            {PAISES.map((x) => (
+              <option key={x.iso} value={x.iso}>
+                {bandera(x.iso)} {x.nombre} (+{x.codigo})
+              </option>
+            ))}
+            <option value={OTRO}>🌐 Otro país</option>
+          </select>
+        </div>
+        <input
+          id="gu-whatsapp"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          enterKeyHint="next"
+          className="gu-input"
+          placeholder={props.ejemplo ?? '+57 300 123 4567'}
+          value={props.numero}
+          onChange={(e) => props.alCambiarNumero(e.target.value)}
+          aria-invalid={props.error ? true : undefined}
+          aria-describedby={props.error ? 'gu-whatsapp-error' : undefined}
+        />
+      </div>
+      {props.error && (
+        <p id="gu-whatsapp-error" className="gu-error">
+          {props.error}
+        </p>
+      )}
+    </div>
+  )
+}
+
 const CAMPO_DEL_PASO = { 1: 'gu-nombre', 2: 'gu-whatsapp', 3: 'gu-correo' } as const
 
 // El final de lo abierto: bloques borrosos de lo que sigue, el botón «Ver todo» y la ventana con el
 // registro. Lo de atrás es de mentira: el texto real no está en la página hasta registrarse.
-// La ventana pide un dato a la vez (pedido de Alejandro: todo junto asustaba): 1) el nombre, con la foto
-// y lo que trae la guía; 2) el WhatsApp; 3) el correo y la aceptación, con el botón propio de la guía.
+// La ventana pide un dato a la vez (pedido de Alejandro: todo junto asustaba): 1) el nombre completo,
+// con la foto y lo que trae la guía; 2) el WhatsApp, con el país ya puesto en el de la persona; 3) el
+// correo y la aceptación, con el botón propio de la guía.
 // Los tres campos viven en el mismo formulario (los pasos ocultos también se envían) y solo el último
 // va al servidor; los dos primeros se revisan aquí antes de seguir.
-export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props) {
+export function Candado({ slug, titulo, incluye, imagen, boton, origen, pais }: Props) {
   const dialogo = useRef<HTMLDialogElement>(null)
   const [estado, enviar, enviando] = useActionState(aSalvo(desbloquear.bind(null, slug)), {} as EstadoCandado)
   const [estadoCorreo, entrar, entrando] = useActionState(aSalvo(ingresarConCorreo.bind(null, slug)), {} as EstadoCandado)
@@ -104,6 +167,10 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
   const [paso, setPaso] = useState<Paso>(1)
   const [aviso, setAviso] = useState<string | null>(null) // el error del paso 1 o 2, revisado aquí
   const [primerNombre, setPrimerNombre] = useState('')
+  const [paisWa, setPaisWa] = useState(() => paisPorDefecto(pais))
+  const [numeroWa, setNumeroWa] = useState('')
+  const datosPaisWa = datosPais(paisWa)
+  const whatsapp = whatsappCompleto(paisWa, numeroWa)
 
   const irAPaso = (p: Paso) => {
     setPaso(p)
@@ -115,15 +182,14 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
   const alEnviar = (e: FormEvent<HTMLFormElement>) => {
     if (paso === 3) return
     e.preventDefault()
-    const campo = paso === 1 ? 'nombre' : 'whatsapp'
-    const valor = String(new FormData(e.currentTarget).get(campo) ?? '')
-    const error = errorDelPaso(paso, valor)
+    const nombre = String(new FormData(e.currentTarget).get('nombre') ?? '')
+    const error = paso === 1 ? errorDelNombre(nombre) : whatsapp ? null : MENSAJES.whatsapp
     if (error) {
       setAviso(error)
-      document.getElementById(`gu-${campo}`)?.focus()
+      document.getElementById(paso === 1 ? 'gu-nombre' : 'gu-whatsapp')?.focus()
       return
     }
-    if (paso === 1) setPrimerNombre(limpiarNombre(valor).split(' ')[0])
+    if (paso === 1) setPrimerNombre(limpiarNombre(nombre).split(' ')[0])
     irAPaso(paso === 1 ? 2 : 3)
   }
 
@@ -260,7 +326,7 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
         <button type="button" className="hm-btn hm-btn--solid gu-ver-todo" onClick={abrir}>
           Ver todo
         </button>
-        <p>Es gratis: le pedimos sus datos una sola vez.</p>
+        <p>Es gratis: te pedimos tus datos una sola vez.</p>
       </div>
 
       <dialog
@@ -293,7 +359,7 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
             <div className="gu-dialogo__presenta">
               <p className="hm-eyebrow">Guía completa · gratis</p>
               <h2 id="gu-dialogo-titulo" ref={encabezado} tabIndex={-1}>
-                Vea la guía completa
+                Mira la guía completa
               </h2>
               <p className="gu-dialogo__guia">{titulo}</p>
               {incluye.length > 0 && (
@@ -325,9 +391,10 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
                 <div className="gu-paso-form" hidden={paso !== 1}>
                   <Pregunta
                     name="nombre"
-                    pregunta="¿Cuál es su nombre?"
+                    pregunta="¿Cuál es tu nombre?"
                     autoComplete="name"
                     enterKeyHint="next"
+                    placeholder="Nombre y apellido"
                     defaultValue={estado.valores?.nombre}
                     error={paso === 1 && aviso ? aviso : estado.errores?.nombre}
                     onChange={() => setAviso(null)}
@@ -336,26 +403,29 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
 
                 <div className="gu-paso-form" hidden={paso !== 2}>
                   {primerNombre && <p className="gu-saludo">Mucho gusto, {primerNombre}.</p>}
-                  <Pregunta
-                    name="whatsapp"
-                    pregunta="¿Le enviamos por WhatsApp las novedades de IA y de los flujos que estamos armando?"
-                    detalle="Déjenos su número con el código de país."
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    enterKeyHint="next"
-                    placeholder="+506 8888 8888"
-                    defaultValue={estado.valores?.whatsapp}
+                  <Telefono
+                    pais={paisWa}
+                    numero={numeroWa}
                     error={paso === 2 && aviso ? aviso : estado.errores?.whatsapp}
-                    onChange={() => setAviso(null)}
+                    alCambiarPais={(iso) => {
+                      setPaisWa(iso)
+                      setAviso(null)
+                    }}
+                    alCambiarNumero={(v) => {
+                      setNumeroWa(v)
+                      setAviso(null)
+                    }}
+                    ejemplo={datosPaisWa?.ejemplo}
                   />
+                  {/* Lo que va al servidor: el número completo con el código del país */}
+                  <input type="hidden" name="whatsapp" value={whatsapp ?? numeroWa} />
                 </div>
 
                 <div className="gu-paso-form" hidden={paso !== 3}>
                   <Pregunta
                     name="correo"
-                    pregunta="Último paso: ¿cuál es su correo?"
-                    detalle="Con él entra a todas las guías de Bralto, desde cualquier aparato."
+                    pregunta="Último paso: ¿cuál es tu correo?"
+                    detalle="Con él entras a todas las guías de Bralto, desde cualquier aparato."
                     type="email"
                     inputMode="email"
                     autoComplete="email"
@@ -397,7 +467,7 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
                 </button>
                 {paso === 1 ? (
                   <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(true)}>
-                    ¿Ya se registró? Entre con su correo
+                    ¿Ya te registraste? Entra con tu correo
                   </button>
                 ) : (
                   <button type="button" className="gu-cambiar" onClick={() => irAPaso(paso === 3 ? 2 : 1)}>
@@ -413,7 +483,7 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen }: Props)
                 <Pregunta
                   name="correo"
                   id="gu-correo-ingreso"
-                  pregunta="¿Con qué correo se registró?"
+                  pregunta="¿Con qué correo te registraste?"
                   type="email"
                   inputMode="email"
                   autoComplete="email"

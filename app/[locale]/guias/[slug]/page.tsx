@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { GuiaArticulo } from '@/components/guias/guia-articulo'
@@ -52,6 +52,7 @@ export default async function GuiaPage({ params, searchParams }: Props) {
       conAcceso={conAcceso}
       recienAbierta={conAcceso && abierta === '1'}
       origen={o}
+      pais={conAcceso ? null : (await headers()).get('x-vercel-ip-country')}
     />
   )
 }

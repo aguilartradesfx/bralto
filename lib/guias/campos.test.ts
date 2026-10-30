@@ -1,15 +1,23 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { MENSAJES, errorDelPaso, pasoConError } from './campos.ts'
+import { MENSAJES, errorDelNombre, nombreValido, pasoConError } from './campos.ts'
 
-test('cada paso de la ventana revisa su campo antes de seguir', () => {
-  assert.equal(errorDelPaso(1, '  '), MENSAJES.nombre)
-  assert.equal(errorDelPaso(1, 'A'), MENSAJES.nombre)
-  assert.equal(errorDelPaso(1, ' Ana  María '), null)
-  assert.equal(errorDelPaso(1, 'x'.repeat(81)), MENSAJES.nombre)
-  assert.equal(errorDelPaso(2, '8888 8888'), MENSAJES.whatsapp)
-  assert.equal(errorDelPaso(2, '+506 8888-8888'), null)
-  assert.equal(errorDelPaso(2, '00506 8888 8888'), null)
+test('el nombre tiene que ser completo: nombre y apellido', () => {
+  assert.equal(nombreValido('Alejandro'), false)
+  assert.equal(nombreValido('Alejandro A.'), false) // una inicial no cuenta como apellido
+  assert.equal(nombreValido('Ana 123'), false)
+  assert.equal(nombreValido('Alejandro Aguilar'), true)
+  assert.equal(nombreValido('José de la Cruz'), true)
+  assert.equal(nombreValido('Li Na'), true)
+  assert.equal(nombreValido('María José Núñez'), true)
+  assert.equal(nombreValido(`Ana ${'x'.repeat(80)}`), false)
+})
+
+test('el paso del nombre lo revisa limpio y con el mensaje de nombre completo', () => {
+  assert.equal(errorDelNombre('  '), MENSAJES.nombre)
+  assert.equal(errorDelNombre(' Alejandro '), MENSAJES.nombre)
+  assert.equal(errorDelNombre(' Ana   María  Pérez '), null)
+  assert.match(MENSAJES.nombre, /apellido/)
 })
 
 test('si el servidor devuelve errores, la ventana vuelve al primer paso que tenga uno', () => {
