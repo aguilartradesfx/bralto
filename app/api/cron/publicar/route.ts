@@ -13,7 +13,10 @@ export async function GET(req: Request) {
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
-  const id = new URL(req.url).searchParams.get('probar')
+  // Con ?probar sin id no corre la cola de verdad: pudo ser una variable vacía en una prueba
+  const params = new URL(req.url).searchParams
+  if (params.has('probar') && !params.get('probar')) return NextResponse.json({ error: 'falta el id en ?probar=' }, { status: 400 })
+  const id = params.get('probar')
   const r = id ? await probar(id) : await correrCola()
   console.log('[publicar]', JSON.stringify(r))
   return NextResponse.json(r)

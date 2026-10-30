@@ -26,7 +26,16 @@ export type Resultado = {
   contenedor?: { id: string; creado: number }
   instagram?: { id: string; permalink: string | null; en: string }
   comentaIg?: { id: string } | { error: string }
-  facebook?: { postId: string | null; url: string | null; automatizacion?: string; errorComenta?: string; error?: string }
+  // estado: Zernio todavía lo está publicando (sin id ni enlace aún); error: no salió
+  facebook?: {
+    zernioId?: string | null
+    postId: string | null
+    url: string | null
+    estado?: string
+    automatizacion?: string
+    errorComenta?: string
+    error?: string
+  }
   collab?: string // 'aceptada' o 'pendiente: <motivo>'
   historias?: string[] // id de cada historia, o 'error: <motivo>'
 }

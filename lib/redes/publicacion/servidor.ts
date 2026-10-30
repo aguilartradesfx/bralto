@@ -1,8 +1,8 @@
 import { createServiceClient } from '@/lib/supabase/service'
-import { avisoError } from './aviso'
+import { avisoCortada, avisoError } from './aviso'
 import { probarFila, publicarFila, type Efectos } from './publicar'
 import { MAX_INTENTOS, type Publicacion } from './tipos'
-import { cuerpoAutomatizacion } from './zernio'
+import { cuerpoAutomatizacion, leerPostFacebook, type RespuestaPost } from './zernio'
 
 // Conexiones reales de la publicación programada: la Graph API de Meta (token del usuario del sistema,
 // el mismo de los primeros posts), Zernio para Facebook y el «Comenta», Supabase y Telegram.
@@ -12,7 +12,11 @@ const TABLA = 'redes_publicaciones'
 const GRAPH = 'https://graph.facebook.com/v26.0'
 const ZERNIO = 'https://zernio.com/api/v1'
 const COLUMNAS =
-  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos'
+  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, actualizado_en'
+// Un paso que se cuelga no se come el tiempo de la función (300 s): Zernio publica el video de Facebook en
+// la misma llamada, por eso le toca más
+const ESPERA_META_MS = 60_000
+const ESPERA_ZERNIO_MS = 120_000
 const TRABADA_MS = 15 * 60_000 // más que el tope de la función: si sigue «publicando», la corrida se cortó
 const TARDE_MS = 3 * 3600_000 // si por algo no salió a su hora, no sale horas después (de noche no)
 
@@ -26,10 +30,11 @@ function env(nombre: string): string {
 
 async function graph<T>(ruta: string, params: Record<string, string>, metodo: 'GET' | 'POST' = 'POST'): Promise<T> {
   const p = new URLSearchParams({ ...params, access_token: env('META_ACCESS_TOKEN') })
+  const signal = AbortSignal.timeout(ESPERA_META_MS)
   const res =
     metodo === 'POST'
-      ? await fetch(`${GRAPH}/${ruta}`, { method: 'POST', body: p, cache: 'no-store' })
-      : await fetch(`${GRAPH}/${ruta}?${p}`, { cache: 'no-store' })
+      ? await fetch(`${GRAPH}/${ruta}`, { method: 'POST', body: p, cache: 'no-store', signal })
+      : await fetch(`${GRAPH}/${ruta}?${p}`, { cache: 'no-store', signal })
   const r = (await res.json().catch(() => ({}))) as T & { error?: { message?: string; error_user_msg?: string } }
   if (!res.ok || r.error) {
     const extra = r.error?.error_user_msg ? ` (${r.error.error_user_msg})` : ''
@@ -45,6 +50,7 @@ async function zernio<T>(ruta: string, cuerpo: unknown, clave: string): Promise<
     headers: { Authorization: `Bearer ${env('ZERNIO_API_KEY')}`, 'Content-Type': 'application/json', 'Idempotency-Key': clave },
     body: JSON.stringify(cuerpo),
     cache: 'no-store',
+    signal: AbortSignal.timeout(ESPERA_ZERNIO_MS),
   })
   const texto = await res.text()
   let j: unknown
@@ -53,6 +59,7 @@ async function zernio<T>(ruta: string, cuerpo: unknown, clave: string): Promise<
   } catch {
     j = { crudo: texto.slice(0, 300) }
   }
+  // 207: el post se creó pero publicar falló o quedó a medias; quien llama revisa el estado (leerPostFacebook)
   if (!res.ok && res.status !== 207) throw new Error(`Zernio ${ruta}: HTTP ${res.status} ${JSON.stringify(j).slice(0, 300)}`)
   return j as T
 }
@@ -61,9 +68,9 @@ async function estadoContenedor(id: string) {
   return (await graph<{ status_code: string }>(id, { fields: 'status_code' }, 'GET')).status_code
 }
 
-type PostZernio = { platform: string; platformPostId?: string; platformPostUrl?: string; status?: string }
-
-function efectosReales(): Efectos {
+// dueño: la corrida que tomó la publicación (con sus intentos). Cada guardado exige que la fila siga siendo
+// suya: si otra corrida la tomó (Vercel a veces entrega el cron dos veces), esta se detiene en vez de pisarla
+function efectosReales(dueño?: { intentos: number }): Efectos {
   const ig = env('META_IG_USER_ID')
   return {
     async crearContenedor(p) {
@@ -113,19 +120,12 @@ function efectosReales(): Efectos {
     // página no lo ve el público
     async publicarFacebook(p) {
       const medios = p.tipo === 'reel' ? [{ type: 'video', url: p.video_url }] : p.laminas.map((url) => ({ type: 'image', url }))
-      const r = await zernio<{ post?: { platforms?: PostZernio[] }; platforms?: PostZernio[]; platformPostUrl?: string }>(
+      const r = await zernio<RespuestaPost>(
         '/posts',
         { content: p.texto, mediaItems: medios, platforms: [{ platform: 'facebook', accountId: env('ZERNIO_FB_ACCOUNT_ID') }], publishNow: true },
         `fb-${p.id}`,
       )
-      const fb = (r.post?.platforms ?? r.platforms ?? []).find((x) => x.platform === 'facebook')
-      const url = fb?.platformPostUrl ?? r.platformPostUrl ?? null
-      // El id del post en Facebook es «página_post»; si Zernio no lo da, sale del enlace
-      const desdeUrl = url?.match(/(\d{6,})\/posts\/(\d+)/)
-      const pagina = process.env.META_FB_PAGE_ID
-      const fbid = url?.match(/fbid=(\d+)/)?.[1]
-      const postId = fb?.platformPostId ?? (desdeUrl ? `${desdeUrl[1]}_${desdeUrl[2]}` : fbid && pagina ? `${pagina}_${fbid}` : null)
-      return { postId, url }
+      return leerPostFacebook(r, process.env.META_FB_PAGE_ID)
     },
 
     // La collab se acepta desde la otra cuenta con el mismo token
@@ -145,8 +145,11 @@ function efectosReales(): Efectos {
     },
 
     async guardar(id, cambios) {
-      const { error } = await createServiceClient().from(TABLA).update(cambios).eq('id', id)
+      let q = createServiceClient().from(TABLA).update(cambios).eq('id', id)
+      if (dueño) q = q.eq('estado', 'publicando').eq('intentos', dueño.intentos)
+      const { data, error } = await q.select('id')
       if (error) throw new Error(`${TABLA}: ${error.message}`)
+      if (dueño && !data?.length) throw new Error('otra corrida tomó esta publicación: esta se detiene')
     },
 
     async avisar(texto) {
@@ -158,6 +161,7 @@ function efectosReales(): Efectos {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: chat, text: texto, disable_web_page_preview: true }),
+          signal: AbortSignal.timeout(20_000),
         })
         if (!res.ok) console.error(`redes: Telegram rechazó el aviso (HTTP ${res.status})`)
       } catch (err) {
@@ -176,7 +180,10 @@ const faltantes = () => NECESARIAS.filter((n) => !process.env[n])
 // pasarse del tiempo de la función; la próxima corrida es en 5 minutos)
 export async function correrCola(): Promise<Record<string, unknown>> {
   const falta = faltantes()
-  if (falta.length) return { ok: false, nota: `falta configurar: ${falta.join(', ')}` }
+  if (falta.length) {
+    console.error(`redes: no se publica nada, falta configurar ${falta.join(', ')}`)
+    return { ok: false, nota: `falta configurar: ${falta.join(', ')}` }
+  }
   const db = createServiceClient()
   const e = efectosReales()
   const ahora = Date.now()
@@ -188,15 +195,22 @@ export async function correrCola(): Promise<Record<string, unknown>> {
     .eq('estado', 'publicando')
     .lt('actualizado_en', new Date(ahora - TRABADA_MS).toISOString())
   if (e1) throw new Error(`${TABLA}: ${e1.message}`)
-  for (const t of (trabadas ?? []) as Publicacion[]) {
-    if (t.intentos >= MAX_INTENTOS) {
-      await e.guardar(t.id, { estado: 'error', ultimo_error: 'la publicación se cortó a la mitad' })
-      await e.avisar(avisoError(t.titulo, t.intentos, 'se cortó a la mitad; revisa qué alcanzó a salir'))
-      hecho[t.titulo] = 'se cortó: queda en error'
-    } else {
-      await e.guardar(t.id, { estado: 'programado' }) // sigue donde quedó: `resultado` no deja repetir pasos
-      hecho[t.titulo] = 'se cortó: vuelve a la cola'
-    }
+  for (const t of (trabadas ?? []) as (Publicacion & { actualizado_en: string })[]) {
+    const final = t.intentos >= MAX_INTENTOS
+    // Condicional: si otra corrida ya la rescató o la volvió a tomar, esta no la toca
+    const { data: rescatada, error: e3 } = await db
+      .from(TABLA)
+      .update(final ? { estado: 'error', ultimo_error: 'la publicación se cortó a la mitad' } : { estado: 'programado' })
+      .eq('id', t.id)
+      .eq('estado', 'publicando')
+      .eq('intentos', t.intentos)
+      .eq('actualizado_en', t.actualizado_en)
+      .select('id')
+    if (e3) throw new Error(`${TABLA}: ${e3.message}`)
+    if (!rescatada?.length) continue
+    if (final) await e.avisar(avisoCortada(t.titulo, t.intentos, t.resultado ?? {}))
+    // Si vuelve a la cola, sigue donde quedó: `resultado` no deja repetir pasos
+    hecho[t.titulo] = final ? 'se cortó: queda en error' : 'se cortó: vuelve a la cola'
   }
 
   const { data, error } = await db
@@ -212,8 +226,14 @@ export async function correrCola(): Promise<Record<string, unknown>> {
 
   if (ahora - Date.parse(p.publicar_en) > TARDE_MS && !p.resultado?.instagram) {
     const motivo = 'se pasó su hora (más de 3 horas tarde); dime cuándo lo saco'
-    await e.guardar(p.id, { estado: 'error', ultimo_error: motivo })
-    await e.avisar(avisoError(p.titulo, null, motivo))
+    const { data: marcada } = await db
+      .from(TABLA)
+      .update({ estado: 'error', ultimo_error: motivo })
+      .eq('id', p.id)
+      .eq('estado', 'programado')
+      .eq('intentos', p.intentos)
+      .select('id')
+    if (marcada?.length) await e.avisar(avisoError(p.titulo, null, motivo))
     return { ok: true, ...hecho, [p.titulo]: `error: ${motivo}` }
   }
 
@@ -228,7 +248,8 @@ export async function correrCola(): Promise<Record<string, unknown>> {
   if (e2) throw new Error(`${TABLA}: ${e2.message}`)
   if (!tomada?.length) return { ok: true, ...hecho, [p.titulo]: 'la tomó otra corrida' }
 
-  hecho[p.titulo] = await publicarFila({ ...p, estado: 'publicando', intentos: p.intentos + 1 }, e)
+  const intentos = p.intentos + 1
+  hecho[p.titulo] = await publicarFila({ ...p, estado: 'publicando', intentos }, efectosReales({ intentos }))
   return { ok: true, ...hecho }
 }
 

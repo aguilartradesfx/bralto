@@ -143,6 +143,26 @@ test('si ya salió y no aparece el post, queda en error para no duplicarlo', asy
   assert.equal(avisos[0], '❌ Jarvis: Instagram dice que ya salió, pero no encontré el post. Revísalo antes de volver a programarlo.')
 })
 
+test('si no se puede leer el estado del contenedor guardado, no lo rehace: reintenta en la próxima corrida', async () => {
+  // Pudo haber salido ya: rehacerlo y publicarlo sería un post repetido
+  const { e, llamadas, guardados } = falsos({
+    estadoContenedor: async (id) => {
+      llamadas.push(`estado:${id}`)
+      throw new Error('Meta: HTTP 500')
+    },
+  })
+  await publicarFila(fila({ resultado: { contenedor: { id: 'cont-1', creado: 0 } } }), e)
+  assert.deepEqual(llamadas, ['estado:cont-1'])
+  assert.equal(ultimo(guardados).estado, 'programado')
+  assert.equal(ultimo(guardados).resultado?.contenedor?.id, 'cont-1')
+})
+
+test('un contenedor guardado que sigue procesándose se espera, no se rehace', async () => {
+  const { e, llamadas } = falsos({}, { 'cont-1': ['IN_PROGRESS', 'FINISHED'] })
+  await publicarFila(fila({ resultado: { contenedor: { id: 'cont-1', creado: 0 } } }), e)
+  assert.deepEqual(llamadas.slice(0, 3), ['estado:cont-1', 'estado:cont-1', 'publicar:cont-1'])
+})
+
 test('un contenedor vencido se rehace', async () => {
   const { e, llamadas } = falsos({}, { viejo: ['EXPIRED'], 'cont-1': ['FINISHED'] })
   await publicarFila(fila({ resultado: { contenedor: { id: 'viejo', creado: 0 } } }), e)

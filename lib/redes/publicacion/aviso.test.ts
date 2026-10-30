@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { avisoError, avisoListo } from './aviso.ts'
+import { avisoCortada, avisoError, avisoListo } from './aviso.ts'
 
 const pub = { titulo: 'Jarvis', colaborador: 'bralto.io', facebook: true, comenta: { palabras: ['jarvis'] }, historias: ['a', 'b', 'c'] }
 
@@ -53,6 +53,25 @@ test('sin collab, sin Facebook, sin «Comenta» y sin historias, esas líneas no
     instagram: { id: '1', permalink: 'p', en: '2026-10-30T19:00:00.000Z' },
   })
   assert.equal(t, '✅ Ya salió Reel (1:00 p. m.)\nInstagram: p')
+})
+
+test('Facebook que Zernio todavía está publicando no se da por publicado', () => {
+  const t = avisoListo(pub, {
+    instagram: { id: '1', permalink: 'p', en: '2026-10-30T16:00:20.000Z' },
+    facebook: { postId: null, url: null, estado: 'processing' },
+  })
+  assert.match(t, /^Facebook: en proceso en Zernio \(processing\) · SIN mensajes$/m)
+})
+
+test('un «Comenta» sin palabras no tumba el aviso', () => {
+  const t = avisoListo({ ...pub, comenta: { palabras: [] } }, { instagram: { id: '1', permalink: 'p', en: '2026-10-30T16:00:20.000Z' } })
+  assert.match(t, /^Mensajes del «Comenta»: FALLARON \(sin crear\)$/m)
+})
+
+test('si se cortó con Instagram ya publicado, el aviso no dice que no salió', () => {
+  const t = avisoCortada('Jarvis', 3, { instagram: { id: '1', permalink: 'https://www.instagram.com/p/X/', en: '2026-10-30T16:00:20.000Z' } })
+  assert.equal(t, '⚠️ Jarvis salió en Instagram (https://www.instagram.com/p/X/), pero la publicación se cortó a la mitad. Revisa Facebook, la collab y las historias.')
+  assert.match(avisoCortada('Jarvis', 3, {}), /^❌ Jarvis no salió \(intento 3 de 3\): se cortó a la mitad/)
 })
 
 test('el aviso de error dice qué no salió y por qué', () => {

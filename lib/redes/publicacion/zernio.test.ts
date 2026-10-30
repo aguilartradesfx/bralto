@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cuerpoAutomatizacion } from './zernio.ts'
+import { cuerpoAutomatizacion, leerPostFacebook } from './zernio.ts'
 import type { Comenta } from './tipos.ts'
 
 const comenta: Comenta = {
@@ -41,6 +41,46 @@ test('el botón para ir al perfil solo va si se pidió', () => {
   const seguir = { ...comenta.seguir!, botonPerfil: 'Ir a mi perfil' }
   const con = cuerpoAutomatizacion({ cuenta, platformPostId: 'p', titulo: 'J', comenta: { ...comenta, seguir }, origen: 'ig' })
   assert.equal(con.followGate?.profileButtonLabel, 'Ir a mi perfil')
+})
+
+test('{enlace} se reemplaza también en las respuestas públicas y en los mensajes de seguir', () => {
+  const c = cuerpoAutomatizacion({
+    cuenta,
+    platformPostId: 'p',
+    titulo: 'J',
+    comenta: { ...comenta, respuestas: ['Va: {enlace}'], seguir: { mensaje: 'Hola {enlace}', boton: 'Sí', noSigue: 'Sígueme {enlace}' } },
+    origen: 'ig',
+  })
+  assert.equal(c.commentReply, 'Va: https://www.bralto.io/es/guias/jarvis?o=ig')
+  assert.equal(c.followGate?.message, 'Hola https://www.bralto.io/es/guias/jarvis?o=ig')
+  assert.equal(c.followGate?.notFollowingMessage, 'Sígueme https://www.bralto.io/es/guias/jarvis?o=ig')
+})
+
+test('Facebook publicado: id y enlace de la respuesta de Zernio', () => {
+  const r = leerPostFacebook({
+    post: { _id: 'z1', status: 'published', platforms: [{ platform: 'facebook', status: 'published', platformPostId: '28_99', platformPostUrl: 'https://facebook.com/28/posts/99' }] },
+  })
+  assert.deepEqual(r, { zernioId: 'z1', postId: '28_99', url: 'https://facebook.com/28/posts/99' })
+})
+
+test('Facebook que falló en Zernio es un error, con su motivo', () => {
+  assert.throws(
+    () => leerPostFacebook({ post: { _id: 'z1', status: 'failed', platforms: [{ platform: 'facebook', status: 'failed', errorMessage: 'token vencido' }] } }),
+    /Zernio no publicó en Facebook \(failed\): token vencido/,
+  )
+})
+
+test('Facebook que Zernio sigue publicando queda en proceso, sin inventar un id', () => {
+  const r = leerPostFacebook({ post: { _id: 'z1', status: 'publishing', platforms: [{ platform: 'facebook', status: 'processing' }] } })
+  assert.deepEqual(r, { zernioId: 'z1', postId: null, url: null, estado: 'processing' })
+})
+
+test('sin platformPostId, el id sale de un enlace numérico; uno «pfbid» no se adivina', () => {
+  const num = leerPostFacebook({ post: { _id: 'z', status: 'published', platforms: [{ platform: 'facebook', status: 'published', platformPostUrl: 'https://www.facebook.com/281613248913342/posts/1234567' }] } })
+  assert.equal(num.postId, '281613248913342_1234567')
+  const pfbid = leerPostFacebook({ post: { _id: 'z', status: 'published', platforms: [{ platform: 'facebook', status: 'published', platformPostUrl: 'https://www.facebook.com/x/posts/pfbid0abc' }] } })
+  assert.equal(pfbid.postId, null)
+  assert.equal(pfbid.url, 'https://www.facebook.com/x/posts/pfbid0abc')
 })
 
 test('{enlace} se reemplaza también dentro del mensaje, y sin botones no se manda la lista vacía', () => {

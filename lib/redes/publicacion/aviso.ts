@@ -14,14 +14,15 @@ export function avisoListo(p: Datos, r: Resultado): string {
   if (p.comenta) {
     const c = r.comentaIg
     const estado = c && 'id' in c ? 'activos' : `FALLARON (${c && 'error' in c ? c.error : 'sin crear'})`
-    lineas.push(`Mensajes de «Comenta ${p.comenta.palabras[0].toUpperCase()}»: ${estado}`)
+    const palabra = p.comenta.palabras[0]
+    lineas.push(`Mensajes ${palabra ? `de «Comenta ${palabra.toUpperCase()}»` : 'del «Comenta»'}: ${estado}`)
   }
   if (p.facebook) {
     const f = r.facebook
     let estado = 'no salió'
     if (f?.error) estado = `no salió (${f.error})`
     else if (f) {
-      estado = f.url ?? f.postId ?? 'publicado'
+      estado = f.url ?? f.postId ?? (f.estado ? `en proceso en Zernio (${f.estado})` : 'publicado')
       if (p.comenta) estado += f.automatizacion ? ' · mensajes activos' : ` · SIN mensajes${f.errorComenta ? ` (${f.errorComenta})` : ''}`
     }
     lineas.push(`Facebook: ${estado}`)
@@ -37,4 +38,12 @@ export function avisoListo(p: Datos, r: Resultado): string {
 // intento null: no se reintenta (al post le falta algo)
 export function avisoError(titulo: string, intento: number | null, motivo: string): string {
   return intento === null ? `❌ ${titulo} no salió: ${motivo}` : `❌ ${titulo} no salió (intento ${intento} de ${MAX_INTENTOS}): ${motivo}`
+}
+
+// Una publicación que se cortó a la mitad y ya no se reintenta: si Instagram alcanzó a salir, no se dice
+// que no salió (invitaría a publicarla otra vez a mano)
+export function avisoCortada(titulo: string, intento: number, r: Resultado): string {
+  const ig = r.instagram
+  if (ig) return `⚠️ ${titulo} salió en Instagram (${ig.permalink ?? ig.id}), pero la publicación se cortó a la mitad. Revisa Facebook, la collab y las historias.`
+  return avisoError(titulo, intento, 'se cortó a la mitad; revisa qué alcanzó a salir')
 }

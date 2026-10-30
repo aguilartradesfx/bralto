@@ -20,7 +20,7 @@ export type Efectos = {
   publicarContenedor(id: string): Promise<{ id: string; permalink: string | null }>
   buscarPublicado(texto: string): Promise<{ id: string; permalink: string | null } | null>
   crearComenta(origen: 'ig' | 'fb', postId: string, p: Publicacion): Promise<string>
-  publicarFacebook(p: Publicacion): Promise<{ postId: string | null; url: string | null }>
+  publicarFacebook(p: Publicacion): Promise<{ zernioId?: string | null; postId: string | null; url: string | null; estado?: string }>
   aceptarCollab(mediaId: string): Promise<void>
   publicarHistoria(url: string): Promise<string>
   guardar(id: string, cambios: Cambios): Promise<void>
@@ -63,8 +63,9 @@ async function esperar(id: string, p: Publicacion, e: Efectos) {
 async function instagram(p: Publicacion, r: Resultado, e: Efectos) {
   if (r.instagram) return
   if (r.contenedor) {
-    // Reintento: ¿el contenedor de la corrida anterior sigue listo, o ya salió?
-    const estado = await e.estadoContenedor(r.contenedor.id).catch(() => 'ERROR')
+    // Reintento: ¿el contenedor de la corrida anterior sigue vivo, o ya salió? Si no se puede saber, no se
+    // rehace (pudo haber salido y sería un post repetido): el error sube y se reintenta en la próxima corrida
+    const estado = await e.estadoContenedor(r.contenedor.id)
     if (estado === 'PUBLISHED') {
       const ya = await e.buscarPublicado(p.texto)
       if (!ya) throw new SinReintento('Instagram dice que ya salió, pero no encontré el post. Revísalo antes de volver a programarlo.')
@@ -72,7 +73,7 @@ async function instagram(p: Publicacion, r: Resultado, e: Efectos) {
       await e.guardar(p.id, { resultado: r })
       return
     }
-    if (estado !== 'FINISHED') delete r.contenedor
+    if (estado === 'ERROR' || estado === 'EXPIRED') delete r.contenedor // si sigue procesándose, se espera
   }
   if (!r.contenedor) {
     r.contenedor = { id: await e.crearContenedor(p), creado: e.ahora() }

@@ -22,7 +22,7 @@ export function cuerpoAutomatizacion(o: {
   const enlace = enlaceGuia(c.guia, o.origen)
   const conEnlace = (t: string) => t.replaceAll('{enlace}', enlace)
   const botones = (c.botones ?? []).map((b) => ({ ...b, title: conEnlace(b.title), url: conEnlace(b.url) }))
-  const [respuesta, ...variaciones] = c.respuestas
+  const [respuesta, ...variaciones] = c.respuestas.map(conEnlace)
   const s = c.seguir
   return {
     profileId: o.cuenta.profileId,
@@ -51,12 +51,39 @@ export function cuerpoAutomatizacion(o: {
       ? {
           audience: { followerStatus: 'follower', whenUnknown: 'verify' },
           followGate: {
-            message: s.mensaje,
+            message: conEnlace(s.mensaje),
             buttonLabel: s.boton,
             ...(s.botonPerfil ? { profileButtonLabel: s.botonPerfil } : {}),
-            notFollowingMessage: s.noSigue,
+            notFollowingMessage: conEnlace(s.noSigue),
           },
         }
       : {}),
   }
+}
+
+type PlataformaZernio = { platform: string; status?: string; platformPostId?: string; platformPostUrl?: string; errorMessage?: string; error?: string }
+export type RespuestaPost = {
+  post?: { _id?: string; status?: string; platforms?: PlataformaZernio[] }
+  platforms?: PlataformaZernio[]
+  platformPostUrl?: string
+}
+
+// La respuesta de POST /v1/posts con publishNow (docs.zernio.com/posts/create-post). Zernio responde 207 cuando
+// el post se creó pero publicar falló o quedó a medias: se mira el estado de Facebook, no el código HTTP.
+// Si sigue publicando, queda «en proceso» sin inventar un id. El id del post es «página_post»: sin
+// platformPostId sale de un enlace numérico; los enlaces «pfbid» no traen el número, así que queda sin id.
+export function leerPostFacebook(r: RespuestaPost, pagina?: string) {
+  const post = r.post ?? {}
+  const fb = (post.platforms ?? r.platforms ?? []).find((x) => x.platform === 'facebook')
+  const estado = fb?.status ?? post.status
+  if (estado === 'failed' || estado === 'cancelled') {
+    throw new Error(`Zernio no publicó en Facebook (${estado}): ${fb?.errorMessage ?? fb?.error ?? 'sin motivo'}`)
+  }
+  const zernioId = post._id ?? null
+  const url = fb?.platformPostUrl ?? r.platformPostUrl ?? null
+  if (estado !== 'published' && !url) return { zernioId, postId: null, url: null, estado }
+  const numerico = url?.match(/(\d{6,})\/posts\/(\d+)(?:[/?#]|$)/)
+  const fbid = url?.match(/[?&]fbid=(\d+)/)?.[1]
+  const postId = fb?.platformPostId ?? (numerico ? `${numerico[1]}_${numerico[2]}` : fbid && pagina ? `${pagina}_${fbid}` : null)
+  return { zernioId, postId, url }
 }
