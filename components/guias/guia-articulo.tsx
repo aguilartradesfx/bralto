@@ -4,6 +4,7 @@ import type { Guia, Visible } from '@/lib/guias/contenido'
 import authorPhoto from '../../app/[locale]/sobre-nosotros/alejandro-aguilar.webp'
 import { Bloques } from './bloques'
 import { Candado } from './candado'
+import { FondoQuieto } from './fondo-quieto'
 import { IrAGuia } from './ir-a-guia'
 import { IrDirecto } from './ir-directo'
 import '../news/news.css'
@@ -23,6 +24,7 @@ type Props = {
 export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbierta, origen }: Props) {
   return (
     <main className="gu">
+      <FondoQuieto />
       <section className="hm-hero hm-hero--page hm-hero--fit" aria-labelledby="gu-titulo">
         <div className="hm-wrap gu-hero">
           <div className="gu-hero__texto">
@@ -71,7 +73,7 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
           </article>
 
           {conAcceso && guia.fuenteUrl && (
-            <aside className="nw-source hm-glass gu-fuente" aria-label="Fuente">
+            <aside className="nw-source gu-fuente gu-tarjeta" aria-label="Fuente">
               <span className="hm-eyebrow">Fuente</span>
               <a href={guia.fuenteUrl} target="_blank" rel="noopener">
                 {guia.fuenteNombre ?? guia.fuenteUrl}

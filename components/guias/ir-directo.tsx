@@ -5,7 +5,7 @@ import { ABRIR_CANDADO } from './candado'
 // «Ir directo a» cada sección. Con la guía cerrada, en vez de saltar abre la ventana del candado.
 export function IrDirecto({ secciones, conAcceso }: { secciones: { id: string; texto: string }[]; conAcceso: boolean }) {
   return (
-    <nav className="gu-indice hm-glass" aria-label="Ir directo a">
+    <nav className="gu-indice gu-tarjeta" aria-label="Ir directo a">
       <span className="hm-eyebrow">Ir directo a</span>
       <ul>
         {secciones.map((s) => (

@@ -41,7 +41,7 @@ function Bloque({ b }: { b: Visible }) {
       )
     case 'nota':
       return (
-        <aside className="gu-nota hm-glass">
+        <aside className="gu-nota gu-tarjeta">
           <p>
             <Linea texto={b.texto} />
           </p>
@@ -72,7 +72,7 @@ function Bloque({ b }: { b: Visible }) {
     case 'enlace':
       return (
         <p>
-          <a className="gu-enlace hm-btn hm-btn--glass hm-glass" href={b.url} target="_blank" rel="noopener">
+          <a className="gu-enlace hm-btn hm-btn--solid" href={b.url} target="_blank" rel="noopener">
             {b.texto} ↗
           </a>
         </p>
@@ -97,7 +97,7 @@ export function Bloques({ bloques }: { bloques: Visible[] }) {
         const p = g.paso
         if (p.tipo !== 'paso') return null
         return (
-          <section key={i} className={`gu-paso hm-glass${g.imagenes.length ? ' gu-paso--con-imagen' : ''}`}>
+          <section key={i} className={`gu-paso gu-tarjeta${g.imagenes.length ? ' gu-paso--con-imagen' : ''}`}>
             <div className="gu-paso__texto">
               <div className="gu-paso__cabeza">
                 <span className="gu-paso__n" aria-hidden="true">

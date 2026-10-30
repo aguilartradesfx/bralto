@@ -53,51 +53,72 @@ export function Candado({ slug, incluye, origen }: Props) {
   const [conCorreo, setConCorreo] = useState(false)
 
   const cta = useRef<HTMLDivElement>(null)
+  const soltarScroll = useRef<(() => void) | null>(null)
+  const restaurando = useRef(false) // el salto de soltar el bloqueo no cuenta como scroll de la persona
 
+  // Con la ventana abierta la página de atrás no se mueve. En iOS no alcanza con overflow: hidden,
+  // así que el body queda fijo donde estaba y al cerrar se devuelve al mismo punto.
   const abrir = () => {
-    if (!dialogo.current?.open) dialogo.current?.showModal()
+    const d = dialogo.current
+    if (!d || d.open) return
+    const y = window.scrollY
+    const b = document.body.style
+    const antes = { position: b.position, top: b.top, left: b.left, right: b.right, width: b.width, overflow: document.documentElement.style.overflow }
+    document.documentElement.style.overflow = 'hidden'
+    Object.assign(b, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' })
+    soltarScroll.current = () => {
+      restaurando.current = true
+      document.documentElement.style.overflow = antes.overflow
+      Object.assign(b, { position: antes.position, top: antes.top, left: antes.left, right: antes.right, width: antes.width })
+      window.scrollTo(0, y)
+      soltarScroll.current = null
+      setTimeout(() => {
+        restaurando.current = false
+      }, 400)
+    }
+    d.showModal()
   }
 
   useEffect(() => {
+    const d = dialogo.current
+    const alCerrar = () => soltarScroll.current?.()
+    d?.addEventListener('close', alCerrar)
     window.addEventListener(ABRIR_CANDADO, abrir)
-    return () => window.removeEventListener(ABRIR_CANDADO, abrir)
+    return () => {
+      d?.removeEventListener('close', alCerrar)
+      window.removeEventListener(ABRIR_CANDADO, abrir)
+      soltarScroll.current?.() // si la página se va con la ventana abierta (al registrarse), el scroll vuelve
+    }
   }, [])
 
-  // La ventana se abre sola cuando la persona baja hasta el «Ver todo». Solo si de verdad bajó
-  // (no al cargar en una pantalla alta) y una sola vez: si la cierra, queda el botón.
+  // La ventana se abre sola cada vez que la persona llega con el scroll hasta el «Ver todo». Si la
+  // cierra, vuelve a salir en cuanto el candado sale de la pantalla y vuelve a entrar. Todo se decide
+  // con el scroll de la persona (no al cargar sin bajar, ni con el salto de soltar el bloqueo).
   useEffect(() => {
-    const d = dialogo.current
     const objetivo = cta.current
-    if (!d || !objetivo) return
-    let visible = false
+    const d = dialogo.current
+    if (!objetivo || !d) return
     let bajo = false
-    let cerrada = false
-    const intentar = () => {
-      if (visible && bajo && !cerrada && !d.open) d.showModal()
+    let armada = true
+    const alCerrar = () => {
+      armada = false // tiene que salir de la pantalla y volver a entrar
     }
-    const io = new IntersectionObserver(
-      ([e]) => {
-        visible = e.isIntersecting
-        intentar()
-      },
-      { threshold: 0.6 },
-    )
-    io.observe(objetivo)
-    const alBajar = () => {
-      if (window.scrollY > 40) {
-        bajo = true
-        intentar()
+    const alScroll = () => {
+      if (d.open || restaurando.current) return
+      if (window.scrollY > 40) bajo = true
+      const r = objetivo.getBoundingClientRect()
+      const h = window.innerHeight
+      if (r.bottom < 0 || r.top > h) armada = true
+      else if (armada && bajo && r.top < h * 0.8 && r.bottom > h * 0.2) {
+        armada = false
+        abrir()
       }
     }
-    const alCerrar = () => {
-      cerrada = true
-    }
-    window.addEventListener('scroll', alBajar, { passive: true })
     d.addEventListener('close', alCerrar)
+    window.addEventListener('scroll', alScroll, { passive: true })
     return () => {
-      io.disconnect()
-      window.removeEventListener('scroll', alBajar)
       d.removeEventListener('close', alCerrar)
+      window.removeEventListener('scroll', alScroll)
     }
   }, [])
 
