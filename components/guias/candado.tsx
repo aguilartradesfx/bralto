@@ -50,20 +50,24 @@ function Campo(props: {
   const id = `gu-${props.name}`
   return (
     <div className="gu-campo">
-      <label htmlFor={id}>{props.label}</label>
-      <input
-        id={id}
-        name={props.name}
-        type={props.type ?? 'text'}
-        className="gu-input"
-        autoComplete={props.autoComplete}
-        inputMode={props.inputMode}
-        placeholder={props.placeholder}
-        defaultValue={props.defaultValue}
-        aria-invalid={props.error ? true : undefined}
-        aria-describedby={props.error ? `${id}-error` : undefined}
-        required
-      />
+      {/* En el teléfono la etiqueta va dentro de la caja del campo (más compacto); en la computadora
+          esta caja no existe para el diseño (display: contents) y la etiqueta va arriba */}
+      <div className="gu-campo__caja">
+        <label htmlFor={id}>{props.label}</label>
+        <input
+          id={id}
+          name={props.name}
+          type={props.type ?? 'text'}
+          className="gu-input"
+          autoComplete={props.autoComplete}
+          inputMode={props.inputMode}
+          placeholder={props.placeholder}
+          defaultValue={props.defaultValue}
+          aria-invalid={props.error ? true : undefined}
+          aria-describedby={props.error ? `${id}-error` : undefined}
+          required
+        />
+      </div>
       {props.error && (
         <p id={`${id}-error`} className="gu-error">
           {props.error}
