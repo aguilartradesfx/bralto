@@ -1,10 +1,12 @@
 import Link from 'next/link'
-import { FileText, Users, ArrowRight, ClipboardList, ScrollText, UserCog, Target } from 'lucide-react'
+import { FileText, Users, ArrowRight, ClipboardList, ScrollText, UserCog, Target, CalendarDays } from 'lucide-react'
+import { Knox } from '@/components/internal/knox/knox'
 import { getCurrentSession } from '@/lib/panel-session'
 import { hasPermission, requiredPermission } from '@/lib/panel-access'
 
 const sections = [
   { href: '/plan-q4', icon: Target, label: 'Plan Q4', description: 'El plan del trimestre por pestañas y las tareas de cada uno.' },
+  { href: '/calendario', icon: CalendarDays, label: 'Calendario', description: 'Lo que sale en redes: el mes, cada publicación y su aprobación.' },
   { href: '/contratos', icon: FileText, label: 'Contratos', description: 'Creá, enviá y gestioná contratos de clientes.' },
   { href: '/clientes', icon: Users, label: 'Clientes', description: 'Base de datos de clientes activos e históricos.' },
   { href: '/solicitudes', icon: ClipboardList, label: 'Solicitudes', description: 'Registrá clientes potenciales y generá sus propuestas.' },
@@ -17,7 +19,9 @@ export default async function AdminPage() {
   const visible = sections.filter((s) => hasPermission(profile, requiredPermission(s.href)))
 
   return (
-    <div className="p-6 md:p-10 max-w-3xl">
+    <div className="p-6 md:p-10 max-w-5xl">
+      {hasPermission(profile, 'is_admin') && <Knox />}
+
       <div className="mb-8">
         <h1 className="text-xl font-semibold text-fg">Panel interno</h1>
         <p className="text-sm text-fg/40 mt-1">{user?.email}</p>
