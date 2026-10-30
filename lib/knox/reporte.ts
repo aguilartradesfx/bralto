@@ -5,8 +5,9 @@ import { escribirGuion } from './escritor'
 import { diaCr } from './fechas'
 import { contenido, leads } from './fuentes/base'
 import { tipoDeCambio } from './fuentes/cambio'
-import { agenda, conversaciones } from './fuentes/ghl'
+import { agenda } from './fuentes/ghl'
 import { redes } from './fuentes/redes'
+import { conversaciones } from './fuentes/zernio'
 import type { Datos, Reporte, Seccion } from './tipos'
 import { narrar } from './voz'
 
@@ -22,7 +23,7 @@ function conTiempo<T>(promesa: Promise<T>, ms: number): Promise<T> {
 async function recolectar(ahora: Date): Promise<Datos> {
   const ayer = new Date(ahora.getTime() - DIA)
   const [cambio, red, nuevos, citas, chats, cont] = await Promise.allSettled(
-    [tipoDeCambio(), redes(ahora), leads(ayer), agenda(ahora), conversaciones(), contenido(ahora)].map((p) => conTiempo<unknown>(p, 45_000)),
+    [tipoDeCambio(), redes(ahora), leads(ayer), agenda(ahora), conversaciones(ahora), contenido(ahora)].map((p) => conTiempo<unknown>(p, 45_000)),
   )
   const faltan: string[] = []
   function de<T>(nombre: string, r: PromiseSettledResult<unknown>): T | null {

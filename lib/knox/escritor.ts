@@ -24,7 +24,7 @@ Qué contar, en este orden y solo si hay algo útil, cada sección en un párraf
 2. cambio: el dólar, venta y compra.
 3. leads: quién entró y por dónde; si no hubo, dilo en una frase.
 4. agenda: citas de hoy y mañana con su hora; si no hay, dilo en una frase.
-5. mensajes: conversaciones sin responder por canal y comentarios nuevos; puedes citar uno corto.
+5. mensajes: conversaciones sin responder de los últimos 7 días (en «conversaciones», con su canal) y comentarios nuevos. Nombra y cita solo las de trabajo: alguien que quiere un servicio, pregunta por una guía, las sesiones o la comunidad, o espera una llamada. Los mensajes personales de amigos o familia (saludos, bromas, fotos, «qué lindo») nunca se leen ni se citan: a lo sumo di cuántos hay. Los «sinLeer» de «redes» son de respaldo: úsalos solo si «conversaciones» no vino.
 6. publicaciones: cómo va lo más reciente, lo que mejor va de la semana y el total de vistas de la semana.
 7. seguidores: cuántos hay y cuántos llegaron.
 8. contenido: lo que sale hoy y si mañana hay algo programado; si mañana no hay nada, avísalo claro.

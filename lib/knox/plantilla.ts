@@ -9,7 +9,7 @@ const FUENTES: Record<string, string> = {
   redes: 'Instagram y Facebook',
   leads: 'los leads del sitio',
   agenda: 'la agenda',
-  conversaciones: 'los mensajes de GoHighLevel',
+  conversaciones: 'tus mensajes de Instagram, Messenger y WhatsApp',
   contenido: 'el calendario de publicaciones',
 }
 
@@ -74,7 +74,7 @@ export function escribirPlantilla(d: Datos, ahora: Date): Seccion[] {
       mensajes.push(`Tienes ${cuantos(d.conversaciones.sinLeer, 'conversación sin responder', 'conversaciones sin responder')}: ${lista(canales)}.`)
     }
   } else if (d.redes) {
-    // Sin GoHighLevel, lo que dice Meta
+    // Si la bandeja de Zernio no respondió, lo que dice Meta
     const sinLeer = d.redes.facebook.reduce((a, p) => a + (p.sinLeer ?? 0), 0) + (d.redes.mensajesIgSinLeer ?? 0)
     if (sinLeer) mensajes.push(`Tienes ${cuantos(sinLeer, 'conversación sin leer', 'conversaciones sin leer')} en Messenger e Instagram.`)
   }
