@@ -57,7 +57,7 @@ const FilaSchema = z.object({
   incluye: z.array(z.string()),
   fuente_nombre: z.string().nullish(),
   fuente_url: https.nullish(),
-  imagen_url: z.string().nullish(),
+  imagen_url: imagenGuia.nullish(), // la portada, de la misma carpeta que las imágenes de los pasos
   abierto: z.array(BloqueSchema),
   bloqueado: z.array(BloqueSchema),
 })

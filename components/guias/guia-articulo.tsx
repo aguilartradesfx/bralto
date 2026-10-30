@@ -57,7 +57,7 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
               lo que trae la guía se ve en la ventana del candado */}
           {conAcceso && secciones.length > 1 && <IrDirecto secciones={secciones} conAcceso={conAcceso} />}
 
-          <article className="gu-cuerpo">
+          <article id="articulo" className="gu-cuerpo">
             <div className={conAcceso ? 'gu-abierto' : 'gu-abierto gu-abierto--cortado'}>
               <Bloques bloques={visibles.abierto} />
             </div>

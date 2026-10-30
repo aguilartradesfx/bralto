@@ -73,6 +73,13 @@ test('una imagen se acepta solo desde la carpeta de guías de Supabase y con su 
   assert.equal(filaAGuia({ ...fila, bloqueado: [{ ...imagen, ancho: undefined }] }), null)
 })
 
+test('la portada también tiene que venir de la carpeta de guías (next/image solo permite esa)', () => {
+  const fila = { slug: 'x', palabra: 'X', titulo: 'T', resumen: 'R', etiqueta: 'E', incluye: [], abierto: [], bloqueado: [] }
+  assert.equal(filaAGuia({ ...fila, imagen_url: IMG })?.imagenUrl, IMG)
+  assert.equal(filaAGuia({ ...fila, imagen_url: null })?.imagenUrl, null)
+  assert.equal(filaAGuia({ ...fila, imagen_url: 'https://otro-sitio.com/portada.webp' }), null)
+})
+
 test('secciones salen de los subtítulos, con un id estable para «Ir directo a»', () => {
   const g: Guia = {
     ...guia,

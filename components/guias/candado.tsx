@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { unstable_isUnrecognizedActionError, unstable_rethrow } from 'next/navigation'
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { desbloquear, ingresarConCorreo, type EstadoCandado } from '@/app/[locale]/guias/[slug]/actions'
 import { deGolpe } from './de-golpe'
@@ -10,6 +11,31 @@ type Props = { slug: string; titulo: string; incluye: string[]; imagen: string |
 
 // Lo que dispara la ventana desde fuera (los botones de «Ir directo a» con la guía cerrada)
 export const ABRIR_CANDADO = 'gu:abrir-candado'
+
+const SIN_CONEXION = 'No pudimos enviar sus datos. Revise su conexión e intente de nuevo.'
+const SITIO_NUEVO = 'El sitio se acaba de actualizar. Recargue la página e intente de nuevo.'
+
+// Si la petición se cae (señal débil, el navegador de Instagram) o el servidor falla, la server action
+// lanza un error en vez de devolver uno, y la página entera se cambiaba por la pantalla de error de Next.
+// Así sale un aviso en la ventana y no se pierde lo escrito. La redirección que abre la guía también
+// llega como error: esa se deja pasar.
+function aSalvo(accion: (prev: EstadoCandado, form: FormData) => Promise<EstadoCandado>) {
+  return async (prev: EstadoCandado, form: FormData): Promise<EstadoCandado> => {
+    try {
+      return await accion(prev, form)
+    } catch (err) {
+      unstable_rethrow(err)
+      const texto = (campo: string) => {
+        const v = form.get(campo)
+        return typeof v === 'string' ? v : ''
+      }
+      return {
+        error: unstable_isUnrecognizedActionError(err) ? SITIO_NUEVO : SIN_CONEXION,
+        valores: { nombre: texto('nombre'), correo: texto('correo'), whatsapp: texto('whatsapp'), acepta: form.get('acepta') === 'on' },
+      }
+    }
+  }
+}
 
 function Campo(props: {
   name: string
@@ -51,9 +77,25 @@ function Campo(props: {
 // el formulario. Lo de atrás es de mentira: el texto real no está en la página hasta registrarse.
 export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
   const dialogo = useRef<HTMLDialogElement>(null)
-  const [estado, enviar, enviando] = useActionState(desbloquear.bind(null, slug), {} as EstadoCandado)
-  const [estadoCorreo, entrar, entrando] = useActionState(ingresarConCorreo.bind(null, slug), {} as EstadoCandado)
+  const [estado, enviar, enviando] = useActionState(aSalvo(desbloquear.bind(null, slug)), {} as EstadoCandado)
+  const [estadoCorreo, entrar, entrando] = useActionState(aSalvo(ingresarConCorreo.bind(null, slug)), {} as EstadoCandado)
   const [conCorreo, setConCorreo] = useState(false)
+
+  // El botón que cambia de formulario desaparece al tocarlo: el foco pasa al primer campo del otro
+  const cambiarFormulario = (aCorreo: boolean) => {
+    setConCorreo(aCorreo)
+    requestAnimationFrame(() => document.getElementById(aCorreo ? 'gu-correo' : 'gu-nombre')?.focus())
+  }
+
+  // Si algo no pasó la revisión, el foco va al primer campo con error (el lector de pantalla lo lee)
+  useEffect(() => {
+    const primero = (['nombre', 'correo', 'whatsapp', 'acepta'] as const).find((c) => estado.errores?.[c])
+    if (primero) document.getElementById(`gu-${primero}`)?.focus()
+  }, [estado])
+
+  useEffect(() => {
+    if (estadoCorreo.error) document.getElementById('gu-correo')?.focus()
+  }, [estadoCorreo])
 
   const cta = useRef<HTMLDivElement>(null)
   const soltarScroll = useRef<(() => void) | null>(null)
@@ -63,18 +105,26 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
 
   // Con la ventana abierta la página de atrás no se mueve.
   // - Computadora: overflow: hidden en el body y nada más, así la página se queda donde estaba (fijar el
-  //   body la hacía saltar en Safari). scrollbar-gutter guarda el lugar de la barra para que no se corra.
+  //   body la hacía saltar en Safari). Con barras de scroll clásicas, scrollbar-gutter guarda el lugar de
+  //   la barra para que la página no se corra; donde no existe (Safari antes de 18.2), un relleno igual.
   // - Pantalla táctil (iOS no respeta el overflow): además el body queda fijo donde estaba, y al cerrar
   //   vuelve al mismo punto de golpe, sin la animación del scroll suave del sitio.
   const abrir = () => {
     const d = dialogo.current
     if (!d || d.open) return
+    const y = window.scrollY
+    const barra = window.innerWidth - document.documentElement.clientWidth
+    try {
+      d.showModal()
+    } catch {
+      return // sin <dialog> (iOS 15.3 o antes): mejor no bloquear nada que dejar la página congelada
+    }
     const html = document.documentElement.style
     const b = document.body.style
-    const antes = { gutter: html.scrollbarGutter, overflow: b.overflow, position: b.position, top: b.top, left: b.left, right: b.right, width: b.width }
+    const antes = { gutter: html.scrollbarGutter, overflow: b.overflow, paddingRight: b.paddingRight, position: b.position, top: b.top, left: b.left, right: b.right, width: b.width }
     const tactil = window.matchMedia('(pointer: coarse)').matches
-    const y = window.scrollY
     html.scrollbarGutter = 'stable'
+    if (barra > 0 && !CSS.supports('scrollbar-gutter: stable')) b.paddingRight = `${barra}px`
     b.overflow = 'hidden'
     if (tactil) Object.assign(b, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' })
     soltarScroll.current = () => {
@@ -88,7 +138,6 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
         restaurando.current = false
       }, 400)
     }
-    d.showModal()
     // El foco va al título y no a la X: así no sale el anillo de foco sobre la X al abrirse sola, y
     // quien usa lector de pantalla oye primero de qué se trata
     encabezado.current?.focus({ preventScroll: true })
@@ -262,7 +311,7 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
                 {enviando ? 'Abriendo la guía…' : 'Ver la guía completa'}
               </button>
               <p className="gu-form__nota">Con este registro se abren todas las guías de Bralto.</p>
-              <button type="button" className="gu-cambiar" onClick={() => setConCorreo(true)}>
+              <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(true)}>
                 ¿Ya se registró? Entre con su correo
               </button>
             </form>
@@ -280,7 +329,7 @@ export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
               <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={entrando}>
                 {entrando ? 'Buscando…' : 'Entrar'}
               </button>
-              <button type="button" className="gu-cambiar" onClick={() => setConCorreo(false)}>
+              <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(false)}>
                 Es mi primera vez
               </button>
             </form>
