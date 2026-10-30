@@ -28,6 +28,9 @@ test('requiredPermission por sección', () => {
   assert.equal(requiredPermission('/calendario'), 'is_admin')
   assert.equal(requiredPermission('/calendario/abc'), 'is_admin')
   assert.equal(requiredPermission('/calendariox'), null)
+  assert.equal(requiredPermission('/crm'), 'is_admin')
+  assert.equal(requiredPermission('/crm/tareas'), 'is_admin')
+  assert.equal(requiredPermission('/crmx'), null)
   assert.equal(requiredPermission('/contratosx'), null)
 })
 

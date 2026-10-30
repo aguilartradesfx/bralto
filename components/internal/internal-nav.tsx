@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FileText, Users, LogOut, Menu, X, LayoutDashboard, ScrollText, ClipboardList, UserCog, Target, CalendarDays, type LucideIcon } from 'lucide-react'
+import { FileText, Users, LogOut, Menu, X, LayoutDashboard, ScrollText, ClipboardList, UserCog, Target, CalendarDays, ContactRound, type LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { hasPermission, requiredPermission } from '@/lib/panel-access'
 import type { UserProfile } from '@/types/user-profiles'
@@ -13,6 +13,7 @@ import { useState } from 'react'
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/admin', label: 'Inicio', icon: LayoutDashboard },
+  { href: '/crm', label: 'CRM', icon: ContactRound },
   { href: '/plan-q4', label: 'Plan Q4', icon: Target },
   { href: '/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/contratos', label: 'Contratos', icon: FileText },
