@@ -25,7 +25,9 @@ function Linea({ texto }: { texto: string }) {
   )
 }
 
-function Bloque({ b }: { b: Visible }) {
+// En la tarjeta de un paso la imagen va al lado del texto (250 px; en el teléfono, debajo y hasta 300 px).
+// Suelta, va centrada sin recortarse: hasta 560 px si es horizontal y 340 px si es vertical.
+function Bloque({ b, enTarjeta = false }: { b: Visible; enTarjeta?: boolean }) {
   switch (b.tipo) {
     case 'subtitulo':
       return (
@@ -79,8 +81,14 @@ function Bloque({ b }: { b: Visible }) {
       )
     case 'imagen':
       return (
-        <figure className="gu-imagen">
-          <Image src={b.src} alt={b.alt} width={b.ancho} height={b.alto} sizes="(min-width: 960px) 380px, 100vw" />
+        <figure className={b.alto > b.ancho ? 'gu-imagen gu-imagen--vertical' : 'gu-imagen'}>
+          <Image
+            src={b.src}
+            alt={b.alt}
+            width={b.ancho}
+            height={b.alto}
+            sizes={enTarjeta ? '(min-width: 720px) 250px, 300px' : '(min-width: 720px) 560px, 100vw'}
+          />
           {b.pie && <figcaption>{b.pie}</figcaption>}
         </figure>
       )
@@ -120,7 +128,7 @@ export function Bloques({ bloques }: { bloques: Visible[] }) {
             {g.imagenes.length > 0 && (
               <div className="gu-paso__imagenes">
                 {g.imagenes.map((b, j) => (
-                  <Bloque key={j} b={b} />
+                  <Bloque key={j} b={b} enTarjeta />
                 ))}
               </div>
             )}

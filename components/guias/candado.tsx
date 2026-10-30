@@ -1,9 +1,12 @@
 'use client'
 
+import Image from 'next/image'
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { desbloquear, ingresarConCorreo, type EstadoCandado } from '@/app/[locale]/guias/[slug]/actions'
+import { deGolpe } from './de-golpe'
+import { TAMANOS_PORTADA } from './portada'
 
-type Props = { slug: string; incluye: string[]; origen?: string }
+type Props = { slug: string; titulo: string; incluye: string[]; imagen: string | null; origen?: string }
 
 // Lo que dispara la ventana desde fuera (los botones de «Ir directo a» con la guía cerrada)
 export const ABRIR_CANDADO = 'gu:abrir-candado'
@@ -46,7 +49,7 @@ function Campo(props: {
 
 // El final de lo abierto: bloques borrosos de lo que sigue, el botón «Ver todo» y la ventana con
 // el formulario. Lo de atrás es de mentira: el texto real no está en la página hasta registrarse.
-export function Candado({ slug, incluye, origen }: Props) {
+export function Candado({ slug, titulo, incluye, imagen, origen }: Props) {
   const dialogo = useRef<HTMLDialogElement>(null)
   const [estado, enviar, enviando] = useActionState(desbloquear.bind(null, slug), {} as EstadoCandado)
   const [estadoCorreo, entrar, entrando] = useActionState(ingresarConCorreo.bind(null, slug), {} as EstadoCandado)
@@ -55,28 +58,40 @@ export function Candado({ slug, incluye, origen }: Props) {
   const cta = useRef<HTMLDivElement>(null)
   const soltarScroll = useRef<(() => void) | null>(null)
   const restaurando = useRef(false) // el salto de soltar el bloqueo no cuenta como scroll de la persona
+  const enFondo = useRef(false)
+  const encabezado = useRef<HTMLHeadingElement>(null)
 
-  // Con la ventana abierta la página de atrás no se mueve. En iOS no alcanza con overflow: hidden,
-  // así que el body queda fijo donde estaba y al cerrar se devuelve al mismo punto.
+  // Con la ventana abierta la página de atrás no se mueve.
+  // - Computadora: overflow: hidden en el body y nada más, así la página se queda donde estaba (fijar el
+  //   body la hacía saltar en Safari). scrollbar-gutter guarda el lugar de la barra para que no se corra.
+  // - Pantalla táctil (iOS no respeta el overflow): además el body queda fijo donde estaba, y al cerrar
+  //   vuelve al mismo punto de golpe, sin la animación del scroll suave del sitio.
   const abrir = () => {
     const d = dialogo.current
     if (!d || d.open) return
-    const y = window.scrollY
+    const html = document.documentElement.style
     const b = document.body.style
-    const antes = { position: b.position, top: b.top, left: b.left, right: b.right, width: b.width, overflow: document.documentElement.style.overflow }
-    document.documentElement.style.overflow = 'hidden'
-    Object.assign(b, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' })
+    const antes = { gutter: html.scrollbarGutter, overflow: b.overflow, position: b.position, top: b.top, left: b.left, right: b.right, width: b.width }
+    const tactil = window.matchMedia('(pointer: coarse)').matches
+    const y = window.scrollY
+    html.scrollbarGutter = 'stable'
+    b.overflow = 'hidden'
+    if (tactil) Object.assign(b, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' })
     soltarScroll.current = () => {
       restaurando.current = true
-      document.documentElement.style.overflow = antes.overflow
-      Object.assign(b, { position: antes.position, top: antes.top, left: antes.left, right: antes.right, width: antes.width })
-      window.scrollTo(0, y)
+      const { gutter, ...body } = antes
+      Object.assign(b, body)
+      html.scrollbarGutter = gutter
+      if (tactil) deGolpe(() => window.scrollTo(0, y))
       soltarScroll.current = null
       setTimeout(() => {
         restaurando.current = false
       }, 400)
     }
     d.showModal()
+    // El foco va al título y no a la X: así no sale el anillo de foco sobre la X al abrirse sola, y
+    // quien usa lector de pantalla oye primero de qué se trata
+    encabezado.current?.focus({ preventScroll: true })
   }
 
   useEffect(() => {
@@ -149,24 +164,42 @@ export function Candado({ slug, incluye, origen }: Props) {
         ref={dialogo}
         className="gu-dialogo"
         aria-labelledby="gu-dialogo-titulo"
+        onPointerDown={(e) => {
+          enFondo.current = e.target === dialogo.current
+        }}
         onClick={(e) => {
-          if (e.target === dialogo.current) dialogo.current.close() // clic afuera de la caja
+          // Clic afuera de la caja; no cuenta si empezó adentro (seleccionar texto y soltar afuera)
+          if (enFondo.current && e.target === dialogo.current) dialogo.current.close()
         }}
       >
         <div className="gu-dialogo__caja">
           <button type="button" className="gu-cerrar" aria-label="Cerrar" onClick={() => dialogo.current?.close()}>
             ×
           </button>
-          <p className="hm-eyebrow">Guía completa · gratis</p>
-          <h2 id="gu-dialogo-titulo">Vea la guía completa</h2>
-          {incluye.length > 0 && (
-            <ul className="gu-incluye">
-              {incluye.map((i) => (
-                <li key={i}>{i}</li>
-              ))}
-            </ul>
-          )}
+          {/* En la computadora son dos columnas: lo que trae la guía (con su foto) y el formulario. La
+              foto es la misma de arriba con el mismo sizes (y priority, igual que arriba: Next las
+              distingue por la dirección): sale de la caché, no se descarga dos veces */}
+          <div className="gu-dialogo__info">
+            {imagen && (
+              <div className="gu-dialogo__foto">
+                <Image src={imagen} alt="" width={1080} height={1350} sizes={TAMANOS_PORTADA} priority />
+              </div>
+            )}
+            <p className="hm-eyebrow">Guía completa · gratis</p>
+            <h2 id="gu-dialogo-titulo" ref={encabezado} tabIndex={-1}>
+              Vea la guía completa
+            </h2>
+            <p className="gu-dialogo__guia">{titulo}</p>
+            {incluye.length > 0 && (
+              <ul className="gu-incluye">
+                {incluye.map((i) => (
+                  <li key={i}>{i}</li>
+                ))}
+              </ul>
+            )}
+          </div>
 
+          <div className="gu-dialogo__form">
           {!conCorreo ? (
             <form action={enviar} className="gu-form" noValidate>
               <input type="hidden" name="origen" value={origen ?? 'web'} />
@@ -252,6 +285,7 @@ export function Candado({ slug, incluye, origen }: Props) {
               </button>
             </form>
           )}
+          </div>
         </div>
       </dialog>
     </div>

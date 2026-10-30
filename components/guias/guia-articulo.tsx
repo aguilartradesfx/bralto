@@ -7,6 +7,7 @@ import { Candado } from './candado'
 import { FondoQuieto } from './fondo-quieto'
 import { IrAGuia } from './ir-a-guia'
 import { IrDirecto } from './ir-directo'
+import { TAMANOS_PORTADA } from './portada'
 import '../news/news.css'
 import './guias.css'
 
@@ -19,33 +20,32 @@ type Props = {
   origen?: string
 }
 
-// Una guía: arriba el título con la foto del post; después unas líneas abiertas que se difuminan
-// hasta el «Ver todo» (o, con acceso, la guía completa en tarjetas). Cierra con la invitación del sitio.
+// Una guía en una sola columna centrada: arriba el título centrado y la foto del post a lo ancho;
+// después unas líneas abiertas que se difuminan hasta el «Ver todo» (o, con acceso, la guía completa
+// en tarjetas). Todo comparte el mismo ancho y los mismos bordes. Cierra con la invitación del sitio.
 export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbierta, origen }: Props) {
   return (
     <main className="gu">
       <FondoQuieto />
-      <section className="hm-hero hm-hero--page hm-hero--fit" aria-labelledby="gu-titulo">
+      <section className="hm-hero hm-hero--page hm-hero--fit gu-cabeza" aria-labelledby="gu-titulo">
         <div className="hm-wrap gu-hero">
-          <div className="gu-hero__texto">
-            <p className="hm-eyebrow">{guia.etiqueta}</p>
-            <h1 id="gu-titulo" className="nw-title">
-              {guia.titulo}
-            </h1>
-            <p className="hm-lead">{guia.resumen}</p>
-            <div className="nw-byline">
-              <Image src={authorPhoto} alt="" width={44} height={44} className="nw-byline__photo" />
-              <span>
-                <a href="/es/sobre-nosotros" className="nw-byline__name">
-                  Alejandro Aguilar
-                </a>
-                <span className="nw-byline__meta">CEO Bralto</span>
-              </span>
-            </div>
+          <p className="hm-eyebrow">{guia.etiqueta}</p>
+          <h1 id="gu-titulo" className="nw-title">
+            {guia.titulo}
+          </h1>
+          <p className="hm-lead">{guia.resumen}</p>
+          <div className="nw-byline">
+            <Image src={authorPhoto} alt="" width={44} height={44} className="nw-byline__photo" />
+            <span>
+              <a href="/es/sobre-nosotros" className="nw-byline__name">
+                Alejandro Aguilar
+              </a>
+              <span className="nw-byline__meta">CEO Bralto</span>
+            </span>
           </div>
           {guia.imagenUrl && (
             <figure className="gu-hero__foto">
-              <Image src={guia.imagenUrl} alt="" width={1080} height={1350} sizes="(min-width: 960px) 360px, 80vw" priority />
+              <Image src={guia.imagenUrl} alt="" width={1080} height={1350} sizes={TAMANOS_PORTADA} priority />
             </figure>
           )}
         </div>
@@ -68,7 +68,7 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
                 <Bloques bloques={visibles.bloqueado} />
               </div>
             ) : (
-              <Candado slug={guia.slug} incluye={guia.incluye} origen={origen} />
+              <Candado slug={guia.slug} titulo={guia.titulo} incluye={guia.incluye} imagen={guia.imagenUrl} origen={origen} />
             )}
           </article>
 
