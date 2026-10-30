@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 // Archivos del panel (admin.bralto.io) y del login. signature-pad.tsx también lo usa la firma pública (/c/).
-const ROOTS = ['app/(internal)', 'app/(auth)', 'components/internal', 'components/users', 'components/contracts', 'components/proposals', 'components/plan-q4', 'components/calendario']
+const ROOTS = ['app/(internal)', 'app/(auth)', 'components/internal', 'components/users', 'components/contracts', 'components/proposals', 'components/plan-q4', 'components/calendario', 'components/crm']
 const EXCLUDE = new Set(['components/contracts/signature-pad.tsx'])
 const OLD_STYLE = /5bb6ff|7cc5ff|\bcyan\b|#0c0c0f|#131316|#111111|#060607|91\s*,?\s*182\s*,?\s*255|\b(?:bg|text|border)-(?:blue|sky|indigo|orange)-\d/i
 // Colores de estado que usa el panel y viven fuera de sus carpetas
