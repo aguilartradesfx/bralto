@@ -227,7 +227,7 @@ export async function crearContacto(datos: Partial<DatosContacto>): Promise<{ id
   if (choque) return choque
   const { data, error } = await db()
     .from('crm_contactos')
-    .insert({ ...datos, origen: 'panel', ultima_actividad: new Date().toISOString() })
+    .insert({ ...datos, origen: 'panel' }) // ultima_actividad: now() de la base, como las notas y los mensajes
     .select('id')
     .single()
   if (error || !data) return fallo('crear contacto', error ?? { message: 'sin fila' })

@@ -102,6 +102,22 @@ export function SubMenu({ activa }: { activa: (typeof SECCIONES)[number]['href']
   )
 }
 
+// Una caja de la ficha del contacto: título (con cuántos hay) y su contenido
+export function Seccion({ titulo, cuenta, accion, children }: { titulo: string; cuenta?: number; accion?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <section className="pn-glass rounded-[20px] p-4 sm:p-5">
+      <div className="mb-3 flex min-h-8 items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold text-fg">
+          {titulo}
+          {cuenta ? <span className="ml-1.5 font-normal tabular-nums text-fg/40">{cuenta}</span> : null}
+        </h2>
+        {accion}
+      </div>
+      {children}
+    </section>
+  )
+}
+
 // Lo que se ve cuando no hay nada
 export function Vacio({ children }: { children: React.ReactNode }) {
   return <p className="pn-glass rounded-[16px] px-4 py-8 text-center text-sm text-fg/50">{children}</p>

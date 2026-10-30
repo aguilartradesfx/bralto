@@ -1,4 +1,5 @@
 // El CRM del panel: las filas de las tablas crm_* (supabase/migrations/20261030_003_crm.sql) y sus nombres.
+import { telefonoLegible } from './telefono.ts'
 
 export type Origen = 'ghl' | 'panel' | 'zernio' | 'web'
 
@@ -190,11 +191,14 @@ export interface AdjuntoFila {
 
 // El nombre que se muestra: nombre y apellido, o lo que haya
 export function nombreVisible(c: { nombre: string; apellido: string; correo?: string | null; telefono?: string | null }): string {
-  return `${c.nombre} ${c.apellido}`.trim() || c.correo || c.telefono || 'Sin nombre'
+  return `${c.nombre} ${c.apellido}`.trim() || c.correo || (c.telefono ? telefonoLegible(c.telefono) : '') || 'Sin nombre'
 }
 
-// Las iniciales del círculo de cada contacto
+// Las iniciales del círculo de cada contacto. Si en vez de nombre hay un correo, su primera letra; si hay un
+// teléfono, un #
 export function iniciales(nombre: string): string {
+  if (/^[+\d]/.test(nombre.trim())) return '#'
+  if (nombre.includes('@')) return ([...nombre.trim()][0] ?? '·').toUpperCase()
   const partes = nombre
     .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .split(/\s+/)
@@ -203,4 +207,21 @@ export function iniciales(nombre: string): string {
   const primera = [...partes[0]][0] ?? ''
   const segunda = partes.length > 1 ? ([...partes[partes.length - 1]][0] ?? '') : ''
   return (primera + segunda).toUpperCase()
+}
+
+// Qué es un archivo, en una palabra: Foto, Video, Audio, PDF o Archivo
+export function tipoArchivo(mime: string | null | undefined): string {
+  const m = mime ?? ''
+  if (m.startsWith('image/')) return 'Foto'
+  if (m.startsWith('video/')) return 'Video'
+  if (m.startsWith('audio/')) return 'Audio'
+  if (m === 'application/pdf') return 'PDF'
+  return 'Archivo'
+}
+
+// 2.4 MB, 350 KB
+export function tamanoLegible(bytes: number | null | undefined): string {
+  if (!bytes || bytes < 0) return ''
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }

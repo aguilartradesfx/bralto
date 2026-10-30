@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import { idDe, uuidV5 } from './ids.ts'
 import { enlaceWhatsApp, normalizarTelefono, telefonoLegible } from './telefono.ts'
 import { pareceHtml, textoPlano } from './texto.ts'
-import { iniciales, nombreVisible, canalConocido } from './tipos.ts'
+import { canalConocido, iniciales, nombreVisible, tamanoLegible, tipoArchivo } from './tipos.ts'
+
+test('tipoArchivo y tamanoLegible', () => {
+  assert.equal(tipoArchivo('image/jpeg'), 'Foto')
+  assert.equal(tipoArchivo('video/mp4'), 'Video')
+  assert.equal(tipoArchivo('audio/ogg'), 'Audio')
+  assert.equal(tipoArchivo('application/pdf'), 'PDF')
+  assert.equal(tipoArchivo(null), 'Archivo')
+  assert.equal(tamanoLegible(500), '1 KB')
+  assert.equal(tamanoLegible(350 * 1024), '350 KB')
+  assert.equal(tamanoLegible(2.44 * 1024 * 1024), '2.4 MB')
+  assert.equal(tamanoLegible(null), '')
+})
 
 test('normalizarTelefono: a E.164, con Costa Rica y EE. UU. por defecto', () => {
   assert.equal(normalizarTelefono('7000 0001'), '+50670000001')
@@ -52,11 +64,12 @@ test('uuidV5 e idDe: fijos, con forma de UUID v5 y distintos por tipo', () => {
 test('nombreVisible, iniciales y canalConocido', () => {
   assert.equal(nombreVisible({ nombre: 'Ana', apellido: 'Prueba' }), 'Ana Prueba')
   assert.equal(nombreVisible({ nombre: '', apellido: '', correo: 'ana@ejemplo.test' }), 'ana@ejemplo.test')
-  assert.equal(nombreVisible({ nombre: '', apellido: '', telefono: '+50670000001' }), '+50670000001')
+  assert.equal(nombreVisible({ nombre: '', apellido: '', telefono: '+50670000001' }), '+506 7000 0001')
   assert.equal(nombreVisible({ nombre: ' ', apellido: '' }), 'Sin nombre')
   assert.equal(iniciales('Ana María Prueba'), 'AP')
   assert.equal(iniciales('Óscar'), 'Ó')
-  assert.equal(iniciales('+50670000001'), '5')
+  assert.equal(iniciales('+506 7000 0001'), '#')
+  assert.equal(iniciales('lucia.prueba@ejemplo.test'), 'L')
   assert.equal(iniciales('—'), '·')
   assert.equal(canalConocido('whatsapp'), 'whatsapp')
   assert.equal(canalConocido('tiktok'), 'otro')

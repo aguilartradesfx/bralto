@@ -48,7 +48,7 @@ export function Buscador({ q, etiqueta, etiquetas }: { q: string; etiqueta: stri
           type="search"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Busca por nombre, teléfono o correo"
+          placeholder="Nombre, teléfono o correo"
           enterKeyHint="search"
           autoComplete="off"
           className={`${CAMPO} pl-9`}

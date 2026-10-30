@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { enlaceLista, leerPagina, terminosDeBusqueda, totalPaginas } from './busqueda.ts'
 import { diaCorto, duracion, fechaHora, haceCuanto, vencimiento } from './fechas.ts'
+import { esLargo, nombreDelDia, porDia, textoLlamada, unirMensajes } from './historial.ts'
 import { agruparTareas, armarTablero, dinero, grupoDe } from './tablero.ts'
 import {
   leerCursor,
@@ -166,6 +167,34 @@ test('leerValor y los cambios de una oportunidad', () => {
     datos: { nombre: 'Página web', pipeline_id: 'p1', etapa_id: 'e1', valor: 1500 },
   })
   assert.equal(validarNuevaOportunidad({ nombre: 'x', etapa_id: 'nada' }, todas).ok, false)
+})
+
+test('historial: unir sin repetir, lo más nuevo arriba y por día de Costa Rica', () => {
+  const m = (id: string, enviado_en: string) => ({ id, enviado_en })
+  const primera = [m('c', '2026-10-30T16:00:00Z'), m('b', '2026-10-30T05:30:00Z')]
+  const mas = [m('b', '2026-10-30T05:30:00Z'), m('a', '2026-10-28T16:00:00Z'), m('a2', '2026-10-28T16:00:00Z')]
+  const todos = unirMensajes(primera, mas)
+  assert.deepEqual(todos.map((x) => x.id), ['c', 'b', 'a2', 'a'])
+  // Las 23:30 del jueves (05:30 UTC del viernes) van en el jueves
+  assert.deepEqual(porDia(todos).map(([dia, lista]) => [dia, lista.map((x) => x.id)]), [
+    ['2026-10-30', ['c']],
+    ['2026-10-29', ['b']],
+    ['2026-10-28', ['a2', 'a']],
+  ])
+  assert.equal(nombreDelDia('2026-10-30', AHORA), 'Hoy')
+  assert.equal(nombreDelDia('2026-10-29', AHORA), 'Ayer')
+  assert.equal(nombreDelDia('2026-10-28', AHORA), 'miércoles 28 de octubre')
+  assert.equal(nombreDelDia('2025-12-31', AHORA), 'miércoles 31 de diciembre de 2025')
+})
+
+test('textoLlamada y esLargo', () => {
+  assert.equal(textoLlamada('saliente', { estado: 'contestada', segundos: 95 }), 'Llamaste · 2 min')
+  assert.equal(textoLlamada('entrante', { estado: 'sin_respuesta' }), 'Te llamó · no contestó')
+  assert.equal(textoLlamada(null, null), 'Llamaste')
+  assert.equal(esLargo('corto'), false)
+  assert.equal(esLargo('x'.repeat(500)), true)
+  assert.equal(esLargo('a\nb\nc\nd\ne\nf\ng\nh\ni'), true)
+  assert.equal(esLargo(null), false)
 })
 
 test('leerCursor: solo una fecha de la base y un id', () => {
