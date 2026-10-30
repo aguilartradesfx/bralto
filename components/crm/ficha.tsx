@@ -72,7 +72,7 @@ export function FichaContacto({ ficha, etiquetas, ahora }: { ficha: Ficha; etiqu
 
       <div className="mt-4 lg:mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)] lg:items-start lg:gap-6">
         <div id="panel-historial" role="tabpanel" aria-labelledby="pestana-historial" className={visible('historial')}>
-          <Historial contactoId={c.id} inicial={ficha.historial} ahora={ahora} />
+          <Historial contactoId={c.id} inicial={ficha.historial} ahora={ahora} conversaciones={ficha.conversaciones} />
         </div>
         <div className="flex flex-col gap-4">
           <div id="panel-ventas" role="tabpanel" aria-labelledby="pestana-ventas" className={visible('ventas')}>

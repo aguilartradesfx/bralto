@@ -96,6 +96,8 @@ export interface MensajeVista {
   estado: string | null // entregado, leido, enviado, pendiente, fallo
   llamada: { estado?: string; segundos?: number } | null
   enviado_en: string
+  autor: string | null // persona, ale, knox, automatizacion (los de la bandeja; null en lo de GoHighLevel)
+  adjunto: string | null // lo que mandó por la bandeja, en una palabra: foto, audio, historia…
 }
 
 export type Cursor = { en: string; id: string }
@@ -105,8 +107,15 @@ export interface Historial {
   siguiente: Cursor | null // null: no hay más
 }
 
+// Una conversación de la bandeja (Instagram, Messenger o WhatsApp por Zernio), para contestarle desde la ficha
+export interface ConversacionDeContacto {
+  id: string
+  canal: Canal
+}
+
 export interface Ficha {
   contacto: ContactoVista
+  conversaciones: ConversacionDeContacto[]
   notas: NotaVista[]
   tareas: TareaVista[]
   oportunidades: OportunidadVista[]
