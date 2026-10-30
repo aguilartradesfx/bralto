@@ -21,13 +21,32 @@ type Props = {
   pais?: string | null // el país que detecta Vercel por la IP: el selector del WhatsApp arranca en él
 }
 
-// Una guía en una sola columna centrada: arriba el título centrado y la foto del post a lo ancho;
-// después unas líneas abiertas que se difuminan hasta el «Ver todo» (o, con acceso, la guía completa
-// en tarjetas). Todo comparte el mismo ancho y los mismos bordes. Cierra con la invitación del sitio.
+// Una guía. Si pide datos (contenido descargable) y la persona no se ha registrado, la página es solo
+// el cuadro del registro, sin adelanto del texto (pedido de Alejandro: «si les interesa, que dejen sus
+// datos; si no, ni modo»). Si no, la guía entera en una sola columna centrada: arriba el título y la
+// foto del post, después el texto con los pasos en tarjetas. Cierra con la invitación del sitio.
 export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbierta, origen, pais }: Props) {
+  if (!conAcceso) {
+    return (
+      <main className="gu">
+        <FondoQuieto />
+        <Candado
+          slug={guia.slug}
+          titulo={guia.titulo}
+          incluye={guia.incluye}
+          imagen={guia.imagenUrl}
+          boton={guia.boton}
+          origen={origen}
+          pais={pais}
+        />
+      </main>
+    )
+  }
+
   return (
     <main className="gu">
       <FondoQuieto />
+      {recienAbierta && <IrAGuia />}
       <section className="hm-hero hm-hero--page hm-hero--fit gu-cabeza" aria-labelledby="gu-titulo">
         <div className="hm-wrap gu-hero">
           <p className="hm-eyebrow">{guia.etiqueta}</p>
@@ -54,34 +73,20 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
 
       <section className="hm-section hm-section--tight gu-main">
         <div className="hm-wrap gu-col">
-          {/* Cerrada, el texto empieza enseguida (en el teléfono el índice empujaba todo hacia abajo);
-              lo que trae la guía se ve en la ventana del candado */}
-          {conAcceso && secciones.length > 1 && <IrDirecto secciones={secciones} conAcceso={conAcceso} />}
+          {secciones.length > 1 && <IrDirecto secciones={secciones} />}
 
           <article id="articulo" className="gu-cuerpo">
-            <div className={conAcceso ? 'gu-abierto' : 'gu-abierto gu-abierto--cortado'}>
+            <div className="gu-abierto">
               <Bloques bloques={visibles.abierto} />
             </div>
-            {conAcceso ? (
-              <div id="guia" className="gu-completa">
-                {recienAbierta && <IrAGuia />}
-                <p className="gu-sello">Guía completa</p>
-                <Bloques bloques={visibles.bloqueado} />
-              </div>
-            ) : (
-              <Candado
-                slug={guia.slug}
-                titulo={guia.titulo}
-                incluye={guia.incluye}
-                imagen={guia.imagenUrl}
-                boton={guia.boton}
-                origen={origen}
-                pais={pais}
-              />
-            )}
+            <div id="guia" className="gu-completa">
+              {/* El sello marca dónde empieza lo que se abrió con el registro; sin registro no hace falta */}
+              {guia.pideDatos && <p className="gu-sello">Guía completa</p>}
+              <Bloques bloques={visibles.bloqueado} />
+            </div>
           </article>
 
-          {conAcceso && guia.fuenteUrl && (
+          {guia.fuenteUrl && (
             <aside className="nw-source gu-fuente gu-tarjeta" aria-label="Fuente">
               <span className="hm-eyebrow">Fuente</span>
               <a href={guia.fuenteUrl} target="_blank" rel="noopener">

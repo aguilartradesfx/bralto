@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { agrupar, bloquesVisibles, filaAGuia, idSeccion, secciones, trozos, type Guia, type Visible } from './contenido.ts'
+import { agrupar, bloquesVisibles, filaAGuia, idSeccion, secciones, tieneAcceso, trozos, type Guia, type Visible } from './contenido.ts'
 
 const IMG = 'https://pjwmfllnyauobityaile.supabase.co/storage/v1/object/public/social-images/guias/jarvis/paso-1.webp'
 
@@ -15,6 +15,7 @@ const guia: Guia = {
   fuenteUrl: null,
   imagenUrl: null,
   boton: null,
+  pideDatos: true,
   abierto: [
     { tipo: 'parrafo', texto: 'Intro' },
     { tipo: 'paso', titulo: 'Clónelo' },
@@ -79,6 +80,17 @@ test('la portada también tiene que venir de la carpeta de guías (next/image so
   assert.equal(filaAGuia({ ...fila, imagen_url: IMG })?.imagenUrl, IMG)
   assert.equal(filaAGuia({ ...fila, imagen_url: null })?.imagenUrl, null)
   assert.equal(filaAGuia({ ...fila, imagen_url: 'https://otro-sitio.com/portada.webp' }), null)
+})
+
+test('una guía pide datos solo si se marca (contenido descargable); si no, se abre entera', () => {
+  const fila = { slug: 'x', palabra: 'X', titulo: 'T', resumen: 'R', etiqueta: 'E', incluye: [], abierto: [], bloqueado: [] }
+  assert.equal(filaAGuia({ ...fila, pide_datos: true })?.pideDatos, true)
+  assert.equal(filaAGuia({ ...fila, pide_datos: false })?.pideDatos, false)
+  assert.equal(filaAGuia(fila)?.pideDatos, false)
+  const abierta = { ...guia, pideDatos: false }
+  assert.equal(tieneAcceso(abierta, false), true)
+  assert.equal(tieneAcceso({ ...guia, pideDatos: true }, false), false)
+  assert.equal(tieneAcceso({ ...guia, pideDatos: true }, true), true)
 })
 
 test('el botón final de la ventana es propio de cada guía, corto, y si falta queda vacío', () => {

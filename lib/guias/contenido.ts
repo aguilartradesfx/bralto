@@ -41,7 +41,8 @@ export type Guia = {
   fuenteNombre: string | null
   fuenteUrl: string | null
   imagenUrl: string | null
-  boton: string | null // el botón final de la ventana («Aprender a instalar Jarvis»); sin él, «Ver la guía completa»
+  boton: string | null // el botón final del registro («Aprender a instalar Jarvis»); sin él, «Ver la guía completa»
+  pideDatos: boolean // contenido descargable: hay que registrarse para verla; si no, se abre entera
   abierto: Bloque[]
   bloqueado: Bloque[]
 }
@@ -60,6 +61,7 @@ const FilaSchema = z.object({
   fuente_url: https.nullish(),
   imagen_url: imagenGuia.nullish(), // la portada, de la misma carpeta que las imágenes de los pasos
   boton: z.string().min(1).max(40).nullish(),
+  pide_datos: z.boolean().nullish(),
   abierto: z.array(BloqueSchema),
   bloqueado: z.array(BloqueSchema),
 })
@@ -80,12 +82,20 @@ export function filaAGuia(fila: Record<string, unknown>): Guia | null {
     fuenteUrl: f.fuente_url ?? null,
     imagenUrl: f.imagen_url ?? null,
     boton: f.boton ?? null,
+    pideDatos: f.pide_datos ?? false,
     abierto: f.abierto,
     bloqueado: f.bloqueado,
   }
 }
 
 export type Visible = Bloque & { numero?: number }
+
+// Decisión de Alejandro (29/10): los datos se piden solo cuando hay algo para descargar. Las demás
+// guías (tutoriales, listas de herramientas) se abren enteras: lo que se pide es seguirlo en Instagram,
+// en el mensaje que llega al comentar. En las que piden datos, la cookie firmada abre la guía.
+export function tieneAcceso(g: Pick<Guia, 'pideDatos'>, firmaValida: boolean): boolean {
+  return !g.pideDatos || firmaValida
+}
 
 // Los pasos se numeran seguidos en las dos partes; sin acceso, lo bloqueado ni siquiera se devuelve
 export function bloquesVisibles(g: Guia, conAcceso: boolean): { abierto: Visible[]; bloqueado: Visible[] } {

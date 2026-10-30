@@ -2,12 +2,11 @@
 
 import Image from 'next/image'
 import { unstable_isUnrecognizedActionError, unstable_rethrow } from 'next/navigation'
-import { useActionState, useEffect, useRef, useState, type FormEvent } from 'react'
+import { useActionState, useEffect, useState, type FormEvent } from 'react'
 import { desbloquear, ingresarConCorreo, type EstadoCandado } from '@/app/[locale]/guias/[slug]/actions'
 import { MENSAJES, errorDelNombre, limpiarNombre, pasoConError, type Paso } from '@/lib/guias/campos'
 import { OTRO, PAISES, bandera, pais as datosPais, paisPorDefecto, whatsappCompleto } from '@/lib/guias/paises'
-import { deGolpe } from './de-golpe'
-import { TAMANOS_PORTADA } from './portada'
+import { TAMANOS_CUADRO } from './portada'
 
 type Props = {
   slug: string
@@ -19,10 +18,7 @@ type Props = {
   pais?: string | null // el país detectado por la IP: el selector del WhatsApp arranca en él
 }
 
-// Lo que dispara la ventana desde fuera (los botones de «Ir directo a» con la guía cerrada)
-export const ABRIR_CANDADO = 'gu:abrir-candado'
-
-// La ventana tutea (pedido de Alejandro); el texto de las guías sigue de usted
+// El cuadro tutea (pedido de Alejandro); el texto de las guías sigue de usted
 const SIN_CONEXION = 'No pudimos enviar tus datos. Revisa tu conexión e intenta de nuevo.'
 const SITIO_NUEVO = 'El sitio se acaba de actualizar. Recarga la página e intenta de nuevo.'
 
@@ -152,15 +148,13 @@ function Telefono(props: {
 
 const CAMPO_DEL_PASO = { 1: 'gu-nombre', 2: 'gu-whatsapp', 3: 'gu-correo' } as const
 
-// El final de lo abierto: bloques borrosos de lo que sigue, el botón «Ver todo» y la ventana con el
-// registro. Lo de atrás es de mentira: el texto real no está en la página hasta registrarse.
-// La ventana pide un dato a la vez (pedido de Alejandro: todo junto asustaba): 1) el nombre completo,
-// con la foto y lo que trae la guía; 2) el WhatsApp, con el país ya puesto en el de la persona; 3) el
-// correo y la aceptación, con el botón propio de la guía.
-// Los tres campos viven en el mismo formulario (los pasos ocultos también se envían) y solo el último
-// va al servidor; los dos primeros se revisan aquí antes de seguir.
+// El candado de las guías que piden datos (contenido descargable): la página es solo este cuadro, sin
+// adelanto del texto (pedido de Alejandro: «si les interesa, que dejen sus datos; si no, ni modo»).
+// Pide un dato a la vez (todo junto asustaba): 1) el nombre completo, con la foto y lo que trae la
+// guía; 2) el WhatsApp, con el país ya puesto en el de la persona; 3) el correo y la aceptación, con el
+// botón propio de la guía. Los tres campos viven en el mismo formulario (los pasos ocultos también se
+// envían) y solo el último va al servidor; los dos primeros se revisan aquí antes de seguir.
 export function Candado({ slug, titulo, incluye, imagen, boton, origen, pais }: Props) {
-  const dialogo = useRef<HTMLDialogElement>(null)
   const [estado, enviar, enviando] = useActionState(aSalvo(desbloquear.bind(null, slug)), {} as EstadoCandado)
   const [estadoCorreo, entrar, entrando] = useActionState(aSalvo(ingresarConCorreo.bind(null, slug)), {} as EstadoCandado)
   const [conCorreo, setConCorreo] = useState(false)
@@ -199,7 +193,7 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen, pais }: 
     requestAnimationFrame(() => document.getElementById(aCorreo ? 'gu-correo-ingreso' : CAMPO_DEL_PASO[paso])?.focus())
   }
 
-  // Si el servidor devuelve errores, la ventana vuelve al primer paso que tenga uno y el foco va a ese
+  // Si el servidor devuelve errores, el cuadro vuelve al primer paso que tenga uno y el foco va a ese
   // campo (el lector de pantalla lo lee)
   useEffect(() => {
     const p = pasoConError(estado.errores)
@@ -214,294 +208,158 @@ export function Candado({ slug, titulo, incluye, imagen, boton, origen, pais }: 
     if (estadoCorreo.error) document.getElementById('gu-correo-ingreso')?.focus()
   }, [estadoCorreo])
 
-  const cta = useRef<HTMLDivElement>(null)
-  const soltarScroll = useRef<(() => void) | null>(null)
-  const restaurando = useRef(false) // el salto de soltar el bloqueo no cuenta como scroll de la persona
-  const enFondo = useRef(false)
-  const encabezado = useRef<HTMLHeadingElement>(null)
-  const pasos = useRef<HTMLParagraphElement>(null)
-
-  // Con la ventana abierta la página de atrás no se mueve.
-  // - Computadora: overflow: hidden en el body y nada más, así la página se queda donde estaba (fijar el
-  //   body la hacía saltar en Safari). Con barras de scroll clásicas, scrollbar-gutter guarda el lugar de
-  //   la barra para que la página no se corra; donde no existe (Safari antes de 18.2), un relleno igual.
-  // - Pantalla táctil (iOS no respeta el overflow): además el body queda fijo donde estaba, y al cerrar
-  //   vuelve al mismo punto de golpe, sin la animación del scroll suave del sitio.
-  const abrir = () => {
-    const d = dialogo.current
-    if (!d || d.open) return
-    const y = window.scrollY
-    const barra = window.innerWidth - document.documentElement.clientWidth
-    try {
-      d.showModal()
-    } catch {
-      return // sin <dialog> (iOS 15.3 o antes): mejor no bloquear nada que dejar la página congelada
-    }
-    const html = document.documentElement.style
-    const b = document.body.style
-    const antes = { gutter: html.scrollbarGutter, overflow: b.overflow, paddingRight: b.paddingRight, position: b.position, top: b.top, left: b.left, right: b.right, width: b.width }
-    const tactil = window.matchMedia('(pointer: coarse)').matches
-    html.scrollbarGutter = 'stable'
-    if (barra > 0 && !CSS.supports('scrollbar-gutter: stable')) b.paddingRight = `${barra}px`
-    b.overflow = 'hidden'
-    if (tactil) Object.assign(b, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' })
-    soltarScroll.current = () => {
-      restaurando.current = true
-      const { gutter, ...body } = antes
-      Object.assign(b, body)
-      html.scrollbarGutter = gutter
-      if (tactil) deGolpe(() => window.scrollTo(0, y))
-      soltarScroll.current = null
-      setTimeout(() => {
-        restaurando.current = false
-      }, 400)
-    }
-    // El foco va al título (o, si en el teléfono no se ve porque va en otro paso, a «Paso 2 de 3») y
-    // no a la X: así no sale el anillo de foco sobre la X al abrirse sola, no se abre el teclado, y
-    // quien usa lector de pantalla oye primero de qué se trata
-    const titulo = encabezado.current
-    ;(titulo && titulo.offsetParent !== null ? titulo : pasos.current)?.focus({ preventScroll: true })
-  }
-
-  useEffect(() => {
-    const d = dialogo.current
-    const alCerrar = () => soltarScroll.current?.()
-    d?.addEventListener('close', alCerrar)
-    window.addEventListener(ABRIR_CANDADO, abrir)
-    return () => {
-      d?.removeEventListener('close', alCerrar)
-      window.removeEventListener(ABRIR_CANDADO, abrir)
-      soltarScroll.current?.() // si la página se va con la ventana abierta (al registrarse), el scroll vuelve
-    }
-  }, [])
-
-  // La ventana se abre sola cada vez que la persona llega con el scroll hasta el «Ver todo». Si la
-  // cierra, vuelve a salir en cuanto el candado sale de la pantalla y vuelve a entrar. Todo se decide
-  // con el scroll de la persona (no al cargar sin bajar, ni con el salto de soltar el bloqueo).
-  useEffect(() => {
-    const objetivo = cta.current
-    const d = dialogo.current
-    if (!objetivo || !d) return
-    let bajo = false
-    let armada = true
-    const alCerrar = () => {
-      armada = false // tiene que salir de la pantalla y volver a entrar
-    }
-    const alScroll = () => {
-      if (d.open || restaurando.current) return
-      if (window.scrollY > 40) bajo = true
-      const r = objetivo.getBoundingClientRect()
-      const h = window.innerHeight
-      if (r.bottom < 0 || r.top > h) armada = true
-      else if (armada && bajo && r.top < h * 0.8 && r.bottom > h * 0.2) {
-        armada = false
-        abrir()
-      }
-    }
-    d.addEventListener('close', alCerrar)
-    window.addEventListener('scroll', alScroll, { passive: true })
-    return () => {
-      d.removeEventListener('close', alCerrar)
-      window.removeEventListener('scroll', alScroll)
-    }
-  }, [])
-
   return (
-    <div id="guia" className="gu-candado">
-      <div className="gu-velo" aria-hidden="true">
-        <span className="gu-velo__titulo" />
-        <span className="gu-velo__linea" style={{ width: '94%' }} />
-        <span className="gu-velo__linea" style={{ width: '88%' }} />
-        <span className="gu-velo__linea" style={{ width: '72%' }} />
-        <span className="gu-velo__tarjeta">
-          <span className="gu-velo__linea" style={{ width: '60%' }} />
-          <span className="gu-velo__codigo" />
-          <span className="gu-velo__imagen" />
-        </span>
-        <span className="gu-velo__linea" style={{ width: '90%' }} />
-        <span className="gu-velo__linea" style={{ width: '66%' }} />
-      </div>
-
-      <div ref={cta} className="gu-candado__cta">
-        <button type="button" className="hm-btn hm-btn--solid gu-ver-todo" onClick={abrir}>
-          Ver todo
-        </button>
-        <p>Es gratis: te pedimos tus datos una sola vez.</p>
-      </div>
-
-      <dialog
-        ref={dialogo}
-        className="gu-dialogo"
-        data-paso={conCorreo ? 'correo' : paso}
-        aria-labelledby="gu-dialogo-titulo"
-        onPointerDown={(e) => {
-          enFondo.current = e.target === dialogo.current
-        }}
-        onClick={(e) => {
-          // Clic afuera de la caja; no cuenta si empezó adentro (seleccionar texto y soltar afuera)
-          if (enFondo.current && e.target === dialogo.current) dialogo.current.close()
-        }}
-      >
-        <div className="gu-dialogo__caja">
-          <button type="button" className="gu-cerrar" aria-label="Cerrar" onClick={() => dialogo.current?.close()}>
-            ×
-          </button>
-          {/* La foto va pegada arriba (solo la caja tiene las esquinas redondeadas). En la computadora
-              son dos columnas: la foto con lo que trae la guía, y los pasos. La foto es la misma de
-              arriba con el mismo sizes (y priority, igual que arriba: Next las distingue por la
-              dirección): sale de la caché, no se descarga dos veces */}
-          <div className="gu-dialogo__info">
-            {imagen && (
-              <div className="gu-dialogo__foto">
-                <Image src={imagen} alt="" width={1080} height={1350} sizes={TAMANOS_PORTADA} priority />
-              </div>
-            )}
-            <div className="gu-dialogo__presenta">
-              <p className="hm-eyebrow">Guía completa · gratis</p>
-              <h2 id="gu-dialogo-titulo" ref={encabezado} tabIndex={-1}>
-                Mira la guía completa
-              </h2>
-              <p className="gu-dialogo__guia">{titulo}</p>
-              {incluye.length > 0 && (
-                <ul className="gu-incluye">
-                  {incluye.map((i) => (
-                    <li key={i}>{i}</li>
-                  ))}
-                </ul>
-              )}
+    <section className="gu-puerta" aria-labelledby="gu-cuadro-titulo">
+      {/* La foto va pegada arriba (solo el cuadro tiene las esquinas redondeadas). En la computadora
+          son dos columnas: la foto con lo que trae la guía, y los pasos */}
+      <div className="gu-cuadro" data-paso={conCorreo ? 'correo' : paso}>
+        <div className="gu-cuadro__info">
+          {imagen && (
+            <div className="gu-cuadro__foto">
+              <Image src={imagen} alt="" width={1080} height={1350} sizes={TAMANOS_CUADRO} priority />
             </div>
+          )}
+          <div className="gu-cuadro__presenta">
+            <p className="hm-eyebrow">Guía completa · gratis</p>
+            <h1 id="gu-cuadro-titulo">Mira la guía completa</h1>
+            <p className="gu-cuadro__guia">{titulo}</p>
+            {incluye.length > 0 && (
+              <ul className="gu-incluye">
+                {incluye.map((i) => (
+                  <li key={i}>{i}</li>
+                ))}
+              </ul>
+            )}
           </div>
+        </div>
 
-          <div className="gu-dialogo__form">
-            {!conCorreo ? (
-              <form action={enviar} onSubmit={alEnviar} className="gu-form" noValidate>
-                <input type="hidden" name="origen" value={origen ?? 'web'} />
-                {/* Campo trampa para bots: una persona no lo ve ni lo llena. Nombre neutro para que
-                    ningún gestor de contraseñas lo autocomplete y deje fuera a alguien real */}
-                <div className="gu-trampa" aria-hidden="true">
-                  <label>
-                    Deje este campo vacío
-                    <input name="hp_extra" tabIndex={-1} autoComplete="off" />
-                  </label>
-                </div>
-                <p ref={pasos} className="gu-pasos" tabIndex={-1} aria-live="polite">
-                  Paso {paso} de 3
-                </p>
+        <div className="gu-cuadro__form">
+          {!conCorreo ? (
+            <form action={enviar} onSubmit={alEnviar} className="gu-form" noValidate>
+              <input type="hidden" name="origen" value={origen ?? 'web'} />
+              {/* Campo trampa para bots: una persona no lo ve ni lo llena. Nombre neutro para que
+                  ningún gestor de contraseñas lo autocomplete y deje fuera a alguien real */}
+              <div className="gu-trampa" aria-hidden="true">
+                <label>
+                  Deje este campo vacío
+                  <input name="hp_extra" tabIndex={-1} autoComplete="off" />
+                </label>
+              </div>
+              <p className="gu-pasos" aria-live="polite">
+                Paso {paso} de 3
+              </p>
 
-                <div className="gu-paso-form" hidden={paso !== 1}>
-                  <Pregunta
-                    name="nombre"
-                    pregunta="¿Cuál es tu nombre?"
-                    autoComplete="name"
-                    enterKeyHint="next"
-                    placeholder="Nombre y apellido"
-                    defaultValue={estado.valores?.nombre}
-                    error={paso === 1 && aviso ? aviso : estado.errores?.nombre}
-                    onChange={() => setAviso(null)}
-                  />
-                </div>
+              <div className="gu-paso-form" hidden={paso !== 1}>
+                <Pregunta
+                  name="nombre"
+                  pregunta="¿Cuál es tu nombre?"
+                  autoComplete="name"
+                  enterKeyHint="next"
+                  placeholder="Nombre y apellido"
+                  defaultValue={estado.valores?.nombre}
+                  error={paso === 1 && aviso ? aviso : estado.errores?.nombre}
+                  onChange={() => setAviso(null)}
+                />
+              </div>
 
-                <div className="gu-paso-form" hidden={paso !== 2}>
-                  {primerNombre && <p className="gu-saludo">Mucho gusto, {primerNombre}.</p>}
-                  <Telefono
-                    pais={paisWa}
-                    numero={numeroWa}
-                    error={paso === 2 && aviso ? aviso : estado.errores?.whatsapp}
-                    alCambiarPais={(iso) => {
-                      setPaisWa(iso)
-                      setAviso(null)
-                    }}
-                    alCambiarNumero={(v) => {
-                      setNumeroWa(v)
-                      setAviso(null)
-                    }}
-                    ejemplo={datosPaisWa?.ejemplo}
-                  />
-                  {/* Lo que va al servidor: el número completo con el código del país */}
-                  <input type="hidden" name="whatsapp" value={whatsapp ?? numeroWa} />
-                </div>
+              <div className="gu-paso-form" hidden={paso !== 2}>
+                {primerNombre && <p className="gu-saludo">Mucho gusto, {primerNombre}.</p>}
+                <Telefono
+                  pais={paisWa}
+                  numero={numeroWa}
+                  error={paso === 2 && aviso ? aviso : estado.errores?.whatsapp}
+                  alCambiarPais={(iso) => {
+                    setPaisWa(iso)
+                    setAviso(null)
+                  }}
+                  alCambiarNumero={(v) => {
+                    setNumeroWa(v)
+                    setAviso(null)
+                  }}
+                  ejemplo={datosPaisWa?.ejemplo}
+                />
+                {/* Lo que va al servidor: el número completo con el código del país */}
+                <input type="hidden" name="whatsapp" value={whatsapp ?? numeroWa} />
+              </div>
 
-                <div className="gu-paso-form" hidden={paso !== 3}>
-                  <Pregunta
-                    name="correo"
-                    pregunta="Último paso: ¿cuál es tu correo?"
-                    detalle="Con él entras a todas las guías de Bralto, desde cualquier aparato."
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    enterKeyHint="go"
-                    defaultValue={estado.valores?.correo}
-                    error={estado.errores?.correo}
-                  />
-                  <div className="gu-acepta">
-                    <input
-                      id="gu-acepta"
-                      type="checkbox"
-                      name="acepta"
-                      defaultChecked={estado.valores?.acepta}
-                      aria-invalid={estado.errores?.acepta ? true : undefined}
-                      aria-describedby={estado.errores?.acepta ? 'gu-acepta-error' : undefined}
-                    />
-                    <label htmlFor="gu-acepta">
-                      Acepto la{' '}
-                      <a href="/es/privacidad" target="_blank" rel="noopener">
-                        política de privacidad
-                      </a>{' '}
-                      y que Bralto me escriba por correo o WhatsApp.
-                    </label>
-                  </div>
-                  {estado.errores?.acepta && (
-                    <p id="gu-acepta-error" className="gu-error">
-                      {estado.errores.acepta}
-                    </p>
-                  )}
-                  {estado.error && (
-                    <p className="gu-error" role="alert">
-                      {estado.error}
-                    </p>
-                  )}
-                </div>
-
-                <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={enviando}>
-                  {paso < 3 ? 'Siguiente' : enviando ? 'Abriendo la guía…' : (boton ?? 'Ver la guía completa')}
-                </button>
-                {paso === 1 ? (
-                  <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(true)}>
-                    ¿Ya te registraste? Entra con tu correo
-                  </button>
-                ) : (
-                  <button type="button" className="gu-cambiar" onClick={() => irAPaso(paso === 3 ? 2 : 1)}>
-                    ← Volver
-                  </button>
-                )}
-              </form>
-            ) : (
-              <form action={entrar} className="gu-form" noValidate>
-                <p ref={pasos} className="gu-pasos" tabIndex={-1}>
-                  Ya registrado
-                </p>
+              <div className="gu-paso-form" hidden={paso !== 3}>
                 <Pregunta
                   name="correo"
-                  id="gu-correo-ingreso"
-                  pregunta="¿Con qué correo te registraste?"
+                  pregunta="Último paso: ¿cuál es tu correo?"
+                  detalle="Con él entras a todas las guías de Bralto, desde cualquier aparato."
                   type="email"
                   inputMode="email"
                   autoComplete="email"
                   enterKeyHint="go"
-                  defaultValue={estadoCorreo.valores?.correo}
-                  error={estadoCorreo.error}
+                  defaultValue={estado.valores?.correo}
+                  error={estado.errores?.correo}
                 />
-                <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={entrando}>
-                  {entrando ? 'Buscando…' : 'Entrar'}
+                <div className="gu-acepta">
+                  <input
+                    id="gu-acepta"
+                    type="checkbox"
+                    name="acepta"
+                    defaultChecked={estado.valores?.acepta}
+                    aria-invalid={estado.errores?.acepta ? true : undefined}
+                    aria-describedby={estado.errores?.acepta ? 'gu-acepta-error' : undefined}
+                  />
+                  <label htmlFor="gu-acepta">
+                    Acepto la{' '}
+                    <a href="/es/privacidad" target="_blank" rel="noopener">
+                      política de privacidad
+                    </a>{' '}
+                    y que Bralto me escriba por correo o WhatsApp.
+                  </label>
+                </div>
+                {estado.errores?.acepta && (
+                  <p id="gu-acepta-error" className="gu-error">
+                    {estado.errores.acepta}
+                  </p>
+                )}
+                {estado.error && (
+                  <p className="gu-error" role="alert">
+                    {estado.error}
+                  </p>
+                )}
+              </div>
+
+              <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={enviando}>
+                {paso < 3 ? 'Siguiente' : enviando ? 'Abriendo la guía…' : (boton ?? 'Ver la guía completa')}
+              </button>
+              {paso === 1 ? (
+                <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(true)}>
+                  ¿Ya te registraste? Entra con tu correo
                 </button>
-                <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(false)}>
-                  Es mi primera vez
+              ) : (
+                <button type="button" className="gu-cambiar" onClick={() => irAPaso(paso === 3 ? 2 : 1)}>
+                  ← Volver
                 </button>
-              </form>
-            )}
-          </div>
+              )}
+            </form>
+          ) : (
+            <form action={entrar} className="gu-form" noValidate>
+              <p className="gu-pasos">Ya registrado</p>
+              <Pregunta
+                name="correo"
+                id="gu-correo-ingreso"
+                pregunta="¿Con qué correo te registraste?"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="go"
+                defaultValue={estadoCorreo.valores?.correo}
+                error={estadoCorreo.error}
+              />
+              <button type="submit" className="hm-btn hm-btn--solid gu-enviar" disabled={entrando}>
+                {entrando ? 'Buscando…' : 'Entrar'}
+              </button>
+              <button type="button" className="gu-cambiar" onClick={() => cambiarFormulario(false)}>
+                Es mi primera vez
+              </button>
+            </form>
+          )}
         </div>
-      </dialog>
-    </div>
+      </div>
+    </section>
   )
 }
