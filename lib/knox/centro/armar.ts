@@ -262,6 +262,11 @@ const tipoPost = (tipo: string) => TIPO_POST[tipo] ?? 'Post'
 // Lo de hoy (día de Costa Rica): citas, lo que sale en redes y las tareas que vencen, en orden de hora
 export function tuDia(o: { citas: CitaDia[]; posts: PostDia[]; tareas: TareaDia[] }, ahora: Date): ItemDia[] {
   const hoy = hoyCR(ahora)
+  return itemsAgenda(o).filter((i) => diaCR(i.en) === hoy)
+}
+
+// Citas, posts (sin los cancelados) y tareas juntos, en orden de hora (de cualquier día)
+export function itemsAgenda(o: { citas: CitaDia[]; posts: PostDia[]; tareas: TareaDia[] }): ItemDia[] {
   const items: ItemDia[] = [
     ...o.citas.map((c): ItemDia => ({ tipo: 'cita', en: c.inicio, titulo: c.titulo, detalle: null, hecho: false, fallo: false })),
     ...o.posts
@@ -280,7 +285,7 @@ export function tuDia(o: { citas: CitaDia[]; posts: PostDia[]; tareas: TareaDia[
       (t): ItemDia => ({ tipo: 'tarea', en: t.vence_en, titulo: t.titulo, detalle: t.contacto ? `Tarea · ${t.contacto}` : null, hecho: t.hecha, fallo: false }),
     ),
   ]
-  return items.filter((i) => diaCR(i.en) === hoy).sort((a, b) => Date.parse(a.en) - Date.parse(b.en))
+  return items.sort((a, b) => Date.parse(a.en) - Date.parse(b.en))
 }
 
 export type EstadoItem = { texto: string; clase: 'hecho' | 'pronto' | 'luego' | 'alerta' }
