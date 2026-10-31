@@ -412,10 +412,16 @@ export const MODO_CENTRO: Record<ModoKnox, { nombre: string; detalle: string }> 
 }
 
 // Cuántas fuentes revisó el reporte: son 6 (dólar, redes, leads, agenda, mensajes y contenido)
-export const FUENTES_DEL_REPORTE = 6
-export const fuentesRevisadas = (faltan: string[] | null | undefined) => Math.max(0, FUENTES_DEL_REPORTE - (faltan?.length ?? 0))
+// Cuántas fuentes revisó el reporte: las que trae `datos` (6 en los viejos, 7 desde que lee el correo) menos las que
+// no respondieron
+export function fuentesRevisadas(datos: Record<string, unknown> | null | undefined): number {
+  if (!datos) return 0
+  const faltan = Array.isArray(datos.faltan) ? datos.faltan.length : 0
+  return Math.max(0, Object.keys(datos).filter((k) => k !== 'faltan').length - faltan)
+}
 
-// Knox vuelve a revisar al abrir si el último reporte es de otro día o tiene más de 5 horas
+// Knox vuelve a revisar al abrir si el último reporte es de otro día o tiene más de una hora
+export const VIGENCIA_REPORTE_MS = HORA
 export function reporteViejo(r: { fecha: string; creadoEn: string }, ahora: Date): boolean {
-  return r.fecha !== hoyCR(ahora) || ahora.getTime() - Date.parse(r.creadoEn) > 5 * HORA
+  return r.fecha !== hoyCR(ahora) || ahora.getTime() - Date.parse(r.creadoEn) > VIGENCIA_REPORTE_MS
 }

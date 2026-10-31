@@ -16,6 +16,8 @@ import {
   visibles,
 } from '@/lib/knox/centro/armar'
 import { colones, compacto, diaCorto, diaYHora, entero, fechaCabecera, hace, hora, reloj, tituloDia } from '@/lib/knox/centro/formato'
+import { etiquetaCorreo } from '@/lib/knox/centro/conexiones'
+import { caben } from '@/lib/knox/centro/escena'
 import type { Centro, Conexion, Dia, Embudo as DatosEmbudo, Esperando as DatosEsperando, Instagram as DatosInstagram, Mejor as DatosMejor, Pulso as DatosPulso } from '@/lib/knox/centro/tipos'
 import type { CanalKnox } from '@/lib/knox/conversar/tipos'
 import { sumarDias } from '@/lib/calendario/fechas'
@@ -120,7 +122,7 @@ export function Clientes({ datos, habla }: { datos: Centro['clientes']; habla: b
   const max = Math.max(1, ...(datos?.porCanal.map((c) => c.total) ?? [0]))
   const n = datos?.puntos.length ?? 0
   return (
-    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ top: 0, height: 280 }}>
+    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ flex: '280 1 0px' }}>
       <div className="ph">
         <span className="ix">01</span>
         <span className="pt">Clientes nuevos</span>
@@ -205,10 +207,12 @@ export function Clientes({ datos, habla }: { datos: Centro['clientes']; habla: b
 
 // 02 · Te están esperando ---------------------------------------------------------------------------------------------
 
-export function Esperando({ datos, ahora, habla }: { datos: DatosEsperando | null; ahora: Date | null; habla: boolean }) {
-  const caliente = datos ? filaCaliente(datos.conversaciones) : -1
+// alto: el del panel (con más alto caben más conversaciones)
+export function Esperando({ datos, ahora, habla, alto }: { datos: DatosEsperando | null; ahora: Date | null; habla: boolean; alto: number }) {
+  const lista = datos ? datos.conversaciones.slice(0, caben.esperando(alto)) : []
+  const caliente = filaCaliente(lista)
   return (
-    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ top: 298, height: 268, display: 'flex', flexDirection: 'column' }}>
+    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ flex: '268 1 0px' }}>
       <div className="ph">
         <span className="ix">02</span>
         <span className="pt">Te están esperando</span>
@@ -223,7 +227,7 @@ export function Esperando({ datos, ahora, habla }: { datos: DatosEsperando | nul
           ¡Vas al día!
         </div>
       ) : (
-        datos.conversaciones.map((c, i) => (
+        lista.map((c, i) => (
           <a key={c.id} className={`msg${i === caliente ? ' hot' : ''}`} href={`/crm/mensajes/${c.id}`}>
             <div className="ini">{c.iniciales}</div>
             <div style={{ minWidth: 0 }}>
@@ -257,7 +261,7 @@ export function Embudo({ datos }: { datos: DatosEmbudo | null }) {
     ['ganados', 'Ganados'],
   ]
   return (
-    <div className="glass hud panel" style={{ top: 584, height: 174 }}>
+    <div className="glass hud panel" style={{ flex: '174 1 0px' }}>
       <div className="ph">
         <span className="ix">03</span>
         <span className="pt">
@@ -281,14 +285,15 @@ export function Embudo({ datos }: { datos: DatosEmbudo | null }) {
 
 // 04 · Instagram -------------------------------------------------------------------------------------------------------
 
-function Linea({ serie, desde }: { serie: number[] | null; desde: string | null }) {
-  const W = 412
-  const H = 70
+// La línea de seguidores. ancho y alto: los del dibujo (sin las fechas de abajo); id: para no repetir los de los degradados
+export function Linea({ serie, desde, ancho = 412, alto = 70, id = 'ig' }: { serie: number[] | null; desde: string | null; ancho?: number; alto?: number; id?: string }) {
+  const W = ancho
+  const H = alto
   const pad = 4
   const guias = [0, 1, 2].map((i) => 4 + (i * (H - 4)) / 2)
   if (!serie || serie.length < 2 || !desde) {
     return (
-      <svg width={W} height={86} className="spark" aria-hidden>
+      <svg width={W} height={H + 16} className="spark" aria-hidden>
         {guias.map((y) => (
           <line key={y} x1="0" x2={W} y1={f(y)} y2={f(y)} stroke="#fff" strokeOpacity=".05" />
         ))}
@@ -308,23 +313,23 @@ function Linea({ serie, desde }: { serie: number[] | null; desde: string | null 
   const medio = Math.round((n - 1) / 2)
   const [lx, ly] = puntos[n - 1]
   return (
-    <svg width={W} height={86} className="spark" aria-hidden>
+    <svg width={W} height={H + 16} className="spark" aria-hidden>
       <defs>
-        <linearGradient id="kc-ar" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`kc-ar-${id}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity=".16" />
           <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
-        <filter id="kc-sg" x="-200%" y="-200%" width="500%" height="500%">
+        <filter id={`kc-sg-${id}`} x="-200%" y="-200%" width="500%" height="500%">
           <feGaussianBlur stdDeviation="3" />
         </filter>
       </defs>
       {guias.map((y) => (
         <line key={y} x1="0" x2={W} y1={f(y)} y2={f(y)} stroke="#fff" strokeOpacity=".05" />
       ))}
-      <path d={`${linea}L${f(X(n - 1))} ${H}L${f(X(0))} ${H}Z`} fill="url(#kc-ar)" />
+      <path d={`${linea}L${f(X(n - 1))} ${H}L${f(X(0))} ${H}Z`} fill={`url(#kc-ar-${id})`} />
       <path d={linea} fill="none" stroke="#f4f4f4" strokeWidth="1.6" />
       <circle cx={f(lx)} cy={f(ly)} r="9" fill={NARANJA} fillOpacity=".18" />
-      <circle cx={f(lx)} cy={f(ly)} r="4" fill={NARANJA} filter="url(#kc-sg)" />
+      <circle cx={f(lx)} cy={f(ly)} r="4" fill={NARANJA} filter={`url(#kc-sg-${id})`} />
       <circle cx={f(lx)} cy={f(ly)} r="4" fill={NARANJA} stroke="#0b0b0b" strokeWidth="1.5" />
       {(
         [
@@ -343,9 +348,10 @@ function Linea({ serie, desde }: { serie: number[] | null; desde: string | null 
 
 const cifra = (v: number | null | undefined) => (typeof v === 'number' ? compacto(v) : RAYA)
 
-export function Instagram({ datos, habla }: { datos: DatosInstagram | null; habla: boolean }) {
+// alto: el del panel (lo que crece, lo toma la línea)
+export function Instagram({ datos, habla, alto }: { datos: DatosInstagram | null; habla: boolean; alto: number }) {
   return (
-    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ top: 0, height: 290 }}>
+    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ flex: '290 1 0px' }}>
       <div className="ph">
         <span className="ix">04</span>
         <span className="pt">
@@ -361,7 +367,7 @@ export function Instagram({ datos, habla }: { datos: DatosInstagram | null; habl
           <span style={{ color: 'var(--ink)' }}>{typeof datos?.semana === 'number' ? `+${entero(datos.semana)}` : RAYA}</span> esta semana
         </div>
       </div>
-      <Linea serie={datos?.serie ?? null} desde={datos?.desde ?? null} />
+      <Linea serie={datos?.serie ?? null} desde={datos?.desde ?? null} alto={Math.max(70, 70 + alto - 290)} />
       <div className="stats">
         <div className="inset">
           <b>{cifra(datos?.vistas)}</b>
@@ -415,7 +421,7 @@ export function Mejor({ datos, habla }: { datos: DatosMejor | false | null; habl
   const barras = datos ? barrasMejor(datos) : null
   const frase = datos ? fraseMejor(datos) : null
   return (
-    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ top: 308, height: 208 }}>
+    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ flex: '208 1 0px' }}>
       <div className="ph">
         <span className="ix">05</span>
         <span className="pt">El que más gustó</span>
@@ -463,10 +469,11 @@ export function Mejor({ datos, habla }: { datos: DatosMejor | false | null; habl
 
 // 06 · Tu día ----------------------------------------------------------------------------------------------------------
 
-export function TuDia({ datos, ahora, habla }: { datos: Dia | null; ahora: Date | null; habla: boolean }) {
+export function TuDia({ datos, ahora, habla, alto }: { datos: Dia | null; ahora: Date | null; habla: boolean; alto: number }) {
   const momento = ahora ?? new Date(0)
   const items = datos?.items ?? []
-  const vis = ahora ? visibles(items, momento) : items.slice(0, 4)
+  const cupo = caben.dia(alto)
+  const vis = ahora ? visibles(items, momento, cupo) : items.slice(0, cupo)
   const etiqueta = !datos
     ? RAYA
     : datos.faltan.length === 1
@@ -477,7 +484,7 @@ export function TuDia({ datos, ahora, habla }: { datos: Dia | null; ahora: Date 
           ? `${ahora ? listos(items, momento) : 0} de ${items.length} ${items.length === 1 ? 'lista' : 'listas'}`
           : 'Libre'
   return (
-    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ top: 534, height: 224 }}>
+    <div className={`glass hud panel${habla ? ' habla' : ''}`} style={{ flex: '224 1 0px' }}>
       <div className="ph">
         <span className="ix">06</span>
         <span className="pt">Tu día</span>
@@ -517,8 +524,9 @@ const ICONO = {
   propuesta: '<path d="M14 5H8.5A1.5 1.5 0 0 0 7 6.5v11A1.5 1.5 0 0 0 8.5 19h7a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 5v3h3"/>',
 }
 
-function PulsoSvg({ datos, ahora }: { datos: DatosPulso; ahora: Date }) {
-  const W = 1280
+// ancho: el del dibujo (el lienzo menos los dos bloques de los lados)
+function PulsoSvg({ datos, ahora, ancho }: { datos: DatosPulso; ahora: Date; ancho: number }) {
+  const W = ancho
   const base = 88
   const X = (h: number) => 14 + ((h - 6) * (W - 48)) / 17
   const centro = (k: number) => 6.25 + k / 2
@@ -570,7 +578,7 @@ function PulsoSvg({ datos, ahora }: { datos: DatosPulso; ahora: Date }) {
   }
 
   return (
-    <svg className="pulso-svg" viewBox="0 0 1280 126" aria-label="Actividad de hoy">
+    <svg className="pulso-svg" viewBox={`0 0 ${W} 126`} aria-label="Actividad de hoy">
       <defs>
         <linearGradient id="kc-pa" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity=".18" />
@@ -653,18 +661,19 @@ function PulsoSvg({ datos, ahora }: { datos: DatosPulso; ahora: Date }) {
 
 const ESTADO_CONEXION: Record<Exclude<Conexion, null>, string> = { conectado: '', caido: 'Sin conexión', 'por-conectar': 'Por conectar' }
 
-function FilaConexion({ nombre, estado, bien }: { nombre: string; estado: Conexion | undefined; bien: string }) {
+// etiqueta: lo que dice a la derecha, si no es lo de siempre (el correo: «Conectado (2)» o «1 de 2»)
+function FilaConexion({ nombre, estado, bien, etiqueta }: { nombre: string; estado: Conexion | undefined; bien: string; etiqueta?: string | null }) {
   const malo = estado === 'caido' || estado === 'por-conectar'
   return (
     <div>
       <i className={estado == null ? 'x' : malo ? 'p' : undefined} />
       {nombre}
-      <span className={malo ? 'p' : undefined}>{estado == null ? RAYA : estado === 'conectado' ? bien : ESTADO_CONEXION[estado]}</span>
+      <span className={malo ? 'p' : undefined}>{estado == null ? RAYA : (etiqueta ?? (estado === 'conectado' ? bien : ESTADO_CONEXION[estado]))}</span>
     </div>
   )
 }
 
-export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexiones'] | null; ahora: Date | null; destello: boolean }) {
+export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexiones'] | null; ahora: Date | null; destello: boolean; ancho: number }) {
   const c = p.conexiones
   return (
     <footer className="glass hud pulse">
@@ -681,7 +690,7 @@ export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexio
       </div>
       <div className="vline" style={{ left: 258 }} />
       {p.datos && p.ahora ? (
-        <PulsoSvg datos={p.datos} ahora={p.ahora} />
+        <PulsoSvg datos={p.datos} ahora={p.ahora} ancho={p.ancho - 640} />
       ) : (
         <div className="pulso-vacio vacio">{RAYA}</div>
       )}
@@ -695,7 +704,7 @@ export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexio
           <FilaConexion nombre="Instagram" estado={c?.instagram} bien="Conectado" />
           <FilaConexion nombre="WhatsApp" estado={c?.whatsapp} bien="Conectado" />
           <FilaConexion nombre="Sitio web" estado={c?.sitio} bien="En línea" />
-          <FilaConexion nombre="Correo" estado={c?.correo} bien="Conectado" />
+          <FilaConexion nombre="Correo" estado={c?.correo} bien="Conectado" etiqueta={etiquetaCorreo(c?.correoCuentas)} />
         </div>
       </div>
     </footer>

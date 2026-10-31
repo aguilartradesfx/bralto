@@ -45,12 +45,14 @@
 .kc svg { overflow: visible; display: inline; }
 .kc :focus-visible { outline: 2px solid rgba(255, 109, 40, .7); outline-offset: 3px; }
 
+/* El lienzo toma la forma de la ventana (lib/knox/centro/escena.ts): 1920 de ancho y el alto que haga falta, o 1080 de
+   alto y el ancho que haga falta. Las medidas las deja el script de la página antes del primer pintado */
 .kc .lienzo {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 1920px;
-  height: 1080px;
+  width: var(--kc-ancho, 1920px);
+  height: var(--kc-alto, 1080px);
   overflow: hidden;
   background: var(--bg);
   transform: translate(-50%, -50%) scale(var(--kc-escala, 1));
@@ -63,14 +65,14 @@
 .kc .kc-svgsora { font-family: var(--sora); }
 
 /* ---------- Fondo ---------- */
-.kc .polvo { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.kc .polvo { position: absolute; inset: 0; width: 100%; height: 100%; }
 .kc .orb { position: absolute; border-radius: 50%; pointer-events: none; }
 .kc .o1 { width: 1300px; height: 1300px; left: -420px; top: -640px; background: radial-gradient(closest-side, rgba(255, 255, 255, .15), transparent 74%); }
 .kc .o2 { width: 900px; height: 900px; right: -260px; top: 300px; background: radial-gradient(closest-side, rgba(255, 255, 255, .09), transparent 70%); }
 .kc .o3 { width: 1500px; height: 800px; left: 100px; bottom: -560px; background: radial-gradient(closest-side, rgba(210, 210, 210, .08), transparent 70%); transform: rotate(-12deg); }
 .kc .o4 { width: 2300px; height: 170px; left: -300px; top: 640px; background: radial-gradient(closest-side, rgba(255, 255, 255, .07), transparent 82%); transform: rotate(-14deg); }
 .kc .ocore {
-  width: 900px; height: 900px; left: 510px; top: -52px;
+  width: 900px; height: 900px; left: calc(50% - 450px); top: calc(var(--kc-extra, 0px) / 2 - 52px);
   background: radial-gradient(closest-side, rgba(255, 109, 40, .16), rgba(255, 109, 40, .05) 45%, transparent 72%);
   opacity: calc(.75 + .5 * var(--kc-nivel, 0));
 }
@@ -82,7 +84,7 @@
   -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, .4) 40%, transparent 80%);
   mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, .4) 40%, transparent 80%);
 }
-.kc .bg { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.kc .bg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .kc .grain {
   position: absolute; inset: 0; opacity: .075; mix-blend-mode: overlay; pointer-events: none; z-index: 50;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -153,13 +155,15 @@
 .kc .av i { position: absolute; right: 0; bottom: 1px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px #0b0b0b, 0 0 10px rgba(255, 109, 40, .9); }
 
 /* ---------- Columnas ---------- */
-.kc .col { position: absolute; top: 108px; bottom: 214px; width: 456px; z-index: 10; }
+/* Los paneles se reparten el alto de la columna en proporción a los del diseño (flex: <alto del diseño> 1 0) */
+.kc .col { position: absolute; top: 108px; bottom: 214px; width: 456px; z-index: 10; display: flex; flex-direction: column; gap: 18px; }
 .kc .left { left: 40px; }
 .kc .right { right: 40px; }
-.kc .col .glass { left: 0; right: 0; }
+.kc .col .glass { position: relative; min-height: 0; display: flex; flex-direction: column; }
+.kc .col .glass > .ph { flex: none; }
 
 /* 01 · radar */
-.kc .radar-wrap { display: flex; gap: 22px; align-items: center; }
+.kc .radar-wrap { display: flex; gap: 22px; align-items: center; flex: 1; }
 .kc .radar { position: relative; width: 196px; height: 196px; flex: none; }
 .kc .sweep {
   position: absolute; inset: 2px; border-radius: 50%; transform: rotate(38deg);
@@ -196,7 +200,7 @@
 .kc .lista-vacia { height: 154px; display: grid; place-items: center; text-align: center; }
 
 /* 03 · embudo */
-.kc .fun { display: grid; gap: 8px; }
+.kc .fun { display: grid; gap: 8px; flex: 1; align-content: center; }
 .kc .fun div { display: grid; grid-template-columns: 96px 1fr 30px; align-items: center; gap: 12px; font: 400 12px/1 var(--sora); color: var(--ink-2); }
 .kc .fun u { display: block; height: 15px; border-radius: 5px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04); position: relative; text-decoration: none; overflow: hidden; }
 .kc .fun u i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: linear-gradient(180deg, rgba(255, 255, 255, .95), rgba(205, 205, 205, .8)); transition: width .8s cubic-bezier(.2, .8, .2, 1); }
@@ -214,7 +218,7 @@
 .kc .stats span { display: block; font: 400 10.5px/1 var(--sora); color: var(--ink-3); margin-top: 6px; }
 
 /* 05 · el que más gustó */
-.kc .post { display: grid; grid-template-columns: 104px 1fr; gap: 18px; align-items: center; }
+.kc .post { display: grid; grid-template-columns: 104px 1fr; gap: 18px; align-items: center; align-content: center; flex: 1; }
 .kc .thumb {
   width: 104px; height: 130px; border-radius: 14px; position: relative; overflow: hidden; display: block;
   background: radial-gradient(120% 80% at 50% 110%, rgba(255, 109, 40, .55), rgba(255, 109, 40, .08) 55%, transparent 75%), linear-gradient(160deg, #1c1c1c, #070707);
@@ -253,7 +257,8 @@
 .kc .ai.pronto .st, .kc .ai.alerta .st { color: var(--accent); }
 
 /* ---------- Centro ---------- */
-.kc .center { position: absolute; top: 108px; bottom: 214px; left: 524px; right: 524px; z-index: 12; }
+/* El bloque de Knox (872×758) va en el medio: a lo ancho y en el alto que sobra entre la barra y el pulso */
+.kc .center { position: absolute; top: calc(108px + var(--kc-extra, 0px) / 2); left: calc(50% - 436px); width: 872px; height: 758px; z-index: 12; }
 .kc .core { position: absolute; left: 50%; top: 0; width: 580px; height: 580px; transform: translateX(-50%); }
 .kc .core > svg { position: absolute; inset: 0; }
 .kc .seg { transform-origin: 290px 290px; }
@@ -336,8 +341,8 @@
 .kc .pl-l { position: absolute; left: 26px; top: 22px; width: 220px; }
 .kc .pl-l .t2 { font: 200 30px/1.05 var(--sora); letter-spacing: -.03em; margin-top: 14px; }
 .kc .pl-l .t3 { font: 400 12px/1.4 var(--sora); color: var(--ink-3); margin-top: 8px; }
-.kc .pulso-svg { position: absolute; left: 276px; top: 18px; width: 1280px; height: 126px; }
-.kc .pulso-vacio { position: absolute; left: 276px; top: 18px; width: 1280px; height: 126px; display: grid; place-items: center; }
+.kc .pulso-svg { position: absolute; left: 276px; top: 18px; width: calc(var(--kc-ancho, 1920px) - 640px); height: 126px; }
+.kc .pulso-vacio { position: absolute; left: 276px; top: 18px; width: calc(var(--kc-ancho, 1920px) - 640px); height: 126px; display: grid; place-items: center; }
 .kc .pl-r { position: absolute; right: 24px; top: 22px; width: 236px; }
 /* «Conexiones» en la barra de arriba: la sección 08 se ilumina un momento */
 .kc .pl-r::after { content: ''; position: absolute; inset: -10px -14px -8px; border-radius: 14px; pointer-events: none; opacity: 0; box-shadow: inset 0 0 0 1px rgba(255, 109, 40, .7), 0 0 30px -6px rgba(255, 109, 40, .7); }

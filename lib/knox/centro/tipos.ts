@@ -94,7 +94,25 @@ export type Pulso = {
 // conectado · caido (no respondió) · por-conectar · null (no se pudo revisar)
 export type Conexion = 'conectado' | 'caido' | 'por-conectar' | null
 
-export type Conexiones = { instagram: Conexion; whatsapp: Conexion; sitio: Conexion; correo: Conexion }
+// correoCuentas: las cuentas de Google que respondieron, de las que hay
+export type Conexiones = {
+  instagram: Conexion
+  whatsapp: Conexion
+  sitio: Conexion
+  correo: Conexion
+  correoCuentas: { conectadas: number; total: number } | null
+}
+
+// Una prueba de la vista Conexiones: qué es, cómo está, un detalle y cuándo se revisó
+export type EstadoChequeo = 'conectado' | 'caido' | 'por-conectar' | 'se-va'
+export type Chequeo = {
+  clave: string
+  nombre: string
+  estado: EstadoChequeo
+  detalle: string
+  revisado: string
+  uso?: { usado: number; limite: number } // la voz: los caracteres del mes
+}
 
 export type Centro = {
   generadoEn: string

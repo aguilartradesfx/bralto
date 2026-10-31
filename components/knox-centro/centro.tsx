@@ -15,6 +15,7 @@ import {
   textoProximo,
 } from '@/lib/knox/centro/armar'
 import { hora, minutosYSegundos } from '@/lib/knox/centro/formato'
+import { BASE_ALTO, BASE_ANCHO, centroKnox, DISENO_DERECHA, DISENO_IZQUIERDA, medidas, repartir, type Medidas } from '@/lib/knox/centro/escena'
 import { arco, BARRAS, C, envolvente, ondaQuieta, P, svgFlujos, svgFondo } from './geometria'
 import { Hud, type Anotacion, type Estado, type FaseVoz, type RefsHud } from './hud'
 import * as Paneles from './paneles'
@@ -23,7 +24,7 @@ import { Polvo } from './polvo'
 import './centro.css'
 
 // El Centro de mando de Knox (/knox), a pantalla completa en la app de Mac y en el navegador. Trae el último reporte
-// hablado (/api/knox) y lo dice en voz alta; si es de otro día o tiene más de 5 horas, primero le pide uno nuevo. Los
+// hablado (/api/knox) y lo dice en voz alta; si es de otro día o tiene más de una hora, primero le pide uno nuevo. Los
 // paneles salen de /api/knox/centro, que pregunta cada minuto. La app de Mac (KnoxMac en el user agent) deja sonar
 // sin un toque; en el navegador, si no deja, Knox espera el primer toque. ?hablar: habla aunque ya lo hayas oído.
 
@@ -56,8 +57,6 @@ const ENV = Array.from({ length: 91 }, (_, j) => envolvente(j))
 const COS = BARRAS.map((b) => Math.cos(((b.grados - 90) * Math.PI) / 180))
 const SIN = BARRAS.map((b) => Math.sin(((b.grados - 90) * Math.PI) / 180))
 const CIRCULO = `M${C} ${C - 226}A226 226 0 1 1 ${C - 0.01} ${C - 226}`
-const FONDO = svgFondo()
-const FLUJOS = svgFlujos()
 
 // Lo mismo que guarda el Inicio del panel: lo que ya se oyó en un lado no se repite en el otro
 const claveEscuchado = (id: string) => `knox-escuchado:${id}`
@@ -87,9 +86,16 @@ async function pedirReporte(metodo: 'GET' | 'POST'): Promise<Reporte> {
   return j.reporte
 }
 
-// El lienzo de 1920×1080 cabe entero en la ventana (con bordes negros)
-function escalar() {
-  document.documentElement.style.setProperty('--kc-escala', String(Math.min(window.innerWidth / 1920, window.innerHeight / 1080)))
+// El lienzo toma la forma de la ventana (lib/knox/centro/escena.ts). Las mismas variables que deja el script de la
+// página antes del primer pintado
+function medirVentana(): Medidas {
+  const m = medidas(window.innerWidth, window.innerHeight)
+  const d = document.documentElement.style
+  d.setProperty('--kc-escala', String(m.escala))
+  d.setProperty('--kc-ancho', `${m.ancho}px`)
+  d.setProperty('--kc-alto', `${m.alto}px`)
+  d.setProperty('--kc-extra', `${m.alto - BASE_ALTO}px`)
+  return m
 }
 
 export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo }) {
@@ -104,6 +110,8 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
   const [enviando, setEnviando] = useState(false)
   const [destello, setDestello] = useState(false)
   const [conAudio, setConAudio] = useState(!!demo)
+  // El tamaño del lienzo: en el servidor, el del diseño; en la ventana, el de la ventana
+  const [lienzoMedidas, setLienzoMedidas] = useState<Pick<Medidas, 'ancho' | 'alto'>>({ ancho: BASE_ANCHO, alto: BASE_ALTO })
 
   const faseRef = useRef<FaseVoz>(fase)
   const audio = useRef<HTMLAudioElement | null>(null)
@@ -266,9 +274,13 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
   }, [])
 
   useEffect(() => {
-    escalar()
-    window.addEventListener('resize', escalar)
-    return () => window.removeEventListener('resize', escalar)
+    const medir = () => {
+      const m = medirVentana()
+      setLienzoMedidas((antes) => (antes.ancho === m.ancho && antes.alto === m.alto ? antes : { ancho: m.ancho, alto: m.alto }))
+    }
+    medir()
+    window.addEventListener('resize', medir)
+    return () => window.removeEventListener('resize', medir)
   }, [])
 
   useEffect(() => {
@@ -548,8 +560,25 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
     return { clave: 'cierre', palabras: fijo(cierre.length <= 160 ? cierre : partes[partes.length - 1]), tenue: false }
   }, [aviso, fase, sub, error, borradores, reporte])
 
+  // El lienzo: el fondo, los flujos de cada panel hacia Knox y el alto de cada panel (para lo que cabe adentro)
+  const { ancho, alto } = lienzoMedidas
+  const centroDeKnox = useMemo(() => centroKnox({ ancho, alto }), [ancho, alto])
+  const izquierda = useMemo(() => repartir(alto, DISENO_IZQUIERDA), [alto])
+  const derecha = useMemo(() => repartir(alto, DISENO_DERECHA), [alto])
+  const fondo = useMemo(() => svgFondo({ ancho, alto }, centroDeKnox), [ancho, alto, centroDeKnox])
+  const flujos = useMemo(() => {
+    const origenes: [number, number][] = [
+      ...izquierda.map((t): [number, number] => [480, t.top + t.alto / 2]),
+      ...derecha.map((t): [number, number] => [ancho - 480, t.top + t.alto / 2]),
+    ]
+    return svgFlujos(origenes, centroDeKnox)
+  }, [izquierda, derecha, ancho, centroDeKnox])
+
   const reviso: Anotacion = reporte
-    ? { valor: `${fuentesRevisadas(reporte.datos?.faltan)} fuentes`, detalle: fase === 'revisando' ? 'revisando ahora…' : `a las ${hora(reporte.creadoEn)}` }
+    ? {
+        valor: `${fuentesRevisadas(reporte.datos as unknown as Record<string, unknown>)} fuentes`,
+        detalle: fase === 'revisando' ? 'revisando ahora…' : `a las ${hora(reporte.creadoEn)}`,
+      }
     : { valor: RAYA, detalle: fase === 'revisando' || fase === 'cargando' ? 'revisando…' : '' }
   const modo: Anotacion = centro?.modo ? { valor: MODO_CENTRO[centro.modo].nombre, detalle: MODO_CENTRO[centro.modo].detalle } : { valor: RAYA, detalle: '' }
   const siguiente = centro?.dia && ahora ? proximo(centro.dia.items, ahora) : null
@@ -558,15 +587,15 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
   return (
     <div className="kc">
       <div className="lienzo" ref={lienzo}>
-        <Polvo />
+        <Polvo ancho={ancho} alto={alto} cx={centroDeKnox.x} cy={centroDeKnox.y} />
         <div className="orb o1" />
         <div className="orb o2" />
         <div className="orb o3" />
         <div className="orb o4" />
         <div className="orb ocore" />
         <div className="floor" />
-        <svg className="bg" viewBox="0 0 1920 1080" aria-hidden dangerouslySetInnerHTML={{ __html: FONDO }} />
-        <svg className="bg" viewBox="0 0 1920 1080" aria-hidden dangerouslySetInnerHTML={{ __html: FLUJOS }} />
+        <svg className="bg" viewBox={`0 0 ${ancho} ${alto}`} aria-hidden dangerouslySetInnerHTML={{ __html: fondo }} />
+        <svg className="bg" viewBox={`0 0 ${ancho} ${alto}`} aria-hidden dangerouslySetInnerHTML={{ __html: flujos }} />
 
         <Cabecera
           centro={centro}
@@ -579,7 +608,7 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
 
         <section className="col left" aria-label="Clientes y ventas">
           <Clientes datos={centro?.clientes ?? null} habla={hablaDe === 'clientes'} />
-          <Esperando datos={centro?.esperando ?? null} ahora={ahora} habla={hablaDe === 'esperando'} />
+          <Esperando datos={centro?.esperando ?? null} ahora={ahora} habla={hablaDe === 'esperando'} alto={izquierda[1].alto} />
           <Embudo datos={centro?.embudo ?? null} />
         </section>
 
@@ -604,12 +633,12 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
         />
 
         <section className="col right" aria-label="Redes y agenda">
-          <Instagram datos={centro?.instagram ?? null} habla={hablaDe === 'instagram'} />
+          <Instagram datos={centro?.instagram ?? null} habla={hablaDe === 'instagram'} alto={derecha[0].alto} />
           <Mejor datos={centro ? centro.mejor : null} habla={hablaDe === 'mejor'} />
-          <TuDia datos={centro?.dia ?? null} ahora={ahora} habla={hablaDe === 'dia'} />
+          <TuDia datos={centro?.dia ?? null} ahora={ahora} habla={hablaDe === 'dia'} alto={derecha[2].alto} />
         </section>
 
-        <Pulso datos={centro?.pulso ?? null} conexiones={centro?.conexiones ?? null} ahora={ahora} destello={destello} />
+        <Pulso datos={centro?.pulso ?? null} conexiones={centro?.conexiones ?? null} ahora={ahora} destello={destello} ancho={ancho} />
 
         <div className="vignette" />
         <div className="grain" />

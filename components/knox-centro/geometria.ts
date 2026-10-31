@@ -1,5 +1,5 @@
 // Los dibujos fijos del Centro de mando (los anillos, el fondo, el radar): los mismos del diseño aprobado
-// (Bralto-redes/knox-centro/diseno/index.html), en el lienzo de 1920×1080. Lo que se mueve con la voz está en hud.tsx.
+// (Bralto-redes/knox-centro/diseno/index.html). Lo que se mueve con la voz está en centro.tsx y hud.tsx.
 
 export const NARANJA = '#ff6d28'
 
@@ -29,19 +29,20 @@ export function azar(semilla: number): () => number {
   }
 }
 
-// El centro de los anillos en el lienzo
-export const CX = 960
-export const CY = 398
+// El lienzo toma la forma de la ventana (lib/knox/centro/escena.ts): el fondo se dibuja con su ancho y su alto, y los
+// anillos alrededor del centro de Knox
+type Lienzo = { ancho: number; alto: number }
+type Punto = { x: number; y: number }
 
-// Fondo: anillos, rayos, el destello y los flujos de datos de cada panel al núcleo
-export function svgFondo(): string {
+// Fondo: anillos, rayos y el destello
+export function svgFondo({ ancho }: Lienzo, { x: CX, y: CY }: Punto): string {
   let s = `<defs>
     <linearGradient id="kc-streak" x1="0" x2="1"><stop offset="0" stop-color="${NARANJA}" stop-opacity="0"/><stop offset=".5" stop-color="${NARANJA}" stop-opacity=".5"/><stop offset="1" stop-color="${NARANJA}" stop-opacity="0"/></linearGradient>
     <filter id="kc-bl6" x="-10%" y="-400%" width="120%" height="900%"><feGaussianBlur stdDeviation="5"/></filter>
   </defs>`
   for (let d = 0; d < 360; d += 15) {
     const [a, b] = P(CX, CY, 330, d)
-    const [c, e] = P(CX, CY, 1150, d)
+    const [c, e] = P(CX, CY, 1150 + Math.max(0, ancho - 1920) / 2, d)
     s += `<line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(e)}" stroke="#fff" stroke-opacity=".022"/>`
   }
   s += `<circle cx="${CX}" cy="${CY}" r="330" fill="none" stroke="#fff" stroke-opacity=".07"/>`
@@ -57,25 +58,17 @@ export function svgFondo(): string {
   s += `<circle cx="${CX}" cy="${CY}" r="600" fill="none" stroke="#fff" stroke-opacity=".045"/>`
   s += `<circle cx="${CX}" cy="${CY}" r="760" fill="none" stroke="#fff" stroke-opacity=".04" stroke-dasharray="60 14"/>`
   s += `<circle cx="${CX}" cy="${CY}" r="980" fill="none" stroke="#fff" stroke-opacity=".03"/>`
-  // Destello anamórfico
-  s += `<rect x="0" y="${CY - 1}" width="1920" height="2" fill="url(#kc-streak)" opacity=".7"/>`
-  s += `<rect x="200" y="${CY - 6}" width="1520" height="12" fill="url(#kc-streak)" opacity=".35" filter="url(#kc-bl6)"/>`
+  // Destello anamórfico, de lado a lado
+  s += `<rect x="0" y="${f(CY - 1)}" width="${ancho}" height="2" fill="url(#kc-streak)" opacity=".7"/>`
+  s += `<rect x="${f(ancho * 0.104)}" y="${f(CY - 6)}" width="${f(ancho * 0.792)}" height="12" fill="url(#kc-streak)" opacity=".35" filter="url(#kc-bl6)"/>`
   return s
 }
 
-// Los flujos: de cada panel hacia el núcleo (los puntos naranjas corren hacia Knox)
-export const ORIGENES_FLUJO: [number, number][] = [
-  [480, 248],
-  [480, 540],
-  [480, 779],
-  [1440, 253],
-  [1440, 520],
-  [1440, 754],
-]
-
-export function svgFlujos(): string {
+// Los flujos: del borde de cada panel hacia el núcleo (los puntos naranjas corren hacia Knox). origenes: el punto del
+// borde de cada panel, de arriba abajo (primero los de la izquierda)
+export function svgFlujos(origenes: [number, number][], { x: CX, y: CY }: Punto): string {
   let s = ''
-  ORIGENES_FLUJO.forEach(([x, y], i) => {
+  origenes.forEach(([x, y], i) => {
     const dx = x - CX
     const dy = y - CY
     const m = Math.hypot(dx, dy)
