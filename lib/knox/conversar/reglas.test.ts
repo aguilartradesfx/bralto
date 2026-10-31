@@ -62,6 +62,14 @@ test('Knox tutea con «tú», nunca con «vos»', () => {
   assert.match(sistema(FICHA), /nunca de «vos»/)
 })
 
+test('Knox habla como tico: si le hablan de usted contesta de usted, y no usa frases de bot', () => {
+  const s = sistema(FICHA)
+  assert.match(s, /de usted, contéstale de usted/)
+  assert.match(s, /pura vida/)
+  assert.match(s, /«mae» solo si la persona lo usa/i)
+  assert.match(s, /Estoy aquí para ayudarte/) // está en la lista de frases prohibidas
+})
+
 test('los enlaces solo pueden ser de bralto.io', () => {
   const bien = normalizarDecision(salida({ respuesta: 'Agéndalo aquí: https://www.bralto.io/es/agendar 🙌' }), FICHA)
   assert.equal(bien.accion, 'responder')
