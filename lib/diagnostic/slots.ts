@@ -1,5 +1,5 @@
 // Horarios del diagnóstico. Son horas de Costa Rica, que no tiene horario de verano (siempre
-// UTC-6), y GHL los cura con estas mismas horas (CURATED_TIME_TO_ID en lib/ghl/bookings.ts).
+// UTC-6). Qué horarios se ofrecen (anticipación, lo ocupado en Google Calendar) lo decide lib/agenda/reglas.ts.
 // Todo se escribe con Intl: la hora de Costa Rica para todos y, aparte, la de quien agenda.
 
 export const SLOT_ZONE = 'America/Costa_Rica'

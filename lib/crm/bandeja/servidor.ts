@@ -10,6 +10,7 @@ import * as almacen from '@/lib/crm/bandeja/almacen'
 import { atenderMensaje, type DepsKnox } from '@/lib/crm/bandeja/knox'
 import { procesarEvento } from '@/lib/crm/bandeja/procesar'
 import { UUID } from '@/lib/crm/validar'
+import { avisarPorTelegram as enviarTelegram } from '@/lib/telegram'
 import {
   nombreConversacion,
   vistaPrevia,
@@ -59,21 +60,9 @@ export function esDeLasPropias(r: Remitente, ids: Set<string>): boolean {
   return [r.id, r.usuario, r.telefono?.replace(/\D/g, '')].some((v) => !!v && ids.has(normal(v)))
 }
 
+// El aviso vive en lib/telegram (también lo usa la agenda)
 export async function avisarPorTelegram(texto: string): Promise<void> {
-  const token = process.env.TELEGRAM_BOT_TOKEN
-  const chat = process.env.TELEGRAM_CHAT_ID
-  if (!token || !chat) return
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chat, text: texto, disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(20_000),
-    })
-    if (!res.ok) console.error(`[bandeja] Telegram rechazó el aviso (HTTP ${res.status})`)
-  } catch (err) {
-    console.error('[bandeja] no salió el aviso a Telegram:', err instanceof Error ? err.message : err)
-  }
+  await enviarTelegram(texto, 'bandeja')
 }
 
 function zernioOpcional(): ClienteZernio | null {

@@ -22,7 +22,7 @@ function inEveryZone(check: (zone: string) => void) {
 // ICU y los navegadores separan "9:00" de "a. m." con espacios de distinto tipo
 const plain = (s: string | null) => (s === null ? null : s.replace(/\s/g, ' '))
 
-test('los horarios del sitio son los cuatro que GHL tiene curados', () => {
+test('los horarios del sitio son las cuatro horas fijas', () => {
   assert.deepEqual([...TIME_SLOT_IDS], ['9am', '1pm', '3pm', '5pm'])
 })
 

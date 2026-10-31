@@ -1,6 +1,6 @@
 import { NextResponse, after } from 'next/server'
+import { horariosDisponibles } from '@/lib/agenda/servidor'
 import { reconcilePendingOrders } from '@/lib/diagnostic/server'
-import { getGhlAvailableSlotKeys } from '@/lib/ghl/bookings'
 
 // Redis key for permanently confirmed bookings
 const KEY = 'bralto:booked_slots'
@@ -28,32 +28,34 @@ export async function GET(req: Request) {
     reconcilePendingOrders({ limit: 3 }).catch((err) => console.error('[bookings] conciliación falló:', err)),
   )
 
-  // Real availability from GHL, so the site hides curated slots already taken/
-  // blocked in GHL. Independent of Redis and non-fatal: on any failure we return
-  // `ghlAvailable: null` and the UI falls back to showing all curated slots.
-  const ghlPromise: Promise<string[] | null> = getGhlAvailableSlotKeys().catch((err) => {
-    console.warn('[bookings] GHL free-slots failed:', err)
-    return null
-  })
+  // Los horarios que se ofrecen: los fijos, con la anticipación mínima y sin lo ocupado en Google Calendar
+  // (lib/agenda). Independiente de Redis y nunca falla: si Google no responde, son los fijos sin revisar el
+  // calendario y Alejandro recibe el aviso. null solo si algo inesperado revienta: la página muestra todos.
+  const disponibles: Promise<string[] | null> = horariosDisponibles()
+    .then((d) => d.disponibles)
+    .catch((err) => {
+      console.error('[bookings] no se pudieron calcular los horarios:', err)
+      return null
+    })
 
   if (!redis) {
-    return NextResponse.json({ booked: [], locked: [], ghlAvailable: await ghlPromise })
+    return NextResponse.json({ booked: [], locked: [], disponibles: await disponibles })
   }
 
   try {
-    const [booked, lockKeys, ghlAvailable] = await Promise.all([
+    const [booked, lockKeys, libres] = await Promise.all([
       redis.smembers(KEY) as Promise<string[]>,
       redis.keys('bralto:lock:*') as Promise<string[]>,
-      ghlPromise,
+      disponibles,
     ])
     const owners: (string | null)[] =
       session && lockKeys.length ? await redis.mget(...lockKeys) : lockKeys.map(() => null)
     const locked = lockKeys
       .filter((_: string, i: number) => !session || owners[i] !== session)
       .map((k: string) => k.replace('bralto:lock:', ''))
-    return NextResponse.json({ booked: booked ?? [], locked, ghlAvailable })
+    return NextResponse.json({ booked: booked ?? [], locked, disponibles: libres })
   } catch {
-    return NextResponse.json({ booked: [], locked: [], ghlAvailable: await ghlPromise })
+    return NextResponse.json({ booked: [], locked: [], disponibles: await disponibles })
   }
 }
 
@@ -129,6 +131,6 @@ export async function POST(req: Request) {
   }
 
   // Ya no hay "confirm" público: la cita solo se confirma después del pago de $97,
-  // en el servidor (lib/diagnostic: retorno de Stripe y webhook)
+  // en el servidor (lib/diagnostic: retorno de la pasarela, webhook y barrido)
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 }

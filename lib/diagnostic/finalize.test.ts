@@ -101,18 +101,28 @@ test('modo prueba: no crea la cita real ni escribe en Supabase, y usa su propio 
   assert.equal(calls.saved + calls.pushed, 0)
 })
 
-test('si el horario se ocupó mientras pagaba: conflicto, queda el registro y no se crea la cita', async () => {
+test('si el horario se ocupó mientras pagaba: conflicto, queda el registro, se avisa y no se crea la cita', async () => {
   const { deps, calls } = fakes(paidLive, { taken: ['2026-10-08-3pm'] })
+  const avisos: string[] = []
+  deps.onUnbooked = async (p) => {
+    avisos.push(`${p.kind}:${p.ref}`)
+  }
   const r = await finalizeDiagnostic('cs_live_1', deps)
   assert.equal(r.status, 'conflict')
   assert.equal(calls.saved, 1)
   assert.equal(calls.pushed, 0)
   assert.ok(calls.logs > 0, 'queda en los logs para dar seguimiento')
+  assert.deepEqual(avisos, ['conflict:cs_live_1'])
 })
 
-test('si el calendario falla, el pago igual queda confirmado y se registra el error', async () => {
+test('si el calendario falla, el pago igual queda confirmado, se registra el error y se avisa', async () => {
   const { deps, calls } = fakes(paidLive, { calendarFails: true })
+  const avisos: string[] = []
+  deps.onUnbooked = async (p) => {
+    avisos.push(`${p.kind}:${p.ref}`)
+  }
   const r = await finalizeDiagnostic('cs_live_1', deps)
   assert.equal(r.status, 'confirmed')
   assert.ok(calls.logs > 0)
+  assert.deepEqual(avisos, ['calendar:cs_live_1'])
 })

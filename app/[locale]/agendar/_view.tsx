@@ -209,8 +209,8 @@ interface FormData {
   answers: Record<string, string>
 }
 
-// Las respuestas viajan tal cual al CRM ("Facturación mensual - 2.0" en GoHighLevel), donde filtros
-// y automatizaciones pueden depender del texto exacto: solo cambia cómo se muestran los rangos
+// Las respuestas viajan tal cual al CRM (los campos que llenaba GoHighLevel, como "Facturación mensual - 2.0"),
+// donde filtros y automatizaciones pueden depender del texto exacto: solo cambia cómo se muestran los rangos
 function optionLabel(opt: string, lang: 'es' | 'en') {
   return opt.replace(/ – /g, lang === 'en' ? ' to ' : ' a ')
 }
@@ -285,9 +285,9 @@ export default function AgendarPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
   const [lockedSlots, setLockedSlots] = useState<Set<string>>(new Set())
-  // Curated slots that are actually free in GHL. `null` = couldn't check
-  // (GHL down) → don't restrict, show all curated slots as before.
-  const [ghlAvailable, setGhlAvailable] = useState<Set<string> | null>(null)
+  // Los horarios que se ofrecen (libres en Google Calendar, con la anticipación mínima). null: no se pudo
+  // preguntar → no se restringe, se muestran todos los fijos
+  const [disponibles, setDisponibles] = useState<Set<string> | null>(null)
 
   // Se guarda en sessionStorage: si cancela el pago y vuelve, el horario retenido sigue siendo suyo
   const [sessionId] = useState<string>(() => {
@@ -330,7 +330,7 @@ export default function AgendarPage() {
       .then((data) => {
         setBookedSlots(new Set(data.booked ?? []))
         setLockedSlots(new Set(data.locked ?? []))
-        setGhlAvailable(Array.isArray(data.ghlAvailable) ? new Set(data.ghlAvailable) : null)
+        setDisponibles(Array.isArray(data.disponibles) ? new Set(data.disponibles) : null)
       })
       .catch(() => {})
   }
@@ -528,7 +528,7 @@ export default function AgendarPage() {
           id,
           label: formatSlotTime(start, lang),
           local: localSlotTime(start, lang, visitorZone),
-          booked: bookedSlots.has(key) || lockedSlots.has(key) || (ghlAvailable !== null && !ghlAvailable.has(key)),
+          booked: bookedSlots.has(key) || lockedSlots.has(key) || (disponibles !== null && !disponibles.has(key)),
         }
       })
     : []

@@ -6,6 +6,7 @@ import {
   reconcileAction,
   type OrderDeps,
   type StoredOrder,
+  type Unbooked,
 } from './diagnostic.ts'
 import type { PaymentStatus } from '../payments/types.ts'
 
@@ -43,7 +44,16 @@ function fakes(status: PaymentStatus, opts: { expected?: 'PROD' | 'TEST'; taken?
   const claimed = new Set<string>()
   const booked = new Map<string, Set<string>>()
   for (const s of opts.taken ?? []) booked.set('bralto:booked_slots', new Set([s]))
-  const calls = { released: [] as string[], saved: 0, pushed: 0, logs: [] as string[], marks: [] as string[], consulted: 0 }
+  const calls = {
+    released: [] as string[],
+    saved: 0,
+    pushed: 0,
+    refs: [] as string[],
+    unbooked: [] as Unbooked[],
+    logs: [] as string[],
+    marks: [] as string[],
+    consulted: 0,
+  }
   const deps: OrderDeps = {
     getOrder: async (n) => (opts.order === undefined ? (n === stored.orderNumber ? stored : null) : opts.order),
     getStatus: async () => {
@@ -66,12 +76,17 @@ function fakes(status: PaymentStatus, opts: { expected?: 'PROD' | 'TEST'; taken?
     releaseLock: async (slot) => {
       calls.released.push(slot)
     },
-    saveBooking: async () => {
+    saveBooking: async (_b, ref) => {
       calls.saved++
+      calls.refs.push(ref)
     },
-    pushToCalendar: async () => {
+    pushToCalendar: async (_b, ref) => {
       calls.pushed++
+      calls.refs.push(ref)
       if (opts.calendarFails) throw new Error('calendar down')
+    },
+    onUnbooked: async (p) => {
+      calls.unbooked.push(p)
     },
     markOrder: async (_n, s) => {
       calls.marks.push(s)
@@ -92,6 +107,13 @@ test('pago aprobado en producción: ocupa el horario, guarda la reserva y crea l
   assert.equal(calls.saved, 1)
   assert.equal(calls.pushed, 1)
   assert.deepEqual(calls.marks, ['paid'])
+  assert.deepEqual(calls.unbooked, [])
+})
+
+test('la reserva y la cita llevan el número de orden (así un reintento no las repite)', async () => {
+  const { deps, calls } = fakes(paid())
+  await finalizeOrder(stored.orderNumber, deps)
+  assert.deepEqual(calls.refs, [stored.orderNumber, stored.orderNumber])
 })
 
 test('la segunda confirmación (webhook, barrido o recarga) no repite nada', async () => {
@@ -160,19 +182,41 @@ test('orden que no es nuestra: inválida, sin consultar la pasarela', async () =
   assert.equal(calls.consulted, 0)
 })
 
-test('horario ocupado por otro pago: conflicto registrado, sin cita nueva', async () => {
+test('horario ocupado por otro pago: conflicto registrado y avisado, sin cita nueva', async () => {
   const { deps, calls } = fakes(paid(), { taken: [booking.slot] })
   const r = await finalizeOrder(stored.orderNumber, deps)
   assert.equal(r.status, 'conflict')
   assert.equal(calls.pushed, 0)
+  assert.equal(calls.saved, 1, 'el registro queda aunque no haya cita')
   assert.deepEqual(calls.marks, ['paid'])
   assert.ok(calls.logs.some((l) => l.includes('CONFLICTO')))
+  assert.deepEqual(calls.unbooked, [{ kind: 'conflict', booking, ref: stored.orderNumber }])
 })
 
-test('si el calendario falla, la reserva igual queda confirmada (y se registra)', async () => {
+test('si el calendario falla, la reserva igual queda confirmada, se registra y se avisa', async () => {
   const { deps, calls } = fakes(paid(), { calendarFails: true })
   assert.equal((await finalizeOrder(stored.orderNumber, deps)).status, 'confirmed')
   assert.equal(calls.logs.length, 1)
+  assert.equal(calls.unbooked.length, 1)
+  assert.equal(calls.unbooked[0].kind, 'calendar')
+  assert.equal(calls.unbooked[0].ref, stored.orderNumber)
+  assert.match(String(calls.unbooked[0].error), /calendar down/)
+})
+
+test('si el aviso de que alguien quedó sin cita falla, no rompe la confirmación', async () => {
+  const { deps, calls } = fakes(paid(), { calendarFails: true })
+  deps.onUnbooked = async () => {
+    throw new Error('telegram down')
+  }
+  assert.equal((await finalizeOrder(stored.orderNumber, deps)).status, 'confirmed')
+  assert.equal(calls.logs.length, 2)
+})
+
+test('un pago de pruebas con el horario ocupado no le avisa a nadie', async () => {
+  const { deps, booked, calls } = fakes(paid({ environment: 'TEST' }), { expected: 'TEST' })
+  booked.set('bralto:test:booked_slots', new Set([booking.slot]))
+  assert.equal((await finalizeOrder(stored.orderNumber, deps)).status, 'conflict')
+  assert.deepEqual(calls.unbooked, [])
 })
 
 // ── Número de orden ─────────────────────────────────────────────────────────────

@@ -147,6 +147,9 @@ export type CheckoutSessionLike = {
   metadata?: Record<string, string> | null
 }
 
+/** Alguien pagó y se quedó sin cita: el horario ya estaba ocupado por otro pago o el calendario falló */
+export type Unbooked = { kind: 'conflict' | 'calendar'; booking: DiagnosticBooking; ref: string; error?: unknown }
+
 export type FinalizeDeps = {
   getSession: (id: string) => Promise<CheckoutSessionLike>
   // true solo para el primero que reclama la clave
@@ -154,9 +157,20 @@ export type FinalizeDeps = {
   // true si el horario quedó ocupado por este pago; false si ya estaba ocupado
   bookSlot: (setKey: string, slot: string) => Promise<boolean>
   releaseLock: (slot: string) => Promise<void>
-  saveBooking: (booking: DiagnosticBooking) => Promise<void>
-  pushToCalendar: (booking: DiagnosticBooking) => Promise<void>
+  // ref: el pago (número de orden o sesión de Stripe), para que el registro y la cita no se repitan
+  saveBooking: (booking: DiagnosticBooking, ref: string) => Promise<void>
+  pushToCalendar: (booking: DiagnosticBooking, ref: string) => Promise<void>
+  // Avisa a Alejandro y deja registro: nadie que pagó puede quedar sin cita sin que él lo sepa
+  onUnbooked?: (problem: Unbooked) => Promise<void>
   log?: (message: string, err?: unknown) => void
+}
+
+async function reportUnbooked(deps: Pick<FinalizeDeps, 'onUnbooked' | 'log'>, problem: Unbooked) {
+  try {
+    await deps.onUnbooked?.(problem)
+  } catch (err) {
+    deps.log?.(`[diagnostic] no salió el aviso de ${problem.ref} sin cita`, err)
+  }
 }
 
 export type FinalizeResult =
@@ -185,7 +199,7 @@ export async function finalizeDiagnostic(checkoutSessionId: string, deps: Finali
 
   if (live) {
     try {
-      await deps.saveBooking(booking)
+      await deps.saveBooking(booking, session.id)
     } catch (err) {
       log(`[diagnostic] no se guardó la reserva ${session.id}`, err)
     }
@@ -193,14 +207,16 @@ export async function finalizeDiagnostic(checkoutSessionId: string, deps: Finali
 
   if (!booked) {
     log(`[diagnostic] CONFLICTO: pago ${session.id} recibido pero el horario ${booking.slot} ya estaba ocupado (${booking.email})`)
+    if (live) await reportUnbooked(deps, { kind: 'conflict', booking, ref: session.id })
     return { status: 'conflict', booking, live }
   }
 
   if (live) {
     try {
-      await deps.pushToCalendar(booking)
+      await deps.pushToCalendar(booking, session.id)
     } catch (err) {
       log(`[diagnostic] no se creó la cita en el calendario para ${session.id}`, err)
+      await reportUnbooked(deps, { kind: 'calendar', booking, ref: session.id, error: err })
     }
   }
 
@@ -274,7 +290,7 @@ export async function finalizeOrder(orderNumber: string, deps: OrderDeps): Promi
 
   if (live) {
     try {
-      await deps.saveBooking(booking)
+      await deps.saveBooking(booking, orderNumber)
     } catch (err) {
       log(`[diagnostic] no se guardó la reserva ${orderNumber}`, err)
     }
@@ -282,14 +298,16 @@ export async function finalizeOrder(orderNumber: string, deps: OrderDeps): Promi
 
   if (!booked) {
     log(`[diagnostic] CONFLICTO: pago ${orderNumber} recibido pero el horario ${booking.slot} ya estaba ocupado (${booking.email})`)
+    if (live) await reportUnbooked(deps, { kind: 'conflict', booking, ref: orderNumber })
     return { status: 'conflict', booking, live }
   }
 
   if (live) {
     try {
-      await deps.pushToCalendar(booking)
+      await deps.pushToCalendar(booking, orderNumber)
     } catch (err) {
       log(`[diagnostic] no se creó la cita en el calendario para ${orderNumber}`, err)
+      await reportUnbooked(deps, { kind: 'calendar', booking, ref: orderNumber, error: err })
     }
   }
 

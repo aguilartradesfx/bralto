@@ -1,4 +1,4 @@
-// Días y claves de horario de /agendar. Los horarios son de Costa Rica (lib/ghl/bookings.ts):
+// Días y claves de horario de /agendar. Los horarios son de Costa Rica (lib/diagnostic/slots.ts):
 // los días se cuentan con la fecha de Costa Rica, no con el reloj de quien ejecuta. La página se
 // arma en el servidor (UTC) y se hidrata en el navegador (cualquier zona); si cada lado contara
 // con su reloj, de 6 p. m. a medianoche marcarían días distintos y la hidratación de React

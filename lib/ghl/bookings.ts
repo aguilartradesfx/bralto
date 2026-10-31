@@ -1,3 +1,4 @@
+// Sin usar: la agenda del diagnóstico pasó a Google Calendar + Meet (lib/agenda). Se deja por si hay que volver.
 import { upsertContact, addContactTags, bookAppointment } from './api'
 import { getLocationAccessToken } from './client'
 

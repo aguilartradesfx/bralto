@@ -2,6 +2,7 @@ import { ghlFetchLocation } from '@/lib/ghl/client'
 import { diaCr, inicioDelDia, sumarDias } from '../fechas'
 import type { Cita } from '../tipos'
 
+// Sin usar: las citas ahora salen de Google Calendar (fuentes/google.ts). Se deja por si hay que volver.
 // Mientras exista GoHighLevel: ahí están las citas del diagnóstico. Los mensajes ya se leen de Zernio.
 // Usa el mismo cliente que la agenda del sitio, que es el que renueva el token.
 const LOC = process.env.HIGHLEVEL_BRALTO_LOCATION_ID ?? 'hdVpvshZP3RGJQbxx8GA'
