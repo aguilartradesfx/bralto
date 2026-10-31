@@ -1,6 +1,6 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { FileText, Users, ArrowRight, ClipboardList, ScrollText, UserCog, Target, CalendarDays } from 'lucide-react'
-import { Knox } from '@/components/internal/knox/knox'
 import { getCurrentSession } from '@/lib/panel-session'
 import { hasPermission, requiredPermission } from '@/lib/panel-access'
 
@@ -16,12 +16,12 @@ const sections = [
 
 export default async function AdminPage() {
   const { user, profile } = await getCurrentSession()
+  // Para los administradores, el Inicio es el Centro de mando de Knox (lo que abre la app de Mac)
+  if (hasPermission(profile, 'is_admin')) redirect('/knox')
   const visible = sections.filter((s) => hasPermission(profile, requiredPermission(s.href)))
 
   return (
     <div className="p-6 md:p-10 max-w-5xl">
-      {hasPermission(profile, 'is_admin') && <Knox />}
-
       <div className="mb-8">
         <h1 className="text-xl font-semibold text-fg">Panel interno</h1>
         <p className="text-sm text-fg/40 mt-1">{user?.email}</p>
