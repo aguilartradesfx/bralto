@@ -18,6 +18,7 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
   ['/plan-q4', 'can_view_plan'],
   ['/calendario', 'is_admin'],
   ['/crm', 'is_admin'],
+  ['/knox', 'is_admin'],
 ]
 
 export function requiredPermission(pathname: string): PanelPermission | null {

@@ -50,7 +50,8 @@ export function ParticlesBackground() {
     const ctxRaw = canvas.getContext('2d')
     if (!ctxRaw) return
     const ctx: CanvasRenderingContext2D = ctxRaw
-    if (isContractSigningPath(pathname)) {
+    // Apagado en la firma de contratos y en el Centro de mando de Knox (/knox), que dibuja su propio polvo
+    if (isContractSigningPath(pathname) || pathname === '/knox') {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       return
     }
