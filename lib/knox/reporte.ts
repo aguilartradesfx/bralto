@@ -6,6 +6,7 @@ import { diaCr } from './fechas'
 import { contenido, leads } from './fuentes/base'
 import { tipoDeCambio } from './fuentes/cambio'
 import { agenda } from './fuentes/ghl'
+import { correos } from './fuentes/gmail'
 import { redes } from './fuentes/redes'
 import { conversaciones } from './fuentes/zernio'
 import type { Datos, Reporte, Seccion } from './tipos'
@@ -22,8 +23,10 @@ function conTiempo<T>(promesa: Promise<T>, ms: number): Promise<T> {
 
 async function recolectar(ahora: Date): Promise<Datos> {
   const ayer = new Date(ahora.getTime() - DIA)
-  const [cambio, red, nuevos, citas, chats, cont] = await Promise.allSettled(
-    [tipoDeCambio(), redes(ahora), leads(ayer), agenda(ahora), conversaciones(ahora), contenido(ahora)].map((p) => conTiempo<unknown>(p, 45_000)),
+  const [cambio, red, nuevos, citas, chats, cont, mails] = await Promise.allSettled(
+    [tipoDeCambio(), redes(ahora), leads(ayer), agenda(ahora), conversaciones(ahora), contenido(ahora), correos()].map((p) =>
+      conTiempo<unknown>(p, 45_000),
+    ),
   )
   const faltan: string[] = []
   function de<T>(nombre: string, r: PromiseSettledResult<unknown>): T | null {
@@ -39,6 +42,7 @@ async function recolectar(ahora: Date): Promise<Datos> {
     agenda: de('agenda', citas),
     conversaciones: de('conversaciones', chats),
     contenido: de('contenido', cont),
+    correos: de('correos', mails),
     faltan,
   }
 }
@@ -68,7 +72,9 @@ const aReporte = (f: Fila): Reporte => ({
 export async function generarReporte(ahora = new Date()): Promise<Reporte> {
   const db = createServiceClient()
   const datos = await recolectar(ahora)
-  const { secciones, escritoPor, error } = await escribirGuion(datos, ahora)
+  // Si Knox ya habló hoy, este reporte es una actualización corta: solo lo nuevo desde entonces
+  const anterior = await ultimoReporte(diaCr(ahora)).catch(() => null)
+  const { secciones, escritoPor, error } = await escribirGuion(datos, ahora, anterior)
   if (error) console.error('[knox] guion con la plantilla:', error)
 
   const id = randomUUID()

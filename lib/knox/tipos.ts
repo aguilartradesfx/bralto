@@ -41,6 +41,11 @@ export type Conversaciones = {
   ultimas: { nombre: string; canal: string; texto: string; en?: string }[]
 }
 
+// Correos sin leer del último día en las cuentas de Google de Ale (sin promociones, redes ni foros).
+// El escritor decide cuáles son importantes; la plantilla solo dice cuántos hay.
+export type Correo = { cuenta: string; de: string; asunto: string; resumen: string; en: string }
+export type Correos = { cuentas: string[]; sinLeer: number; recientes: Correo[] }
+
 export type ContenidoDelDia = {
   hoy: { titulo: string; tipo: string; en: string; hora: string; estado: string }[]
   manana: number // cuántas publicaciones hay programadas para mañana
@@ -53,6 +58,7 @@ export type Datos = {
   agenda: Cita[] | null
   conversaciones: Conversaciones | null
   contenido: ContenidoDelDia | null
+  correos?: Correos | null // desde el 30/10; los reportes viejos no lo traen
   faltan: string[] // las fuentes que no respondieron esta vez
 }
 

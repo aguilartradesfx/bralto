@@ -2,7 +2,7 @@ import { diaCr, fechaHablada, horaHablada, saludo } from './fechas.ts'
 import type { Datos, Publicacion, Seccion, Tarjeta } from './tipos.ts'
 
 // El guion de Knox armado sin IA. Sirve de respaldo: si Claude no responde, Knox igual habla.
-const NOMBRE = 'Alejandro'
+const NOMBRE = 'Ale'
 
 const FUENTES: Record<string, string> = {
   cambio: 'el tipo de cambio',
@@ -11,6 +11,7 @@ const FUENTES: Record<string, string> = {
   agenda: 'la agenda',
   conversaciones: 'tus mensajes de Instagram, Messenger y WhatsApp',
   contenido: 'el calendario de publicaciones',
+  correos: 'tu correo',
 }
 
 // Lo que se dice no lleva emojis ni símbolos: la voz los leería
@@ -78,6 +79,8 @@ export function escribirPlantilla(d: Datos, ahora: Date): Seccion[] {
     const sinLeer = d.redes.facebook.reduce((a, p) => a + (p.sinLeer ?? 0), 0) + (d.redes.mensajesIgSinLeer ?? 0)
     if (sinLeer) mensajes.push(`Tienes ${cuantos(sinLeer, 'conversación sin leer', 'conversaciones sin leer')} en Messenger e Instagram.`)
   }
+  // Sin Claude no se sabe cuáles son importantes: solo cuántos hay
+  if (d.correos?.sinLeer) mensajes.push(`Tienes ${cuantos(d.correos.sinLeer, 'correo sin leer de hoy', 'correos sin leer de hoy')}.`)
   if (d.redes?.comentarios.length) {
     const ultimo = paraVoz(d.redes.comentarios[0].texto)
     const cuantosComentarios = cuantos(d.redes.comentarios.length, 'comentario nuevo', 'comentarios nuevos')
