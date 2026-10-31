@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { horarioOcupado } from '@/lib/agenda/servidor'
 import { parseDiagnosticRequest } from '@/lib/diagnostic/diagnostic'
 import { holdSlotForCheckout, startDiagnosticCheckout } from '@/lib/diagnostic/server'
 import { TilopayConfigError } from '@/lib/payments/tilopay'
@@ -28,6 +29,11 @@ export async function POST(req: Request) {
   const parsed = parseDiagnosticRequest(body)
   if (!parsed.ok) {
     return NextResponse.json({ error: 'invalid', fields: parsed.error }, { status: 400 })
+  }
+
+  // Antes de cobrar: si mientras llenaba los datos ese horario se ocupó en Google Calendar, que elija otro
+  if (await horarioOcupado(parsed.data.slot)) {
+    return NextResponse.json({ error: 'booked' }, { status: 409 })
   }
 
   const hold = await holdSlotForCheckout(parsed.data.slot, parsed.data.sessionId)

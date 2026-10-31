@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { finalizeDiagnosticOrder } from '@/lib/diagnostic/server'
 import type { OrderResult } from '@/lib/diagnostic/diagnostic'
-import { parseSlotKey } from '@/lib/ghl/bookings'
+import { slotStart } from '@/lib/diagnostic/slots'
 import ConfirmacionView, { type ConfirmationState } from '../_view'
 
 type Props = {
@@ -52,7 +52,7 @@ export default async function ConfirmacionOrdenPage({ params, searchParams }: Pr
         dateStyle: 'full',
         timeStyle: 'short',
         timeZone: 'America/Costa_Rica',
-      }).format(new Date(parseSlotKey(result.booking.slot)))
+      }).format(slotStart(result.booking.slot))
     }
   } catch (err) {
     console.error('[confirmacion] no se pudo verificar el pago:', err)
