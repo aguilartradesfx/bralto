@@ -130,6 +130,8 @@ const aMensaje = (m: Record<string, unknown>): MensajeVista => {
     estado: meta.estado ?? null,
     llamada: meta.llamada ?? null,
     enviado_en: m.enviado_en as string,
+    autor: (m.autor as string | null) ?? null,
+    adjunto: typeof (m.meta as { adjunto?: unknown } | null)?.adjunto === 'string' ? ((m.meta as { adjunto: string }).adjunto) : null,
   }
 }
 
@@ -137,7 +139,7 @@ const aMensaje = (m: Record<string, unknown>): MensajeVista => {
 export async function leerHistorial(contactoId: string, antes: Cursor | null = null): Promise<Historial> {
   let consulta = db()
     .from('crm_mensajes')
-    .select('id, canal, tipo, direccion, texto, asunto, adjuntos, meta, enviado_en')
+    .select('id, canal, tipo, direccion, texto, asunto, adjuntos, meta, enviado_en, autor')
     .eq('contacto_id', contactoId)
   // El cursor ya viene revisado (leerCursor): una fecha de la base y un uuid
   if (antes) consulta = consulta.or(`enviado_en.lt."${antes.en}",and(enviado_en.eq."${antes.en}",id.lt.${antes.id})`)
@@ -154,7 +156,7 @@ export async function leerHistorial(contactoId: string, antes: Cursor | null = n
 
 export async function leerFicha(id: string): Promise<Ficha | null> {
   if (!UUID.test(id)) return null
-  const [c, notas, tareas, oportunidades, citas, adjuntos, pipelines, historial] = await Promise.all([
+  const [c, notas, tareas, oportunidades, citas, adjuntos, conversaciones, pipelines, historial] = await Promise.all([
     db()
       .from('crm_contactos')
       .select('id, nombre, apellido, telefono, correo, empresa, etiquetas, campos, fuente, no_molestar, origen, creado_en, ultima_actividad')
@@ -165,14 +167,16 @@ export async function leerFicha(id: string): Promise<Ficha | null> {
     db().from('crm_oportunidades').select('id, nombre, valor, estado, pipeline_id, etapa_id, cambio_etapa_en').eq('contacto_id', id).order('creado_en', { ascending: false }),
     db().from('crm_citas').select('id, titulo, inicio, fin, estado, enlace, notas').eq('contacto_id', id).order('inicio', { ascending: false }),
     db().from('crm_adjuntos').select('id, nombre, tipo, tamano, creado_en').eq('contacto_id', id).order('creado_en', { ascending: false }),
+    db().from('crm_conversaciones').select('id, canal').eq('contacto_id', id).eq('origen', 'zernio').order('ultimo_mensaje_en', { ascending: false, nullsFirst: false }),
     leerPipelines(),
     leerHistorial(id),
   ])
-  for (const r of [c, notas, tareas, oportunidades, citas, adjuntos]) if (r.error) throw new Error(`crm (ficha): ${r.error.message}`)
+  for (const r of [c, notas, tareas, oportunidades, citas, adjuntos, conversaciones]) if (r.error) throw new Error(`crm (ficha): ${r.error.message}`)
   if (!c.data) return null
   const contacto = c.data as ContactoVista & { campos: Campos }
   return {
     contacto: { ...contacto, etiquetas: contacto.etiquetas ?? [], campos: contacto.campos ?? {} },
+    conversaciones: ((conversaciones.data ?? []) as { id: string; canal: string }[]).map((x) => ({ id: x.id, canal: canalConocido(x.canal) })),
     notas: (notas.data ?? []) as NotaVista[],
     tareas: (tareas.data ?? []) as TareaVista[],
     oportunidades: ((oportunidades.data ?? []) as OportunidadVista[]).map((o) => ({ ...o, valor: Number(o.valor) || 0 })),

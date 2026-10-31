@@ -1,16 +1,28 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Activity, FileText, Image as ImagenIcono, Music, Paperclip, PhoneIncoming, PhoneOutgoing, Video } from 'lucide-react'
+import Link from 'next/link'
+import { Activity, Bot, ChevronRight, FileText, Image as ImagenIcono, Music, Paperclip, PhoneIncoming, PhoneOutgoing, Video } from 'lucide-react'
+import { adjuntoLabel } from '@/lib/crm/bandeja/vista'
 import { horaCR } from '@/lib/calendario/fechas'
 import { esLargo, nombreDelDia, porDia, textoLlamada, unirMensajes } from '@/lib/crm/historial'
 import { CANAL_LABEL, tipoArchivo, type AdjuntoMensaje } from '@/lib/crm/tipos'
-import type { Cursor, Historial as HistorialDatos, MensajeVista } from '@/lib/crm/vista'
+import type { ConversacionDeContacto, Cursor, Historial as HistorialDatos, MensajeVista } from '@/lib/crm/vista'
 import { Aviso, CanalIcono, ICONO } from '@/components/crm/piezas'
 
 // Los mensajes de todos los canales en una sola línea de tiempo, lo más nuevo arriba y por día. Lo que entró va a
 // la izquierda y lo que salió, a la derecha (como en el teléfono). Los avisos del sistema van discretos, al centro
-export function Historial({ contactoId, inicial, ahora }: { contactoId: string; inicial: HistorialDatos; ahora: string }) {
+export function Historial({
+  contactoId,
+  inicial,
+  ahora,
+  conversaciones = [],
+}: {
+  contactoId: string
+  inicial: HistorialDatos
+  ahora: string
+  conversaciones?: ConversacionDeContacto[]
+}) {
   const [mas, setMas] = useState<MensajeVista[]>([])
   const [siguiente, setSiguiente] = useState<Cursor | null>(null)
   const [pidio, setPidio] = useState(false)
@@ -49,6 +61,17 @@ export function Historial({ contactoId, inicial, ahora }: { contactoId: string; 
         Historial
       </h2>
       <p className="mt-0.5 text-xs text-fg/45">Todo lo que se han escrito, por todos los canales. Lo más nuevo, arriba.</p>
+      {conversaciones.length > 0 && (
+        <p className="mt-3 flex flex-wrap gap-1.5">
+          {conversaciones.map((c) => (
+            <Link key={c.id} href={`/crm/mensajes/${c.id}`} className="pn-btn-glass inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium">
+              <CanalIcono canal={c.canal} size={12} />
+              Contestar por {CANAL_LABEL[c.canal]}
+              <ChevronRight size={12} {...ICONO} />
+            </Link>
+          ))}
+        </p>
+      )}
 
       {mensajes.length === 0 ? (
         <p className="mt-6 pb-2 text-center text-sm text-fg/45">Todavía no hay mensajes con esta persona.</p>
@@ -114,18 +137,33 @@ function Mensaje({ m }: { m: MensajeVista }) {
     )
   }
 
+  // Lo que salió por la bandeja dice quién lo escribió si no fue Ale: Knox o una automatización
+  const quien = sale && m.autor === 'knox' ? 'Knox' : sale && m.autor === 'automatizacion' ? 'Automático' : null
+  const adjunto = adjuntoLabel(m.adjunto)
   return (
     <li className={`flex ${lado}`}>
       <div className={`min-w-0 max-w-[88%] rounded-2xl px-3.5 py-2.5 sm:max-w-[80%] ${sale ? 'rounded-tr-md bg-fg/[0.1]' : 'rounded-tl-md bg-fg/[0.045]'}`}>
         <p className="mb-1 flex items-center gap-1.5 text-[11px] text-fg/45">
           <CanalIcono canal={m.canal} size={11} />
           <span>{CANAL_LABEL[m.canal]}</span>
-          <span className="sr-only">{sale ? ', le escribiste' : ', te escribió'}</span>
+          <span className="sr-only">{quien ? `, le escribió ${quien}` : sale ? ', le escribiste' : ', te escribió'}</span>
+          {quien && (
+            <span aria-hidden className="inline-flex items-center gap-1">
+              · {quien === 'Knox' && <Bot size={11} {...ICONO} />}
+              {quien}
+            </span>
+          )}
           <span aria-hidden>·</span>
           <span className="tabular-nums">{hora}</span>
         </p>
         {m.asunto && <p className="mb-1 break-words text-sm font-medium text-fg">{m.asunto}</p>}
-        {m.texto ? <Texto texto={m.texto} /> : m.tipo === 'correo' && <p className="text-sm italic text-fg/40">Correo sin texto guardado</p>}
+        {m.texto ? <Texto texto={m.texto} /> : m.tipo === 'correo' ? <p className="text-sm italic text-fg/40">Correo sin texto guardado</p> : !adjunto && m.adjuntos.length === 0 && <p className="text-sm italic text-fg/40">Mensaje sin texto</p>}
+        {adjunto && m.adjuntos.length === 0 && (
+          <p className={`inline-flex items-center gap-1.5 rounded-full bg-fg/[0.06] px-2.5 py-0.5 text-xs text-fg/70 ${m.texto ? 'mt-1.5' : ''}`}>
+            <Paperclip size={12} {...ICONO} />
+            {adjunto}
+          </p>
+        )}
         {m.adjuntos.length > 0 && <Adjuntos adjuntos={m.adjuntos} />}
         {m.estado === 'fallo' && <p className="mt-1.5 text-[11px] text-red-300">No se entregó</p>}
       </div>

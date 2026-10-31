@@ -77,27 +77,31 @@ export function Encabezado({ titulo, resumen, children }: { titulo: string; resu
 
 const SECCIONES = [
   { href: '/crm', label: 'Contactos' },
+  { href: '/crm/mensajes', label: 'Mensajes' },
   { href: '/crm/pipeline', label: 'Pipeline' },
   { href: '/crm/tareas', label: 'Tareas' },
+  { href: '/crm/knox', label: 'Knox' },
 ] as const
 
-// Contactos · Pipeline · Tareas
+// Contactos · Mensajes · Pipeline · Tareas · Knox. En un teléfono angosto se desliza de lado
 export function SubMenu({ activa }: { activa: (typeof SECCIONES)[number]['href'] }) {
   return (
-    <nav aria-label="Secciones del CRM" className="mb-5 flex gap-1.5">
-      {SECCIONES.map((s) => {
-        const on = s.href === activa
-        return (
-          <Link
-            key={s.href}
-            href={s.href}
-            aria-current={on ? 'page' : undefined}
-            className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${on ? 'pn-chip-on text-fg' : 'text-fg/55 hover:bg-fg/[0.05] hover:text-fg'}`}
-          >
-            {s.label}
-          </Link>
-        )
-      })}
+    <nav aria-label="Secciones del CRM" className="-mx-4 mb-5 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden">
+      <div className="flex w-max gap-0.5 sm:gap-1">
+        {SECCIONES.map((s) => {
+          const on = s.href === activa
+          return (
+            <Link
+              key={s.href}
+              href={s.href}
+              aria-current={on ? 'page' : undefined}
+              className={`shrink-0 rounded-full px-2.5 py-1.5 text-[13px] font-medium transition-colors sm:px-3.5 ${on ? 'pn-chip-on text-fg' : 'text-fg/55 hover:bg-fg/[0.05] hover:text-fg'}`}
+            >
+              {s.label}
+            </Link>
+          )
+        })}
+      </div>
     </nav>
   )
 }
