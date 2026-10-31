@@ -20,6 +20,7 @@ import { etiquetaCorreo } from '@/lib/knox/centro/conexiones'
 import { caben } from '@/lib/knox/centro/escena'
 import type { Centro, Conexion, Dia, Embudo as DatosEmbudo, Esperando as DatosEsperando, Instagram as DatosInstagram, Mejor as DatosMejor, Pulso as DatosPulso } from '@/lib/knox/centro/tipos'
 import type { CanalKnox } from '@/lib/knox/conversar/tipos'
+import type { Vista } from '@/lib/knox/centro/vistas/tipos'
 import { sumarDias } from '@/lib/calendario/fechas'
 import { curvaSuave, f, NARANJA, P, svgRadar } from './geometria'
 
@@ -58,13 +59,23 @@ function Reloj({ fijo }: { fijo: Date | null }) {
   )
 }
 
+const PESTANAS: [Vista, string][] = [
+  ['hoy', 'Hoy'],
+  ['ventas', 'Ventas'],
+  ['redes', 'Redes'],
+  ['agenda', 'Agenda'],
+  ['conexiones', 'Conexiones'],
+]
+
+// Las pestañas cambian de vista sin salir de /knox (el enlace sirve para abrirla directo)
 export function Cabecera(p: {
   centro: Centro | null
   iniciales: string
   ahora: Date | null
   relojFijo: Date | null
   hablaDolar: boolean
-  onConexiones: () => void
+  vista: Vista
+  onVista: (v: Vista) => void
 }) {
   const t = p.centro?.temperatura
   const usd = p.centro?.dolar
@@ -75,23 +86,23 @@ export function Cabecera(p: {
       <div className="sep" />
       <span className="brand-k">KNOX</span>
       <span className="brand-s">Centro de mando</span>
-      <nav className="nav" aria-label="Secciones">
-        <a className="on" aria-current="page">
-          <i className="dot" />
-          Hoy
-        </a>
-        <a href="/crm/pipeline">Ventas</a>
-        <a href="/calendario">Redes</a>
-        <a href="/crm/tareas">Agenda</a>
-        <a
-          href="#conexiones"
-          onClick={(e) => {
-            e.preventDefault()
-            p.onConexiones()
-          }}
-        >
-          Conexiones
-        </a>
+      <nav className="nav" aria-label="Vistas">
+        {PESTANAS.map(([v, nombre]) => (
+          <a
+            key={v}
+            href={v === 'hoy' ? '/knox' : `/knox?vista=${v}`}
+            className={p.vista === v ? 'on' : undefined}
+            aria-current={p.vista === v ? 'page' : undefined}
+            onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey) return
+              e.preventDefault()
+              p.onVista(v)
+            }}
+          >
+            {p.vista === v && <i className="dot" />}
+            {nombre}
+          </a>
+        ))}
       </nav>
       <div className="tr">
         <div className="meta">
@@ -673,7 +684,8 @@ function FilaConexion({ nombre, estado, bien, etiqueta }: { nombre: string; esta
   )
 }
 
-export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexiones'] | null; ahora: Date | null; destello: boolean; ancho: number }) {
+// onConexiones: tocar la sección 08 abre la vista Conexiones
+export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexiones'] | null; ahora: Date | null; ancho: number; onConexiones: () => void }) {
   const c = p.conexiones
   return (
     <footer className="glass hud pulse">
@@ -695,7 +707,19 @@ export function Pulso(p: { datos: DatosPulso | null; conexiones: Centro['conexio
         <div className="pulso-vacio vacio">{RAYA}</div>
       )}
       <div className="vline" style={{ right: 282 }} />
-      <div className={`pl-r${p.destello ? ' destello' : ''}`} id="conexiones">
+      <div
+        className="pl-r"
+        id="conexiones"
+        role="button"
+        tabIndex={0}
+        aria-label="Ver las conexiones"
+        onClick={p.onConexiones}
+        onKeyDown={(e) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return
+          e.preventDefault()
+          p.onConexiones()
+        }}
+      >
         <div className="ph" style={{ margin: 0 }}>
           <span className="ix">08</span>
           <span className="pt">Conexiones</span>
