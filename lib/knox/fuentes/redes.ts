@@ -6,7 +6,7 @@ const GRAPH = 'https://graph.facebook.com/v26.0'
 const DIA = 24 * 3600_000
 const PAGINA_BRALTO = '185038244684371'
 
-type Medio = {
+export type Medio = {
   id: string
   caption?: string
   media_type: string
@@ -17,7 +17,7 @@ type Medio = {
   comments_count?: number
 }
 
-async function graph<T>(ruta: string, token: string): Promise<T> {
+export async function graph<T>(ruta: string, token: string): Promise<T> {
   const res = await fetch(`${GRAPH}/${ruta}${ruta.includes('?') ? '&' : '?'}access_token=${encodeURIComponent(token)}`, {
     signal: AbortSignal.timeout(15_000),
     cache: 'no-store',
@@ -28,14 +28,14 @@ async function graph<T>(ruta: string, token: string): Promise<T> {
 }
 
 // Instagram manda «+0000» sin los dos puntos
-const fecha = (ts: string) => new Date(ts.replace(/([+-]\d\d)(\d\d)$/, '$1:$2'))
+export const fecha = (ts: string) => new Date(ts.replace(/([+-]\d\d)(\d\d)$/, '$1:$2'))
 
-function tituloDe(caption: string | undefined): string {
+export function tituloDe(caption: string | undefined): string {
   const linea = (caption ?? '').split('\n').map((l) => l.trim()).find(Boolean) ?? 'Sin texto'
   return linea.length > 70 ? `${linea.slice(0, 67).trimEnd()}…` : linea
 }
 
-function tipoDe(m: Medio): Publicacion['tipo'] {
+export function tipoDe(m: Medio): Publicacion['tipo'] {
   if (m.media_product_type === 'REELS' || m.media_type === 'VIDEO') return 'reel'
   return m.media_type === 'CAROUSEL_ALBUM' ? 'carrusel' : 'foto'
 }
