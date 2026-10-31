@@ -82,6 +82,31 @@ export function hace(instante: string, ahora: Date): string {
   return `${Math.floor(horas / 24)} d`
 }
 
+// '$1.500' (sin centavos)
+export const dolares = (n: number) => `$${entero(n)}`
+
+// '44%' (de a sobre b); null si b es cero
+export function porcentaje(a: number, b: number): string | null {
+  return b > 0 ? `${Math.round((a / b) * 100)}%` : null
+}
+
+const diaUtc = (dia: string) => new Date(`${dia}T12:00:00Z`)
+
+// 'Viernes 30' (de un día AAAA-MM-DD)
+export function tituloDeDia(dia: string): string {
+  const d = diaUtc(dia)
+  return `${mayuscula(DIAS[d.getUTCDay()])} ${d.getUTCDate()}`
+}
+
+// 'Hoy', 'Mañana' o 'Dom 1 nov'
+export function nombreDia(dia: string, hoy: string): string {
+  if (dia === hoy) return 'Hoy'
+  const manana = new Date(Date.parse(`${hoy}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10)
+  if (dia === manana) return 'Mañana'
+  const d = diaUtc(dia)
+  return `${mayuscula(DIAS[d.getUTCDay()].slice(0, 3))} ${d.getUTCDate()} ${MESES[d.getUTCMonth()]}`
+}
+
 // 00:41 (del audio)
 export function minutosYSegundos(segundos: number): string {
   const s = Number.isFinite(segundos) ? Math.max(0, Math.floor(segundos)) : 0

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { colones, compacto, decimal, diaCorto, diaYHora, entero, fechaCabecera, hace, minutosYSegundos, reloj, tituloDia } from './formato.ts'
+import { colones, compacto, decimal, diaCorto, diaYHora, dolares, entero, fechaCabecera, hace, minutosYSegundos, nombreDia, porcentaje, reloj, tituloDeDia, tituloDia } from './formato.ts'
 
 test('los miles van con punto y los decimales con coma', () => {
   assert.equal(entero(4445), '4.445')
@@ -46,6 +46,16 @@ test('hace cuánto, corto', () => {
   assert.equal(hace('2026-10-30T22:30:00Z', ahora), '1 h')
   assert.equal(hace('2026-10-27T20:00:00Z', ahora), '3 d')
   assert.equal(hace('no es fecha', ahora), 'ahora')
+})
+
+test('plata, porcentajes y nombres de los días', () => {
+  assert.equal(dolares(1500), '$1.500')
+  assert.equal(porcentaje(21, 48), '44%')
+  assert.equal(porcentaje(3, 0), null)
+  assert.equal(tituloDeDia('2026-10-30'), 'Viernes 30')
+  assert.equal(nombreDia('2026-10-30', '2026-10-30'), 'Hoy')
+  assert.equal(nombreDia('2026-10-31', '2026-10-30'), 'Mañana')
+  assert.equal(nombreDia('2026-11-01', '2026-10-30'), 'Dom 1 nov')
 })
 
 test('el tiempo del audio', () => {

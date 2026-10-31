@@ -262,6 +262,11 @@ const tipoPost = (tipo: string) => TIPO_POST[tipo] ?? 'Post'
 // Lo de hoy (día de Costa Rica): citas, lo que sale en redes y las tareas que vencen, en orden de hora
 export function tuDia(o: { citas: CitaDia[]; posts: PostDia[]; tareas: TareaDia[] }, ahora: Date): ItemDia[] {
   const hoy = hoyCR(ahora)
+  return itemsAgenda(o).filter((i) => diaCR(i.en) === hoy)
+}
+
+// Citas, posts (sin los cancelados) y tareas juntos, en orden de hora (de cualquier día)
+export function itemsAgenda(o: { citas: CitaDia[]; posts: PostDia[]; tareas: TareaDia[] }): ItemDia[] {
   const items: ItemDia[] = [
     ...o.citas.map((c): ItemDia => ({ tipo: 'cita', en: c.inicio, titulo: c.titulo, detalle: null, hecho: false, fallo: false })),
     ...o.posts
@@ -280,7 +285,7 @@ export function tuDia(o: { citas: CitaDia[]; posts: PostDia[]; tareas: TareaDia[
       (t): ItemDia => ({ tipo: 'tarea', en: t.vence_en, titulo: t.titulo, detalle: t.contacto ? `Tarea · ${t.contacto}` : null, hecho: t.hecha, fallo: false }),
     ),
   ]
-  return items.filter((i) => diaCR(i.en) === hoy).sort((a, b) => Date.parse(a.en) - Date.parse(b.en))
+  return items.sort((a, b) => Date.parse(a.en) - Date.parse(b.en))
 }
 
 export type EstadoItem = { texto: string; clase: 'hecho' | 'pronto' | 'luego' | 'alerta' }
@@ -412,10 +417,16 @@ export const MODO_CENTRO: Record<ModoKnox, { nombre: string; detalle: string }> 
 }
 
 // Cuántas fuentes revisó el reporte: son 6 (dólar, redes, leads, agenda, mensajes y contenido)
-export const FUENTES_DEL_REPORTE = 6
-export const fuentesRevisadas = (faltan: string[] | null | undefined) => Math.max(0, FUENTES_DEL_REPORTE - (faltan?.length ?? 0))
+// Cuántas fuentes revisó el reporte: las que trae `datos` (6 en los viejos, 7 desde que lee el correo) menos las que
+// no respondieron
+export function fuentesRevisadas(datos: Record<string, unknown> | null | undefined): number {
+  if (!datos) return 0
+  const faltan = Array.isArray(datos.faltan) ? datos.faltan.length : 0
+  return Math.max(0, Object.keys(datos).filter((k) => k !== 'faltan').length - faltan)
+}
 
-// Knox vuelve a revisar al abrir si el último reporte es de otro día o tiene más de 5 horas
+// Knox vuelve a revisar al abrir si el último reporte es de otro día o tiene más de una hora
+export const VIGENCIA_REPORTE_MS = HORA
 export function reporteViejo(r: { fecha: string; creadoEn: string }, ahora: Date): boolean {
-  return r.fecha !== hoyCR(ahora) || ahora.getTime() - Date.parse(r.creadoEn) > 5 * HORA
+  return r.fecha !== hoyCR(ahora) || ahora.getTime() - Date.parse(r.creadoEn) > VIGENCIA_REPORTE_MS
 }

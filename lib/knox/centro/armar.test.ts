@@ -351,10 +351,14 @@ test('conexiones, modo y reporte', () => {
   assert.equal(whatsappConectado([{ platform: 'instagram' }, { platform: 'whatsapp', isActive: true }]), true)
   assert.equal(whatsappConectado([{ platform: 'whatsapp', needsReconnection: true }]), false)
   assert.equal(whatsappConectado([{ platform: 'instagram' }]), false)
-  assert.equal(fuentesRevisadas([]), 6)
-  assert.equal(fuentesRevisadas(['agenda']), 5)
-  assert.equal(fuentesRevisadas(undefined), 6)
-  assert.equal(reporteViejo({ fecha: '2026-10-30', creadoEn: cr('2026-10-30', '16:06') }, AHORA), false)
+  const seis = { cambio: null, redes: null, leads: null, agenda: null, conversaciones: null, contenido: null }
+  assert.equal(fuentesRevisadas({ ...seis, faltan: [] }), 6) // los reportes de antes del correo
+  assert.equal(fuentesRevisadas({ ...seis, correos: null, faltan: [] }), 7)
+  assert.equal(fuentesRevisadas({ ...seis, correos: null, faltan: ['agenda'] }), 6)
+  assert.equal(fuentesRevisadas(undefined), 0)
+  // Con más de una hora, Knox vuelve a revisar
+  assert.equal(reporteViejo({ fecha: '2026-10-30', creadoEn: cr('2026-10-30', '16:50') }, AHORA), false)
+  assert.equal(reporteViejo({ fecha: '2026-10-30', creadoEn: cr('2026-10-30', '16:40') }, AHORA), true)
   assert.equal(reporteViejo({ fecha: '2026-10-30', creadoEn: cr('2026-10-30', '06:00') }, AHORA), true)
   assert.equal(reporteViejo({ fecha: '2026-10-29', creadoEn: cr('2026-10-29', '23:59') }, new Date(cr('2026-10-30', '00:30'))), true)
 })

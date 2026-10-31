@@ -36,37 +36,18 @@ import {
   type TareaDia,
 } from '@/lib/knox/centro/armar'
 import { aprobarBorradores, MAX_BORRADORES } from '@/lib/knox/centro/aprobar'
+import { cuentasGoogle } from '@/lib/knox/centro/chequeos'
+import { estadoCorreo } from '@/lib/knox/centro/conexiones'
+import { conTope, memo, MIN, TOPE_MS, valor } from '@/lib/knox/centro/memoria'
 import type { Centro, Conexion, Dia, Embudo, Esperando, Instagram, PostIg } from '@/lib/knox/centro/tipos'
 
-const MIN = 60_000
-const TOPE_MS = 8_000
 const SITIO = 'https://www.bralto.io'
 // San José, sin clave
 const CLIMA = 'https://api.open-meteo.com/v1/forecast?latitude=9.9281&longitude=-84.0907&current=temperature_2m&timezone=America/Costa_Rica'
+// Las que caben en el panel más alto (en 16:10 caben 4)
+const ESPERANDO_MAX = 8
 
 const db = () => createServiceClient()
-
-function conTope<T>(promesa: Promise<T>, ms = TOPE_MS): Promise<T> {
-  let reloj: ReturnType<typeof setTimeout> | undefined
-  const tope = new Promise<never>((_, rechazar) => {
-    reloj = setTimeout(() => rechazar(new Error(`no respondió en ${ms / 1000} s`)), ms)
-  })
-  return Promise.race([promesa, tope]).finally(() => clearTimeout(reloj))
-}
-
-// Lo que se guarda unos minutos en memoria (por instancia del servidor). Si falla, se vuelve a pedir la próxima vez
-const guardado = new Map<string, { hasta: number; valor: Promise<unknown> }>()
-function memo<T>(clave: string, ms: number, leer: () => Promise<T>): Promise<T> {
-  const ahora = Date.now()
-  const g = guardado.get(clave)
-  if (g && g.hasta > ahora) return g.valor as Promise<T>
-  const valor = leer()
-  guardado.set(clave, { hasta: ahora + ms, valor })
-  valor.catch(() => {
-    if (guardado.get(clave)?.valor === valor) guardado.delete(clave)
-  })
-  return valor
-}
 
 function revisar<T>(r: { data: T; error: { message: string } | null }, donde: string): T {
   if (r.error) throw new Error(`${donde}: ${r.error.message}`)
@@ -90,10 +71,10 @@ async function clima(): Promise<number> {
 
 // Personas nuevas ----------------------------------------------------------------------------------------------------
 
-const personaDeLead = (l: Lead): Persona => ({ clave: `lead|${l.origen}|${l.en}|${l.nombre}`, en: l.en, canal: 'Sitio web' })
+export const personaDeLead = (l: Lead): Persona => ({ clave: `lead|${l.origen}|${l.en}|${l.nombre}`, en: l.en, canal: 'Sitio web' })
 
 // Los contactos que Knox sacó de la bandeja (una conversación de trabajo) desde `desde`
-async function contactosDeLaBandeja(desde: string): Promise<Persona[]> {
+export async function contactosDeLaBandeja(desde: string): Promise<Persona[]> {
   const base = db()
   const contactos = revisar(
     await base.from('crm_contactos').select('id, creado_en').eq('origen', 'zernio').gte('creado_en', desde).limit(1000),
@@ -117,7 +98,8 @@ async function contactosDeLaBandeja(desde: string): Promise<Persona[]> {
 
 // Te están esperando ---------------------------------------------------------------------------------------------------
 
-async function esperando(): Promise<Esperando> {
+// cuantas: las que se mandan a la pantalla (Hoy muestra las que caben; Ventas, más)
+export async function esperando(cuantas = ESPERANDO_MAX): Promise<Esperando> {
   const { filas } = await listarBandeja('por_responder', 200)
   const lista: FilaBandeja[] = filas.map((f) => ({
     id: f.id,
@@ -132,7 +114,7 @@ async function esperando(): Promise<Esperando> {
   }))
   const base = db()
   const contactos = porResponder(lista)
-    .slice(0, 3)
+    .slice(0, cuantas)
     .map((f) => f.contactoId)
     .filter((id): id is string => !!id)
   const [etiquetas, borradores] = await Promise.all([
@@ -149,12 +131,12 @@ async function esperando(): Promise<Esperando> {
   ])
   const porContacto = new Map(((revisar(etiquetas, 'crm_contactos') ?? []) as { id: string; etiquetas: string[] | null }[]).map((c) => [c.id, c.etiquetas ?? []]))
   const ids = ((revisar(borradores, 'crm_knox_decisiones') ?? []) as { id: string }[]).map((b) => b.id)
-  return armarEsperando(lista, porContacto, ids)
+  return armarEsperando(lista, porContacto, ids, cuantas)
 }
 
 // Camino a la venta (este mes) ---------------------------------------------------------------------------------------
 
-async function embudo(hoy: string): Promise<Embudo> {
+export async function embudo(hoy: string): Promise<Embudo> {
   const base = db()
   const mes = rangoUtc(`${hoy.slice(0, 7)}-01`, hoy).desde
   const [llegaron, conversando, etapas, ganados] = await Promise.all([
@@ -320,17 +302,11 @@ async function sitioEnLinea(): Promise<boolean> {
 
 // Todo junto -----------------------------------------------------------------------------------------------------------
 
-function valor<T>(r: PromiseSettledResult<T>, nombre: string): T | null {
-  if (r.status === 'fulfilled') return r.value
-  console.error(`[knox-centro] no se pudo leer ${nombre}:`, r.reason instanceof Error ? r.reason.message : r.reason)
-  return null
-}
-
 export async function leerCentro(ahora = new Date()): Promise<Centro> {
   const hoy = hoyCR(ahora)
   // Desde las 00:00 de hace 7 días: para comparar con ayer y para el día de siempre del pulso
   const semana = rangoUtc(sumarDias(hoy, -7), hoy).desde
-  const [rClima, rDolar, rLeads, rContactos, rEsperando, rEmbudo, rIg, rCitas, rPosts, rTareas, rMensajes, rZernio, rSitio, rModo] =
+  const [rClima, rDolar, rLeads, rContactos, rEsperando, rEmbudo, rIg, rCitas, rPosts, rTareas, rMensajes, rZernio, rSitio, rModo, rGoogle] =
     await Promise.allSettled([
       conTope(memo('clima', 10 * MIN, clima)),
       conTope(memo('dolar', 30 * MIN, tipoDeCambio)),
@@ -349,6 +325,7 @@ export async function leerCentro(ahora = new Date()): Promise<Centro> {
       conTope(memo('zernio', 5 * MIN, cuentasZernio)),
       conTope(memo('sitio', 2 * MIN, sitioEnLinea)),
       conTope(ajustesKnox()),
+      conTope(cuentasGoogle(), 12_000),
     ])
 
   const listaLeads = valor(rLeads, 'leads')
@@ -371,6 +348,8 @@ export async function leerCentro(ahora = new Date()): Promise<Centro> {
   const ig = valor(rIg, 'Instagram')
   const zernio = valor(rZernio, 'cuentas de Zernio')
   const sitio = valor(rSitio, 'el sitio')
+  const google = valor(rGoogle, 'las cuentas de Google')
+  const correo = google ? estadoCorreo(google) : null
   const conexion = (ok: boolean | null, sinCuenta: Conexion = 'caido'): Conexion => (ok === null ? 'caido' : ok ? 'conectado' : sinCuenta)
 
   return {
@@ -388,7 +367,9 @@ export async function leerCentro(ahora = new Date()): Promise<Centro> {
       instagram: conexion(ig ? true : null),
       whatsapp: conexion(zernio ? whatsappConectado(zernio) : null, 'por-conectar'),
       sitio: conexion(sitio),
-      correo: 'por-conectar', // todavía no hay permiso de Google
+      // «Conectado (2)» si responden las dos cuentas de Google
+      correo: correo?.estado ?? 'caido',
+      correoCuentas: correo ? { conectadas: correo.conectadas, total: correo.total } : null,
     },
     modo: valor(rModo, 'el modo de Knox')?.modo ?? null,
   }

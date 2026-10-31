@@ -15,19 +15,51 @@ import {
   textoProximo,
 } from '@/lib/knox/centro/armar'
 import { hora, minutosYSegundos } from '@/lib/knox/centro/formato'
+import { BASE_ALTO, BASE_ANCHO, centroKnox, DISENO_DERECHA, DISENO_IZQUIERDA, medidas, repartir, type Medidas } from '@/lib/knox/centro/escena'
 import { arco, BARRAS, C, envolvente, ondaQuieta, P, svgFlujos, svgFondo } from './geometria'
 import { Hud, type Anotacion, type Estado, type FaseVoz, type RefsHud } from './hud'
 import * as Paneles from './paneles'
 import type { Panel } from './paneles'
 import { Polvo } from './polvo'
+import { MiniKnox } from './mini-knox'
+import { MarcoVista, VistaAgendaPaneles, VistaConexionesPaneles, VistaRedesPaneles, VistaVentasPaneles } from './vistas'
+import { leerVista, type DatosVista, type Vista, type VistaConDatos } from '@/lib/knox/centro/vistas/tipos'
 import './centro.css'
 
 // El Centro de mando de Knox (/knox), a pantalla completa en la app de Mac y en el navegador. Trae el último reporte
-// hablado (/api/knox) y lo dice en voz alta; si es de otro día o tiene más de 5 horas, primero le pide uno nuevo. Los
+// hablado (/api/knox) y lo dice en voz alta; si es de otro día o tiene más de una hora, primero le pide uno nuevo. Los
 // paneles salen de /api/knox/centro, que pregunta cada minuto. La app de Mac (KnoxMac en el user agent) deja sonar
 // sin un toque; en el navegador, si no deja, Knox espera el primer toque. ?hablar: habla aunque ya lo hayas oído.
 
-export type Demo = { centro: Centro; reporte: Reporte; fase: FaseVoz; segundo: number; duracion: number; ahora: string }
+export type Demo = {
+  centro: Centro
+  reporte: Reporte
+  fase: FaseVoz
+  segundo: number
+  duracion: number
+  ahora: string
+  vistas?: Partial<DatosVista>
+}
+
+// Lo de cada vista: los datos y cuándo llegaron (se vuelven a pedir si tienen más de un minuto)
+type GuardadoVistas = { [K in VistaConDatos]?: { datos: DatosVista[K]; en: number } }
+const VIGENCIA_VISTA_MS = 60_000
+
+// La dirección de cada vista (el enlace sirve para abrirla directo; Hoy es /knox a secas)
+function direccionDe(v: Vista): string {
+  const url = new URL(window.location.href)
+  url.searchParams.delete('hablar')
+  if (v === 'hoy') url.searchParams.delete('vista')
+  else url.searchParams.set('vista', v)
+  return `${url.pathname}${url.search}`
+}
+
+const VISTA_INFO: Record<VistaConDatos, { titulo: string; sub: string; enlace?: { texto: string; href: string } }> = {
+  ventas: { titulo: 'Ventas', sub: 'Cómo va el camino a la venta', enlace: { texto: 'Abrir en el CRM', href: '/crm/pipeline' } },
+  redes: { titulo: 'Redes', sub: 'Instagram y lo que sale', enlace: { texto: 'Abrir el calendario', href: '/calendario' } },
+  agenda: { titulo: 'Agenda', sub: 'Hoy y mañana: citas, posts y tareas', enlace: { texto: 'Abrir las tareas', href: '/crm/tareas' } },
+  conexiones: { titulo: 'Conexiones', sub: 'Lo que Knox puede leer, revisado de verdad', enlace: { texto: 'Ajustes de Knox', href: '/crm/knox' } },
+}
 
 // Los paneles se vuelven a dibujar solo si cambian sus datos (el subtítulo cambia varias veces por segundo)
 const Cabecera = memo(Paneles.Cabecera)
@@ -56,8 +88,6 @@ const ENV = Array.from({ length: 91 }, (_, j) => envolvente(j))
 const COS = BARRAS.map((b) => Math.cos(((b.grados - 90) * Math.PI) / 180))
 const SIN = BARRAS.map((b) => Math.sin(((b.grados - 90) * Math.PI) / 180))
 const CIRCULO = `M${C} ${C - 226}A226 226 0 1 1 ${C - 0.01} ${C - 226}`
-const FONDO = svgFondo()
-const FLUJOS = svgFlujos()
 
 // Lo mismo que guarda el Inicio del panel: lo que ya se oyó en un lado no se repite en el otro
 const claveEscuchado = (id: string) => `knox-escuchado:${id}`
@@ -87,12 +117,26 @@ async function pedirReporte(metodo: 'GET' | 'POST'): Promise<Reporte> {
   return j.reporte
 }
 
-// El lienzo de 1920×1080 cabe entero en la ventana (con bordes negros)
-function escalar() {
-  document.documentElement.style.setProperty('--kc-escala', String(Math.min(window.innerWidth / 1920, window.innerHeight / 1080)))
+// El lienzo toma la forma de la ventana (lib/knox/centro/escena.ts). Las mismas variables que deja el script de la
+// página antes del primer pintado
+function medirVentana(): Medidas {
+  const m = medidas(window.innerWidth, window.innerHeight)
+  const d = document.documentElement.style
+  d.setProperty('--kc-escala', String(m.escala))
+  d.setProperty('--kc-ancho', `${m.ancho}px`)
+  d.setProperty('--kc-alto', `${m.alto}px`)
+  d.setProperty('--kc-extra', `${m.alto - BASE_ALTO}px`)
+  return m
 }
 
-export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo }) {
+// vistaInicial: la de ?vista= (si no se entiende, Hoy)
+export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: string; demo?: Demo; vistaInicial?: string }) {
+  const [vista, setVista] = useState<Vista>(() => leerVista(vistaInicial))
+  const [vistas, setVistas] = useState<GuardadoVistas>(() =>
+    demo?.vistas ? Object.fromEntries(Object.entries(demo.vistas).map(([k, v]) => [k, { datos: v, en: Date.now() }])) : {},
+  )
+  const vistasRef = useRef<GuardadoVistas>(vistas)
+  vistasRef.current = vistas
   const [centro, setCentro] = useState<Centro | null>(demo?.centro ?? null)
   const [reporte, setReporte] = useState<Reporte | null>(demo?.reporte ?? null)
   const [fase, setFase] = useState<FaseVoz>(demo?.fase ?? 'cargando')
@@ -102,8 +146,9 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
   const [ahora, setAhora] = useState<Date | null>(null)
   const [confirmar, setConfirmar] = useState(false)
   const [enviando, setEnviando] = useState(false)
-  const [destello, setDestello] = useState(false)
   const [conAudio, setConAudio] = useState(!!demo)
+  // El tamaño del lienzo: en el servidor, el del diseño; en la ventana, el de la ventana
+  const [lienzoMedidas, setLienzoMedidas] = useState<Pick<Medidas, 'ancho' | 'alto'>>({ ancho: BASE_ANCHO, alto: BASE_ALTO })
 
   const faseRef = useRef<FaseVoz>(fase)
   const audio = useRef<HTMLAudioElement | null>(null)
@@ -126,6 +171,9 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
   const punta = useRef<SVGGElement>(null)
   const barra = useRef<HTMLElement>(null)
   const tiempo = useRef<HTMLElement>(null)
+  // Knox en pequeño (en las vistas que no son Hoy)
+  const miniOnda = useRef<HTMLDivElement>(null)
+  const miniTiempo = useRef<HTMLSpanElement>(null)
   // El mismo objeto siempre: así el núcleo no se vuelve a dibujar con cada palabra del subtítulo
   const refs: RefsHud = useMemo(
     () => ({ nucleo, onda, ondaDentro, arco: arcoVoz, punta, barra, tiempo }),
@@ -266,9 +314,13 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
   }, [])
 
   useEffect(() => {
-    escalar()
-    window.addEventListener('resize', escalar)
-    return () => window.removeEventListener('resize', escalar)
+    const medir = () => {
+      const m = medirVentana()
+      setLienzoMedidas((antes) => (antes.ancho === m.ancho && antes.alto === m.alto ? antes : { ancho: m.ancho, alto: m.alto }))
+    }
+    medir()
+    window.addEventListener('resize', medir)
+    return () => window.removeEventListener('resize', medir)
   }, [])
 
   useEffect(() => {
@@ -429,6 +481,23 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
         textoTiempo = texto
       }
 
+      // Knox en pequeño (en las otras vistas): su onda y su tiempo
+      const mini = miniOnda.current?.children
+      if (mini && (demo || sonando || vuelta % 3 === 0)) {
+        const medio = (mini.length - 1) / 2
+        for (let k = 0; k < mini.length; k++) {
+          const d = Math.abs(k - medio) / medio
+          const v =
+            sonando && an
+              ? (bins[1 + Math.round(d * 10)] / 255) * (1 - d * 0.35)
+              : sonando
+                ? (0.25 + 0.6 * Math.abs(Math.sin(t * 7.3 + d * 5)) * (0.6 + 0.4 * Math.sin(t * 2.1 + k))) * (1 - d * 0.45)
+                : 0.12
+          ;(mini[k] as HTMLElement).style.transform = `scaleY(${Math.max(0.12, Math.min(1, v)).toFixed(3)})`
+        }
+      }
+      if (miniTiempo.current && miniTiempo.current.textContent !== texto) miniTiempo.current.textContent = texto
+
       // El subtítulo cambia cuando cambia la palabra
       if (f === 'hablando' || f === 'pausado') {
         const s = enVivo(textos.current, inicios.current, dur, pos)
@@ -509,11 +578,43 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
 
   const cancelar = useCallback(() => setConfirmar(false), [])
 
-  const verConexiones = useCallback(() => {
-    setDestello(false)
-    requestAnimationFrame(() => setDestello(true))
-    setTimeout(() => setDestello(false), 1900)
+  // Vistas ---------------------------------------------------------------------------------------------------------
+
+  // Cambia sin recargar: la dirección queda con ?vista= (y el botón de atrás vuelve)
+  const cambiarVista = useCallback((v: Vista) => {
+    setVista(v)
+    window.history.pushState({ vista: v }, '', direccionDe(v))
   }, [])
+
+  useEffect(() => {
+    const alVolver = () => setVista(leerVista(new URLSearchParams(window.location.search).get('vista')))
+    window.addEventListener('popstate', alVolver)
+    return () => window.removeEventListener('popstate', alVolver)
+  }, [])
+
+  const cargarVista = useCallback(async (v: VistaConDatos) => {
+    try {
+      const res = await fetch(`/api/knox/centro/vista/${v}`, { cache: 'no-store' })
+      if (res.status === 401) {
+        window.location.href = '/login'
+        return
+      }
+      if (!res.ok) return
+      const j = (await res.json()) as { datos?: DatosVista[VistaConDatos] }
+      if (j.datos) setVistas((antes) => ({ ...antes, [v]: { datos: j.datos, en: Date.now() } }))
+    } catch {
+      // la próxima vuelta lo intenta de nuevo
+    }
+  }, [])
+
+  // Al abrir una vista: sus datos (si los que hay tienen más de un minuto) y luego cada minuto mientras esté abierta
+  useEffect(() => {
+    if (vista === 'hoy' || demo) return
+    const guardado = vistasRef.current[vista]
+    if (!guardado || Date.now() - guardado.en > VIGENCIA_VISTA_MS) void cargarVista(vista)
+    const id = setInterval(() => document.visibilityState === 'visible' && void cargarVista(vista), VIGENCIA_VISTA_MS)
+    return () => clearInterval(id)
+  }, [vista, demo, cargarVista])
 
   // Lo que se ve -----------------------------------------------------------------------------------------------------
 
@@ -548,68 +649,119 @@ export function CentroKnox({ iniciales, demo }: { iniciales: string; demo?: Demo
     return { clave: 'cierre', palabras: fijo(cierre.length <= 160 ? cierre : partes[partes.length - 1]), tenue: false }
   }, [aviso, fase, sub, error, borradores, reporte])
 
+  // El lienzo: el fondo, los flujos de cada panel hacia Knox y el alto de cada panel (para lo que cabe adentro)
+  const { ancho, alto } = lienzoMedidas
+  const centroDeKnox = useMemo(() => centroKnox({ ancho, alto }), [ancho, alto])
+  const izquierda = useMemo(() => repartir(alto, DISENO_IZQUIERDA), [alto])
+  const derecha = useMemo(() => repartir(alto, DISENO_DERECHA), [alto])
+  const fondo = useMemo(() => svgFondo({ ancho, alto }, centroDeKnox), [ancho, alto, centroDeKnox])
+  const flujos = useMemo(() => {
+    const origenes: [number, number][] = [
+      ...izquierda.map((t): [number, number] => [480, t.top + t.alto / 2]),
+      ...derecha.map((t): [number, number] => [ancho - 480, t.top + t.alto / 2]),
+    ]
+    return svgFlujos(origenes, centroDeKnox)
+  }, [izquierda, derecha, ancho, centroDeKnox])
+
   const reviso: Anotacion = reporte
-    ? { valor: `${fuentesRevisadas(reporte.datos?.faltan)} fuentes`, detalle: fase === 'revisando' ? 'revisando ahora…' : `a las ${hora(reporte.creadoEn)}` }
+    ? {
+        valor: `${fuentesRevisadas(reporte.datos as unknown as Record<string, unknown>)} fuentes`,
+        detalle: fase === 'revisando' ? 'revisando ahora…' : `a las ${hora(reporte.creadoEn)}`,
+      }
     : { valor: RAYA, detalle: fase === 'revisando' || fase === 'cargando' ? 'revisando…' : '' }
   const modo: Anotacion = centro?.modo ? { valor: MODO_CENTRO[centro.modo].nombre, detalle: MODO_CENTRO[centro.modo].detalle } : { valor: RAYA, detalle: '' }
   const siguiente = centro?.dia && ahora ? proximo(centro.dia.items, ahora) : null
   const prox: Anotacion = siguiente ? { valor: hora(siguiente.en), detalle: textoProximo(siguiente) } : { valor: RAYA, detalle: centro?.dia ? 'nada más hoy' : '' }
 
+  // Knox en pequeño, en la esquina de las otras vistas
+  const mini = (
+    <MiniKnox
+      hablando={fase === 'hablando'}
+      texto={estado.texto}
+      conAudio={conAudio}
+      ondaRef={miniOnda}
+      tiempoRef={miniTiempo}
+      onCara={() => cambiarVista('hoy')}
+      onBoton={demo ? () => undefined : alOrbe}
+    />
+  )
+  const info = vista === 'hoy' ? null : VISTA_INFO[vista]
+
   return (
     <div className="kc">
-      <div className="lienzo" ref={lienzo}>
-        <Polvo />
+      <div className="lienzo" ref={lienzo} data-vista={vista}>
+        <Polvo ancho={ancho} alto={alto} cx={centroDeKnox.x} cy={centroDeKnox.y} />
         <div className="orb o1" />
         <div className="orb o2" />
         <div className="orb o3" />
         <div className="orb o4" />
         <div className="orb ocore" />
         <div className="floor" />
-        <svg className="bg" viewBox="0 0 1920 1080" aria-hidden dangerouslySetInnerHTML={{ __html: FONDO }} />
-        <svg className="bg" viewBox="0 0 1920 1080" aria-hidden dangerouslySetInnerHTML={{ __html: FLUJOS }} />
+        <svg className="bg" viewBox={`0 0 ${ancho} ${alto}`} aria-hidden dangerouslySetInnerHTML={{ __html: fondo }} />
 
         <Cabecera
           centro={centro}
           iniciales={iniciales}
           ahora={ahora}
           relojFijo={demo ? new Date(demo.ahora) : null}
-          hablaDolar={hablaDe === 'dolar'}
-          onConexiones={verConexiones}
+          hablaDolar={hablaDe === 'dolar' && vista === 'hoy'}
+          vista={vista}
+          onVista={cambiarVista}
         />
 
-        <section className="col left" aria-label="Clientes y ventas">
-          <Clientes datos={centro?.clientes ?? null} habla={hablaDe === 'clientes'} />
-          <Esperando datos={centro?.esperando ?? null} ahora={ahora} habla={hablaDe === 'esperando'} />
-          <Embudo datos={centro?.embudo ?? null} />
-        </section>
+        {/* Hoy no se desmonta al cambiar de vista: Knox sigue hablando y la onda sigue andando */}
+        <div className={`capa-hoy${vista === 'hoy' ? '' : ' fuera'}`} aria-hidden={vista !== 'hoy'}>
+          <svg className="bg flujos" viewBox={`0 0 ${ancho} ${alto}`} aria-hidden dangerouslySetInnerHTML={{ __html: flujos }} />
 
-        <Hud
-          fase={fase}
-          refs={refs}
-          estado={estado}
-          subtitulo={subtitulo}
-          reviso={reviso}
-          modo={modo}
-          proximo={prox}
-          borradores={borradores}
-          conAudio={conAudio}
-          confirmar={confirmar ? { pregunta: preguntaAprobar(borradores), uno: borradores === 1 } : null}
-          enviando={enviando}
-          onOrbe={demo ? () => undefined : conAudio ? alOrbe : null}
-          onEscuchar={escuchar}
-          onActualizar={() => void actualizar()}
-          onPedirAprobar={() => setConfirmar(true)}
-          onAprobar={() => void aprobar()}
-          onCancelar={cancelar}
-        />
+          <section className="col left" aria-label="Clientes y ventas">
+            <Clientes datos={centro?.clientes ?? null} habla={hablaDe === 'clientes'} />
+            <Esperando datos={centro?.esperando ?? null} ahora={ahora} habla={hablaDe === 'esperando'} alto={izquierda[1].alto} />
+            <Embudo datos={centro?.embudo ?? null} />
+          </section>
 
-        <section className="col right" aria-label="Redes y agenda">
-          <Instagram datos={centro?.instagram ?? null} habla={hablaDe === 'instagram'} />
-          <Mejor datos={centro ? centro.mejor : null} habla={hablaDe === 'mejor'} />
-          <TuDia datos={centro?.dia ?? null} ahora={ahora} habla={hablaDe === 'dia'} />
-        </section>
+          <Hud
+            fase={fase}
+            refs={refs}
+            estado={estado}
+            subtitulo={subtitulo}
+            reviso={reviso}
+            modo={modo}
+            proximo={prox}
+            borradores={borradores}
+            conAudio={conAudio}
+            confirmar={confirmar ? { pregunta: preguntaAprobar(borradores), uno: borradores === 1 } : null}
+            enviando={enviando}
+            onOrbe={demo ? () => undefined : conAudio ? alOrbe : null}
+            onEscuchar={escuchar}
+            onActualizar={() => void actualizar()}
+            onPedirAprobar={() => setConfirmar(true)}
+            onAprobar={() => void aprobar()}
+            onCancelar={cancelar}
+          />
 
-        <Pulso datos={centro?.pulso ?? null} conexiones={centro?.conexiones ?? null} ahora={ahora} destello={destello} />
+          <section className="col right" aria-label="Redes y agenda">
+            <Instagram datos={centro?.instagram ?? null} habla={hablaDe === 'instagram'} alto={derecha[0].alto} />
+            <Mejor datos={centro ? centro.mejor : null} habla={hablaDe === 'mejor'} />
+            <TuDia datos={centro?.dia ?? null} ahora={ahora} habla={hablaDe === 'dia'} alto={derecha[2].alto} />
+          </section>
+
+          <Pulso
+            datos={centro?.pulso ?? null}
+            conexiones={centro?.conexiones ?? null}
+            ahora={ahora}
+            ancho={ancho}
+            onConexiones={() => cambiarVista('conexiones')}
+          />
+        </div>
+
+        {info && vista !== 'hoy' && (
+          <MarcoVista key={vista} titulo={info.titulo} sub={info.sub} enlace={info.enlace} mini={mini} clase={`g-${vista}`}>
+            {vista === 'ventas' && <VistaVentasPaneles datos={vistas.ventas?.datos} ahora={ahora} />}
+            {vista === 'redes' && <VistaRedesPaneles datos={vistas.redes?.datos} ahora={ahora} />}
+            {vista === 'agenda' && <VistaAgendaPaneles datos={vistas.agenda?.datos} ahora={ahora} />}
+            {vista === 'conexiones' && <VistaConexionesPaneles datos={vistas.conexiones?.datos} ahora={ahora} />}
+          </MarcoVista>
+        )}
 
         <div className="vignette" />
         <div className="grain" />
