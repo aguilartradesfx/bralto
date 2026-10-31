@@ -38,7 +38,7 @@ const texto = (d: Datos) => escribirPlantilla(d, AHORA).map((s) => s.texto).join
 test('empieza con el saludo y termina con el cierre', () => {
   const secciones = escribirPlantilla(datos(), AHORA)
   assert.equal(secciones[0].tarjeta, 'saludo')
-  assert.match(secciones[0].texto, /^Buenos días, Alejandro\. Hoy es viernes 30 de octubre/)
+  assert.match(secciones[0].texto, /^Buenos días, Ale\. Hoy es viernes 30 de octubre/)
   assert.equal(secciones.at(-1)?.tarjeta, 'cierre')
 })
 
@@ -69,6 +69,18 @@ test('nombra la publicación más reciente y la mejor de la semana, sin emojis',
   assert.match(t, /«Tu propio asistente» lleva 600 vistas, 10 me gusta y 3 comentarios/)
   assert.match(t, /Lo que mejor va esta semana es el reel «El reel que más gustó», con 2145 vistas/)
   assert.doesNotMatch(t, /🤖|🔥/)
+})
+
+test('cuenta los correos sin leer sin leer de quién son (eso lo decide el escritor)', () => {
+  const conCorreos = datos({ correos: { cuentas: ['a@ejemplo.test'], sinLeer: 4, recientes: [{ cuenta: 'a@ejemplo.test', de: 'Ana', asunto: 'Hola', resumen: '', en: '2026-10-30T12:00:00.000Z' }] } })
+  const t = texto(conCorreos)
+  assert.match(t, /4 correos sin leer de hoy/)
+  assert.doesNotMatch(t, /Ana/)
+  assert.doesNotMatch(texto(datos()), /correos sin leer/)
+})
+
+test('si el correo no respondió, lo dice en el cierre', () => {
+  assert.match(texto(datos({ correos: null, faltan: ['correos'] })), /Hoy no pude leer tu correo/)
 })
 
 test('si una fuente no respondió, lo dice antes de despedirse y no inventa esa parte', () => {
