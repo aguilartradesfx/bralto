@@ -17,8 +17,9 @@ import {
 } from '@/lib/knox/centro/armar'
 import { hora, minutosYSegundos } from '@/lib/knox/centro/formato'
 import { BASE_ALTO, BASE_ANCHO, centroKnox, DISENO_DERECHA, DISENO_IZQUIERDA, medidas, repartir, type Medidas } from '@/lib/knox/centro/escena'
-import { arco, BARRAS, C, envolvente, ondaQuieta, P, svgFlujos, svgFondo } from './geometria'
+import { arco, C, P, svgFlujos, svgFondo } from './geometria'
 import { Hud, type Anotacion, type Estado, type FaseVoz, type RefsHud } from './hud'
+import type { LeerOrbe } from './orbe'
 import * as Paneles from './paneles'
 import type { Panel } from './paneles'
 import { Polvo } from './polvo'
@@ -86,10 +87,6 @@ const PANEL_DE: Partial<Record<Tarjeta, Panel>> = {
   contenido: 'dia',
 }
 
-const QUIETA = ondaQuieta()
-const ENV = Array.from({ length: 91 }, (_, j) => envolvente(j))
-const COS = BARRAS.map((b) => Math.cos(((b.grados - 90) * Math.PI) / 180))
-const SIN = BARRAS.map((b) => Math.sin(((b.grados - 90) * Math.PI) / 180))
 const CIRCULO = `M${C} ${C - 226}A226 226 0 1 1 ${C - 0.01} ${C - 226}`
 
 // Lo mismo que guarda el Inicio del panel: lo que ya se oyó en un lado no se repite en el otro
@@ -168,6 +165,8 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   )
   const vistasRef = useRef<GuardadoVistas>(vistas)
   vistasRef.current = vistas
+  const vistaRef = useRef<Vista>(vista)
+  vistaRef.current = vista
   const [centro, setCentro] = useState<Centro | null>(demo?.centro ?? null)
   const [reporte, setReporte] = useState<Reporte | null>(demo?.reporte ?? null)
   const [fase, setFase] = useState<FaseVoz>(demo?.fase ?? 'cargando')
@@ -187,6 +186,8 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   const objeto = useRef<string | null>(null)
   const contexto = useRef<AudioContext | null>(null)
   const analizador = useRef<AnalyserNode | null>(null)
+  // El del orbe: como el de la página donde Ale lo eligió, para que reaccione igual a la voz
+  const analizadorOrbe = useRef<AnalyserNode | null>(null)
   const conectado = useRef<HTMLAudioElement | null>(null)
   const textos = useRef<string[]>([])
   const inicios = useRef<number[]>([])
@@ -197,8 +198,6 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   const relojAviso = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lienzo = useRef<HTMLDivElement>(null)
   const nucleo = useRef<HTMLDivElement>(null)
-  const onda = useRef<SVGGElement>(null)
-  const ondaDentro = useRef<SVGGElement>(null)
   const arcoVoz = useRef<SVGPathElement>(null)
   const punta = useRef<SVGGElement>(null)
   const barra = useRef<HTMLElement>(null)
@@ -207,10 +206,15 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   const miniOnda = useRef<HTMLDivElement>(null)
   const miniTiempo = useRef<HTMLSpanElement>(null)
   // El mismo objeto siempre: así el núcleo no se vuelve a dibujar con cada palabra del subtítulo
-  const refs: RefsHud = useMemo(
-    () => ({ nucleo, onda, ondaDentro, arco: arcoVoz, punta, barra, tiempo }),
-    [],
-  )
+  const refs: RefsHud = useMemo(() => ({ nucleo, arco: arcoVoz, punta, barra, tiempo }), [])
+
+  // Lo que el orbe pregunta en cada cuadro: en qué está Knox y si su voz suena (en otra vista no se dibuja)
+  const leerOrbe: LeerOrbe = useCallback(() => {
+    if (demo) return { fase: demo.fase, sonando: demo.fase === 'hablando', analizador: null, visible: true }
+    const a = audio.current
+    const sonando = !!a && !a.paused && !a.ended
+    return { fase: faseRef.current, sonando, analizador: sonando ? analizadorOrbe.current : null, visible: vistaRef.current === 'hoy' }
+  }, [demo])
 
   const ponerFase = useCallback((f: FaseVoz) => {
     faseRef.current = f
@@ -233,10 +237,11 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
     audio.current = null
     objeto.current = null
     analizador.current = null
+    analizadorOrbe.current = null
     setConAudio(false)
   }, [])
 
-  // Con un toque (o en la app de Mac) el contexto de audio arranca: así la onda sale de la voz de verdad
+  // Con un toque (o en la app de Mac) el contexto de audio arranca: así el orbe y el brillo salen de la voz de verdad
   const despertarAudio = useCallback(() => {
     try {
       const Contexto = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
@@ -245,7 +250,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       contexto.current = ctx
       if (ctx.state !== 'running') void ctx.resume()
     } catch {
-      // sin Web Audio, la onda se dibuja sola
+      // sin Web Audio, el orbe se mueve con una voz de mentira
     }
   }, [])
 
@@ -264,15 +269,22 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       const an = ctx.createAnalyser()
       an.fftSize = 128
       an.smoothingTimeConstant = 0.72
-      // La voz de ElevenLabs viene fuerte: con el techo más arriba, la onda no se llena toda
+      // La voz de ElevenLabs viene fuerte: con el techo más arriba, la onda de Knox en pequeño no se llena toda
       an.minDecibels = -88
       an.maxDecibels = -12
-      fuente.connect(an)
+      // En fila (la voz pasa por los dos sin cambiar): así el del orbe siempre recibe la voz
+      const orbe = ctx.createAnalyser()
+      orbe.fftSize = 512
+      orbe.smoothingTimeConstant = 0.7
+      fuente.connect(orbe)
+      orbe.connect(an)
       an.connect(ctx.destination)
       analizador.current = an
+      analizadorOrbe.current = orbe
       conectado.current = a
     } catch {
       analizador.current = null
+      analizadorOrbe.current = null
     }
   }, [])
 
@@ -308,8 +320,8 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
     [],
   )
 
-  // Un audio corto de Knox (su saludo, «ya casi», «Ahora sí…»), con su subtítulo y la onda de su voz. false si no
-  // pudo sonar (el navegador pide un toque); si suena, termina cuando acaba
+  // Un audio corto de Knox (su saludo, «ya casi», «Ahora sí…»), con su subtítulo y el orbe moviéndose con su voz.
+  // false si no pudo sonar (el navegador pide un toque); si suena, termina cuando acaba
   const decirCorto = useCallback(
     async (src: string, secciones: string[], ini: number[], alEmpezar?: () => void): Promise<boolean> => {
       detener()
@@ -494,34 +506,15 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
     }
   }, [demo, bajarAudio, decirCorto, detener, mostrarAviso, ponerFase, preparar, sonarArranque])
 
-  // Cuadro a cuadro: la onda (de la voz de verdad si hay analizador), el anillo de avance, el tiempo y el subtítulo
+  // Cuadro a cuadro: el brillo de atrás y la cara (con la voz de verdad si hay analizador), el anillo de avance, el
+  // tiempo, Knox en pequeño y el subtítulo. El orbe se mueve solo (orbe.tsx)
   useEffect(() => {
-    const lineas = Array.from(refs.onda.current?.children ?? []) as SVGLineElement[]
-    const internas = Array.from(refs.ondaDentro.current?.children ?? []) as SVGLineElement[]
-    const previos = new Float32Array(BARRAS.length)
     const bins = new Uint8Array(64)
-    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let textoTiempo = '-'
     let arcoVisible = true
     let nivelPrevio = -1
     let vuelta = 0
     let raf = 0
-
-    const pintarBarra = (i: number, v: number) => {
-      const L = 3 + 42 * Math.max(0, Math.min(1, v))
-      const ln = lineas[i]
-      const li = internas[i]
-      if (ln) {
-        ln.setAttribute('x2', (C + (180 + L) * COS[i]).toFixed(1))
-        ln.setAttribute('y2', (C + (180 + L) * SIN[i]).toFixed(1))
-        ln.setAttribute('stroke-opacity', (0.28 + (0.72 * L) / 45).toFixed(2))
-      }
-      if (li) {
-        const r = 175 - L * 0.22
-        li.setAttribute('x2', (C + r * COS[i]).toFixed(1))
-        li.setAttribute('y2', (C + r * SIN[i]).toFixed(1))
-      }
-    }
 
     const cuadro = (ms: number) => {
       const t = demo ? demo.segundo : ms / 1000
@@ -536,35 +529,9 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       // Lo que dice mientras revisa no es el reporte: sin anillo de avance ni tiempo
       const corto = f === 'saludando'
       if (an && sonando) an.getByteFrequencyData(bins)
-
-      // La onda: quieta con poco movimiento si no habla; cada 3 cuadros basta
       vuelta++
-      if (demo || sonando || busca || vuelta % 3 === 0) {
-        for (let i = 0; i < BARRAS.length; i++) {
-          const { j, grados } = BARRAS[i]
-          let v: number
-          if (sonando && an) {
-            // La voz vive entre ~300 Hz y ~4,5 kHz (los primeros 12 casilleros de 375 Hz): ahí se reparten las rayas
-            const a1 = bins[1 + ((j * 7) % 12)]
-            const a2 = bins[1 + Math.round((Math.abs(j - 45) / 45) * 5)]
-            v = Math.min(1, Math.pow((0.6 * a1 + 0.4 * a2) / 255, 1.15) * 1.3) * ENV[j]
-          } else if (sonando && !demo) {
-            v = (0.25 + 0.6 * Math.abs(Math.sin(t * 7.3 + j * 0.21)) * (0.6 + 0.4 * Math.sin(t * 2.1 + j * 0.5))) * ENV[j]
-          } else if (sonando) {
-            v = QUIETA[j] * ENV[j]
-          } else if (busca && !reducido) {
-            const s = (t * 140) % 360
-            const d = Math.min(Math.abs(grados - s), 360 - Math.abs(grados - s))
-            v = QUIETA[j] * ENV[j] * 0.22 + 0.62 * Math.max(0, 1 - d / 46) ** 2
-          } else {
-            v = QUIETA[j] * ENV[j] * (0.3 + (reducido ? 0 : 0.06 * Math.sin(t * 1.3)))
-          }
-          previos[i] = demo ? v : previos[i] + (v - previos[i]) * (sonando ? 0.5 : 0.18)
-          pintarBarra(i, previos[i])
-        }
-      }
 
-      // Qué tan fuerte suena (el brillo naranja de atrás)
+      // Qué tan fuerte suena (el brillo naranja de atrás y el de la cara)
       let nivel = 0
       if (sonando && an) {
         let suma = 0
@@ -830,7 +797,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
           onVista={cambiarVista}
         />
 
-        {/* Hoy no se desmonta al cambiar de vista: Knox sigue hablando y la onda sigue andando */}
+        {/* Hoy no se desmonta al cambiar de vista: Knox sigue hablando (el orbe no se dibuja mientras no se ve) */}
         <div className={`capa-hoy${vista === 'hoy' ? '' : ' fuera'}`} aria-hidden={vista !== 'hoy'}>
           <svg className="bg flujos" viewBox={`0 0 ${ancho} ${alto}`} aria-hidden dangerouslySetInnerHTML={{ __html: flujos }} />
 
@@ -852,6 +819,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
             conAudio={conAudio}
             confirmar={confirmar ? { pregunta: preguntaAprobar(borradores), uno: borradores === 1 } : null}
             enviando={enviando}
+            leerOrbe={leerOrbe}
             onOrbe={demo ? () => undefined : conAudio ? alOrbe : null}
             onEscuchar={escuchar}
             onActualizar={() => void actualizar()}

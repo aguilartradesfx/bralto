@@ -1,5 +1,6 @@
 // Los dibujos fijos del Centro de mando (los anillos, el fondo, el radar): los mismos del diseño aprobado
-// (Bralto-redes/knox-centro/diseno/index.html). Lo que se mueve con la voz está en centro.tsx y hud.tsx.
+// (Bralto-redes/knox-centro/diseno/index.html), sin la mascota en el centro: ahí va el orbe (orbe.tsx). Lo que se
+// mueve con la voz está en centro.tsx, hud.tsx y el orbe.
 
 export const NARANJA = '#ff6d28'
 
@@ -83,19 +84,12 @@ export function svgFlujos(origenes: [number, number][], { x: CX, y: CY }: Punto)
   return s
 }
 
-// Núcleo (580×580): lo de abajo de la onda
+// Núcleo (580×580): los anillos alrededor del orbe
 export const C = 290
 
 export function svgNucleoAbajo(): string {
   let s = `<defs>
-    <radialGradient id="kc-orbFill" cx=".42" cy=".3" r=".78"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".45" stop-color="#1c1c1c" stop-opacity=".62"/><stop offset="1" stop-color="#050505" stop-opacity=".9"/></radialGradient>
-    <linearGradient id="kc-orbRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset=".38" stop-color="#fff" stop-opacity=".08"/><stop offset=".72" stop-color="#fff" stop-opacity=".03"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient>
-    <radialGradient id="kc-orbFloor" cx=".5" cy=".86" r=".55"><stop offset="0" stop-color="${NARANJA}" stop-opacity=".38"/><stop offset=".55" stop-color="${NARANJA}" stop-opacity=".08"/><stop offset="1" stop-color="${NARANJA}" stop-opacity="0"/></radialGradient>
-    <linearGradient id="kc-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a6a" stop-opacity=".26"/><stop offset=".6" stop-color="#ff9a6a" stop-opacity=".05"/><stop offset="1" stop-color="#ff9a6a" stop-opacity="0"/></linearGradient>
-    <radialGradient id="kc-plat"><stop offset="0" stop-color="#ffb08a" stop-opacity=".9"/><stop offset=".45" stop-color="${NARANJA}" stop-opacity=".35"/><stop offset="1" stop-color="${NARANJA}" stop-opacity="0"/></radialGradient>
     <filter id="kc-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="kc-soft"><feGaussianBlur stdDeviation="9"/></filter>
-    <clipPath id="kc-orbClip"><circle cx="${C}" cy="${C}" r="164"/></clipPath>
   </defs>`
   // Etiquetas del aro de afuera
   for (let d = 30; d < 360; d += 30) {
@@ -132,50 +126,6 @@ export function svgAnillosVoz(): string {
     `<circle cx="${C}" cy="${C}" r="236" fill="none" stroke="#fff" stroke-opacity=".08" stroke-dasharray="1 3"/>` +
     `<circle cx="${C}" cy="${C}" r="226" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="2"/>`
   )
-}
-
-// La onda: 91 rayas por lado (en espejo), de 3 a 45 px de largo
-export const BARRAS: { j: number; grados: number }[] = (() => {
-  const lista: { j: number; grados: number }[] = []
-  for (let j = 0; j <= 90; j++) for (const g of j === 0 || j === 90 ? [j * 2] : [j * 2, 360 - j * 2]) lista.push({ j, grados: g })
-  return lista
-})()
-
-// La forma: cortas arriba y abajo, largas a los lados
-export const envolvente = (j: number) => Math.pow(Math.sin((Math.PI * j) / 90), 0.7)
-
-// Una onda quieta y bonita (la del diseño), para cuando no hay audio que medir
-export function ondaQuieta(semilla = 7): number[] {
-  const R = azar(semilla)
-  const porJ: number[] = []
-  for (let j = 0; j <= 90; j++) {
-    const v = Math.abs(Math.sin(j * 0.27) * 0.55 + Math.sin(j * 0.61 + 0.8) * 0.3 + Math.sin(j * 0.09 + 2) * 0.35)
-    porJ.push(Math.min(1, v) * (0.72 + 0.28 * R()))
-  }
-  return porJ
-}
-
-// Lo de arriba de la onda: el orbe de vidrio, el haz y la plataforma
-export function svgNucleoArriba(): string {
-  let s = `<circle cx="${C}" cy="${C}" r="164" fill="url(#kc-orbFill)"/>`
-  s += `<circle cx="${C}" cy="${C}" r="164" fill="url(#kc-orbFloor)"/>`
-  s += `<g clip-path="url(#kc-orbClip)">`
-  for (let y = C - 164; y < C + 164; y += 14) s += `<line x1="${C - 170}" y1="${y}" x2="${C + 170}" y2="${y}" stroke="#fff" stroke-opacity=".025"/>`
-  for (let x = C - 164; x < C + 164; x += 14) s += `<line x1="${x}" y1="${C - 170}" x2="${x}" y2="${C + 170}" stroke="#fff" stroke-opacity=".025"/>`
-  s += `<ellipse cx="236" cy="176" rx="78" ry="34" transform="rotate(-32 236 176)" fill="#fff" fill-opacity=".07" filter="url(#kc-soft)"/>`
-  s += `</g>`
-  s += `<circle cx="${C}" cy="${C}" r="164" fill="none" stroke="url(#kc-orbRim)" stroke-width="1.3"/>`
-  s += `<circle cx="${C}" cy="${C}" r="152" fill="none" stroke="#fff" stroke-opacity=".08" stroke-dasharray="2 4"/>`
-  s += `<path d="M232 394L348 394L392 130L188 130Z" fill="url(#kc-beam)"/>`
-  s += `<ellipse cx="${C}" cy="394" rx="118" ry="19" fill="none" stroke="#fff" stroke-opacity=".16" stroke-dasharray="3 4"/>`
-  s += `<ellipse cx="${C}" cy="394" rx="86" ry="13.5" fill="none" stroke="${NARANJA}" stroke-opacity=".7" filter="url(#kc-glow)"/>`
-  s += `<ellipse cx="${C}" cy="394" rx="64" ry="10" fill="url(#kc-plat)"/>`
-  for (let d = 0; d < 360; d += 20) {
-    const a = (d * Math.PI) / 180
-    s += `<line x1="${f(C + Math.cos(a) * 102)}" y1="${f(394 + Math.sin(a) * 16.5)}" x2="${f(C + Math.cos(a) * 110)}" y2="${f(394 + Math.sin(a) * 17.8)}" stroke="#fff" stroke-opacity=".3"/>`
-  }
-  s += `<text class="kc-svgmono" x="${C}" y="430" fill="#fff" fill-opacity=".55" font-size="9" letter-spacing="6" text-anchor="middle">KNOX</text>`
-  return s
 }
 
 // Las líneas de las cuatro anotaciones del centro (872×758)
