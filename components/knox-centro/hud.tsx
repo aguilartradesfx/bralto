@@ -1,19 +1,23 @@
 'use client'
 
 import { Fragment, memo, useEffect, useMemo, useRef, type RefObject } from 'react'
+import dynamic from 'next/dynamic'
 import type { Palabra } from '@/lib/knox/centro/subtitulo'
-import { BARRAS, C, envolvente, NARANJA, ondaQuieta, P, f, arco, svgAnillosVoz, svgLideres, svgNucleoAbajo, svgNucleoArriba, svgSegmentos } from './geometria'
+import { C, NARANJA, arco, svgAnillosVoz, svgLideres, svgNucleoAbajo, svgSegmentos } from './geometria'
+import type { LeerOrbe } from './orbe'
 
-// El centro del Centro de mando: Knox dentro de los anillos, las cuatro anotaciones, lo que está diciendo y los
-// botones. La onda y el anillo de avance los mueve el cuadro a cuadro de centro.tsx (por las refs), sin React.
+// El centro del Centro de mando: el orbe dentro de los anillos, las cuatro anotaciones, lo que Knox está diciendo (con
+// su cara al lado) y los botones. El anillo de avance lo mueve el cuadro a cuadro de centro.tsx (por las refs), sin
+// React; el orbe se mueve solo y le pregunta al centro qué hace Knox.
+
+// El orbe trae three.js: se baja aparte y solo en el navegador
+const Orbe = dynamic(() => import('./orbe'), { ssr: false })
 
 // saludando: Knox habla mientras revisa (su saludo al abrir, «ya casi», «Ahora sí, acá el reporte»)
 export type FaseVoz = 'cargando' | 'revisando' | 'saludando' | 'esperando' | 'hablando' | 'pausado' | 'terminado' | 'error'
 
 export type RefsHud = {
   nucleo: RefObject<HTMLDivElement | null>
-  onda: RefObject<SVGGElement | null>
-  ondaDentro: RefObject<SVGGElement | null>
   arco: RefObject<SVGPathElement | null>
   punta: RefObject<SVGGElement | null>
   barra: RefObject<HTMLElement | null>
@@ -22,39 +26,16 @@ export type RefsHud = {
 
 export type Anotacion = { valor: string; detalle: string }
 
-const QUIETA = ondaQuieta()
-// La onda antes del primer cuadro (y en el HTML del servidor): la del diseño, bajita
-const INICIAL = BARRAS.map(({ j, grados }) => {
-  const L = 3 + 42 * QUIETA[j] * envolvente(j) * 0.3
-  const [a, b] = P(C, C, 180, grados)
-  const [x, y] = P(C, C, 180 + L, grados)
-  const [g, h] = P(C, C, 175, grados)
-  const [m, n] = P(C, C, 175 - L * 0.22, grados)
-  return { a, b, x, y, g, h, m, n, o: 0.28 + (0.72 * L) / 45 }
-})
-
 const ABAJO = svgNucleoAbajo()
 const SEGMENTOS = svgSegmentos()
 const ANILLOS = svgAnillosVoz()
-const ARRIBA = svgNucleoArriba()
 const LIDERES = svgLideres()
 
-function Mascota({ pose, visible }: { pose: 'senalando' | 'pulgar'; visible: boolean }) {
-  const src = `/knox/${pose}.webp`
-  return (
-    <div className={`knox${visible ? '' : ' oculto'}`} style={{ ['--kc-mascara' as string]: `url(${src})` }} aria-hidden={!visible}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="ghost" src={src} alt="" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="k" src={src} alt={visible ? 'Knox' : ''} />
-      <div className="scan" />
-    </div>
-  )
-}
-
-function Nucleo({ fase, refs, onOrbe, tocar }: { fase: FaseVoz; refs: RefsHud; onOrbe: (() => void) | null; tocar: boolean }) {
+// Los anillos van encima del orbe, como un visor sobre la luz
+function Nucleo({ fase, refs, onOrbe, tocar, leer }: { fase: FaseVoz; refs: RefsHud; onOrbe: (() => void) | null; tocar: boolean; leer: LeerOrbe }) {
   return (
     <div className="core" ref={refs.nucleo} data-fase={fase}>
+      <Orbe leer={leer} />
       <svg viewBox="0 0 580 580" width="580" height="580" aria-hidden>
         <g dangerouslySetInnerHTML={{ __html: ABAJO }} />
         <g className="seg" dangerouslySetInnerHTML={{ __html: SEGMENTOS }} />
@@ -67,20 +48,7 @@ function Nucleo({ fase, refs, onOrbe, tocar }: { fase: FaseVoz; refs: RefsHud; o
           <circle r="10" fill={NARANJA} fillOpacity=".16" />
           <circle r="4" fill="#ffd3bd" filter="url(#kc-glow)" />
         </g>
-        <g ref={refs.onda} filter="url(#kc-glow)">
-          {INICIAL.map((l, i) => (
-            <line key={i} x1={f(l.a)} y1={f(l.b)} x2={f(l.x)} y2={f(l.y)} stroke={NARANJA} strokeOpacity={l.o.toFixed(2)} strokeWidth="1.7" strokeLinecap="round" />
-          ))}
-        </g>
-        <g ref={refs.ondaDentro}>
-          {INICIAL.map((l, i) => (
-            <line key={i} x1={f(l.g)} y1={f(l.h)} x2={f(l.m)} y2={f(l.n)} stroke="#fff" strokeOpacity=".2" strokeWidth="1.2" strokeLinecap="round" />
-          ))}
-        </g>
-        <g dangerouslySetInnerHTML={{ __html: ARRIBA }} />
       </svg>
-      <Mascota pose="senalando" visible={fase === 'hablando'} />
-      <Mascota pose="pulgar" visible={fase !== 'hablando'} />
       {onOrbe && <button type="button" className="orbe-toque" onClick={onOrbe} aria-label={fase === 'hablando' ? 'Pausar a Knox' : 'Escuchar a Knox'} />}
       {tocar && onOrbe && (
         <button type="button" className="tocar" onClick={onOrbe}>
@@ -129,6 +97,27 @@ function Anotaciones({ reviso, modo, proximo }: { reviso: Anotacion; modo: Anota
 }
 
 export type Estado = { texto: string; late: boolean; barra: 'avance' | 'busca' | null }
+
+// La cara de Knox, al lado de lo que va diciendo (como en una llamada): se ilumina con su voz mientras habla y late
+// mientras revisa. Tocarla pausa o sigue, igual que el orbe
+function Cara({ fase, onToque }: { fase: FaseVoz; onToque: (() => void) | null }) {
+  const habla = fase === 'hablando' || fase === 'saludando'
+  const clase = `cara${habla ? ' habla' : fase === 'revisando' || fase === 'cargando' ? ' revisa' : ''}`
+  const fotos = (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className={habla ? undefined : 'oculto'} src="/knox/senalando.webp" alt="" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className={habla ? 'oculto' : undefined} src="/knox/pulgar.webp" alt="" />
+    </>
+  )
+  if (!onToque) return <div className={clase}>{fotos}</div>
+  return (
+    <button type="button" className={clase} onClick={onToque} aria-label={fase === 'hablando' ? 'Pausar a Knox' : 'Escuchar a Knox'}>
+      {fotos}
+    </button>
+  )
+}
 
 function Subtitulo({ clave, palabras, tenue }: { clave: string; palabras: Palabra[]; tenue: boolean }) {
   const largo = palabras.reduce((n, p) => n + p.texto.length + 1, 0) > 120
@@ -213,6 +202,7 @@ export function Hud(p: {
   conAudio: boolean
   confirmar: { pregunta: string; uno: boolean } | null
   enviando: boolean
+  leerOrbe: LeerOrbe
   onOrbe: (() => void) | null
   onEscuchar: () => void
   onActualizar: () => void
@@ -227,20 +217,23 @@ export function Hud(p: {
   )
   return (
     <section className={`center${p.confirmar ? ' pregunta' : ''}`} aria-label="Knox">
-      <NucleoQuieto fase={p.fase} refs={p.refs} onOrbe={p.onOrbe} tocar={p.fase === 'esperando'} />
+      <NucleoQuieto fase={p.fase} refs={p.refs} onOrbe={p.onOrbe} tocar={p.fase === 'esperando'} leer={p.leerOrbe} />
       <Anotaciones reviso={p.reviso} modo={p.modo} proximo={p.proximo} />
       <div className="speak">
-        <div className="status">
-          <i className={`dot${p.estado.late ? ' late' : ' quieto'}`} />
-          {p.estado.texto}
-          {p.estado.barra && (
-            <span className={`bar${p.estado.barra === 'busca' ? ' busca' : ''}`}>
-              <i ref={p.estado.barra === 'avance' ? (p.refs.barra as RefObject<HTMLElement>) : undefined} />
-            </span>
-          )}
-          <span className="tm" ref={p.refs.tiempo as RefObject<HTMLSpanElement>} />
+        <Cara fase={p.fase} onToque={p.onOrbe} />
+        <div className="dice">
+          <div className="status">
+            <i className={`dot${p.estado.late ? ' late' : ' quieto'}`} />
+            {p.estado.texto}
+            {p.estado.barra && (
+              <span className={`bar${p.estado.barra === 'busca' ? ' busca' : ''}`}>
+                <i ref={p.estado.barra === 'avance' ? (p.refs.barra as RefObject<HTMLElement>) : undefined} />
+              </span>
+            )}
+            <span className="tm" ref={p.refs.tiempo as RefObject<HTMLSpanElement>} />
+          </div>
+          {subtitulo}
         </div>
-        {subtitulo}
       </div>
       <div className="acts">
         {p.borradores > 0 ? (
