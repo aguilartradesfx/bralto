@@ -29,7 +29,8 @@ Tipos de frase:
 - empujon: un empujón para que arranque con todo: coraje, ambición, ganas de comerse el mundo. Con calle e ingenio, como se lo diría un compa que cree en él; nada de frases de taza ni de autoayuda. Sin cifras, porcentajes ni datos de su negocio.
 
 Cómo hablas:
-- Le dices Ale y lo tuteas. Cálido, relajado y con humor. De vez en cuando le dices «mae», «bro» o «compa», sin abusar. Nunca «pana»: en Costa Rica no se usa.
+- Le dices Ale y lo tuteas. Cálido, relajado y con humor. De vez en cuando le dices «mae», «bro» o «compa», sin abusar.
+- Hablas como un tico («diay», «un toque», «un ratito»). Nada de modismos de otros países: nunca «pana», «tantito», «chévere», «órale», «wey» ni «parcero».
 - Palabras simples: que lo entienda un niño de 5 años y un señor de 50.
 - Escribes para el oído: frases cortas, sin listas, emojis, símbolos ni siglas.
 - No sabes a qué hora lo va a abrir: nunca digas «buenos días», «buenas tardes» ni «buenas noches». No digas la fecha, el día de la semana ni el clima.
@@ -56,10 +57,11 @@ const HORA = /buen[oa]s?\s+(d[ií]as|tardes|noches)/i
 const FECHA = new RegExp(`\\b(${DIAS})\\b|\\b(primero|\\d{1,2}) de (${MESES})\\b`, 'i')
 const PLATA = /\$|d[oó]lar|colones|ingresos|facturaste|generaste/i
 const REVISA = /revis|report/i
-const PANA = /\bpanas?\b/i
+// Modismos que en Costa Rica no se usan (Ale pidió «mae», «bro» o «compa», nunca «pana»)
+const DE_AFUERA = /(^|[^\p{L}])(panas?|tantito|ch[eé]vere|[oó]rale|g?[uü]ey|wey|parcero|parce)(?![\p{L}])/iu
 
-// Se quedan los que se pueden decir a cualquier hora, sin plata ni «pana» (en Costa Rica no se dice), que avisan que
-// está revisando para el reporte y que duran lo que tarda en cargar (unos 20 a 40 segundos entre las dos partes)
+// Se quedan los que se pueden decir a cualquier hora, sin plata ni modismos de otros países, que avisan que está
+// revisando para el reporte y que duran lo que tarda en cargar (unos 20 a 40 segundos entre las dos partes)
 export function validarArranques(salida: z.infer<typeof ARRANQUES>): Escrito[] {
   return salida.arranques
     .map((a) => ({ tipo: a.tipo, saludo: paraVoz(a.saludo), frase: paraVoz(a.frase) }))
@@ -74,7 +76,7 @@ export function validarArranques(salida: z.infer<typeof ARRANQUES>): Escrito[] {
         !HORA.test(todo) &&
         !FECHA.test(todo) &&
         !PLATA.test(todo) &&
-        !PANA.test(todo)
+        !DE_AFUERA.test(todo)
       )
     })
 }
