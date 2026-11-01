@@ -1,9 +1,7 @@
-import { diaCr, fechaHablada, horaHablada, saludo } from './fechas.ts'
+import { diaCr, horaHablada } from './fechas.ts'
 import type { Datos, Publicacion, Seccion, Tarjeta } from './tipos.ts'
 
 // El guion de Knox armado sin IA. Sirve de respaldo: si Claude no responde, Knox igual habla.
-const NOMBRE = 'Ale'
-
 const FUENTES: Record<string, string> = {
   cambio: 'el tipo de cambio',
   redes: 'Instagram y Facebook',
@@ -23,6 +21,20 @@ export function paraVoz(texto: string): string {
     .trim()
 }
 
+const MESES = 'enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre'
+const DIAS = 'lunes|martes|miércoles|miercoles|jueves|viernes|sábado|sabado|domingo'
+const SALUDA = /^[¡\s]*(buen[oa]s?\s+(d[ií]as|tardes|noches)|hola|hey)\b/i
+const FECHA = new RegExp(`\\b(${DIAS})\\b|\\b(primero|\\d{1,2}) de (${MESES})\\b`, 'i')
+
+// El reporte llega después del arranque, que ya saludó: a la primera parte se le quitan las oraciones que saludan o
+// dicen el día, y queda el resumen del día
+export function sinSaludoNiFecha(texto: string): string {
+  return (texto.match(/[^.!?]+[.!?]*/g) ?? [])
+    .map((o) => o.trim())
+    .filter((o) => o && !SALUDA.test(o) && !FECHA.test(o))
+    .join(' ')
+}
+
 const lista = (partes: string[]) => (partes.length <= 1 ? partes.join('') : `${partes.slice(0, -1).join(', ')} y ${partes.at(-1)}`)
 const cuantos = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
 const nombre = (p: Publicacion) => `el ${p.tipo} «${paraVoz(p.titulo)}»`
@@ -40,8 +52,7 @@ export function escribirPlantilla(d: Datos, ahora: Date): Seccion[] {
   const secciones: Seccion[] = []
   const decir = (tarjeta: Tarjeta, texto: string) => secciones.push({ tarjeta, texto: paraVoz(texto) })
 
-  decir('saludo', `${saludo(ahora)}, ${NOMBRE}. Hoy es ${fechaHablada(ahora)}. Te cuento lo importante.`)
-
+  // Sin saludo ni fecha: antes del reporte, el arranque ya saludó y dijo «Ahora sí, acá el reporte»
   if (d.cambio) {
     decir('cambio', `El dólar está a ${Math.round(d.cambio.venta)} colones para la venta y ${Math.round(d.cambio.compra)} para la compra.`)
   }

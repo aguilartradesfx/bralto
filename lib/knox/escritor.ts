@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import { z } from 'zod'
 import { diaCr, fechaHablada, horaHablada } from './fechas'
-import { escribirPlantilla, paraVoz } from './plantilla'
+import { escribirPlantilla, paraVoz, sinSaludoNiFecha } from './plantilla'
 import { TARJETAS, type Datos, type Reporte, type Seccion } from './tipos'
 
 // Claude escribe lo que Knox va a decir a partir de los datos del día. Si falla, se usa la plantilla.
@@ -20,7 +20,7 @@ Escribes para el oído, no para leer:
 - Nunca inventes. Si un dato no viene, no lo menciones. Si una fuente está en «faltan», dilo en una frase corta en el cierre.
 
 Qué contar, en este orden y solo si hay algo útil, cada sección en un párrafo corto con su tarjeta:
-1. saludo: saluda según la hora, di el día y resume el día en una frase.
+1. saludo: no saludes ni digas el día ni la fecha (antes del reporte ya lo saludaste y le dijiste «Ahora sí, acá el reporte»): resume el día en una frase.
 2. cambio: el dólar, venta y compra.
 3. leads: quién entró y por dónde; si no hubo, dilo en una frase.
 4. agenda: citas de hoy y mañana con su hora; si no hay, dilo en una frase.
@@ -37,7 +37,7 @@ function actualizacion(anterior: Reporte | null | undefined, ahora: Date): strin
   if (!anterior || anterior.fecha !== diaCr(ahora)) return null
   const antes = anterior.secciones.map((s) => s.texto).join(' ')
   return `ESTO ES UNA ACTUALIZACIÓN. Ya le hablaste hoy a ${horaHablada(new Date(anterior.creadoEn))} y le dijiste esto: «${antes}»
-Ahora cuenta solo lo nuevo o lo que cambió desde esa hora: leads, mensajes y correos que llegaron, publicaciones que ya salieron o que vienen, citas próximas. No repitas lo que ya le dijiste ni hables de algo que ya pasó como si fuera a pasar. El dólar solo si cambió. Saludo corto, sin decir otra vez la fecha, y cierre corto. Entre 60 y 110 palabras en total; si no hay nada nuevo, dilo en una frase amable.`
+Ahora cuenta solo lo nuevo o lo que cambió desde esa hora: leads, mensajes y correos que llegaron, publicaciones que ya salieron o que vienen, citas próximas. No repitas lo que ya le dijiste ni hables de algo que ya pasó como si fuera a pasar. El dólar solo si cambió. Sin saludo ni fecha: arranca directo con lo nuevo, y cierre corto. Entre 60 y 110 palabras en total; si no hay nada nuevo, dilo en una frase amable.`
 }
 
 function mensaje(d: Datos, ahora: Date, anterior?: Reporte | null): string {
@@ -48,10 +48,13 @@ function mensaje(d: Datos, ahora: Date, anterior?: Reporte | null): string {
   return `Hoy es ${fechaHablada(ahora)} y son ${horaHablada(ahora)} en Costa Rica.${extra ? `\n\n${extra}` : ''}\n\nDatos del día:\n${JSON.stringify(recortados)}`
 }
 
+// Si igual se le escapa un saludo o la fecha en la primera parte, se quitan (Ale no quiere oír qué día es)
 function validar(salida: z.infer<typeof GUION> | null, minimo: number): Seccion[] {
   if (!salida) throw new Error('el guion de Claude no se pudo leer')
-  const secciones = salida.secciones.map((s) => ({ tarjeta: s.tarjeta, texto: paraVoz(s.texto) })).filter((s) => s.texto)
-  if (secciones[0]?.tarjeta !== 'saludo' || secciones.at(-1)?.tarjeta !== 'cierre') throw new Error('el guion no empieza con el saludo o no termina con el cierre')
+  const secciones = salida.secciones
+    .map((s) => ({ tarjeta: s.tarjeta, texto: paraVoz(s.tarjeta === 'saludo' ? sinSaludoNiFecha(s.texto) : s.texto) }))
+    .filter((s) => s.texto)
+  if (secciones.at(-1)?.tarjeta !== 'cierre') throw new Error('el guion no termina con el cierre')
   const largo = secciones.reduce((a, s) => a + s.texto.length, 0)
   if (largo < minimo || largo > 2000) throw new Error(`el guion mide ${largo} caracteres`)
   return secciones
