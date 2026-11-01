@@ -42,6 +42,14 @@ test('quita los que hablan de plata y los que no dicen que está revisando para 
   assert.equal(validarArranques({ arranques: [BIEN, ...malos] }).length, 1)
 })
 
+test('quita los que dicen «pana», que en Costa Rica no se usa (sí mae, bro o compa)', () => {
+  const malos = [
+    { ...BIEN, saludo: 'Ale, mi pana, qué bueno que llegaste. Ya me puse a revisar todo para el reporte.' },
+    { ...BIEN, frase: `Te tengo un recordatorio de Pana. ${BIEN.frase}` },
+  ]
+  assert.equal(validarArranques({ arranques: [BIEN, { ...BIEN, saludo: '¡Qué hay, compa! Estoy revisando todo para darte el reporte.' }, ...malos] }).length, 2)
+})
+
 test('quita los que quedaron muy cortos o muy largos para el tiempo que tarda en cargar', () => {
   const malos = [
     { ...BIEN, frase: 'Los humanos son raros.' },
