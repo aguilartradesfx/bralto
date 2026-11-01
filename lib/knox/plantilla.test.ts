@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { escribirPlantilla, paraVoz } from './plantilla.ts'
+import { escribirPlantilla, paraVoz, sinSaludoNiFecha } from './plantilla.ts'
 import type { Datos } from './tipos.ts'
 
 const AHORA = new Date('2026-10-30T13:00:00Z') // viernes, 7:00 a. m. en Costa Rica
@@ -35,11 +35,18 @@ function datos(extra: Partial<Datos> = {}): Datos {
 
 const texto = (d: Datos) => escribirPlantilla(d, AHORA).map((s) => s.texto).join(' ')
 
-test('empieza con el saludo y termina con el cierre', () => {
+test('arranca directo con lo importante, sin saludo ni fecha (ya saludó el arranque), y termina con el cierre', () => {
   const secciones = escribirPlantilla(datos(), AHORA)
-  assert.equal(secciones[0].tarjeta, 'saludo')
-  assert.match(secciones[0].texto, /^Buenos días, Ale\. Hoy es viernes 30 de octubre/)
+  assert.equal(secciones[0].tarjeta, 'cambio')
+  assert.doesNotMatch(texto(datos()), /Buenos días|Hoy es|viernes|30 de octubre/)
   assert.equal(secciones.at(-1)?.tarjeta, 'cierre')
+})
+
+test('al saludo que escribe Claude le quita el saludo y la fecha, y deja el resumen del día', () => {
+  assert.equal(sinSaludoNiFecha('Buenos días, Ale. Hoy es viernes 30 de octubre. Hoy viene movido: dos leads nuevos.'), 'Hoy viene movido: dos leads nuevos.')
+  assert.equal(sinSaludoNiFecha('¡Hola, Ale! Es domingo 1 de noviembre y está tranquilo.'), '')
+  assert.equal(sinSaludoNiFecha('Hoy viene tranquilo, con una cita en la tarde.'), 'Hoy viene tranquilo, con una cita en la tarde.')
+  assert.equal(sinSaludoNiFecha('Buenas noches, Ale, te cuento.'), '')
 })
 
 test('cuenta los leads con su nombre y por dónde entraron', () => {

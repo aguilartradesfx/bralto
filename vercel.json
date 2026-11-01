@@ -15,6 +15,10 @@
     {
       "path": "/api/cron/knox",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/knox-arranques",
+      "schedule": "0 4 * * *"
     }
   ]
 }

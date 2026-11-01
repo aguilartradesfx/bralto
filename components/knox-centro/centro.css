@@ -263,7 +263,8 @@
 .kc .core > svg { position: absolute; inset: 0; }
 .kc .seg { transform-origin: 290px 290px; }
 .kc .core[data-fase='hablando'] .seg { animation: kc-gira 60s linear infinite; }
-.kc .core[data-fase='revisando'] .seg { animation: kc-gira 6s linear infinite; }
+.kc .core[data-fase='revisando'] .seg,
+.kc .core[data-fase='saludando'] .seg { animation: kc-gira 6s linear infinite; }
 .kc .giro { transform-origin: 290px 290px; animation: kc-gira 2.4s linear infinite; }
 .kc .knox { position: absolute; left: 50%; top: 84px; width: 204px; height: 306px; transform: translateX(-50%); transition: opacity .45s ease; }
 .kc .knox img, .kc .knox .scan { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -277,7 +278,8 @@
   background: linear-gradient(180deg, transparent 37%, rgba(255, 170, 130, .30) 38.5%, transparent 40.5%), repeating-linear-gradient(180deg, rgba(255, 150, 105, .20) 0 1px, transparent 1px 3px);
 }
 .kc .core[data-fase='hablando'] .knox .scan { animation: kc-escanea 3.2s ease-in-out infinite; }
-.kc .core[data-fase='revisando'] .knox .scan { animation: kc-escanea 1.1s ease-in-out infinite; }
+.kc .core[data-fase='revisando'] .knox .scan,
+.kc .core[data-fase='saludando'] .knox .scan { animation: kc-escanea 1.1s ease-in-out infinite; }
 .kc .knox.oculto { opacity: 0; }
 .kc .tocar {
   position: absolute; left: 50%; top: 446px; transform: translateX(-50%); z-index: 3;

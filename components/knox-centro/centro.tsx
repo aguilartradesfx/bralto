@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Reporte, Tarjeta } from '@/lib/knox/tipos'
 import type { Centro } from '@/lib/knox/centro/tipos'
+import { TRANSICION, YA_CASI, type Arranque } from '@/lib/knox/arranque/textos'
 import { enVivo, fijo, trozos, type Subtitulo } from '@/lib/knox/centro/subtitulo'
 import {
   fuentesRevisadas,
@@ -27,9 +28,11 @@ import { leerVista, type DatosVista, type Vista, type VistaConDatos } from '@/li
 import './centro.css'
 
 // El Centro de mando de Knox (/knox), a pantalla completa en la app de Mac y en el navegador. Trae el último reporte
-// hablado (/api/knox) y lo dice en voz alta; si es de otro día o tiene más de una hora, primero le pide uno nuevo. Los
-// paneles salen de /api/knox/centro, que pregunta cada minuto. La app de Mac (KnoxMac en el user agent) deja sonar
-// sin un toque; en el navegador, si no deja, Knox espera el primer toque. ?hablar: habla aunque ya lo hayas oído.
+// hablado (/api/knox) y lo dice en voz alta; si es de otro día o tiene más de una hora, primero le pide uno nuevo. Al
+// abrir suena el arranque y, si Knox va a contar algo nuevo, mientras revisa saluda y dice lo que trae en la cabeza
+// (/api/knox/arranque, preparado la noche anterior). Los paneles salen de /api/knox/centro, que pregunta cada minuto.
+// La app de Mac (KnoxMac en el user agent) deja sonar sin un toque; en el navegador, si no deja, no hay arranque y
+// Knox espera el primer toque. ?hablar: habla aunque ya lo hayas oído.
 
 export type Demo = {
   centro: Centro
@@ -117,6 +120,34 @@ async function pedirReporte(metodo: 'GET' | 'POST'): Promise<Reporte> {
   return j.reporte
 }
 
+// Lo que Knox dice mientras revisa al abrir (lo preparó la noche anterior). null si no hay o no respondió
+async function pedirArranque(): Promise<Arranque | null> {
+  try {
+    const res = await fetch('/api/knox/arranque', { cache: 'no-store' })
+    if (!res.ok) return null
+    const j = (await res.json()) as { arranque?: Arranque | null }
+    return j.arranque ?? null
+  } catch {
+    return null
+  }
+}
+
+// Que ya sonó, para que no se repita
+function marcarArranque(id: string) {
+  void fetch('/api/knox/arranque', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => undefined)
+}
+
+// true si la promesa termina (bien o mal) antes de ms
+function antesDe(promesa: Promise<unknown>, ms: number): Promise<boolean> {
+  return Promise.race([
+    promesa.then(
+      () => true,
+      () => true,
+    ),
+    new Promise<boolean>((listo) => setTimeout(() => listo(false), ms)),
+  ])
+}
+
 // El lienzo toma la forma de la ventana (lib/knox/centro/escena.ts). Las mismas variables que deja el script de la
 // página antes del primer pintado
 function medirVentana(): Medidas {
@@ -162,6 +193,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   const claveSub = useRef('')
   const esMac = useRef(false)
   const refrescado = useRef(false)
+  const audiosReporte = useRef(new Map<string, Promise<Blob | null>>())
   const relojAviso = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lienzo = useRef<HTMLDivElement>(null)
   const nucleo = useRef<HTMLDivElement>(null)
@@ -263,6 +295,65 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
     [conectarOnda, ponerFase],
   )
 
+  // El sonido de arranque (de Mixkit): suena al abrir, en la app de Mac o si el navegador ya lo deja. Termina cuando
+  // acaba o a los 6 s, lo que pase primero
+  const sonarArranque = useCallback(
+    () =>
+      new Promise<void>((listo) => {
+        const a = new Audio('/api/knox/arranque/sonido')
+        for (const e of ['ended', 'error']) a.addEventListener(e, () => listo(), { once: true })
+        setTimeout(listo, 6000)
+        a.play().catch(() => listo())
+      }),
+    [],
+  )
+
+  // Un audio corto de Knox (su saludo, «ya casi», «Ahora sí…»), con su subtítulo y la onda de su voz. false si no
+  // pudo sonar (el navegador pide un toque); si suena, termina cuando acaba
+  const decirCorto = useCallback(
+    async (src: string, secciones: string[], ini: number[], alEmpezar?: () => void): Promise<boolean> => {
+      detener()
+      const a = new Audio(src)
+      a.preload = 'auto'
+      textos.current = secciones
+      inicios.current = ini
+      claveSub.current = ''
+      setSub(null)
+      audio.current = a
+      try {
+        if (esMac.current) await conectarOnda()
+        await a.play()
+        if (!esMac.current) void conectarOnda()
+      } catch {
+        audio.current = null
+        return false
+      }
+      alEmpezar?.()
+      ponerFase('saludando')
+      await new Promise<void>((listo) => {
+        for (const e of ['ended', 'error', 'pause']) a.addEventListener(e, () => listo(), { once: true })
+      })
+      return true
+    },
+    [conectarOnda, detener, ponerFase],
+  )
+
+  // El audio de cada reporte se baja una sola vez: se pide apenas llega el reporte, mientras Knox saluda
+  const bajarAudio = useCallback((r: Reporte): Promise<Blob | null> => {
+    if (!r.conAudio) return Promise.resolve(null)
+    const guardado = audiosReporte.current.get(r.id)
+    if (guardado) return guardado
+    const p = fetch(`/api/knox/audio/${r.id}`)
+      .then((res) => (res.ok ? res.blob() : null))
+      .catch(() => null)
+      .then((b) => {
+        if (!b) audiosReporte.current.delete(r.id)
+        return b
+      })
+    audiosReporte.current.set(r.id, p)
+    return p
+  }, [])
+
   const preparar = useCallback(
     async (r: Reporte, hablar: boolean, conToque = false) => {
       detener()
@@ -270,10 +361,9 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       inicios.current = r.inicios
       claveSub.current = ''
       setSub(null)
-      if (!r.conAudio) return ponerFase('terminado')
-      const res = await fetch(`/api/knox/audio/${r.id}`).catch(() => null)
-      if (!res?.ok) return ponerFase('terminado')
-      objeto.current = URL.createObjectURL(await res.blob())
+      const blob = await bajarAudio(r)
+      if (!blob) return ponerFase('terminado')
+      objeto.current = URL.createObjectURL(blob)
       const a = new Audio(objeto.current)
       a.preload = 'auto'
       const control = new AbortController()
@@ -293,7 +383,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       if (hablar) await reproducir(conToque)
       else ponerFase('terminado')
     },
-    [detener, ponerFase, reproducir],
+    [bajarAudio, detener, ponerFase, reproducir],
   )
 
   // Datos ---------------------------------------------------------------------------------------------------------
@@ -337,31 +427,60 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
     return () => clearInterval(id)
   }, [demo, cargarCentro])
 
-  // Al abrir: el último reporte; si está viejo, uno nuevo (una sola vez). Después, a hablar
+  // Al abrir suena el arranque y llega el último reporte; si está viejo, Knox pide uno nuevo (una sola vez). Si va a
+  // contar algo que no oíste, mientras lo prepara te saluda y te dice lo que trae en la cabeza; si el reporte tarda
+  // más, avisa que ya casi; y antes del reporte: «Ahora sí, acá el reporte»
   useEffect(() => {
     if (demo) return
     esMac.current = navigator.userAgent.includes('KnoxMac')
     let vivo = true
+    const sonido = sonarArranque()
     const demora = setTimeout(() => vivo && faseRef.current === 'cargando' && ponerFase('revisando'), 2500)
     ;(async () => {
       const forzar = new URLSearchParams(window.location.search).has('hablar')
       try {
-        let r = await pedirReporte('GET')
+        const ultimo = await pedirReporte('GET')
         if (!vivo) return
-        setReporte(r)
-        if (!refrescado.current && reporteViejo(r, new Date())) {
+        setReporte(ultimo)
+        const viejo = !refrescado.current && reporteViejo(ultimo, new Date())
+        if (viejo) {
           refrescado.current = true
           ponerFase('revisando')
-          try {
-            r = await pedirReporte('POST')
-            if (!vivo) return
-            setReporte(r)
-          } catch {
-            mostrarAviso('Knox no pudo revisar de nuevo. Te cuento lo último que tengo.')
+        }
+        // El nuevo se pide mientras Knox saluda, y su audio se baja apenas llega
+        const listo = viejo
+          ? pedirReporte('POST').catch(() => {
+              mostrarAviso('Knox no pudo revisar de nuevo. Te cuento lo último que tengo.')
+              return ultimo
+            })
+          : Promise.resolve(ultimo)
+        void listo.then((x) => {
+          if (vivo) void bajarAudio(x)
+        })
+
+        let saludo = false
+        const arranque = viejo || !yaEscuchado(ultimo.id) ? await pedirArranque() : null
+        if (arranque && vivo) {
+          await sonido
+          if (!vivo) return
+          saludo = await decirCorto(`/api/knox/arranque/${arranque.id}`, arranque.secciones, arranque.inicios, () => marcarArranque(arranque.id))
+          if (saludo && vivo && !(await antesDe(listo, 6000)) && vivo) {
+            ponerFase('revisando')
+            await decirCorto('/api/knox/arranque/ya-casi', [YA_CASI], [0])
           }
         }
+        if (!vivo) return
+        if (faseRef.current === 'saludando') ponerFase('revisando')
+        const r = await listo
+        if (!vivo) return
+        setReporte(r)
         clearTimeout(demora)
-        await preparar(r, forzar || !yaEscuchado(r.id))
+        const hablar = forzar || !yaEscuchado(r.id)
+        if (saludo && hablar) await decirCorto('/api/knox/arranque/transicion', [TRANSICION], [0])
+        // Sin arranque, el reporte espera a que termine el sonido
+        if (hablar) await sonido
+        if (!vivo) return
+        await preparar(r, hablar)
       } catch (e) {
         if (!vivo) return
         setError(e instanceof Error ? e.message : 'Knox no respondió.')
@@ -373,7 +492,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       clearTimeout(demora)
       detener()
     }
-  }, [demo, detener, mostrarAviso, ponerFase, preparar])
+  }, [demo, bajarAudio, decirCorto, detener, mostrarAviso, ponerFase, preparar, sonarArranque])
 
   // Cuadro a cuadro: la onda (de la voz de verdad si hay analizador), el anillo de avance, el tiempo y el subtítulo
   useEffect(() => {
@@ -414,6 +533,8 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       const dur = demo ? demo.duracion : a && Number.isFinite(a.duration) ? a.duration : Number.NaN
       const hayAudio = demo ? true : !!a
       const busca = f === 'revisando' || f === 'cargando'
+      // Lo que dice mientras revisa no es el reporte: sin anillo de avance ni tiempo
+      const corto = f === 'saludando'
       if (an && sonando) an.getByteFrequencyData(bins)
 
       // La onda: quieta con poco movimiento si no habla; cada 3 cuadros basta
@@ -457,7 +578,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
 
       // El anillo de avance y el tiempo
       const fraccion = dur > 0 ? Math.min(1, Math.max(0, pos / dur)) : 0
-      const verArco = hayAudio && pos > 0.05 && !busca && f !== 'error'
+      const verArco = hayAudio && pos > 0.05 && !busca && !corto && f !== 'error'
       const arcoEl = refs.arco.current
       const puntaEl = refs.punta.current
       if (arcoEl && puntaEl) {
@@ -475,7 +596,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
         }
       }
       if (refs.barra.current) refs.barra.current.style.width = `${(fraccion * 100).toFixed(2)}%`
-      const texto = hayAudio && !busca && f !== 'error' ? `${minutosYSegundos(pos)} / ${Number.isFinite(dur) ? minutosYSegundos(dur) : '--:--'}` : ''
+      const texto = hayAudio && !busca && !corto && f !== 'error' ? `${minutosYSegundos(pos)} / ${Number.isFinite(dur) ? minutosYSegundos(dur) : '--:--'}` : ''
       if (texto !== textoTiempo && refs.tiempo.current) {
         refs.tiempo.current.textContent = texto
         textoTiempo = texto
@@ -499,7 +620,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
       if (miniTiempo.current && miniTiempo.current.textContent !== texto) miniTiempo.current.textContent = texto
 
       // El subtítulo cambia cuando cambia la palabra
-      if (f === 'hablando' || f === 'pausado') {
+      if (f === 'hablando' || f === 'pausado' || f === 'saludando') {
         const s = enVivo(textos.current, inicios.current, dur, pos)
         if (s) {
           const clave = `${s.seccion}-${s.trozo}-${s.palabras.findIndex((p) => p.estado === 'actual')}`
@@ -626,7 +747,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   const estado: Estado = useMemo(() => {
     if (fase === 'hablando') return { texto: 'Knox está hablando', late: true, barra: 'avance' }
     if (fase === 'pausado') return { texto: 'Knox en pausa', late: false, barra: 'avance' }
-    if (fase === 'revisando' || fase === 'cargando') return { texto: 'Knox está revisando', late: true, barra: 'busca' }
+    if (fase === 'revisando' || fase === 'cargando' || fase === 'saludando') return { texto: 'Knox está revisando', late: true, barra: 'busca' }
     if (fase === 'esperando') return { texto: 'Knox tiene tu resumen', late: true, barra: 'avance' }
     if (fase === 'error') return { texto: 'Knox no respondió', late: false, barra: null }
     return { texto: reporte ? `Resumen de las ${hora(reporte.creadoEn)}` : 'Resumen de hoy', late: false, barra: conAudio || demo ? 'avance' : null }
@@ -634,7 +755,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
 
   const subtitulo = useMemo(() => {
     if (aviso) return { clave: `aviso-${aviso}`, palabras: fijo(aviso), tenue: false }
-    if (fase === 'hablando' || fase === 'pausado') return sub ? { clave: `${sub.seccion}-${sub.trozo}`, palabras: sub.palabras, tenue: false } : null
+    if (fase === 'hablando' || fase === 'pausado' || fase === 'saludando') return sub ? { clave: `${sub.seccion}-${sub.trozo}`, palabras: sub.palabras, tenue: false } : null
     if (fase === 'revisando') return { clave: 'revisando', palabras: fijo('Knox está revisando tus fuentes…'), tenue: true }
     if (fase === 'cargando') return null
     if (fase === 'esperando') return { clave: 'esperando', palabras: fijo('Tengo listo tu resumen de hoy.'), tenue: false }
@@ -666,9 +787,9 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   const reviso: Anotacion = reporte
     ? {
         valor: `${fuentesRevisadas(reporte.datos as unknown as Record<string, unknown>)} fuentes`,
-        detalle: fase === 'revisando' ? 'revisando ahora…' : `a las ${hora(reporte.creadoEn)}`,
+        detalle: fase === 'revisando' || fase === 'saludando' ? 'revisando ahora…' : `a las ${hora(reporte.creadoEn)}`,
       }
-    : { valor: RAYA, detalle: fase === 'revisando' || fase === 'cargando' ? 'revisando…' : '' }
+    : { valor: RAYA, detalle: fase === 'revisando' || fase === 'cargando' || fase === 'saludando' ? 'revisando…' : '' }
   const modo: Anotacion = centro?.modo ? { valor: MODO_CENTRO[centro.modo].nombre, detalle: MODO_CENTRO[centro.modo].detalle } : { valor: RAYA, detalle: '' }
   const siguiente = centro?.dia && ahora ? proximo(centro.dia.items, ahora) : null
   const prox: Anotacion = siguiente ? { valor: hora(siguiente.en), detalle: textoProximo(siguiente) } : { valor: RAYA, detalle: centro?.dia ? 'nada más hoy' : '' }
@@ -676,7 +797,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
   // Knox en pequeño, en la esquina de las otras vistas
   const mini = (
     <MiniKnox
-      hablando={fase === 'hablando'}
+      hablando={fase === 'hablando' || fase === 'saludando'}
       texto={estado.texto}
       conAudio={conAudio}
       ondaRef={miniOnda}

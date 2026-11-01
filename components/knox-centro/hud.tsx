@@ -7,7 +7,8 @@ import { BARRAS, C, envolvente, NARANJA, ondaQuieta, P, f, arco, svgAnillosVoz, 
 // El centro del Centro de mando: Knox dentro de los anillos, las cuatro anotaciones, lo que está diciendo y los
 // botones. La onda y el anillo de avance los mueve el cuadro a cuadro de centro.tsx (por las refs), sin React.
 
-export type FaseVoz = 'cargando' | 'revisando' | 'esperando' | 'hablando' | 'pausado' | 'terminado' | 'error'
+// saludando: Knox habla mientras revisa (su saludo al abrir, «ya casi», «Ahora sí, acá el reporte»)
+export type FaseVoz = 'cargando' | 'revisando' | 'saludando' | 'esperando' | 'hablando' | 'pausado' | 'terminado' | 'error'
 
 export type RefsHud = {
   nucleo: RefObject<HTMLDivElement | null>
@@ -58,7 +59,7 @@ function Nucleo({ fase, refs, onOrbe, tocar }: { fase: FaseVoz; refs: RefsHud; o
         <g dangerouslySetInnerHTML={{ __html: ABAJO }} />
         <g className="seg" dangerouslySetInnerHTML={{ __html: SEGMENTOS }} />
         <g dangerouslySetInnerHTML={{ __html: ANILLOS }} />
-        {(fase === 'revisando' || fase === 'cargando') && (
+        {(fase === 'revisando' || fase === 'cargando' || fase === 'saludando') && (
           <path className="giro" d={arco(C, C, 226, 0, 64)} fill="none" stroke={NARANJA} strokeWidth="2.5" strokeLinecap="round" filter="url(#kc-glow)" />
         )}
         <path ref={refs.arco} d="" fill="none" stroke={NARANJA} strokeWidth="2.5" strokeLinecap="round" filter="url(#kc-glow)" />
@@ -219,7 +220,7 @@ export function Hud(p: {
   onAprobar: () => void
   onCancelar: () => void
 }) {
-  const ocupado = p.fase === 'revisando' || p.fase === 'cargando'
+  const ocupado = p.fase === 'revisando' || p.fase === 'cargando' || p.fase === 'saludando'
   const subtitulo = useMemo(
     () => (p.subtitulo ? <Subtitulo clave={p.subtitulo.clave} palabras={p.subtitulo.palabras} tenue={p.subtitulo.tenue} /> : <p className="sub" />),
     [p.subtitulo],
