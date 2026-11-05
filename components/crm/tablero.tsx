@@ -66,7 +66,7 @@ export function Tablero({ pipelines, pipeline, estado, tarjetas }: Props) {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="px-4 pb-12 md:px-8">
       <Encabezado
         titulo="Pipeline"
         resumen={`${pipelines.length === 1 ? `${pipeline.nombre} · ` : ''}${visibles.length} ${(visibles.length === 1 ? ESTADO_OPORTUNIDAD_LABEL[estado] : PLURAL[estado]).toLowerCase()}${suma > 0 ? ` · ${dinero(suma)}` : ''}${refrescando ? ' · guardando…' : ''}`}

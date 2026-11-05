@@ -15,11 +15,11 @@ export default async function ClientesPage() {
   const clients = clientsData ?? []
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="px-4 pb-12 md:px-8">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-xl font-semibold text-fg">Clientes</h1>
-          <p className="text-sm text-fg/40 mt-0.5">{clients?.length ?? 0} cliente(s)</p>
+          <h1 className="sr-only">Clientes</h1>
+          <p className="text-[13px] text-fg/50">{clients?.length ?? 0} cliente(s)</p>
         </div>
       </div>
 

@@ -37,10 +37,9 @@ export async function MesCalendario({ mes: param, ahora }: { mes: unknown; ahora
   const porSalir = delMes.reduce((n, [, lista]) => n + lista.filter((p) => p.estado === 'programado').length, 0)
 
   return (
-    <div className="max-w-6xl p-4 md:p-6 lg:p-8">
+    <div className="px-4 pb-12 md:px-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-widest text-fg/40">Calendario de redes</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-fg">{nombreMes(mes)}</h1>
           <p className="mt-0.5 text-sm text-fg/45">
             {total === 0

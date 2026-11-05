@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { Plus, X, Copy, Check, Loader2, Users, Trash2, Shield, RefreshCw, Pencil } from 'lucide-react'
 import type { UserWithProfile } from '@/types/user-profiles'
 import { PERMISSION_LABELS } from '@/types/user-profiles'
+import { PestañasAjustes } from '@/components/internal/ajustes/pestanas'
 
 const INPUT =
   'w-full bg-fg/5 border border-fg/10 rounded-lg px-3 py-2 text-sm text-fg placeholder-fg/30 focus:outline-none focus:border-fg/50 transition-colors'
@@ -495,11 +496,14 @@ export function UserManagement({ isAdmin, initialUsers }: UserManagementProps) {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-4 pb-12 md:px-8">
+      <div className="mb-4">
+        <PestañasAjustes activa="equipo" admin />
+      </div>
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-xl font-semibold text-fg">Usuarios</h1>
-          <p className="text-sm text-fg/40 mt-0.5">{users.length} usuario(s) registrado(s)</p>
+          <h1 className="text-[15px] font-medium text-fg">Equipo</h1>
+          <p className="text-[12.5px] text-fg/45 mt-0.5">{users.length === 1 ? '1 persona con acceso al panel' : `${users.length} personas con acceso al panel`}</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={fetchUsers} className="p-2 text-fg/30 hover:text-fg/60 border border-fg/10 rounded-lg transition-colors">

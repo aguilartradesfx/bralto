@@ -38,7 +38,7 @@ export function FichaContacto({ ficha, etiquetas, ahora }: { ficha: Ficha; etiqu
   const visible = (p: Pestaña) => `${pestaña === p ? 'block' : 'hidden'} lg:block`
 
   return (
-    <div className="max-w-6xl p-4 md:p-6 lg:p-8">
+    <div className="max-w-6xl px-4 pb-12 md:px-8">
       <Link href="/crm" className="mb-5 inline-flex items-center gap-1.5 text-sm text-fg/55 transition-colors hover:text-fg">
         <ArrowLeft size={14} {...ICONO} />
         Contactos

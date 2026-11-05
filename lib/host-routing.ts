@@ -17,7 +17,7 @@ const PRIVATE_HOSTS = [...ADMIN_HOSTS, ...KNOX_HOSTS]
 // La página del Centro de mando dentro de la app (en knox.bralto.io se sirve en /)
 export const KNOX_PATH = '/knox'
 
-const PANEL_PREFIXES = ['/admin', '/contratos', '/clientes', '/solicitudes', '/usuarios', '/plan-q4', '/calendario', '/crm', '/knox']
+const PANEL_PREFIXES = ['/admin', '/contratos', '/clientes', '/solicitudes', '/usuarios', '/plan-q4', '/calendario', '/crm', '/knox', '/ajustes', '/pronto']
 // Sin subrutas: /propuestas/<slug> es la página pública de cada propuesta
 const PANEL_EXACT = ['/login', '/propuestas']
 

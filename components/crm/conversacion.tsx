@@ -91,7 +91,7 @@ export function Conversacion({ c, modo, ahora }: { c: ConversacionDetalle; modo:
   }
 
   return (
-    <div className="max-w-3xl p-4 md:p-6 lg:p-8">
+    <div className="max-w-4xl px-4 pb-12 md:px-8">
       <Link href="/crm/mensajes" className="mb-4 inline-flex items-center gap-1.5 text-sm text-fg/55 transition-colors hover:text-fg">
         <ArrowLeft size={14} {...ICONO} />
         Mensajes

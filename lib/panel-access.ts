@@ -19,6 +19,8 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
   ['/calendario', 'is_admin'],
   ['/crm', 'is_admin'],
   ['/knox', 'is_admin'],
+  // Lo que viene (Próximamente): por ahora solo lo ven los administradores. /ajustes solo pide sesión
+  ['/pronto', 'is_admin'],
 ]
 
 export function requiredPermission(pathname: string): PanelPermission | null {

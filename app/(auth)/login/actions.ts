@@ -14,7 +14,7 @@ export async function login(_: unknown, formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    return { error: 'Credenciales incorrectas. Verificá tu correo y contraseña.' }
+    return { error: 'El correo o la contraseña no coinciden. Revísalos y prueba de nuevo.' }
   }
 
   // En knox.bralto.io se entra directo al centro de mando; en el panel, al Inicio
