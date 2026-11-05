@@ -5,6 +5,7 @@ import { hostKind, isContractSigningPath, isPanelPath, isPrivateSurface, PRIVATE
 test('hostKind reconoce hosts con mayúsculas y puerto', () => {
   assert.equal(hostKind('Admin.Bralto.io:443'), 'admin')
   assert.equal(hostKind('admin.bralto.io'), 'admin')
+  assert.equal(hostKind('Knox.Bralto.io'), 'knox')
   assert.equal(hostKind('www.bralto.io'), 'public')
   assert.equal(hostKind('bralto.io'), 'public')
   assert.equal(hostKind('localhost:3000'), 'other')
@@ -33,8 +34,29 @@ test('admin: las rutas del panel pasan', () => {
   assert.deepEqual(resolveHostRouting('admin.bralto.io', '/contratos/abc'), { action: 'next' })
   assert.deepEqual(resolveHostRouting('admin.bralto.io', '/login'), { action: 'next' })
   assert.deepEqual(resolveHostRouting('admin.bralto.io', '/propuestas'), { action: 'next' })
-  // El Centro de mando de Knox (la app de Mac abre /knox y /knox?hablar)
-  assert.deepEqual(resolveHostRouting('admin.bralto.io', '/knox', '?hablar'), { action: 'next' })
+  assert.deepEqual(resolveHostRouting('admin.bralto.io', '/admin'), { action: 'next' })
+})
+
+test('admin: Knox se mudó a knox.bralto.io (la app de Mac vieja abría /knox y /knox?hablar)', () => {
+  assert.deepEqual(resolveHostRouting('admin.bralto.io', '/knox'), { action: 'redirect', url: 'https://knox.bralto.io/' })
+  assert.deepEqual(resolveHostRouting('admin.bralto.io', '/knox', '?hablar'), { action: 'redirect', url: 'https://knox.bralto.io/?hablar' })
+  assert.deepEqual(resolveHostRouting('admin.bralto.io', '/knox', '?vista=ventas'), { action: 'redirect', url: 'https://knox.bralto.io/?vista=ventas' })
+})
+
+test('knox: la raíz muestra el centro de mando sin cambiar la dirección', () => {
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/'), { action: 'rewrite', pathname: '/knox' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/', '?vista=redes'), { action: 'rewrite', pathname: '/knox' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/knox', '?vista=redes'), { action: 'redirect', url: 'https://knox.bralto.io/?vista=redes' })
+})
+
+test('knox: login propio, APIs y el resto al panel o al sitio', () => {
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/login'), { action: 'next' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/api/knox/centro'), { action: 'next' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/_next/static/x.js'), { action: 'next' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/crm/mensajes/abc'), { action: 'redirect', url: 'https://admin.bralto.io/crm/mensajes/abc' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/calendario'), { action: 'redirect', url: 'https://admin.bralto.io/calendario' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/admin'), { action: 'redirect', url: 'https://admin.bralto.io/admin' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/es/precios', '?plan=87'), { action: 'redirect', url: 'https://www.bralto.io/es/precios?plan=87' })
 })
 
 test('admin: links viejos de contratos y propuestas van al sitio público', () => {
@@ -52,7 +74,7 @@ test('público: el panel redirige a admin conservando el query', () => {
   assert.deepEqual(resolveHostRouting('www.bralto.io', '/solicitudes', '?success=1'), { action: 'redirect', url: 'https://admin.bralto.io/solicitudes?success=1' })
   assert.deepEqual(resolveHostRouting('bralto.io', '/login'), { action: 'redirect', url: 'https://admin.bralto.io/login' })
   assert.deepEqual(resolveHostRouting('www.bralto.io', '/propuestas'), { action: 'redirect', url: 'https://admin.bralto.io/propuestas' })
-  assert.deepEqual(resolveHostRouting('www.bralto.io', '/knox', '?hablar'), { action: 'redirect', url: 'https://admin.bralto.io/knox?hablar' })
+  assert.deepEqual(resolveHostRouting('www.bralto.io', '/knox', '?hablar'), { action: 'redirect', url: 'https://knox.bralto.io/?hablar' })
 })
 
 test('público: sitio y páginas de cliente pasan', () => {
@@ -64,6 +86,7 @@ test('público: sitio y páginas de cliente pasan', () => {
 test('otros hosts (localhost, previews): todo pasa', () => {
   assert.deepEqual(resolveHostRouting('localhost:3000', '/contratos'), { action: 'next' })
   assert.deepEqual(resolveHostRouting('localhost:3000', '/es'), { action: 'next' })
+  assert.deepEqual(resolveHostRouting('localhost:3000', '/knox'), { action: 'next' })
   assert.deepEqual(resolveHostRouting('bralto-git-x.vercel.app', '/login'), { action: 'next' })
 })
 
@@ -74,6 +97,8 @@ const SURFACES: [host: string, pathname: string, isPrivate: boolean][] = [
   ['www.bralto.io', '/c/acme-x1y2', true],
   ['www.bralto.io', '/c/acme-x1y2/firmado', true],
   ['localhost', '/solicitudes', true],
+  ['knox.bralto.io', '/', true],
+  ['Knox.bralto.io', '/login', true],
   ['www.bralto.io', '/', false],
   ['www.bralto.io', '/es/precios', false],
   ['www.bralto.io', '/propuestas/abc123', false],

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { FileText, Users, ArrowRight, ClipboardList, ScrollText, UserCog, Target, CalendarDays } from 'lucide-react'
 import { getCurrentSession } from '@/lib/panel-session'
 import { hasPermission, requiredPermission } from '@/lib/panel-access'
@@ -16,8 +15,6 @@ const sections = [
 
 export default async function AdminPage() {
   const { user, profile } = await getCurrentSession()
-  // Para los administradores, el Inicio es el Centro de mando de Knox (lo que abre la app de Mac)
-  if (hasPermission(profile, 'is_admin')) redirect('/knox')
   const visible = sections.filter((s) => hasPermission(profile, requiredPermission(s.href)))
 
   return (

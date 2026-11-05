@@ -55,9 +55,16 @@ function markConsentRegion(request: NextRequest, response: NextResponse): NextRe
 
 const PERMISSION_COLUMNS ='is_admin, can_view_contracts, can_view_clients, can_submit_proposals, can_view_proposals, can_view_plan'
 
-// Session + section permission check for panel routes
-async function guardPanel(request: NextRequest): Promise<NextResponse> {
-  let response = NextResponse.next({ request })
+// Session + section permission check for panel routes. Con `rewriteTo` sirve esa ruta sin cambiar la dirección
+// (knox.bralto.io/ muestra /knox) y el permiso es el de esa ruta.
+async function guardPanel(request: NextRequest, rewriteTo?: string): Promise<NextResponse> {
+  const pass = () => {
+    if (!rewriteTo) return NextResponse.next({ request })
+    const url = request.nextUrl.clone()
+    url.pathname = rewriteTo
+    return NextResponse.rewrite(url, { request })
+  }
+  let response = pass()
   try {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -67,7 +74,7 @@ async function guardPanel(request: NextRequest): Promise<NextResponse> {
           getAll() { return request.cookies.getAll() },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-            response = NextResponse.next({ request })
+            response = pass()
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options)
             )
@@ -78,7 +85,7 @@ async function guardPanel(request: NextRequest): Promise<NextResponse> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-    const permission = requiredPermission(request.nextUrl.pathname)
+    const permission = requiredPermission(rewriteTo ?? request.nextUrl.pathname)
     if (permission) {
       const { data: profile } = await supabase
         .from('user_profiles')
@@ -98,9 +105,10 @@ async function guardPanel(request: NextRequest): Promise<NextResponse> {
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
 
-  // ── Host routing: admin.bralto.io = panel, www.bralto.io = public site ────
+  // ── Host routing: admin.bralto.io = panel, knox.bralto.io = Knox, www.bralto.io = public site ────
   const decision = resolveHostRouting(request.headers.get('host'), pathname, search)
   if (decision.action === 'redirect') return NextResponse.redirect(decision.url)
+  if (decision.action === 'rewrite') return guardPanel(request, decision.pathname)
 
   // ── Panel: /login is open, everything else needs session + permission ─────
   if (isPanelPath(pathname)) {
