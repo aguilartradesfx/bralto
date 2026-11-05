@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
+import { firmar, leerDestinos, repartir } from '@/lib/meta/reparto'
 import { firmaValida, leerEventos, respuestaVerificacion } from '@/lib/meta/webhook'
 import { createServiceClient } from '@/lib/supabase/service'
 
 // La puerta de los avisos de Meta (webhooks) a la app «Bralto.io». En el panel de Meta va como
-// https://www.bralto.io/api/meta/webhook con el token META_WEBHOOK_VERIFY_TOKEN. Por ahora solo guarda:
-// cada comentario o mensaje queda en meta_eventos y nada se contesta desde aquí.
+// https://www.bralto.io/api/meta/webhook con el token META_WEBHOOK_VERIFY_TOKEN. Lo de las cuentas de
+// un cliente se le pasa a su sitio (META_REENVIOS); lo de Bralto solo se guarda en meta_eventos y nada
+// se contesta desde aquí.
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
@@ -34,7 +36,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'JSON inválido' }, { status: 400 })
   }
 
-  const eventos = leerEventos(aviso)
+  // Primero lo de los clientes (META_REENVIOS): si el sitio de un cliente no lo recibe, 500 y Meta vuelve
+  // a mandar todo más tarde. Así no se guarda nada de Bralto dos veces; el cliente ignora lo repetido.
+  const { envios, resto } = repartir(aviso, leerDestinos(process.env.META_REENVIOS))
+  for (const { destino, aviso: suyo } of envios) {
+    if (!(await reenviar(destino.url, JSON.stringify(suyo), secreto))) {
+      console.error(`[meta/webhook] ${destino.nombre} no recibió su aviso: Meta lo va a reintentar`)
+      return NextResponse.json({ error: 'No se pudo reenviar' }, { status: 500 })
+    }
+  }
+
+  const eventos = leerEventos(resto)
   if (eventos.length > 0) {
     const { error } = await createServiceClient().from('meta_eventos').insert(eventos)
     // Con un 500 Meta lo vuelve a mandar más tarde: así no se pierde nada si Supabase falla un rato
@@ -43,5 +55,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No se pudo guardar' }, { status: 500 })
     }
   }
-  return NextResponse.json({ ok: true, eventos: eventos.length })
+  return NextResponse.json({ ok: true, eventos: eventos.length, reenviados: envios.length })
+}
+
+// Se le pasa al cliente con la misma firma que pondría Meta (misma clave de la app)
+async function reenviar(url: string, cuerpo: string, secreto: string): Promise<boolean> {
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Hub-Signature-256': firmar(cuerpo, secreto) },
+      body: cuerpo,
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!r.ok) console.error(`[meta/webhook] ${url} contestó ${r.status}`)
+    return r.ok
+  } catch (e) {
+    console.error(`[meta/webhook] ${url} no contestó`, e instanceof Error ? e.message : e)
+    return false
+  }
 }
