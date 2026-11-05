@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { isContractSigningPath } from '@/lib/host-routing'
+import { hostKind, isContractSigningPath, KNOX_PATH } from '@/lib/host-routing'
 
 // Fondo de partículas con scroll (fondo-particulas-handoff.md): comportamiento de la
 // implementación de referencia, montado una sola vez en el layout raíz.
@@ -50,8 +50,8 @@ export function ParticlesBackground() {
     const ctxRaw = canvas.getContext('2d')
     if (!ctxRaw) return
     const ctx: CanvasRenderingContext2D = ctxRaw
-    // Apagado en la firma de contratos y en el Centro de mando de Knox (/knox), que dibuja su propio polvo
-    if (isContractSigningPath(pathname) || pathname === '/knox') {
+    // Apagado en la firma de contratos y en el Centro de mando de Knox (/knox, o knox.bralto.io), que dibuja su propio polvo
+    if (isContractSigningPath(pathname) || pathname === KNOX_PATH || hostKind(location.hostname) === 'knox') {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       return
     }
