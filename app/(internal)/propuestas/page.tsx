@@ -68,10 +68,10 @@ export default async function PropuestasPage() {
   const now = new Date()
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl">
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-xl font-semibold text-fg">Propuestas</h1>
-        <p className="text-sm text-fg/40 mt-0.5">{rows.length} propuesta(s) publicada(s)</p>
+    <div className="px-4 pb-12 md:px-8">
+      <div className="mb-4">
+        <h1 className="sr-only">Propuestas</h1>
+        <p className="text-[13px] text-fg/50">{rows.length} propuesta(s) publicada(s)</p>
       </div>
 
       {rows.length === 0 ? (

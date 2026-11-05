@@ -7,7 +7,7 @@ import { enlaceLista } from '@/lib/crm/busqueda'
 import { CAMPO, ICONO } from '@/components/crm/piezas'
 
 // Busca mientras escribes (con una pausa corta) y filtra por etiqueta. Todo queda en la dirección: ?q=…&etiqueta=…
-export function Buscador({ q, etiqueta, etiquetas }: { q: string; etiqueta: string; etiquetas: { etiqueta: string; total: number }[] }) {
+export function Buscador({ q, etiqueta, etiquetas, className = 'mb-4' }: { q: string; etiqueta: string; etiquetas: { etiqueta: string; total: number }[]; className?: string }) {
   const router = useRouter()
   const [texto, setTexto] = useState(q)
   const [buscando, startTransition] = useTransition()
@@ -37,7 +37,7 @@ export function Buscador({ q, etiqueta, etiquetas }: { q: string; etiqueta: stri
         e.preventDefault()
         ir({ q: texto, etiqueta })
       }}
-      className="mb-4 flex flex-col gap-2 sm:flex-row"
+      className={`flex flex-col gap-2 sm:flex-row ${className}`}
     >
       <label className="relative min-w-0 flex-1">
         <span className="sr-only">Buscar contactos</span>
@@ -48,15 +48,15 @@ export function Buscador({ q, etiqueta, etiquetas }: { q: string; etiqueta: stri
           type="search"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Nombre, teléfono o correo"
+          placeholder="Busca por nombre, teléfono o correo"
           enterKeyHint="search"
           autoComplete="off"
-          className={`${CAMPO} pl-9`}
+          className={`${CAMPO} h-9 pl-9`}
         />
       </label>
-      <label className="sm:w-60">
+      <label className="sm:w-56">
         <span className="sr-only">Filtrar por etiqueta</span>
-        <select value={etiqueta} onChange={(e) => ir({ q: texto, etiqueta: e.target.value })} className={CAMPO}>
+        <select value={etiqueta} onChange={(e) => ir({ q: texto, etiqueta: e.target.value })} className={`${CAMPO} h-9 py-0`}>
           <option value="">Todas las etiquetas</option>
           {etiqueta && !etiquetas.some((e) => e.etiqueta === etiqueta) && <option value={etiqueta}>{etiqueta}</option>}
           {etiquetas.map((e) => (

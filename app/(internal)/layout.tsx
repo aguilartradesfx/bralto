@@ -3,26 +3,30 @@ import '@/components/internal/panel.css'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { Document } from '@/components/document'
-import { panelFonts } from '@/components/home/fonts'
-import { PanelAmbient } from '@/components/internal/panel-ambient'
+import { adminFonts } from '@/components/home/fonts'
 import { themeBootScript } from '@/lib/home/theme'
-import { InternalNav } from '@/components/internal/internal-nav'
+import { Marco, menuBootScript } from '@/components/internal/shell/marco'
 import { getCurrentSession } from '@/lib/panel-session'
+import { menuPara, piePara } from '@/lib/panel/navegacion'
+import { cuentasDelMenu } from '@/lib/panel/cuentas'
 
-export const metadata: Metadata = { robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: { default: 'Panel', template: '%s · Panel Bralto' }, robots: { index: false, follow: false } }
 
 export default async function InternalLayout({ children }: { children: React.ReactNode }) {
   const { user, profile } = await getCurrentSession()
   if (!user) redirect('/login')
 
+  const cuentas = profile?.is_admin ? await cuentasDelMenu() : {}
+
   return (
-    <Document lang="es" fonts={panelFonts}>
+    <Document lang="es" fonts={adminFonts}>
       <div className="pn" data-theme="dark" suppressHydrationWarning>
-        {/* Fija el tema guardado antes del primer pintado (sin flash); debe ser el primer hijo */}
+        {/* Fijan el tema y el ancho del menú guardados antes del primer pintado (sin flash); deben ser los primeros hijos */}
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
-        <PanelAmbient />
-        <InternalNav profile={profile} />
-        <main className="pt-14 md:pt-0 md:pl-[248px] min-h-screen">{children}</main>
+        <script dangerouslySetInnerHTML={{ __html: menuBootScript }} />
+        <Marco menu={menuPara(profile)} pie={piePara(profile)} cuentas={cuentas} perfil={profile} nombre={profile?.full_name?.trim() ?? ''} correo={user.email ?? ''}>
+          {children}
+        </Marco>
       </div>
     </Document>
   )

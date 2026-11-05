@@ -39,11 +39,11 @@ test('las piezas del panel no fijan position', () => {
   assert.deepEqual(offenders, [])
 })
 
-test('el panel y el login usan los tokens, las fuentes y el fondo del sitio', () => {
+test('el panel y el login usan los tokens del sitio, los estilos del panel y sus fuentes', () => {
   for (const file of ['app/(internal)/layout.tsx', 'app/(auth)/layout.tsx']) {
     const source = readFileSync(file, 'utf8')
     assert.match(source, /className="pn[\s"]/, file)
-    assert.match(source, /panelFonts/, file)
+    assert.match(source, /adminFonts/, file)
     assert.match(source, /tokens\.css/, file)
     assert.match(source, /panel\.css/, file)
   }
@@ -90,12 +90,14 @@ test('los textos de color del panel tienen su tono para el tema claro', () => {
   assert.deepEqual(missing, [])
 })
 
-test('el panel y el login arrancan con el tema guardado y tienen el fondo del sitio', () => {
+// Mate: sin los orbes del sitio (las partículas se apagan solas en .pn, components/particles-background.tsx)
+test('el panel y el login arrancan con el tema guardado y sin los orbes del sitio', () => {
   for (const file of ['app/(internal)/layout.tsx', 'app/(auth)/layout.tsx']) {
     const source = readFileSync(file, 'utf8')
     assert.match(source, /themeBootScript/, file)
-    assert.match(source, /PanelAmbient/, file)
+    assert.doesNotMatch(source, /PanelAmbient/, file)
   }
+  assert.match(readFileSync('components/particles-background.tsx', 'utf8'), /querySelector\('\.pn'\)/)
 })
 
 function panelFiles(): string[] {
@@ -138,7 +140,6 @@ test('las barras sobre contenido usan el vidrio denso', () => {
   const bars: [string, RegExp][] = [
     ['app/(internal)/contratos/[id]/page.tsx', /sticky[^"]*pn-glass/],
     ['components/contracts/contract-form.tsx', /fixed bottom-0[^"]*pn-glass/],
-    ['components/internal/internal-nav.tsx', /md:hidden fixed top-0[^"]*pn-glass/],
     ['components/proposals/solicitudes-dashboard.tsx', /max-w-\[520px\][^"]*pn-glass/],
   ]
   for (const [file, pattern] of bars) {

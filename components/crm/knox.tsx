@@ -30,7 +30,7 @@ interface Props {
 export function PanelKnox({ ajustes, decisiones, otraApp, ahora }: Props) {
   const [ficha, setFicha] = useState(ajustes.ficha)
   return (
-    <div className="max-w-3xl p-4 md:p-6 lg:p-8">
+    <div className="max-w-4xl px-4 pb-12 md:px-8">
       <Encabezado titulo="Knox" resumen="Tu asistente para los mensajes de Instagram, Messenger y WhatsApp" />
       <SubMenu activa="/crm/knox" />
       <div className="space-y-4">

@@ -37,7 +37,7 @@ export function Bandeja({ filas, filtro, cuantas, hayMas, resumen, ahora }: Prop
   ].filter(Boolean)
 
   return (
-    <div className="max-w-3xl p-4 md:p-6 lg:p-8">
+    <div className="max-w-4xl px-4 pb-12 md:px-8">
       <Encabezado titulo="Mensajes" resumen={partes.join(' · ')} />
       <SubMenu activa="/crm/mensajes" />
 

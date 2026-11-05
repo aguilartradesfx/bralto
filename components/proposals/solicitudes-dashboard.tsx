@@ -336,7 +336,7 @@ export function SolicitudesDashboard() {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl min-h-screen flex flex-col">
+    <div className="px-4 pb-12 md:px-8 flex flex-col">
       {showSuccess && (
         <div className="mb-4 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm rounded-lg">
           Solicitud enviada correctamente. El equipo la revisará pronto.
@@ -344,10 +344,10 @@ export function SolicitudesDashboard() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-xl font-semibold text-fg">Solicitudes de propuesta</h1>
-          <p className="text-sm text-fg/40 mt-0.5">
+          <h1 className="sr-only">Solicitudes de propuesta</h1>
+          <p className="text-[13px] text-fg/50">
             {loading ? 'Cargando...' : `${proposals.length} solicitud(es)`}
           </p>
         </div>

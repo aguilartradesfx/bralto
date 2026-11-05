@@ -7,7 +7,7 @@ import { FilaTarea } from '@/components/crm/tarea'
 export function ListaTareas({ pendientes, hechas, ahora }: { pendientes: TareaVista[]; hechas: TareaVista[]; ahora: string }) {
   const grupos = agruparTareas(pendientes, new Date(ahora))
   return (
-    <div className="max-w-3xl p-4 md:p-6 lg:p-8">
+    <div className="max-w-4xl px-4 pb-12 md:px-8">
       <Encabezado titulo="Tareas" resumen={pendientes.length === 0 ? 'Nada pendiente' : pendientes.length === 1 ? '1 pendiente' : `${pendientes.length} pendientes`} />
       <SubMenu activa="/crm/tareas" />
 

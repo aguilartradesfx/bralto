@@ -20,7 +20,7 @@ export default async function PlanQ4Page({ searchParams }: { searchParams: Promi
   const content = await getPlanContent()
   if (!content) {
     return (
-      <div className="p-4 md:p-8">
+      <div className="px-4 pb-12 md:px-8">
         <h1 className="text-xl font-semibold text-fg">Plan Q4</h1>
         <p className="mt-2 text-sm text-fg/50">El plan todavía no está cargado.</p>
       </div>
@@ -50,7 +50,7 @@ export default async function PlanQ4Page({ searchParams }: { searchParams: Promi
   const list = { today, week, doneIds, canEdit: actor.slug !== null, areas: guia?.areas, textos }
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl">
+    <div className="max-w-5xl px-4 pb-12 md:px-8">
       <div className="mb-8">
         <p className="font-mono text-[11px] uppercase tracking-widest text-fg/40">Plan Q4 · Octubre a diciembre 2026</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-fg">{view.vista === 'inicio' ? 'El plan del trimestre' : VISTA_LABELS[view.vista]}</h1>

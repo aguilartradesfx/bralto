@@ -1,34 +1,103 @@
-/* Panel interno (admin.bralto.io) y login: el sistema liquid glass del sitio en versión de trabajo.
-   Tokens en components/home/tokens.css. Tema claro y oscuro: data-theme en .pn, con el toggle y la preferencia del sitio. */
+/* Panel interno (admin.bralto.io) y login. Diseño mate de trabajo (superficies sólidas, sin vidrio) con acentos
+   naranjas tenues. Tema claro y oscuro: data-theme en .pn, con el toggle y la preferencia del sitio.
+   Tokens base en components/home/tokens.css; los del panel (--pn-*) aquí. */
 
 :root:has(.pn) {
-  /* font-sans, font-mono de Tailwind y el body apuntan a Geist: en el panel (y sus modales
-     montados en <body>), a las fuentes del sitio */
-  --font-geist: var(--font-sora);
-  --font-geist-mono: var(--font-jbmono);
+  /* font-sans y font-mono de Tailwind (y el body) apuntan a Geist: en el panel, a la Geist del panel */
+  --font-geist: var(--font-admin);
+  --font-geist-mono: var(--font-admin-mono);
 }
 
-/* fg (text-fg, border-fg/10… en Tailwind): blanco en el tema oscuro, casi negro en el claro */
+/* Tema oscuro (el de siempre) */
 .pn,
 :where(:root:has(.pn)) {
-  --pn-fg: 255 255 255;
+  --font-display: var(--font-admin), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-admin-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* fg (text-fg, border-fg/10… en Tailwind) */
+  --pn-fg: 236 236 236;
+  --pn-bg: #141414;
+  --pn-side: #191919;
+  --pn-card: #1b1b1b;
+  --pn-raise: #242424;
+  --pn-raise-2: #2c2c2c;
+  --pn-hover: rgba(255, 255, 255, .035);
+  --pn-line: rgba(255, 255, 255, .065);
+  --pn-line-2: rgba(255, 255, 255, .11);
+  --pn-muted: #8f8f8f;
+  /* El acento: el naranja de Bralto, siempre tenue */
+  --pn-accent: #ff6d28;
+  --pn-accent-ink: #ff8f5a;
+  --pn-accent-soft: rgba(255, 109, 40, .1);
+  --pn-accent-line: rgba(255, 109, 40, .3);
+  --pn-accent-glow: rgba(255, 109, 40, .16);
+  --pn-good: #4ade80;
+  --pn-bad: #f87171;
+  --pn-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+  --pn-pop: 0 0 0 1px var(--pn-line-2), 0 24px 56px -16px rgba(0, 0, 0, .75);
+  --pn-side-w: 248px;
+  /* Los tokens del sitio que todavía usan algunas piezas */
+  --ink: rgb(var(--pn-fg));
+  --accent-ink: var(--pn-accent);
+  --rule: var(--pn-line);
+  --rule-2: var(--pn-line-2);
+  --solid: #171717;
+  --inset-fill: var(--pn-raise);
+  --inset-hi: transparent;
+  --inset-edge: var(--pn-line);
 }
 
 .pn[data-theme='light'],
 :where(:root:has(.pn[data-theme='light'])) {
-  --pn-fg: 11 11 11;
+  --pn-fg: 23 23 23;
+  --pn-bg: #f4f4f3;
+  --pn-side: #eeeeec;
+  --pn-card: #ffffff;
+  --pn-raise: #f1f1ef;
+  --pn-raise-2: #e8e8e6;
+  --pn-hover: rgba(0, 0, 0, .03);
+  --pn-line: rgba(0, 0, 0, .075);
+  --pn-line-2: rgba(0, 0, 0, .13);
+  --pn-muted: #6b6b6b;
+  --pn-accent: #f26419;
+  --pn-accent-ink: #c2410c;
+  --pn-accent-soft: rgba(242, 100, 25, .08);
+  --pn-accent-line: rgba(242, 100, 25, .3);
+  --pn-accent-glow: rgba(242, 100, 25, .12);
+  --pn-good: #15803d;
+  --pn-bad: #b91c1c;
+  --pn-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  --pn-pop: 0 0 0 1px var(--pn-line-2), 0 24px 56px -20px rgba(0, 0, 0, .22);
+  --accent-ink: #c2410c;
+  --solid: #fbfbfa;
 }
 
-/* Sin fondo propio: el color base va en el body para que se vean las partículas del sitio
-   (canvas del layout raíz), debajo de los orbes */
+@media (max-width: 767px) {
+  .pn,
+  :where(:root:has(.pn)) {
+    --pn-side-w: 0px;
+  }
+}
+
+/* El menú corto (solo íconos), si lo dejaste así */
+@media (min-width: 768px) {
+  .pn[data-menu='corto'] {
+    --pn-side-w: 68px;
+  }
+}
+
+.pn-side {
+  overflow: hidden;
+}
+
+/* El color base va en el body (también lo ven los modales montados en <body>) */
 :root:has(.pn),
 :root:has(.pn) body {
-  background-color: #050505;
+  background-color: #141414;
 }
 
 :root:has(.pn[data-theme='light']),
 :root:has(.pn[data-theme='light']) body {
-  background-color: #e8e8e8;
+  background-color: #f4f4f3;
 }
 
 /* globals.css fija el oscuro en :root y el texto claro en body: los modales montados en <body> y las barras
@@ -38,7 +107,7 @@
 }
 
 :root:has(.pn[data-theme='light']) body {
-  color: #0b0b0b;
+  color: #171717;
 }
 
 .pn {
@@ -46,190 +115,323 @@
   isolation: isolate;
   min-height: 100vh;
   min-height: 100dvh;
-  color: var(--ink);
+  color: rgb(var(--pn-fg));
+  background: var(--pn-bg);
   font-family: var(--font-display);
+  font-feature-settings: 'cv11', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* El grano del sitio, sobre los orbes */
-.pn::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: var(--grain);
-  mix-blend-mode: var(--grain-blend);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 220px 220px;
-}
-
-/* Orbes del sitio (panel-ambient.tsx): lo que el vidrio refracta. La posición la ponen sus clases de Tailwind */
-.pn-orb--a {
-  width: 64vmax;
-  height: 64vmax;
-  left: -18vmax;
-  top: -30vmax;
-  background: radial-gradient(closest-side, var(--orb-1), transparent 74%);
-}
-
-.pn-orb--b {
-  width: 46vmax;
-  height: 46vmax;
-  right: -10vmax;
-  top: 34vh;
-  background: radial-gradient(closest-side, var(--orb-2), transparent 70%);
-}
-
-.pn-orb--c {
-  width: 80vmax;
-  height: 44vmax;
-  left: 4vw;
-  bottom: -26vmax;
-  background: radial-gradient(closest-side, var(--orb-3), transparent 70%);
-  transform: rotate(-12deg);
-}
-
-/* Una franja de luz alargada y más definida: le da al vidrio un borde que difuminar */
-.pn-orb--d {
-  width: 120vmax;
-  height: 9vmax;
-  left: -16vmax;
-  top: 62vh;
-  background: radial-gradient(closest-side, var(--streak), transparent 82%);
-  transform: rotate(-14deg);
-}
-
-@keyframes pn-drift-a {
-  to { transform: translate3d(9vw, 8vh, 0) scale(1.08); }
-}
-
-@keyframes pn-drift-b {
-  to { transform: translate3d(-8vw, -7vh, 0) scale(.92); }
-}
-
-@keyframes pn-drift-c {
-  from { transform: rotate(-12deg); }
-  to { transform: translate3d(-6vw, -5vh, 0) rotate(-4deg) scale(1.06); }
-}
-
-@keyframes pn-drift-d {
-  from { transform: rotate(-14deg); }
-  to { transform: translate3d(8vw, -12vh, 0) rotate(-22deg); }
-}
-
-@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
-  .pn-orb--a { animation: pn-drift-a 38s var(--ease-io) infinite alternate; }
-  .pn-orb--b { animation: pn-drift-b 46s var(--ease-io) infinite alternate; }
-  .pn-orb--c { animation: pn-drift-c 54s var(--ease-io) infinite alternate; }
-  .pn-orb--d { animation: pn-drift-d 62s var(--ease-io) infinite alternate; }
-}
-
-/* "Pausar animaciones" del pie del sitio (data-motion en <html>, misma preferencia) */
-html[data-motion='paused'] .pn-orb {
-  animation-play-state: paused;
+/* Números de tablas y tarjetas: todos del mismo ancho */
+.pn .tabular-nums,
+.pn table {
+  font-variant-numeric: tabular-nums;
 }
 
 :root:has(.pn) :focus-visible {
-  outline: 2px solid var(--accent-ink);
+  outline: 2px solid var(--pn-accent-line);
   outline-offset: 2px;
 }
 
-/* Los campos de texto marcan el foco con su borde; checkbox y radio conservan el anillo */
+/* Los campos de texto marcan el foco con su borde (naranja tenue); checkbox y radio conservan el anillo */
 :root:has(.pn) :is(input:not([type='checkbox']):not([type='radio']), select, textarea):focus-visible {
   outline: none;
 }
 
-/* Vidrio ahumado. Con backdrop-filter: nunca en un contenedor que tenga adentro un modal fixed.
-   Sin position: la pone cada uso (fixed, sticky, relative) con Tailwind */
+:root:has(.pn) :is(input:not([type='checkbox']):not([type='radio']), select, textarea):focus-visible:not(.focus\:\!shadow-none) {
+  border-color: var(--pn-accent-line) !important;
+  box-shadow: 0 0 0 3px var(--pn-accent-soft);
+}
+
+:root:has(.pn) :is(input[type='checkbox'], input[type='radio']) {
+  accent-color: var(--pn-accent);
+}
+
+:root:has(.pn) ::selection {
+  background: var(--pn-accent-glow);
+}
+
+/* La tarjeta: superficie sólida con un borde finito. (Se llama pn-glass porque así la usan todas las pantallas;
+   ya no es vidrio.) Sin position: la pone cada uso con Tailwind */
 .pn-glass {
-  background: var(--glass-sheen), var(--glass-tint);
-  -webkit-backdrop-filter: blur(var(--blur)) saturate(165%);
-  backdrop-filter: blur(var(--blur)) saturate(165%);
-  box-shadow:
-    inset 0 1px 0 var(--glass-hi),
-    inset 0 -1px 0 var(--glass-lo),
-    inset 0 0 0 1px var(--glass-edge),
-    var(--glass-shadow);
+  background: var(--pn-card);
+  box-shadow: inset 0 0 0 1px var(--pn-line), var(--pn-shadow);
 }
 
-/* Barras y paneles que flotan sobre contenido (también sobre la hoja blanca del contrato): tinte casi opaco */
-.pn-glass--dense {
-  --glass-tint: rgba(10, 10, 10, .9);
+/* Lo que flota encima (menús, barras, modales): la misma tarjeta con sombra */
+.pn-glass--dense,
+.pn-pop {
+  background: var(--pn-card);
+  box-shadow: var(--pn-pop);
 }
 
-:root:has(.pn[data-theme='light']) .pn-glass--dense {
-  --glass-tint: rgba(244, 244, 244, .9);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .pn-glass {
-    background: var(--glass-sheen), var(--solid);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .pn-glass {
-    background: var(--glass-sheen), var(--solid);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-/* Superficie sólida: listas, tablas y desplegables */
+/* Superficie hundida: listas, tablas y desplegables dentro de una tarjeta */
 .pn-solid {
   background: var(--solid);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  box-shadow: inset 0 0 0 1px var(--pn-line);
 }
 
-/* Botón principal: blanco con degradado, como el del sitio */
+/* Botón principal: el naranja, tenue */
 .pn-btn-solid {
-  background: var(--btn-bg);
-  color: var(--btn-ink);
-  border-radius: var(--r-pill);
-  box-shadow: inset 0 1px 0 var(--btn-hi), inset 0 -1px 0 var(--btn-lo), 0 10px 24px -12px var(--btn-shadow);
-  transition: transform .3s var(--ease), box-shadow .3s var(--ease), opacity .2s;
+  background: var(--pn-accent-soft);
+  color: var(--pn-accent-ink);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--pn-accent-line);
+  transition: background-color .2s var(--ease), box-shadow .2s var(--ease), transform .15s var(--ease), opacity .2s;
 }
 
 .pn-btn-solid:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 var(--btn-hi), inset 0 -1px 0 var(--btn-lo), 0 16px 30px -14px var(--btn-shadow);
+  background: var(--pn-accent-glow);
 }
 
-.pn-btn-solid:active:not(:disabled) {
+.pn-btn-solid:active:not(:disabled),
+.pn-btn-glass:active:not(:disabled) {
   transform: scale(.98);
-  transition-duration: .12s;
 }
 
-/* Botón secundario: vidrio interno */
+/* Botón secundario: gris, como los del diseño */
 .pn-btn-glass {
-  background: var(--inset-fill);
-  color: var(--ink);
-  border-radius: var(--r-pill);
-  box-shadow: inset 0 1px 0 var(--inset-hi), inset 0 0 0 1px var(--inset-edge);
-  transition: box-shadow .2s, opacity .2s;
+  background: var(--pn-raise);
+  color: rgb(var(--pn-fg));
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--pn-line);
+  transition: background-color .2s var(--ease), box-shadow .2s var(--ease), transform .15s var(--ease), opacity .2s;
 }
 
 .pn-btn-glass:hover:not(:disabled) {
-  box-shadow: inset 0 1px 0 var(--inset-hi), inset 0 0 0 1px var(--rule-2);
+  background: var(--pn-raise-2);
 }
 
 /* Activo: chips, filtros, pestañas e ítem del menú */
 .pn-chip-on {
-  background: var(--inset-fill);
-  color: var(--ink);
-  box-shadow: inset 0 1px 0 var(--inset-hi), inset 0 0 0 1px var(--inset-edge);
+  background: var(--pn-raise);
+  color: rgb(var(--pn-fg));
+  box-shadow: inset 0 0 0 1px var(--pn-line);
 }
 
-/* La señal: el único naranja (ítem activo del menú) */
+/* La señal: el puntito naranja (lo activo, lo programado, lo nuevo) */
 .pn-signal {
   width: 6px;
   height: 6px;
   flex: none;
   border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 10px rgba(255, 109, 40, .6);
+  background: var(--pn-accent);
+  box-shadow: 0 0 8px var(--pn-accent-glow);
+}
+
+/* Pestañas en una cápsula (General · Equipo · …): la activa, levantada */
+:where(.pn-tabs) {
+  display: inline-flex;
+}
+
+.pn-tabs {
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--pn-card);
+  box-shadow: inset 0 0 0 1px var(--pn-line);
+}
+
+.pn-tab {
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--pn-muted);
+  white-space: nowrap;
+  transition: color .15s, background-color .15s;
+}
+
+.pn-tab:hover {
+  color: rgb(var(--pn-fg));
+}
+
+.pn-tab[aria-current='page'],
+.pn-tab[aria-selected='true'] {
+  background: var(--pn-raise-2);
+  color: rgb(var(--pn-fg));
+}
+
+/* Etiqueta de estado con su puntito de color (En conversación, Ganada…) */
+:where(.pn-pill) {
+  display: inline-flex;
+}
+
+.pn-pill {
+  align-items: center;
+  gap: 6px;
+  border-radius: 7px;
+  padding: 2px 8px;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  color: rgb(var(--pn-fg) / .85);
+  background: var(--pn-raise);
+  box-shadow: inset 0 0 0 1px var(--pn-line);
+}
+
+.pn-pill > i {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* El color de cada etapa o estado (siempre va con su nombre escrito al lado) */
+.pn,
+:where(:root:has(.pn)) {
+  --pn-c-gris: #8f8f8f;
+  --pn-c-azul: #5b9bf8;
+  --pn-c-morado: #b98cf5;
+  --pn-c-verde: #34c769;
+  --pn-c-rojo: #f06a6a;
+  --pn-c-ambar: #e5b52a;
+}
+
+.pn[data-theme='light'],
+:where(:root:has(.pn[data-theme='light'])) {
+  --pn-c-gris: #8a8a8a;
+  --pn-c-azul: #2563eb;
+  --pn-c-morado: #9333ea;
+  --pn-c-verde: #16a34a;
+  --pn-c-rojo: #dc2626;
+  --pn-c-ambar: #b7791f;
+}
+
+.pn-pill > i.gris { background: var(--pn-c-gris); }
+.pn-pill > i.azul { background: var(--pn-c-azul); }
+.pn-pill > i.morado { background: var(--pn-c-morado); }
+.pn-pill > i.verde { background: var(--pn-c-verde); }
+.pn-pill > i.rojo { background: var(--pn-c-rojo); }
+.pn-pill > i.ambar { background: var(--pn-c-ambar); }
+
+/* «Próximamente» */
+:where(.pn-pronto) {
+  display: inline-flex;
+}
+
+.pn-pronto {
+  align-items: center;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 10.5px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--pn-accent-ink);
+  background: var(--pn-accent-soft);
+}
+
+/* Contador del menú (Mensajes 3) */
+.pn-count {
+  min-width: 20px;
+  border-radius: 6px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--pn-fg) / .7);
+  background: var(--pn-raise);
+  box-shadow: inset 0 0 0 1px var(--pn-line);
+}
+
+.pn-count--accent {
+  color: var(--pn-accent-ink);
+  background: var(--pn-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--pn-accent-line);
+}
+
+/* Botón de ícono cuadrado (buscar, campana, ⋮) */
+:where(.pn-icon-btn) {
+  display: inline-grid;
+}
+
+.pn-icon-btn {
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  color: rgb(var(--pn-fg) / .7);
+  background: var(--pn-card);
+  box-shadow: inset 0 0 0 1px var(--pn-line);
+  transition: color .15s, background-color .15s;
+}
+
+.pn-icon-btn:hover {
+  color: rgb(var(--pn-fg));
+  background: var(--pn-raise);
+}
+
+/* La barrita de puntaje (Fit 94) */
+.pn-meter {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(var(--pn-fg) / .1);
+  overflow: hidden;
+}
+
+.pn-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: rgb(var(--pn-fg) / .75);
+}
+
+.pn-meter--accent > span {
+  background: linear-gradient(90deg, var(--pn-accent-line), var(--pn-accent));
+}
+
+/* Filas de tabla: el hover y la fila abierta (con la rayita naranja a la izquierda) */
+.pn-row {
+  transition: background-color .15s;
+}
+
+.pn-row:hover {
+  background: var(--pn-hover);
+}
+
+.pn-row[aria-current='true'],
+.pn-row[data-on='true'] {
+  background: var(--pn-raise);
+  box-shadow: inset 2px 0 0 var(--pn-accent);
+}
+
+/* Bloques que esperan datos */
+.pn-skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgb(var(--pn-fg) / .05), rgb(var(--pn-fg) / .09), rgb(var(--pn-fg) / .05));
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pn-skeleton {
+    animation: pn-shimmer 1.6s linear infinite;
+  }
+}
+
+@keyframes pn-shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* Entrada de las tarjetas: suben un poquito, una detrás de otra */
+@media (prefers-reduced-motion: no-preference) {
+  .pn-rise {
+    animation: pn-rise .5s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+}
+
+@keyframes pn-rise {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* Scroll finito dentro de los paneles */
+.pn-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--pn-fg) / .15) transparent;
 }
 
 /* Tema claro: los textos de estado (rojo, verde, ámbar) en tonos que se leen sobre gris claro.
@@ -267,3 +469,65 @@ html[data-motion='paused'] .pn-orb {
 .plan-table th { text-align: left; font-weight: 500; color: rgb(var(--pn-fg) / 0.5); background: rgb(var(--pn-fg) / 0.03); }
 .plan-table th, .plan-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgb(var(--pn-fg) / 0.06); vertical-align: top; }
 .plan-table tr:last-child td { border-bottom: 0; }
+
+/* Login: la imagen de la derecha. Persianas con grano en tonos de naranja (de oscuro a cobre) */
+.pn-vitrina {
+  background: #1a0e08;
+}
+
+.pn-vitrina__persianas {
+  background:
+    radial-gradient(ellipse 70% 55% at 72% 18%, rgba(255, 150, 80, .55), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 18% 92%, rgba(255, 109, 40, .28), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .13) 0, rgba(255, 255, 255, .02) 46px, rgba(0, 0, 0, .3) 86px, rgba(255, 255, 255, .13) 88px),
+    linear-gradient(165deg, #2b140a 0%, #7a3412 42%, #3a170a 78%, #140a06 100%);
+}
+
+.pn-vitrina__grano {
+  opacity: .38;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
+.pn-vitrina__sombra {
+  background: linear-gradient(to top, rgba(0, 0, 0, .45), transparent);
+}
+
+.pn[data-theme='light'] .pn-vitrina {
+  background: #f3d2bb;
+}
+
+.pn[data-theme='light'] .pn-vitrina__persianas {
+  background:
+    radial-gradient(ellipse 70% 55% at 72% 18%, rgba(255, 236, 220, .85), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 18% 92%, rgba(242, 100, 25, .35), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .35) 0, rgba(255, 255, 255, .05) 46px, rgba(120, 50, 15, .16) 86px, rgba(255, 255, 255, .35) 88px),
+    linear-gradient(165deg, #f7dccb 0%, #f0a271 45%, #d9773f 80%, #b9572a 100%);
+}
+
+.pn[data-theme='light'] .pn-vitrina__grano {
+  opacity: .3;
+  mix-blend-mode: multiply;
+}
+
+.pn[data-theme='light'] .pn-vitrina__sombra {
+  background: linear-gradient(to top, rgba(120, 50, 15, .2), transparent);
+}
+
+/* La franja de color (Ajustes → Knox): naranja que se apaga hacia el gris, como la del diseño */
+.pn-banda {
+  color: #fff7f1;
+  background:
+    radial-gradient(ellipse 40% 140% at 0% 50%, rgba(255, 140, 70, .55), transparent 70%),
+    linear-gradient(90deg, #a84413 0%, #7a3a1c 38%, #3a2a24 70%, #26262a 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+.pn[data-theme='light'] .pn-banda {
+  color: #3a1606;
+  background:
+    radial-gradient(ellipse 40% 140% at 0% 50%, rgba(255, 170, 110, .6), transparent 70%),
+    linear-gradient(90deg, #f7b98f 0%, #f6d4bd 45%, #efe7e2 75%, #ecebea 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06);
+}

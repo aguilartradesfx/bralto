@@ -61,14 +61,14 @@ export function Etiqueta({ children }: { children: React.ReactNode }) {
   return <span className="inline-block max-w-[12rem] truncate rounded-full bg-fg/[0.06] px-2 py-0.5 align-middle text-[11px] leading-4 text-fg/65">{children}</span>
 }
 
-// El título de cada pantalla del CRM: «CRM» chiquito arriba, el nombre y una línea de resumen
+// Arriba de cada pantalla del CRM: una línea de resumen y sus botones (el nombre va en la barra de arriba)
 export function Encabezado({ titulo, resumen, children }: { titulo: string; resumen?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-4 flex min-h-9 flex-wrap items-center justify-between gap-3">
       <div className="min-w-0">
-        <p className="font-mono text-[11px] uppercase tracking-widest text-fg/40">CRM</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-fg">{titulo}</h1>
-        {resumen && <p className="mt-0.5 text-sm text-fg/45">{resumen}</p>}
+        {/* El nombre de la sección ya está en la barra de arriba */}
+        <h1 className="sr-only">{titulo}</h1>
+        {resumen && <p className="text-[13px] text-fg/50">{resumen}</p>}
       </div>
       {children}
     </div>
@@ -83,10 +83,10 @@ const SECCIONES = [
   { href: '/crm/knox', label: 'Knox' },
 ] as const
 
-// Contactos · Mensajes · Pipeline · Tareas · Knox. En un teléfono angosto se desliza de lado
+// Contactos · Mensajes · Pipeline · Tareas · Knox. Solo en pantallas chicas (en la compu ya están en el menú)
 export function SubMenu({ activa }: { activa: (typeof SECCIONES)[number]['href'] }) {
   return (
-    <nav aria-label="Secciones del CRM" className="-mx-4 mb-5 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden">
+    <nav aria-label="Secciones del CRM" className="-mx-4 mb-4 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0 lg:hidden [&::-webkit-scrollbar]:hidden">
       <div className="flex w-max gap-0.5 sm:gap-1">
         {SECCIONES.map((s) => {
           const on = s.href === activa

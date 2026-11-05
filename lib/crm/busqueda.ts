@@ -31,11 +31,13 @@ export function leerPagina(valor: unknown): number {
 export const totalPaginas = (total: number) => Math.max(1, Math.ceil(total / POR_PAGINA))
 
 // Los enlaces de la lista conservan la búsqueda y el filtro
-export function enlaceLista(params: { q?: string; etiqueta?: string; pagina?: number }): string {
+// c: el contacto abierto en el panel de la derecha
+export function enlaceLista(params: { q?: string; etiqueta?: string; pagina?: number; c?: string }): string {
   const u = new URLSearchParams()
   if (params.q?.trim()) u.set('q', params.q.trim())
   if (params.etiqueta) u.set('etiqueta', params.etiqueta)
   if (params.pagina && params.pagina > 1) u.set('pagina', String(params.pagina))
+  if (params.c) u.set('c', params.c)
   const s = u.toString()
   return s ? `/crm?${s}` : '/crm'
 }

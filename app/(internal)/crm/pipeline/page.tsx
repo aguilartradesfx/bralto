@@ -21,7 +21,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
   const pipeline = pipelines.find((p) => p.id === sp.pipeline) ?? pipelines[0]
   if (!pipeline) {
     return (
-      <div className="p-4 md:p-6 lg:p-8">
+      <div className="px-4 pb-12 md:px-8">
         <Encabezado titulo="Pipeline" />
         <SubMenu activa="/crm/pipeline" />
         <Vacio>Todavía no hay ningún pipeline.</Vacio>
