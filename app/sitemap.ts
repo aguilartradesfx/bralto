@@ -27,7 +27,6 @@ const ROUTES: Route[] = [
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/sistemas-internos' },
   { priority: 0.85, changeFrequency: 'monthly', path: '/servicios/asesoria' },
   { priority: 0.8,  changeFrequency: 'monthly', path: '/casos' },
-  { priority: 0.7,  changeFrequency: 'weekly',  path: '/noticias' },
   ...clients.map((c): Route => ({ priority: 0.7, changeFrequency: 'monthly', path: `/servicios/sitios-web/${c.id}` })),
   // Privacidad y términos, solo publicados (como borrador dan 404 en producción)
   ...(LEGAL_REVIEWED
@@ -79,6 +78,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       })
     }
+  }
+
+  // Recursos (guías y noticias juntas), solo en español como las guías. Descargables entra cuando tenga algo.
+  for (const path of ['/recursos', '/recursos/noticias']) {
+    entries.push({ url: `${SITE_URL}/es${path}`, lastModified: now, changeFrequency: 'daily', priority: 0.7 })
   }
 
   // Las guías publicadas, solo en español (la parte abierta sirve para Google)

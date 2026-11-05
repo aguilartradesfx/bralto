@@ -58,7 +58,7 @@ export async function HomeFooter({ locale, showLegal }: { locale: Locale; showLe
               <a href={`/${locale}/plataforma`}>{t('nav.links.plataforma')}</a>
             </li>
             <li>
-              <a href={`/${locale}/noticias`}>{t('nav.links.noticias')}</a>
+              <a href="/es/recursos">{t('nav.links.recursos')}</a>
             </li>
             <li>
               <a href={`/${locale}/sobre-nosotros`}>{t('nav.links.about')}</a>
