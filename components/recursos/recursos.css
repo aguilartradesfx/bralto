@@ -1,0 +1,101 @@
+/* ---------- /es/recursos: las tres pestañas y lo vacío (las tarjetas son las de news.css) ---------- */
+.rc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.rc-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  font-size: 15.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .2s var(--ease), transform .2s var(--ease);
+}
+
+.rc-tab:hover {
+  color: var(--ink);
+}
+
+.rc-tab--activa {
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  box-shadow: inset 0 1px 0 var(--btn-hi), 0 10px 24px -14px var(--btn-shadow);
+}
+
+.rc-tab--activa:hover {
+  color: var(--btn-ink);
+}
+
+.rc-tab__n {
+  min-width: 24px;
+  padding: 3px 7px;
+  border-radius: var(--r-pill);
+  background: var(--hover);
+  font: 500 12px/1 var(--font-mono);
+  text-align: center;
+}
+
+.rc-tab--activa .rc-tab__n {
+  background: rgba(0, 0, 0, .08);
+}
+
+.rc-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.rc-bajada {
+  margin: 16px 0 0;
+  font-size: 15px;
+  color: var(--ink-3);
+}
+
+.rc-vacio {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+  max-width: 560px;
+  padding: 28px;
+  border-radius: var(--r-md);
+}
+
+.rc-vacio p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.rc-sin-foto {
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: var(--inset-fill);
+}
+
+/* En el teléfono, las tres en una fila del mismo ancho: el nombre arriba y cuántas hay abajo */
+@media (max-width: 560px) {
+  .rc-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 26px;
+  }
+
+  .rc-tab {
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-height: 68px;
+    padding: 8px 4px;
+    border-radius: var(--r-sm);
+    font-size: 14px;
+  }
+}

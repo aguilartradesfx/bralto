@@ -49,6 +49,9 @@ export function GuiaArticulo({ guia, visibles, secciones, conAcceso, recienAbier
       {recienAbierta && <IrAGuia />}
       <section className="hm-hero hm-hero--page hm-hero--fit gu-cabeza" aria-labelledby="gu-titulo">
         <div className="hm-wrap gu-hero">
+          <a href="/es/recursos" className="nw-back">
+            Todas las guías
+          </a>
           <p className="hm-eyebrow">{guia.etiqueta}</p>
           <h1 id="gu-titulo" className="nw-title">
             {guia.titulo}

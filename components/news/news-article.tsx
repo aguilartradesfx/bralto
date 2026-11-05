@@ -24,7 +24,7 @@ export async function NewsArticle({ row, locale, preview }: Props) {
               {t('preview')}
             </p>
           )}
-          <a href={`/${locale}/noticias`} className="nw-back">
+          <a href="/es/recursos/noticias" className="nw-back">
             {t('back')}
           </a>
           <p className="hm-eyebrow">{row.tipo === 'articulo' ? t('articleEyebrow') : t('eyebrow')}</p>

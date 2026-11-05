@@ -33,6 +33,19 @@ export async function listPublished(page: number): Promise<{ items: NewsRow[]; h
   return { items: rows.slice(0, PAGE_SIZE), hasMore: rows.length > PAGE_SIZE }
 }
 
+// Todas las publicadas, solo lo que lleva la tarjeta de /recursos (ahí se juntan con las guías)
+export async function listAllForIndex(): Promise<
+  Pick<NewsRow, 'slug' | 'tipo' | 'titulo_es' | 'resumen_es' | 'imagen_url' | 'publicada_en'>[]
+> {
+  const { data, error } = await publicClient()
+    .from(TABLE)
+    .select('slug, tipo, titulo_es, resumen_es, imagen_url, publicada_en')
+    .eq('estado', 'publicada')
+    .order('publicada_en', { ascending: false })
+  if (error) fail('índice de recursos', error)
+  return data ?? []
+}
+
 export async function getPublished(slug: string): Promise<NewsRow | null> {
   const { data, error } = await publicClient()
     .from(TABLE)
