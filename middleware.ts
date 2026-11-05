@@ -7,6 +7,7 @@ import { OPT_IN_REGION, REGION_COOKIE, requiresOptIn } from './lib/consent'
 import { preferredLocale } from './lib/locale'
 import { isPanelPath, resolveHostRouting } from './lib/host-routing'
 import { hasPermission, requiredPermission, type PanelPermission } from './lib/panel-access'
+import { esAvisoDeMeta } from './lib/eliminar-datos/ruta'
 import type { UserProfile } from './types/user-profiles'
 
 // La elección guardada, después el idioma del navegador y por último el país (lib/locale.ts)
@@ -104,6 +105,11 @@ export async function middleware(request: NextRequest) {
   // ── Panel: /login is open, everything else needs session + permission ─────
   if (isPanelPath(pathname)) {
     return pathname === '/login' ? NextResponse.next() : guardPanel(request)
+  }
+
+  // ── Meta avisa por POST a /eliminar-datos cuando alguien quita la app: va a la API, no a la redirección de idioma
+  if (esAvisoDeMeta(request.method, pathname, request.headers.get('next-action'))) {
+    return NextResponse.rewrite(new URL('/api/meta/eliminar-datos', request.url))
   }
 
   // ── robots.txt y sitemap.xml van en la raíz: sin esto se mandaban a /en/… y daban 404

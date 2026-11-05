@@ -1,0 +1,175 @@
+/* ==========================================================================
+   Eliminación de datos: el texto usa el de las páginas legales (legal.css); aquí van el formulario
+   y la consulta del estado, en cajas de vidrio con los tokens de .hm.
+   ========================================================================== */
+
+.lg-doc > .ed-privacidad {
+  margin-top: 32px;
+  font-size: 15.5px;
+}
+
+.ed-privacidad a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ed-bloque {
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+  border-radius: var(--r-md);
+  max-width: 640px;
+}
+
+.ed-bloque h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+
+.ed-bloque__ayuda {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.ed-form,
+.ed-consulta {
+  display: grid;
+  gap: 16px;
+}
+
+.ed-campo {
+  display: grid;
+  gap: 6px;
+}
+
+.ed-campo__etiqueta {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ed-campo__ayuda {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.ed-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--inset-fill);
+  box-shadow: inset 0 0 0 1px var(--inset-edge), inset 0 1px 0 var(--inset-hi);
+  color: var(--ink);
+  font: 400 16px/1.4 var(--font-display);
+}
+
+textarea.ed-input {
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.ed-input::placeholder {
+  color: var(--ink-3);
+  opacity: .7;
+}
+
+.ed-input[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 1px var(--accent-ink), inset 0 1px 0 var(--inset-hi);
+}
+
+.ed-input:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+.ed-error {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--accent-ink);
+}
+
+.ed-error--general {
+  font-size: 14.5px;
+}
+
+.ed-form .hm-btn,
+.ed-listo .hm-btn {
+  justify-self: start;
+}
+
+/* El campo trampa para bots: fuera de la vista, pero no display:none (algunos bots lo saltan) */
+.ed-oculto {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.ed-listo {
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border-radius: var(--r-md);
+}
+
+.ed-listo h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ed-listo p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.ed-codigo {
+  font: 600 26px/1.2 var(--font-mono, ui-monospace, monospace);
+  letter-spacing: .06em;
+  color: var(--ink) !important;
+}
+
+.ed-resultado {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--r-sm);
+  background: var(--inset-fill);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.ed-consulta__fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .ed-bloque {
+    padding: 18px;
+  }
+
+  .ed-consulta__fila {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-consulta__fila .hm-btn {
+    justify-self: start;
+  }
+}
