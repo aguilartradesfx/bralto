@@ -28,13 +28,14 @@ function env(nombre: string): string {
   return v
 }
 
-async function graph<T>(ruta: string, params: Record<string, string>, metodo: 'GET' | 'POST' = 'POST'): Promise<T> {
+// También la usan las pruebas (lib/redes/pruebas/servidor.ts): métricas y borrar versiones
+export async function graph<T>(ruta: string, params: Record<string, string>, metodo: 'GET' | 'POST' | 'DELETE' = 'POST'): Promise<T> {
   const p = new URLSearchParams({ ...params, access_token: env('META_ACCESS_TOKEN') })
   const signal = AbortSignal.timeout(ESPERA_META_MS)
   const res =
     metodo === 'POST'
       ? await fetch(`${GRAPH}/${ruta}`, { method: 'POST', body: p, cache: 'no-store', signal })
-      : await fetch(`${GRAPH}/${ruta}?${p}`, { cache: 'no-store', signal })
+      : await fetch(`${GRAPH}/${ruta}?${p}`, { method: metodo, cache: 'no-store', signal })
   const r = (await res.json().catch(() => ({}))) as T & { error?: { message?: string; error_user_msg?: string } }
   if (!res.ok || r.error) {
     const extra = r.error?.error_user_msg ? ` (${r.error.error_user_msg})` : ''
@@ -70,7 +71,7 @@ async function estadoContenedor(id: string) {
 
 // dueño: la corrida que tomó la publicación (con sus intentos). Cada guardado exige que la fila siga siendo
 // suya: si otra corrida la tomó (Vercel a veces entrega el cron dos veces), esta se detiene en vez de pisarla
-function efectosReales(dueño?: { intentos: number }): Efectos {
+export function efectosReales(dueño?: { intentos: number }): Efectos {
   const ig = env('META_IG_USER_ID')
   return {
     async crearContenedor(p) {
