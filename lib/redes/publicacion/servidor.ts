@@ -12,7 +12,7 @@ const TABLA = 'redes_publicaciones'
 const GRAPH = 'https://graph.facebook.com/v26.0'
 const ZERNIO = 'https://zernio.com/api/v1'
 const COLUMNAS =
-  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, actualizado_en'
+  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, prueba, grupo, version, gancho, actualizado_en'
 // Un paso que se cuelga no se come el tiempo de la función (300 s): Zernio publica el video de Facebook en
 // la misma llamada, por eso le toca más
 const ESPERA_META_MS = 60_000

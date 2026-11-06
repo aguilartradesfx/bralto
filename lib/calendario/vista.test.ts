@@ -23,6 +23,10 @@ function fila(extra: Partial<Fila> = {}): Fila {
       facebook: { postId: 'fb-1', url: 'https://www.facebook.com/watch/?v=1' },
     },
     intentos: 1,
+    prueba: false,
+    grupo: null,
+    version: null,
+    gancho: null,
     ultimo_error: null,
     ...extra,
   }

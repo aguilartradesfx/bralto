@@ -40,6 +40,10 @@ export type Resultado = {
   historias?: string[] // id de cada historia, o 'error: <motivo>'
 }
 
+// Reels de prueba: qué cambia en el inicio de cada versión
+export type TipoGancho = 'sorpresa' | 'mito' | 'advertencia' | 'pregunta' | 'lista' | 'otro'
+export type Gancho = { tipo: TipoGancho; frase: string; pantalla: string }
+
 export type Publicacion = {
   id: string
   titulo: string
@@ -57,4 +61,9 @@ export type Publicacion = {
   comenta: Comenta | null
   resultado: Resultado
   intentos: number
+  // Versión de un reel de prueba (lib/redes/pruebas): sale solo a quien no sigue la cuenta
+  prueba: boolean
+  grupo: string | null
+  version: number | null
+  gancho: Gancho | null
 }

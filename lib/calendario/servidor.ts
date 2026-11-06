@@ -6,14 +6,14 @@ import type { Fila, Resumen } from '@/lib/calendario/vista'
 
 const TABLA = 'redes_publicaciones'
 const COLUMNAS =
-  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, ultimo_error'
+  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, prueba, grupo, version, gancho, ultimo_error'
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // Lo que sale entre dos instantes (desde incluido, hasta no), en orden de hora
 export async function leerEntre(desde: string, hasta: string): Promise<Resumen[]> {
   const { data, error } = await createServiceClient()
     .from(TABLA)
-    .select('id, titulo, tipo, estado, publicar_en')
+    .select('id, titulo, tipo, estado, publicar_en, prueba, grupo, version')
     .gte('publicar_en', desde)
     .lt('publicar_en', hasta)
     .order('publicar_en')

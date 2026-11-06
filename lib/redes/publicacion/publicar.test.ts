@@ -21,6 +21,10 @@ function fila(extra: Partial<Publicacion> = {}): Publicacion {
     comenta: { guia: 'jarvis', palabras: ['jarvis'], mensaje: 'm', respuestas: ['r'] },
     resultado: {},
     intentos: 1,
+    prueba: false,
+    grupo: null,
+    version: null,
+    gancho: null,
     ...extra,
   }
 }
