@@ -28,9 +28,17 @@ export type EfectosPrueba = {
 const mensaje = (err: unknown) => (err instanceof Error ? err.message : String(err)).slice(0, 300)
 const esMedida = (m: unknown): m is Metricas => typeof m === 'object' && m !== null
 
-// Cuánta gente se quedó después del gancho: las vistas menos las que la pasaron en los primeros 3 segundos
-export function puntaje(m: Metricas): number {
-  return m.views * (1 - (m.skip ?? 100) / 100)
+// Cuánta gente se quedó después del gancho: las vistas menos las que la pasaron en los primeros 3 segundos.
+// null si Meta no dio ese dato: no se inventa
+export function puntaje(m: Metricas): number | null {
+  return m.skip === null ? null : m.views * (1 - m.skip / 100)
+}
+
+// El puntaje de cada versión del grupo. Si a alguna le falta el dato del gancho, se comparan todas por vistas:
+// así una versión no pierde (y no se borra) solo porque Meta no dio su dato
+export function puntajesDelGrupo(medidas: Record<string, Metricas>): Record<string, number> {
+  const todas = Object.values(medidas).every((m) => m.skip !== null)
+  return Object.fromEntries(Object.entries(medidas).map(([id, m]) => [id, todas ? (puntaje(m) ?? 0) : m.views]))
 }
 
 // La de mayor puntaje; si empatan, la que vieron más tiempo y después la más compartida y guardada.
@@ -38,11 +46,18 @@ export function puntaje(m: Metricas): number {
 export function elegirGanadora(medidas: Record<string, Metricas>): string | null {
   const conVistas = Object.entries(medidas).filter(([, m]) => m.views > 0)
   if (!conVistas.length) return null
+  const p = puntajesDelGrupo(Object.fromEntries(conVistas))
   conVistas.sort(
-    ([, a], [, b]) =>
-      puntaje(b) - puntaje(a) || (b.promedioMs ?? 0) - (a.promedioMs ?? 0) || b.shares + b.saved - (a.shares + a.saved),
+    ([ia, a], [ib, b]) => p[ib] - p[ia] || (b.promedioMs ?? 0) - (a.promedioMs ?? 0) || b.shares + b.saved - (a.shares + a.saved),
   )
   return conVistas[0][0]
+}
+
+// Se decide solo de día (8:00 a 20:59 de Costa Rica): la ganadora sale en Facebook y el aviso le pide compartirla
+// con los seguidores, y nada de eso va de noche
+export function horaDeDecidir(ahora: number): boolean {
+  const hora = Number(horaCR(new Date(ahora).toISOString()).slice(0, 2))
+  return hora >= 8 && hora < 21
 }
 
 // De cada 10 personas, cuántas se quedaron después del gancho (null si Meta no dio el dato)
@@ -88,6 +103,8 @@ function pendiente(v: Publicacion, ahora: number): boolean {
 // Un paso del grupo. Devuelve qué hizo, en una línea, para el log
 export async function avanzarGrupo(p: Prueba, versiones: Publicacion[], e: EfectosPrueba): Promise<string> {
   if (p.estado === 'decidida' || p.estado === 'cancelada' || p.estado === 'error') return 'nada que hacer'
+  // El script crea el grupo y un momento después sus versiones: sin versiones todavía, no se toca
+  if (!versiones.length) return 'sin versiones todavía'
   const ahora = e.ahora()
   const salieron = versiones.filter((v) => v.resultado?.instagram)
 
@@ -104,6 +121,7 @@ export async function avanzarGrupo(p: Prueba, versiones: Publicacion[], e: Efect
   }
 
   if (!p.decidir_en || ahora < Date.parse(p.decidir_en)) return 'todavía no'
+  if (!horaDeDecidir(ahora)) return 'espera el día'
   const r: ResultadoPrueba = structuredClone(p.resultado ?? {})
 
   // 1. Las métricas de cada versión que salió (lo ya leído no se vuelve a pedir)

@@ -180,7 +180,8 @@ export async function publicarFila(p: Publicacion, e: Efectos): Promise<string> 
   }
 
   await e.guardar(p.id, { estado: 'publicado', resultado: r, ultimo_error: null })
-  await e.avisar(avisoListo(p, r))
+  // Una versión de prueba no avisa al salir (serían 5 por reel): el aviso llega a los 3 días, con la ganadora
+  if (!p.prueba) await e.avisar(avisoListo(p, r))
   return `publicado: ${ig.permalink ?? ig.id}`
 }
 

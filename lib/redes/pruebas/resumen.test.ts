@@ -49,9 +49,16 @@ test('resumen: la mejor hora de cada día, por puntaje relativo a su grupo', () 
   assert.match(texto, /lunes: 5:00 p\. m\./i)
 })
 
-test('resumen: cierra con la propuesta y no cambia nada solo', () => {
-  const grupos = [grupo(1, 'pregunta'), grupo(2, 'pregunta'), grupo(3, 'mito')]
+test('resumen: después de 4 semanas cierra con la propuesta y no cambia nada solo', () => {
+  const grupos = [grupo(1, 'pregunta', { hace: 30 }), grupo(2, 'pregunta'), grupo(3, 'mito')]
   const texto = resumenSemanal(grupos, AHORA)!
   assert.match(texto, /2 versiones con gancho de pregunta y 3 para seguir probando/)
   assert.ok(texto.trimEnd().endsWith('Contéstame si la aplico.'))
+})
+
+test('resumen: las primeras 4 semanas solo cuenta cómo va, sin proponer cambios', () => {
+  const grupos = [grupo(1, 'pregunta', { hace: 20 }), grupo(2, 'pregunta'), grupo(3, 'mito')]
+  const texto = resumenSemanal(grupos, AHORA)!
+  assert.match(texto, /el gancho de pregunta ganó 2 de 3/i)
+  assert.doesNotMatch(texto, /Propuesta/)
 })

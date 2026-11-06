@@ -1,6 +1,16 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { avanzarGrupo, avisoGanadora, elegirGanadora, ESPERA_MS, GRACIA_MS, puntaje, type EfectosPrueba } from './decidir.ts'
+import {
+  avanzarGrupo,
+  avisoGanadora,
+  elegirGanadora,
+  ESPERA_MS,
+  GRACIA_MS,
+  horaDeDecidir,
+  puntaje,
+  puntajesDelGrupo,
+  type EfectosPrueba,
+} from './decidir.ts'
 import type { Metricas, Prueba, ResultadoPrueba } from './tipos.ts'
 import type { Publicacion } from '../publicacion/tipos.ts'
 
@@ -9,6 +19,8 @@ const HORA = 3600_000
 const T = Date.parse('2026-11-06T04:00:00.000Z')
 // Las 5 versiones salieron ese jueves a las 8, 11, 14, 17 y 22 de Costa Rica
 const SALIDAS = ['2026-11-05T14:00:00.000Z', '2026-11-05T17:00:00.000Z', '2026-11-05T20:00:00.000Z', '2026-11-05T23:00:00.000Z', '2026-11-06T04:00:00.000Z']
+// Vence el domingo 8 a las 22:00 de Costa Rica; de noche no se decide, así que decide el lunes 9 a las 9:00
+const DECIDE = T + ESPERA_MS + 11 * HORA
 
 function version(n: number, extra: Partial<Publicacion> = {}): Publicacion {
   return {
@@ -101,9 +113,48 @@ function falsos(ahora: number, datos: Record<string, Metricas | 'sin_datos' | 'n
 const todas = (m: Record<number, Metricas | 'sin_datos' | 'no_existe'>) =>
   Object.fromEntries(Object.entries(m).map(([n, v]) => [`media-${n}`, v]))
 
-test('puntaje: la gente que se quedó después de los primeros 3 segundos', () => {
+test('puntaje: la gente que se quedó después de los primeros 3 segundos; sin el dato del gancho, no se inventa', () => {
   assert.equal(puntaje(medida(1000, 40)), 600)
-  assert.equal(puntaje(medida(1000, null)), 0)
+  assert.equal(puntaje(medida(1000, null)), null)
+})
+
+test('elegirGanadora: si a una le falta el dato del gancho, se comparan todas por vistas (no se castiga a la que no lo trae)', () => {
+  // Con el gancho, b ganaría (810 contra 0); sin el dato de a, gana la de más vistas
+  assert.equal(elegirGanadora({ a: medida(1000, null), b: medida(900, 10) }), 'a')
+  assert.equal(puntajesDelGrupo({ a: medida(1000, null), b: medida(900, 10) }).b, 900)
+})
+
+test('de noche no decide: vence a las 22:00 y espera a la mañana', async () => {
+  const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
+  const f = falsos(T + ESPERA_MS + 17 * 60_000, datos) // domingo 22:17
+  const r = await avanzarGrupo(prueba(), cinco(), f.e)
+  assert.equal(r, 'espera el día')
+  assert.deepEqual(f.llamadas, [])
+  assert.deepEqual(f.guardados, [])
+  assert.equal(horaDeDecidir(T + ESPERA_MS + 17 * 60_000), false)
+  assert.equal(horaDeDecidir(DECIDE), true) // lunes 9:00
+  assert.equal(horaDeDecidir(T + ESPERA_MS - 2 * HORA + 17 * 60_000), true) // 20:17
+})
+
+test('sin versiones todavía (el script las está creando): no la cancela', async () => {
+  const f = falsos(T, {})
+  const r = await avanzarGrupo(prueba({ estado: 'programada', decidir_en: null }), [], f.e)
+  assert.equal(r, 'sin versiones todavía')
+  assert.deepEqual(f.guardados, [])
+})
+
+test('si el aviso no sale, no queda como enviado: la próxima corrida lo vuelve a mandar', async () => {
+  const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
+  const f = falsos(DECIDE, datos, {
+    async avisar() {
+      throw new Error('Telegram: HTTP 502')
+    },
+  })
+  await assert.rejects(avanzarGrupo(prueba(), cinco(), f.e), /Telegram/)
+  const ultimo = f.ultimo()!
+  assert.equal(ultimo.resultado?.aviso, undefined)
+  assert.equal(ultimo.resultado?.ganadora, 'fila-2')
+  assert.notEqual(ultimo.estado, 'decidida')
 })
 
 test('elegirGanadora: el mayor puntaje; si empatan, más tiempo viéndola y después más compartidos y guardados', () => {
@@ -145,7 +196,7 @@ test('todavía no: antes de las 72 h no lee métricas', async () => {
 
 test('decide: gana la de mayor puntaje, borra las otras 4, saca la ganadora en Facebook y avisa', async () => {
   const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
-  const f = falsos(T + ESPERA_MS + HORA, datos)
+  const f = falsos(DECIDE, datos)
   await avanzarGrupo(prueba(), cinco(), f.e)
   const borradas = f.llamadas.filter((l) => l.startsWith('borrar:'))
   assert.deepEqual(borradas.sort(), ['borrar:media-1', 'borrar:media-3', 'borrar:media-4', 'borrar:media-5'])
@@ -162,7 +213,7 @@ test('decide: gana la de mayor puntaje, borra las otras 4, saca la ganadora en F
 
 test('el aviso: título, la frase de las 10 personas, el enlace, el botón y una línea por versión con su hora', async () => {
   const datos = todas({ 1: medida(1000, 70), 2: medida(1240, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
-  const f = falsos(T + ESPERA_MS + HORA, datos)
+  const f = falsos(DECIDE, datos)
   await avanzarGrupo(prueba(), cinco(), f.e)
   const aviso = f.avisos[0]
   assert.match(aviso, /Ganó la versión 2 de «Radar»/)
@@ -175,7 +226,7 @@ test('el aviso: título, la frase de las 10 personas, el enlace, el botón y una
 
 test('sin métricas espera: a las 72 h, si a una le faltan datos, no decide ni borra', async () => {
   const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: 'sin_datos', 4: medida(500, 20), 5: medida(300, 90) })
-  const f = falsos(T + ESPERA_MS + HORA, datos)
+  const f = falsos(DECIDE, datos)
   const r = await avanzarGrupo(prueba(), cinco(), f.e)
   assert.equal(r, 'espera métricas')
   assert.equal(f.llamadas.filter((l) => l.startsWith('borrar')).length, 0)
@@ -186,7 +237,7 @@ test('sin métricas espera: a las 72 h, si a una le faltan datos, no decide ni b
 
 test('sin métricas a las 96 h: decide con las que tienen datos', async () => {
   const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: 'sin_datos', 4: medida(500, 20), 5: medida(300, 90) })
-  const f = falsos(T + ESPERA_MS + GRACIA_MS + HORA, datos)
+  const f = falsos(DECIDE + GRACIA_MS, datos)
   await avanzarGrupo(prueba(), cinco(), f.e)
   assert.equal(f.ultimo()?.ganadora, 'fila-2')
   assert.equal(f.ultimo()?.estado, 'decidida')
@@ -194,7 +245,7 @@ test('sin métricas a las 96 h: decide con las que tienen datos', async () => {
 
 test('sin métricas a las 96 h: si ninguna tiene datos, avisa y no borra nada', async () => {
   const datos = todas({ 1: 'sin_datos', 2: 'sin_datos', 3: 'sin_datos', 4: 'sin_datos', 5: 'sin_datos' })
-  const f = falsos(T + ESPERA_MS + GRACIA_MS + HORA, datos)
+  const f = falsos(DECIDE + GRACIA_MS, datos)
   await avanzarGrupo(prueba(), cinco(), f.e)
   assert.equal(f.llamadas.filter((l) => l.startsWith('borrar') || l.startsWith('facebook')).length, 0)
   assert.match(f.avisos[0], /ninguna versión de «Radar» tuvo vistas/i)
@@ -204,7 +255,7 @@ test('sin métricas a las 96 h: si ninguna tiene datos, avisa y no borra nada', 
 
 test('versión borrada a mano: queda fuera y no se intenta borrar', async () => {
   const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: 'no_existe', 4: medida(500, 20), 5: medida(300, 90) })
-  const f = falsos(T + ESPERA_MS + HORA, datos)
+  const f = falsos(DECIDE, datos)
   await avanzarGrupo(prueba(), cinco(), f.e)
   assert.equal(f.ultimo()?.ganadora, 'fila-2')
   assert.equal(f.llamadas.includes('borrar:media-3'), false)
@@ -234,7 +285,7 @@ test('segunda corrida no repite nada: con todo hecho, solo la deja decidida', as
     facebook: { postId: 'pagina_99', url: 'u', automatizacion: 'auto-fb' },
     aviso: '2026-11-09T05:00:00.000Z',
   }
-  const f = falsos(T + ESPERA_MS + 2 * HORA, {})
+  const f = falsos(DECIDE + HORA, {})
   await avanzarGrupo(prueba({ estado: 'decidiendo', resultado: hecho }), cinco(), f.e)
   assert.deepEqual(f.llamadas, [])
   assert.deepEqual(f.avisos, [])
@@ -242,7 +293,7 @@ test('segunda corrida no repite nada: con todo hecho, solo la deja decidida', as
 })
 
 test('ya decidida: no hace nada', async () => {
-  const f = falsos(T + ESPERA_MS + 2 * HORA, {})
+  const f = falsos(DECIDE + HORA, {})
   await avanzarGrupo(prueba({ estado: 'decidida' }), cinco(), f.e)
   assert.deepEqual(f.llamadas, [])
   assert.deepEqual(f.guardados, [])
@@ -250,7 +301,7 @@ test('ya decidida: no hace nada', async () => {
 
 test('un borrado falla: se anota, las demás se borran y el aviso lo dice', async () => {
   const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
-  const f = falsos(T + ESPERA_MS + HORA, datos, {
+  const f = falsos(DECIDE, datos, {
     async borrar(media) {
       if (media === 'media-4') throw new Error('Meta: no se pudo')
     },

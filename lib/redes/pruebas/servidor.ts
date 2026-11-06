@@ -1,7 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import { efectosReales, graph } from '@/lib/redes/publicacion/servidor'
 import type { Publicacion } from '@/lib/redes/publicacion/tipos'
-import { avanzarGrupo, puntaje, type CambiosPrueba, type EfectosPrueba } from './decidir'
+import { avanzarGrupo, horaDeDecidir, puntajesDelGrupo, type CambiosPrueba, type EfectosPrueba } from './decidir'
 import { resumenSemanal, type GrupoDecidido } from './resumen'
 import type { EstadoPrueba, Metricas, Prueba } from './tipos'
 import type { Gancho } from '@/lib/redes/publicacion/tipos'
@@ -21,29 +21,60 @@ type Valor = { data?: { values?: { value?: number }[]; total_value?: { value?: n
 const valor = (r: Valor): number | null => r.data?.[0]?.values?.[0]?.value ?? r.data?.[0]?.total_value?.value ?? null
 const noExiste = (err: unknown) => /does not exist|no existe/i.test(err instanceof Error ? err.message : String(err))
 
-// Una métrica; las que Meta tiene «en desarrollo» pueden fallar sin tumbar las demás
+// Una métrica secundaria, con un reintento. Las que Meta tiene «en desarrollo» pueden fallar: quedan en null y la
+// decisión no las cuenta (ver puntajesDelGrupo), en vez de tumbar la versión
 async function metrica(media: string, nombre: string): Promise<number | null> {
+  for (let intento = 1; intento <= 2; intento++) {
+    try {
+      return valor(await graph<Valor>(`${media}/insights`, { metric: nombre }, 'GET'))
+    } catch {
+      if (intento === 2) return null
+    }
+  }
+  return null
+}
+
+// ¿El reel sigue en Instagram? El error genérico de Meta («does not exist, cannot be loaded… or does not support
+// this operation») sale también cuando las métricas no se pueden leer: se pregunta por el reel mismo
+async function sigueEnInstagram(media: string): Promise<boolean | null> {
   try {
-    return valor(await graph<Valor>(`${media}/insights`, { metric: nombre }, 'GET'))
+    await graph(media, { fields: 'id' }, 'GET')
+    return true
   } catch (err) {
-    if (noExiste(err)) throw err
-    return null
+    return noExiste(err) ? false : null
   }
 }
 
+// Las métricas de una versión. Si Meta falla o todavía no las tiene, 'sin_datos': la decisión espera (hasta 24 h
+// más) en vez de tomar un error por un cero. Solo un reel que ya no existe queda fuera
 async function leerMetricas(media: string): Promise<Metricas | 'sin_datos' | 'no_existe'> {
   let views: number | null
   try {
     views = valor(await graph<Valor>(`${media}/insights`, { metric: 'views' }, 'GET'))
   } catch (err) {
-    if (noExiste(err)) return 'no_existe'
-    throw err
+    if (noExiste(err) && (await sigueEnInstagram(media)) === false) return 'no_existe'
+    return 'sin_datos'
   }
   if (views === null) return 'sin_datos'
   const [reach, skip, promedioMs, shares, saved] = await Promise.all(
     ['reach', 'reels_skip_rate', 'ig_reels_avg_watch_time', 'shares', 'saved'].map((m) => metrica(media, m)),
   )
   return { views, reach, skip, promedioMs, shares: shares ?? 0, saved: saved ?? 0, leidas_en: new Date().toISOString() }
+}
+
+// El aviso de la ganadora por Telegram. A diferencia del de la publicación, si no sale tira error: así no queda
+// como enviado y la próxima corrida lo vuelve a mandar (las perdedoras ya se borraron; él tiene que enterarse)
+async function avisarSeguro(texto: string): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN
+  const chat = process.env.TELEGRAM_CHAT_ID
+  if (!token || !chat) throw new Error('falta TELEGRAM_BOT_TOKEN o TELEGRAM_CHAT_ID')
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chat, text: texto, disable_web_page_preview: true }),
+    signal: AbortSignal.timeout(20_000),
+  })
+  if (!res.ok) throw new Error(`Telegram rechazó el aviso (HTTP ${res.status})`)
 }
 
 // dueño: el estado y los intentos con que esta corrida tomó el grupo. Cada guardado exige que el grupo siga así
@@ -69,7 +100,7 @@ function efectosPruebas(dueño: { estado: EstadoPrueba; intentos: number }): Efe
       if (!data?.length) throw new Error('otra corrida tomó esta prueba: esta se detiene')
       if (cambios.estado) dueño.estado = cambios.estado
     },
-    avisar: (texto) => pub.avisar(texto),
+    avisar: avisarSeguro,
     ahora: () => Date.now(),
   }
 }
@@ -97,7 +128,8 @@ export async function correrPruebas(): Promise<Record<string, unknown>> {
   if (error) throw new Error(`${TABLA}: ${error.message}`)
   let decididos = 0
   for (const g of (data ?? []) as Prueba[]) {
-    const vence = g.estado === 'corriendo' && g.decidir_en !== null && Date.parse(g.decidir_en) <= ahora
+    // De noche no se decide: lo que vence a las 22:00 espera a las 8:00 (ver horaDeDecidir)
+    const vence = g.estado === 'corriendo' && g.decidir_en !== null && Date.parse(g.decidir_en) <= ahora && horaDeDecidir(ahora)
     if (g.estado === 'corriendo' && !vence) continue
     if (vence && decididos >= MAX_DECIDIR) continue
 
@@ -140,7 +172,12 @@ export async function correrPruebas(): Promise<Record<string, unknown>> {
         .eq('grupo', g.grupo)
         .eq('estado', 'decidiendo')
         .eq('intentos', dueño.intentos)
-      if (final) await efectosReales().avisar(`❌ No pude decidir la prueba de «${g.titulo}»: ${motivo}. Revísala en admin.bralto.io/calendario.`)
+      if (final) {
+        // Si Telegram es lo que falla, no se tumba la corrida (las demás pruebas siguen)
+        await avisarSeguro(`❌ No pude decidir la prueba de «${g.titulo}»: ${motivo}. Revísala en admin.bralto.io/calendario.`).catch((e) =>
+          console.error('[pruebas] no salió el aviso de error', e instanceof Error ? e.message : e),
+        )
+      }
     }
   }
   return { ok: true, ...hecho }
@@ -158,16 +195,21 @@ export async function mandarResumen(): Promise<Record<string, unknown>> {
     .select('id, grupo, publicar_en, gancho')
     .in('grupo', pruebas.map((p) => p.grupo))
   if (e2) throw new Error(`redes_publicaciones: ${e2.message}`)
-  const grupos: GrupoDecidido[] = pruebas.map((p) => ({
-    ganadora: p.ganadora!,
-    decidida_en: p.resultado.aviso ?? p.actualizado_en,
-    versiones: ((filas ?? []) as { id: string; grupo: string; publicar_en: string; gancho: Gancho | null }[])
-      .filter((f) => f.grupo === p.grupo)
-      .flatMap((f) => {
-        const m = p.resultado.metricas?.[f.id]
-        return typeof m === 'object' && m !== null ? [{ id: f.id, publicar_en: f.publicar_en, tipo: f.gancho?.tipo ?? 'otro', puntaje: puntaje(m) }] : []
-      }),
-  }))
+  const grupos: GrupoDecidido[] = pruebas.map((p) => {
+    const suyas = ((filas ?? []) as { id: string; grupo: string; publicar_en: string; gancho: Gancho | null }[]).filter((f) => f.grupo === p.grupo)
+    const medidas: Record<string, Metricas> = {}
+    for (const f of suyas) {
+      const m = p.resultado.metricas?.[f.id]
+      if (typeof m === 'object' && m !== null) medidas[f.id] = m
+    }
+    // El mismo puntaje con que se decidió (si a una le faltó el dato del gancho, por vistas)
+    const puntos = puntajesDelGrupo(medidas)
+    return {
+      ganadora: p.ganadora!,
+      decidida_en: p.resultado.aviso ?? p.actualizado_en,
+      versiones: suyas.filter((f) => f.id in puntos).map((f) => ({ id: f.id, publicar_en: f.publicar_en, tipo: f.gancho?.tipo ?? 'otro', puntaje: puntos[f.id] })),
+    }
+  })
   const texto = resumenSemanal(grupos, new Date())
   if (!texto) return { ok: true, resumen: 'todavía es muy pronto (menos de 2 semanas de datos)' }
   await efectosReales().avisar(texto)

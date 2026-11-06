@@ -12,6 +12,7 @@ export type GrupoDecidido = {
 }
 
 const MINIMO_MS = 14 * 86_400_000 // desde la segunda semana con datos
+const PROPONER_MS = 28 * 86_400_000 // las primeras 4 semanas se prueba todo, sin preferencias
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const NOMBRE: Record<TipoGancho, string> = {
   sorpresa: 'sorpresa',
@@ -64,7 +65,7 @@ export function resumenSemanal(grupos: GrupoDecidido[], ahora: Date): string | n
   const partes = [`📊 Cómo van las pruebas (${grupos.length} reels probados)`, '', 'Los ganchos que más ganan:']
   for (const [tipo, n] of ranking) partes.push(`• El gancho de ${NOMBRE[tipo]} ganó ${n} de ${grupos.length}`)
   if (mejoresHoras.length) partes.push('', 'La mejor hora de cada día:', ...mejoresHoras)
-  if (ranking.length) {
+  if (ranking.length && ahora.getTime() - primera >= PROPONER_MS) {
     partes.push(
       '',
       `Propuesta: que las próximas pruebas lleven 2 versiones con gancho de ${NOMBRE[ranking[0][0]]} y 3 para seguir probando. Contéstame si la aplico.`,

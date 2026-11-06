@@ -279,6 +279,13 @@ test('parametrosReel prueba: lleva trial_params MANUAL y no va al feed ni en col
   assert.equal('collaborators' in p, false)
 })
 
+test('una versión de prueba que sale no manda el «ya salió» (serían 5 por reel): el aviso llega con la ganadora', async () => {
+  const { e, avisos } = falsos({}, { 'cont-1': ['FINISHED'] })
+  const r = await publicarFila(versionDePrueba({ estado: 'publicando', comenta: null }), e)
+  assert.match(r, /^publicado/)
+  assert.deepEqual(avisos, [])
+})
+
 test('parametrosReel normal: igual que siempre, sin trial_params', () => {
   const p = parametrosReel(fila({ tipo: 'reel', video_url: 'https://x/v.mp4', portada_url: 'https://x/p.jpg', laminas: [] }))
   assert.equal('trial_params' in p, false)
