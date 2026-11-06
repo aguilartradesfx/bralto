@@ -3,6 +3,7 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import type { Actualizar } from '@/lib/calendario/editar'
 import type { Fila, Resumen } from '@/lib/calendario/vista'
+import type { Prueba } from '@/lib/redes/pruebas/tipos'
 
 const TABLA = 'redes_publicaciones'
 const COLUMNAS =
@@ -27,6 +28,18 @@ export async function leerFila(id: string): Promise<Fila | null> {
   const { data, error } = await createServiceClient().from(TABLA).select(COLUMNAS).eq('id', id).maybeSingle()
   if (error) throw new Error(`${TABLA}: ${error.message}`)
   return (data as Fila | null) ?? null
+}
+
+// El grupo de un reel de prueba (redes_pruebas), para el detalle de cada versión
+export async function leerPrueba(grupo: string): Promise<Prueba | null> {
+  if (!UUID.test(grupo)) return null
+  const { data, error } = await createServiceClient()
+    .from('redes_pruebas')
+    .select('grupo, titulo, origen, estado, facebook, decidir_en, ganadora, resultado, intentos, actualizado_en')
+    .eq('grupo', grupo)
+    .maybeSingle()
+  if (error) throw new Error(`redes_pruebas: ${error.message}`)
+  return (data as Prueba | null) ?? null
 }
 
 // Las versiones de un reel de prueba, en orden

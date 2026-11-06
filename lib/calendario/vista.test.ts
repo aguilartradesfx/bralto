@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { aVista, type Fila } from './vista.ts'
+import type { Prueba } from '../redes/pruebas/tipos.ts'
 
 function fila(extra: Partial<Fila> = {}): Fila {
   return {
@@ -54,4 +55,30 @@ test('aVista: sin «Comenta» ni enlaces, todo en null', () => {
   assert.equal(v.ultimo_error, 'Meta: caído')
   // Instagram a veces no devuelve el enlace
   assert.equal(aVista(fila({ resultado: { instagram: { id: 'ig-1', permalink: null, en: '' } } })).instagram, null)
+})
+
+const grupo = (extra: Partial<Prueba> = {}): Prueba => ({
+  grupo: 'g-1',
+  titulo: 'Radar',
+  origen: 'ia',
+  estado: 'corriendo',
+  facebook: true,
+  decidir_en: '2026-11-09T21:00:00.000Z',
+  ganadora: null,
+  resultado: {},
+  intentos: 0,
+  actualizado_en: '2026-11-06T21:00:00.000Z',
+  ...extra,
+})
+
+test('aVista: una versión de prueba dice cuál es, cuándo decide y si ganó', () => {
+  const version = fila({ prueba: true, grupo: 'g-1', version: 2, colaborador: null, facebook: false, historias: [] })
+  const corriendo = aVista(version, grupo())
+  assert.deepEqual(corriendo.prueba, { version: 2, total: 5, estado: 'corriendo', decidir_en: '2026-11-09T21:00:00.000Z', esGanadora: null })
+  assert.equal(aVista(version, grupo({ estado: 'decidida', ganadora: 'pub-1' })).prueba?.esGanadora, true)
+  assert.equal(aVista(version, grupo({ estado: 'decidida', ganadora: 'otra' })).prueba?.esGanadora, false)
+})
+
+test('aVista: una publicación normal no es prueba', () => {
+  assert.equal(aVista(fila()).prueba, null)
 })

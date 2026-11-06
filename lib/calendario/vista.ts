@@ -1,4 +1,5 @@
 import type { Publicacion } from '../redes/publicacion/tipos.ts'
+import type { EstadoPrueba, Prueba } from '../redes/pruebas/tipos.ts'
 
 // Una fila completa de redes_publicaciones, como la lee el panel
 export type Fila = Publicacion & { ultimo_error: string | null }
@@ -28,10 +29,23 @@ export type Vista = Pick<
   palabra: string | null // la del «Comenta PALABRA»
   instagram: string | null // enlace al post, si ya salió
   facebookUrl: string | null
+  // Si es una versión de un reel de prueba: cuál es, cómo va el grupo y, cuando se decide, si ganó
+  prueba: { version: number; total: 5; estado: EstadoPrueba; decidir_en: string | null; esGanadora: boolean | null } | null
 }
 
-export function aVista(f: Fila): Vista {
+export function aVista(f: Fila, p?: Prueba | null): Vista {
+  const prueba =
+    f.prueba && f.version
+      ? {
+          version: f.version,
+          total: 5 as const,
+          estado: p?.estado ?? 'programada',
+          decidir_en: p?.decidir_en ?? null,
+          esGanadora: p?.estado === 'decidida' ? p.ganadora === f.id : null,
+        }
+      : null
   return {
+    prueba,
     id: f.id,
     titulo: f.titulo,
     tipo: f.tipo,
