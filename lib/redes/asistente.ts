@@ -101,16 +101,25 @@ export function esDeNoche(instante: string): boolean {
   return hora < PRIMERA || hora > ULTIMA || (hora === ULTIMA && new Date(instante).getUTCSeconds() > 0)
 }
 
-// Sin id, la acción va sobre la única publicación cercana en `estados`; si hay varias o ninguna, no elige
+// Sin id, la acción va sobre la única publicación cercana en `estados`; si hay varias o ninguna, no elige.
+// Las versiones de un mismo reel de prueba cuentan como una sola: la de la versión más baja
 export function elegirPendiente(
-  lista: Pick<Publicacion, 'id' | 'titulo' | 'tipo' | 'estado' | 'publicar_en'>[],
+  lista: (Pick<Publicacion, 'id' | 'titulo' | 'tipo' | 'estado' | 'publicar_en'> & Partial<Pick<Publicacion, 'grupo' | 'version'>>)[],
   ahora: Date,
   estados: readonly Estado[],
 ): { ok: true; id: string } | { ok: false; status: 404 | 409; error: string; opciones: Item[] } {
   const t = ahora.getTime()
-  const cerca = lista
+  const enRango = lista
     .filter((p) => estados.includes(p.estado))
     .filter((p) => Date.parse(p.publicar_en) >= t - ATRAS_MS && Date.parse(p.publicar_en) <= t + ADELANTE_MS)
+  const primeraDelGrupo = new Map<string, (typeof enRango)[number]>()
+  for (const p of enRango) {
+    if (!p.grupo) continue
+    const ya = primeraDelGrupo.get(p.grupo)
+    if (!ya || (p.version ?? 99) < (ya.version ?? 99)) primeraDelGrupo.set(p.grupo, p)
+  }
+  const cerca = enRango
+    .filter((p) => !p.grupo || primeraDelGrupo.get(p.grupo) === p)
     .sort((a, b) => Date.parse(a.publicar_en) - Date.parse(b.publicar_en))
   if (cerca.length === 1) return { ok: true, id: cerca[0].id }
   if (!cerca.length) return { ok: false, status: 404, error: 'No hay ninguna publicación pendiente para las próximas 24 horas', opciones: [] }
@@ -158,6 +167,30 @@ export function armarSacarYa(actual: Publicacion, ahora: Date, confirmar: boolea
   if (esDeNoche(ya) && !confirmar) return noche(ya, 'Saldría')
   return { ok: true, cambio: { texto: actual.texto, publicar_en: ya, estado: 'programado' } }
 }
+
+// Las versiones de un reel de prueba se aprueban o se frenan juntas. Las que ya salieron no se tocan; al aprobar,
+// la que ya pasó su hora queda fuera. Si no queda ninguna, el primer motivo
+export function armarGrupo(accion: 'aprobar' | 'frenar', filas: Publicacion[], ahora: Date): { ok: true; cambios: { id: string; cambio: Cambio }[] } | Fallo {
+  const cambios: { id: string; cambio: Cambio }[] = []
+  let primerFallo: Fallo | null = null
+  for (const f of filas) {
+    if (!sePuedeEditar(f.estado)) continue
+    const r = accion === 'aprobar' ? armarAprobar(f, ahora) : armarFrenar(f, ahora)
+    if (r.ok) cambios.push({ id: f.id, cambio: r.cambio })
+    else primerFallo ??= r
+  }
+  if (cambios.length) return { ok: true, cambios }
+  return primerFallo ?? { ok: false, status: 409, error: NO_SE_PUEDE }
+}
+
+export function mensajeGrupo(accion: 'aprobar' | 'frenar', titulo: string, n: number): string {
+  const cuantas = n === 1 ? `la versión de prueba de «${titulo}» quedó` : `las ${n} versiones de prueba de «${titulo}» quedaron`
+  if (accion === 'aprobar') return `Listo: ${cuantas} ${n === 1 ? 'aprobada y sale a su hora' : 'aprobadas y salen cada una a su hora'}.`
+  return `Listo: ${cuantas} en borrador y no ${n === 1 ? 'sale hasta que la apruebes' : 'salen hasta que las apruebes'}.`
+}
+
+// «Prueba 2/5 · Radar» → «Radar»
+export const tituloSinPrueba = (titulo: string) => titulo.replace(/^Prueba \d\/\d · /, '')
 
 export function mensajeListo(accion: Exclude<Accion, 'listar'>, p: Pick<Publicacion, 'titulo' | 'estado' | 'publicar_en'>): string {
   const t = `«${p.titulo}»`

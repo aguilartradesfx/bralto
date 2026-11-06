@@ -29,6 +29,14 @@ export async function leerFila(id: string): Promise<Fila | null> {
   return (data as Fila | null) ?? null
 }
 
+// Las versiones de un reel de prueba, en orden
+export async function leerGrupo(grupo: string): Promise<Fila[]> {
+  if (!UUID.test(grupo)) return []
+  const { data, error } = await createServiceClient().from(TABLA).select(COLUMNAS).eq('grupo', grupo).order('version')
+  if (error) throw new Error(`${TABLA}: ${error.message}`)
+  return (data ?? []) as Fila[]
+}
+
 // Condicional: solo cambia la fila si sigue en uno de `estados`. Si el cron ya la tomó, no cambia nada
 export const actualizarFila: Actualizar = async (id, cambio, estados) => {
   const { data, error } = await createServiceClient()
