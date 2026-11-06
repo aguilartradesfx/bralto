@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import { avisoCortada, avisoError } from './aviso'
-import { probarFila, publicarFila, type Efectos } from './publicar'
+import { parametrosReel, probarFila, publicarFila, type Efectos } from './publicar'
 import { MAX_INTENTOS, type Publicacion } from './tipos'
 import { cuerpoAutomatizacion, leerPostFacebook, type RespuestaPost } from './zernio'
 
@@ -74,14 +74,12 @@ function efectosReales(dueño?: { intentos: number }): Efectos {
   const ig = env('META_IG_USER_ID')
   return {
     async crearContenedor(p) {
+      // El reel (normal o de prueba) sale de parametrosReel, con pruebas
+      if (p.tipo === 'reel') return (await graph<{ id: string }>(`${ig}/media`, parametrosReel(p))).id
       const comun = {
         caption: p.texto,
         ...(p.colaborador ? { collaborators: JSON.stringify([p.colaborador]) } : {}),
         ...(p.hecho_con_ia ? { is_ai_generated: 'true' } : {}),
-      }
-      if (p.tipo === 'reel') {
-        const reel = { media_type: 'REELS', video_url: p.video_url ?? '', share_to_feed: 'true', ...(p.portada_url ? { cover_url: p.portada_url } : {}) }
-        return (await graph<{ id: string }>(`${ig}/media`, { ...reel, ...comun })).id
       }
       const hijos: string[] = []
       for (const image_url of p.laminas) hijos.push((await graph<{ id: string }>(`${ig}/media`, { image_url, is_carousel_item: 'true' })).id)
