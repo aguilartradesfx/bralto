@@ -1,8 +1,10 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import { efectosReales, graph } from '@/lib/redes/publicacion/servidor'
 import type { Publicacion } from '@/lib/redes/publicacion/tipos'
-import { avanzarGrupo, type CambiosPrueba, type EfectosPrueba } from './decidir'
+import { avanzarGrupo, puntaje, type CambiosPrueba, type EfectosPrueba } from './decidir'
+import { resumenSemanal, type GrupoDecidido } from './resumen'
 import type { EstadoPrueba, Metricas, Prueba } from './tipos'
+import type { Gancho } from '@/lib/redes/publicacion/tipos'
 
 // Conexiones reales de las pruebas: Supabase, las métricas y el borrado por la Graph API, y Facebook, el
 // «Comenta» y Telegram con lo mismo que usa la publicación. La lógica está en decidir.ts, con pruebas.
@@ -142,4 +144,32 @@ export async function correrPruebas(): Promise<Record<string, unknown>> {
     }
   }
   return { ok: true, ...hecho }
+}
+
+// El resumen de los domingos: las pruebas decididas con ganadora y el puntaje de cada versión. Solo avisa
+export async function mandarResumen(): Promise<Record<string, unknown>> {
+  const db = createServiceClient()
+  const { data, error } = await db.from(TABLA).select(COLUMNAS).eq('estado', 'decidida').not('ganadora', 'is', null)
+  if (error) throw new Error(`${TABLA}: ${error.message}`)
+  const pruebas = (data ?? []) as Prueba[]
+  if (!pruebas.length) return { ok: true, resumen: 'todavía no hay pruebas decididas' }
+  const { data: filas, error: e2 } = await db
+    .from('redes_publicaciones')
+    .select('id, grupo, publicar_en, gancho')
+    .in('grupo', pruebas.map((p) => p.grupo))
+  if (e2) throw new Error(`redes_publicaciones: ${e2.message}`)
+  const grupos: GrupoDecidido[] = pruebas.map((p) => ({
+    ganadora: p.ganadora!,
+    decidida_en: p.resultado.aviso ?? p.actualizado_en,
+    versiones: ((filas ?? []) as { id: string; grupo: string; publicar_en: string; gancho: Gancho | null }[])
+      .filter((f) => f.grupo === p.grupo)
+      .flatMap((f) => {
+        const m = p.resultado.metricas?.[f.id]
+        return typeof m === 'object' && m !== null ? [{ id: f.id, publicar_en: f.publicar_en, tipo: f.gancho?.tipo ?? 'otro', puntaje: puntaje(m) }] : []
+      }),
+  }))
+  const texto = resumenSemanal(grupos, new Date())
+  if (!texto) return { ok: true, resumen: 'todavía es muy pronto (menos de 2 semanas de datos)' }
+  await efectosReales().avisar(texto)
+  return { ok: true, resumen: 'enviado', pruebas: grupos.length }
 }
