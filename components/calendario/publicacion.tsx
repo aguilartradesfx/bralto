@@ -183,8 +183,12 @@ function Dato({ nombre, children }: { nombre: string; children: React.ReactNode 
 // Una versión de un reel de prueba: cuál es y cómo va su grupo
 function textoPrueba(p: NonNullable<Vista['prueba']>): string {
   const cual = `Versión ${p.version} de ${p.total}`
-  if (p.esGanadora === true) return `${cual} · 🏆 ganó: compártela con tus seguidores desde Instagram`
-  if (p.esGanadora === false) return `${cual} · no ganó (se borró de Instagram)`
+  if (p.final === 'gano') return `${cual} · 🏆 ganó: compártela con tus seguidores desde Instagram`
+  if (p.final === 'borrada') return `${cual} · no ganó (se borró de Instagram)`
+  if (p.final === 'sin_borrar') return `${cual} · no ganó, pero no se pudo borrar: bórrala tú en Instagram`
+  if (p.final === 'ya_no_estaba') return `${cual} · ya no estaba en Instagram`
+  if (p.final === 'sin_ganadora') return `${cual} · ninguna tuvo vistas: no se borró nada`
+  if (p.final === 'no_salio') return `${cual} · no salió`
   if (p.estado === 'corriendo' && p.decidir_en) return `${cual} · decide el ${nombreDia(diaCR(p.decidir_en)).toLowerCase()} a las ${horaCR(p.decidir_en)}`
   if (p.estado === 'decidiendo') return `${cual} · decidiendo ahora`
   if (p.estado === 'error') return `${cual} · no se pudo decidir`

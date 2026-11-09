@@ -18,6 +18,7 @@ export type CambiosPrueba = Partial<Pick<Prueba, 'estado' | 'decidir_en' | 'gana
 export type EfectosPrueba = {
   metricas(mediaId: string): Promise<Metricas | 'sin_datos' | 'no_existe'>
   borrar(mediaId: string): Promise<void>
+  existe(mediaId: string): Promise<boolean | null> // null: no se pudo saber
   publicarFacebook(p: Publicacion): Promise<{ postId: string | null; url: string | null }>
   crearComentaFb(postId: string, p: Publicacion): Promise<string>
   guardar(grupo: string, cambios: CambiosPrueba): Promise<void>
@@ -124,15 +125,17 @@ export async function avanzarGrupo(p: Prueba, versiones: Publicacion[], e: Efect
   if (!horaDeDecidir(ahora)) return 'espera el día'
   const r: ResultadoPrueba = structuredClone(p.resultado ?? {})
 
-  // 1. Las métricas de cada versión que salió (lo ya leído no se vuelve a pedir)
+  // 1. Las métricas de cada versión que salió. Hasta elegir la ganadora se leen todas en cada corrida: así se
+  // comparan medidas al mismo tiempo aunque una se atrase. Si una lectura nueva falla, queda la última buena
   r.metricas ??= {}
-  let leidas = false
-  for (const v of salieron) {
-    if (esMedida(r.metricas[v.id]) || r.metricas[v.id] === 'no_existe') continue
-    r.metricas[v.id] = await e.metricas(v.resultado.instagram!.id)
-    leidas = true
+  if (r.ganadora === undefined) {
+    for (const v of salieron) {
+      if (r.metricas[v.id] === 'no_existe') continue
+      const nueva = await e.metricas(v.resultado.instagram!.id)
+      if (nueva !== 'sin_datos' || !esMedida(r.metricas[v.id])) r.metricas[v.id] = nueva
+    }
+    await e.guardar(p.grupo, { resultado: r })
   }
-  if (leidas) await e.guardar(p.grupo, { resultado: r })
   const faltan = salieron.some((v) => r.metricas![v.id] === 'sin_datos')
   if (faltan && ahora < Date.parse(p.decidir_en) + GRACIA_MS) return 'espera métricas'
 
@@ -153,11 +156,13 @@ export async function avanzarGrupo(p: Prueba, versiones: Publicacion[], e: Efect
     r.borradas ??= {}
     for (const v of salieron) {
       if (v.id === ganadora.id || r.metricas[v.id] === 'no_existe' || r.borradas[v.id] === 'ok') continue
+      const media = v.resultado.instagram!.id
       try {
-        await e.borrar(v.resultado.instagram!.id)
+        await e.borrar(media)
         r.borradas[v.id] = 'ok'
       } catch (err) {
-        r.borradas[v.id] = mensaje(err)
+        // Si ya no está, quedó borrada: la borró una corrida que se cortó antes de guardarlo
+        r.borradas[v.id] = (await e.existe(media).catch(() => null)) === false ? 'ok' : mensaje(err)
       }
       await e.guardar(p.grupo, { resultado: r })
     }

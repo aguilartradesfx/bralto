@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resumenSemanal, type GrupoDecidido } from './resumen.ts'
+import { mandarUnaVez, resumenSemanal, type GrupoDecidido, type UnaVez } from './resumen.ts'
 import type { TipoGancho } from '../publicacion/tipos.ts'
 
 const AHORA = new Date('2026-11-29T15:00:00Z') // domingo 29, 9:00 en Costa Rica
@@ -61,4 +61,36 @@ test('resumen: las primeras 4 semanas solo cuenta cómo va, sin proponer cambios
   const texto = resumenSemanal(grupos, AHORA)!
   assert.match(texto, /el gancho de pregunta ganó 2 de 3/i)
   assert.doesNotMatch(texto, /Propuesta/)
+})
+
+function unaVez(libre: boolean, over: Partial<UnaVez> = {}) {
+  const avisos: string[] = []
+  const soltados: string[] = []
+  const e: UnaVez = {
+    tomar: async () => libre,
+    soltar: async (dia) => void soltados.push(dia),
+    avisar: async (texto) => void avisos.push(texto),
+    ...over,
+  }
+  return { e, avisos, soltados }
+}
+
+test('el resumen del día sale una sola vez: si otra corrida ya lo tomó, esta no manda nada', async () => {
+  const primera = unaVez(true)
+  assert.equal(await mandarUnaVez('2026-11-29', 'hola', primera.e), true)
+  assert.deepEqual(primera.avisos, ['hola'])
+
+  const repetida = unaVez(false)
+  assert.equal(await mandarUnaVez('2026-11-29', 'hola', repetida.e), false)
+  assert.deepEqual(repetida.avisos, [])
+})
+
+test('si Telegram falla, suelta el día para poder mandarlo después', async () => {
+  const f = unaVez(true, {
+    avisar: async () => {
+      throw new Error('Telegram rechazó el aviso')
+    },
+  })
+  await assert.rejects(mandarUnaVez('2026-11-29', 'hola', f.e), /Telegram/)
+  assert.deepEqual(f.soltados, ['2026-11-29'])
 })

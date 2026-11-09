@@ -74,9 +74,21 @@ const grupo = (extra: Partial<Prueba> = {}): Prueba => ({
 test('aVista: una versión de prueba dice cuál es, cuándo decide y si ganó', () => {
   const version = fila({ prueba: true, grupo: 'g-1', version: 2, colaborador: null, facebook: false, historias: [] })
   const corriendo = aVista(version, grupo())
-  assert.deepEqual(corriendo.prueba, { version: 2, total: 5, estado: 'corriendo', decidir_en: '2026-11-09T21:00:00.000Z', esGanadora: null })
-  assert.equal(aVista(version, grupo({ estado: 'decidida', ganadora: 'pub-1' })).prueba?.esGanadora, true)
-  assert.equal(aVista(version, grupo({ estado: 'decidida', ganadora: 'otra' })).prueba?.esGanadora, false)
+  assert.deepEqual(corriendo.prueba, { version: 2, total: 5, estado: 'corriendo', decidir_en: '2026-11-09T21:00:00.000Z', final: null })
+  assert.equal(aVista(version, grupo({ estado: 'decidida', ganadora: 'pub-1' })).prueba?.final, 'gano')
+})
+
+test('aVista: el Calendario solo dice «se borró» si de verdad se borró', () => {
+  const salio = { instagram: { id: 'm', permalink: null, en: '2026-11-05T14:00:00.000Z' } }
+  const version = fila({ prueba: true, grupo: 'g-1', version: 2, colaborador: null, facebook: false, historias: [], resultado: salio })
+  const final = (resultado: Prueba['resultado'], ganadora: string | null = 'otra') =>
+    aVista(version, grupo({ estado: 'decidida', ganadora, resultado })).prueba?.final
+  assert.equal(final({ borradas: { 'pub-1': 'ok' } }), 'borrada')
+  assert.equal(final({ borradas: { 'pub-1': 'Meta: no se pudo' } }), 'sin_borrar')
+  assert.equal(final({ metricas: { 'pub-1': 'no_existe' } }), 'ya_no_estaba')
+  assert.equal(final({}, null), 'sin_ganadora')
+  const noSalio = fila({ prueba: true, grupo: 'g-1', version: 2, colaborador: null, facebook: false, historias: [], resultado: {} })
+  assert.equal(aVista(noSalio, grupo({ estado: 'decidida', ganadora: 'otra' })).prueba?.final, 'no_salio')
 })
 
 test('aVista: una publicación normal no es prueba', () => {

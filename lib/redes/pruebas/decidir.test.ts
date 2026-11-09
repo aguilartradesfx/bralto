@@ -90,6 +90,7 @@ function falsos(ahora: number, datos: Record<string, Metricas | 'sin_datos' | 'n
     async borrar(media) {
       llamadas.push(`borrar:${media}`)
     },
+    existe: async () => true,
     async publicarFacebook(p) {
       llamadas.push(`facebook:${p.id}`)
       return { postId: 'pagina_99', url: 'https://www.facebook.com/reel/99' }
@@ -231,7 +232,7 @@ test('sin métricas espera: a las 72 h, si a una le faltan datos, no decide ni b
   assert.equal(r, 'espera métricas')
   assert.equal(f.llamadas.filter((l) => l.startsWith('borrar')).length, 0)
   assert.deepEqual(f.avisos, [])
-  // Lo que ya leyó queda guardado: la próxima corrida no lo vuelve a pedir
+  // Lo que ya leyó queda guardado: si en la próxima lectura Meta falla, no se pierde
   assert.equal(typeof f.ultimo()?.resultado?.metricas?.['fila-1'], 'object')
 })
 
@@ -312,6 +313,42 @@ test('un borrado falla: se anota, las demás se borran y el aviso lo dice', asyn
   assert.match(String(final.resultado?.borradas?.['fila-4']), /no se pudo/)
   assert.equal(final.resultado?.borradas?.['fila-1'], 'ok')
   assert.match(f.avisos[0], /no pude borrar 1 versión/i)
+})
+
+test('se comparan medidas al mismo tiempo: mientras falte una, la próxima corrida vuelve a leer todas', async () => {
+  const antes: ResultadoPrueba = {
+    metricas: { 'fila-1': medida(100, 50), 'fila-2': medida(100, 50), 'fila-3': 'sin_datos', 'fila-4': medida(100, 50), 'fila-5': medida(100, 50) },
+  }
+  const datos = todas({ 1: medida(2000, 50), 2: medida(1000, 50), 3: medida(1500, 50), 4: medida(900, 50), 5: medida(800, 50) })
+  const f = falsos(DECIDE + HORA, datos)
+  await avanzarGrupo(prueba({ resultado: antes }), cinco(), f.e)
+  assert.equal(f.llamadas.filter((l) => l.startsWith('metricas:')).length, 5)
+  const metricas = f.ultimo()?.resultado?.metricas
+  assert.equal((metricas?.['fila-1'] as Metricas).views, 2000)
+  assert.equal(f.ultimo()?.ganadora, 'fila-1')
+})
+
+test('si una lectura nueva falla, se conserva la última buena', async () => {
+  const antes: ResultadoPrueba = {
+    metricas: { 'fila-1': medida(3000, 10), 'fila-2': 'sin_datos', 'fila-3': medida(100, 50), 'fila-4': medida(100, 50), 'fila-5': medida(100, 50) },
+  }
+  const datos = todas({ 1: 'sin_datos', 2: medida(500, 50), 3: medida(100, 50), 4: medida(100, 50), 5: medida(100, 50) })
+  const f = falsos(DECIDE + HORA, datos)
+  await avanzarGrupo(prueba({ resultado: antes }), cinco(), f.e)
+  assert.equal(f.ultimo()?.ganadora, 'fila-1')
+})
+
+test('borrado repetido: si Meta da error pero el reel ya no está, cuenta como borrado y el aviso no se queja', async () => {
+  const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
+  const f = falsos(DECIDE, datos, {
+    async borrar(media) {
+      if (media === 'media-4') throw new Error('Meta: does not exist')
+    },
+    existe: async (media) => media !== 'media-4',
+  })
+  await avanzarGrupo(prueba(), cinco(), f.e)
+  assert.equal(f.ultimo()?.resultado?.borradas?.['fila-4'], 'ok')
+  assert.doesNotMatch(f.avisos[0], /no pude borrar/i)
 })
 
 test('avisoGanadora sin datos del gancho no inventa la frase de las 10 personas', () => {

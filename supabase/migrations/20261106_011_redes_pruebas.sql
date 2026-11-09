@@ -53,3 +53,12 @@ alter table public.redes_publicaciones add constraint redes_publicaciones_prueba
 
 create unique index if not exists redes_publicaciones_grupo_version
   on public.redes_publicaciones (grupo, version) where grupo is not null;
+
+-- Un resumen de los domingos por día: si Vercel entrega el cron dos veces, el segundo no manda nada
+create table if not exists public.redes_pruebas_resumenes (
+  dia date primary key,
+  enviado_en timestamptz not null default now()
+);
+
+alter table public.redes_pruebas_resumenes enable row level security;
+revoke all on public.redes_pruebas_resumenes from anon, authenticated;

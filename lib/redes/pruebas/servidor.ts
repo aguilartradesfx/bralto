@@ -2,7 +2,8 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { efectosReales, graph } from '@/lib/redes/publicacion/servidor'
 import type { Publicacion } from '@/lib/redes/publicacion/tipos'
 import { avanzarGrupo, horaDeDecidir, puntajesDelGrupo, type CambiosPrueba, type EfectosPrueba } from './decidir'
-import { resumenSemanal, type GrupoDecidido } from './resumen'
+import { mandarUnaVez, resumenSemanal, type GrupoDecidido } from './resumen'
+import { diaCR } from '@/lib/calendario/fechas'
 import type { EstadoPrueba, Metricas, Prueba } from './tipos'
 import type { Gancho } from '@/lib/redes/publicacion/tipos'
 
@@ -10,6 +11,7 @@ import type { Gancho } from '@/lib/redes/publicacion/tipos'
 // «Comenta» y Telegram con lo mismo que usa la publicación. La lógica está en decidir.ts, con pruebas.
 
 const TABLA = 'redes_pruebas'
+const RESUMENES = 'redes_pruebas_resumenes'
 const COLUMNAS = 'grupo, titulo, origen, estado, facebook, decidir_en, ganadora, resultado, intentos, actualizado_en'
 const COLUMNAS_VERSION =
   'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, prueba, grupo, version, gancho'
@@ -86,6 +88,7 @@ function efectosPruebas(dueño: { estado: EstadoPrueba; intentos: number }): Efe
     async borrar(media) {
       await graph(media, {}, 'DELETE')
     },
+    existe: sigueEnInstagram,
     publicarFacebook: (p) => pub.publicarFacebook(p),
     crearComentaFb: (postId, p) => pub.crearComenta('fb', postId, p),
     async guardar(grupo, cambios: CambiosPrueba) {
@@ -212,6 +215,16 @@ export async function mandarResumen(): Promise<Record<string, unknown>> {
   })
   const texto = resumenSemanal(grupos, new Date())
   if (!texto) return { ok: true, resumen: 'todavía es muy pronto (menos de 2 semanas de datos)' }
-  await efectosReales().avisar(texto)
-  return { ok: true, resumen: 'enviado', pruebas: grupos.length }
+  const enviado = await mandarUnaVez(diaCR(new Date().toISOString()), texto, {
+    async tomar(dia) {
+      const { data: tomado, error: e3 } = await db.from(RESUMENES).upsert({ dia }, { onConflict: 'dia', ignoreDuplicates: true }).select('dia')
+      if (e3) throw new Error(`${RESUMENES}: ${e3.message}`)
+      return Boolean(tomado?.length)
+    },
+    async soltar(dia) {
+      await db.from(RESUMENES).delete().eq('dia', dia)
+    },
+    avisar: avisarSeguro,
+  })
+  return { ok: true, resumen: enviado ? 'enviado' : 'ya se había mandado hoy', pruebas: grupos.length }
 }

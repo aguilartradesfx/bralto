@@ -23,6 +23,25 @@ const NOMBRE: Record<TipoGancho, string> = {
   otro: 'otro tipo',
 }
 
+export type UnaVez = {
+  tomar(dia: string): Promise<boolean> // true solo para la primera corrida del día
+  soltar(dia: string): Promise<void>
+  avisar(texto: string): Promise<void>
+}
+
+// Vercel a veces entrega un cron dos veces: el resumen de cada día sale una sola vez. Si el aviso falla, el día se
+// suelta para que se pueda volver a mandar
+export async function mandarUnaVez(dia: string, texto: string, e: UnaVez): Promise<boolean> {
+  if (!(await e.tomar(dia))) return false
+  try {
+    await e.avisar(texto)
+  } catch (err) {
+    await e.soltar(dia).catch(() => {})
+    throw err
+  }
+  return true
+}
+
 const mayuscula = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
 const diaSemana = (instante: string) => new Date(`${diaCR(instante)}T12:00:00Z`).getUTCDay()
 
