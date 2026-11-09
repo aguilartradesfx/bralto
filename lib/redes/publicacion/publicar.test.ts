@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { MAX_INTENTOS, probarFila, publicarFila, validar, type Cambios, type Efectos } from './publicar.ts'
+import { MAX_INTENTOS, parametrosReel, probarFila, publicarFila, validar, type Cambios, type Efectos } from './publicar.ts'
 import type { Publicacion, Resultado } from './tipos.ts'
 
 function fila(extra: Partial<Publicacion> = {}): Publicacion {
@@ -21,6 +21,10 @@ function fila(extra: Partial<Publicacion> = {}): Publicacion {
     comenta: { guia: 'jarvis', palabras: ['jarvis'], mensaje: 'm', respuestas: ['r'] },
     resultado: {},
     intentos: 1,
+    prueba: false,
+    grupo: null,
+    version: null,
+    gancho: null,
     ...extra,
   }
 }
@@ -234,4 +238,59 @@ test('probar arma y procesa el contenedor sin publicar nada', async () => {
   assert.deepEqual(llamadas, ['crear:carrusel', 'estado:cont-1', 'estado:cont-1'])
   assert.deepEqual(guardados, [])
   assert.equal(r, 'contenedor listo (cont-1): Instagram lo aceptó, no se publicó nada')
+})
+
+// Reels de prueba (Trial Reels): una versión de un grupo, solo para quien no sigue la cuenta
+const versionDePrueba = (extra: Partial<Publicacion> = {}) =>
+  fila({
+    tipo: 'reel',
+    video_url: 'https://x/v1.mp4',
+    portada_url: null,
+    laminas: [],
+    prueba: true,
+    grupo: 'grupo-1',
+    version: 1,
+    colaborador: null,
+    facebook: false,
+    historias: [],
+    ...extra,
+  })
+
+test('validar: una versión de prueba bien armada pasa', () => {
+  assert.equal(validar(versionDePrueba()), null)
+})
+
+test('validar: una prueba no puede ir en collab, ni en Facebook, ni con historias, ni ser carrusel', () => {
+  assert.equal(validar(versionDePrueba({ colaborador: 'x' })), 'un reel de prueba no puede ir en collab')
+  assert.equal(validar(versionDePrueba({ facebook: true })), 'un reel de prueba no sale en Facebook (sale solo la ganadora)')
+  assert.equal(validar(versionDePrueba({ historias: ['h'] })), 'un reel de prueba no lleva historias')
+  assert.equal(validar(versionDePrueba({ tipo: 'carrusel', laminas: ['l1', 'l2'] })), 'solo un reel puede ser de prueba')
+})
+
+test('parametrosReel prueba: lleva trial_params MANUAL y no va al feed ni en collab', () => {
+  const p = parametrosReel(versionDePrueba({ portada_url: 'https://x/p1.jpg' }))
+  assert.equal(p.media_type, 'REELS')
+  assert.equal(p.video_url, 'https://x/v1.mp4')
+  assert.equal(p.caption, versionDePrueba().texto)
+  assert.equal(p.trial_params, '{"graduation_strategy":"MANUAL"}')
+  assert.equal(p.cover_url, 'https://x/p1.jpg')
+  assert.equal(p.is_ai_generated, 'true')
+  assert.equal('share_to_feed' in p, false)
+  assert.equal('collaborators' in p, false)
+})
+
+test('una versión de prueba que sale no manda el «ya salió» (serían 5 por reel): el aviso llega con la ganadora', async () => {
+  const { e, avisos } = falsos({}, { 'cont-1': ['FINISHED'] })
+  const r = await publicarFila(versionDePrueba({ estado: 'publicando', comenta: null }), e)
+  assert.match(r, /^publicado/)
+  assert.deepEqual(avisos, [])
+})
+
+test('parametrosReel normal: igual que siempre, sin trial_params', () => {
+  const p = parametrosReel(fila({ tipo: 'reel', video_url: 'https://x/v.mp4', portada_url: 'https://x/p.jpg', laminas: [] }))
+  assert.equal('trial_params' in p, false)
+  assert.equal(p.share_to_feed, 'true')
+  assert.equal(p.collaborators, '["bralto.io"]')
+  assert.equal(p.cover_url, 'https://x/p.jpg')
+  assert.equal(p.media_type, 'REELS')
 })

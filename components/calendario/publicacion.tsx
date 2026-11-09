@@ -180,6 +180,22 @@ function Dato({ nombre, children }: { nombre: string; children: React.ReactNode 
   )
 }
 
+// Una versión de un reel de prueba: cuál es y cómo va su grupo
+function textoPrueba(p: NonNullable<Vista['prueba']>): string {
+  const cual = `Versión ${p.version} de ${p.total}`
+  if (p.final === 'gano') return `${cual} · 🏆 ganó: compártela con tus seguidores desde Instagram`
+  if (p.final === 'borrada') return `${cual} · no ganó (se borró de Instagram)`
+  if (p.final === 'sin_borrar') return `${cual} · no ganó, pero no se pudo borrar: bórrala tú en Instagram`
+  if (p.final === 'ya_no_estaba') return `${cual} · ya no estaba en Instagram`
+  if (p.final === 'sin_ganadora') return `${cual} · ninguna tuvo vistas: no se borró nada`
+  if (p.final === 'no_salio') return `${cual} · no salió`
+  if (p.estado === 'corriendo' && p.decidir_en) return `${cual} · decide el ${nombreDia(diaCR(p.decidir_en)).toLowerCase()} a las ${horaCR(p.decidir_en)}`
+  if (p.estado === 'decidiendo') return `${cual} · decidiendo ahora`
+  if (p.estado === 'error') return `${cual} · no se pudo decidir`
+  if (p.estado === 'cancelada') return `${cual} · prueba cancelada`
+  return `${cual} · corre 3 días desde que salen las 5`
+}
+
 function Ficha({ vista }: { vista: Vista }) {
   return (
     <section className="pn-glass rounded-[20px] p-5 lg:col-start-2 lg:row-start-1">
@@ -197,7 +213,8 @@ function Ficha({ vista }: { vista: Vista }) {
         <Dato nombre="Cuándo">
           {nombreDia(diaCR(vista.publicar_en))}, {horaCR(vista.publicar_en)} <span className="text-fg/40">(hora de Costa Rica)</span>
         </Dato>
-        <Dato nombre="Facebook">{vista.facebook ? 'Sí, también sale ahí' : 'No'}</Dato>
+        {vista.prueba && <Dato nombre="Prueba">{textoPrueba(vista.prueba)}</Dato>}
+        <Dato nombre="Facebook">{vista.prueba ? 'Solo si gana' : vista.facebook ? 'Sí, también sale ahí' : 'No'}</Dato>
         <Dato nombre="«Comenta»">{vista.palabra ? vista.palabra.toUpperCase() : 'No tiene'}</Dato>
         {vista.ultimo_error && (
           <Dato nombre="Último error">

@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSession } from '@/lib/panel-session'
 import { hasPermission } from '@/lib/panel-access'
-import { leerFila } from '@/lib/calendario/servidor'
+import { leerFila, leerPrueba } from '@/lib/calendario/servidor'
 import { aVista } from '@/lib/calendario/vista'
 import { DetallePublicacion } from '@/components/calendario/publicacion'
 
@@ -15,7 +15,8 @@ export default async function PublicacionPage({ params }: { params: Promise<{ id
 
   const fila = await leerFila((await params).id)
   if (!fila) notFound()
+  const prueba = fila.grupo ? await leerPrueba(fila.grupo) : null
 
   // key: al pasar de una publicación a otra, el formulario arranca de cero
-  return <DetallePublicacion key={fila.id} vista={aVista(fila)} />
+  return <DetallePublicacion key={fila.id} vista={aVista(fila, prueba)} />
 }

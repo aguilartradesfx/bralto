@@ -3,17 +3,18 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import type { Actualizar } from '@/lib/calendario/editar'
 import type { Fila, Resumen } from '@/lib/calendario/vista'
+import type { Prueba } from '@/lib/redes/pruebas/tipos'
 
 const TABLA = 'redes_publicaciones'
 const COLUMNAS =
-  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, ultimo_error'
+  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, prueba, grupo, version, gancho, ultimo_error'
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // Lo que sale entre dos instantes (desde incluido, hasta no), en orden de hora
 export async function leerEntre(desde: string, hasta: string): Promise<Resumen[]> {
   const { data, error } = await createServiceClient()
     .from(TABLA)
-    .select('id, titulo, tipo, estado, publicar_en')
+    .select('id, titulo, tipo, estado, publicar_en, prueba, grupo, version')
     .gte('publicar_en', desde)
     .lt('publicar_en', hasta)
     .order('publicar_en')
@@ -27,6 +28,26 @@ export async function leerFila(id: string): Promise<Fila | null> {
   const { data, error } = await createServiceClient().from(TABLA).select(COLUMNAS).eq('id', id).maybeSingle()
   if (error) throw new Error(`${TABLA}: ${error.message}`)
   return (data as Fila | null) ?? null
+}
+
+// El grupo de un reel de prueba (redes_pruebas), para el detalle de cada versión
+export async function leerPrueba(grupo: string): Promise<Prueba | null> {
+  if (!UUID.test(grupo)) return null
+  const { data, error } = await createServiceClient()
+    .from('redes_pruebas')
+    .select('grupo, titulo, origen, estado, facebook, decidir_en, ganadora, resultado, intentos, actualizado_en')
+    .eq('grupo', grupo)
+    .maybeSingle()
+  if (error) throw new Error(`redes_pruebas: ${error.message}`)
+  return (data as Prueba | null) ?? null
+}
+
+// Las versiones de un reel de prueba, en orden
+export async function leerGrupo(grupo: string): Promise<Fila[]> {
+  if (!UUID.test(grupo)) return []
+  const { data, error } = await createServiceClient().from(TABLA).select(COLUMNAS).eq('grupo', grupo).order('version')
+  if (error) throw new Error(`${TABLA}: ${error.message}`)
+  return (data ?? []) as Fila[]
 }
 
 // Condicional: solo cambia la fila si sigue en uno de `estados`. Si el cron ya la tomó, no cambia nada

@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import { avisoCortada, avisoError } from './aviso'
-import { probarFila, publicarFila, type Efectos } from './publicar'
+import { parametrosReel, probarFila, publicarFila, type Efectos } from './publicar'
 import { MAX_INTENTOS, type Publicacion } from './tipos'
 import { cuerpoAutomatizacion, leerPostFacebook, type RespuestaPost } from './zernio'
 
@@ -12,7 +12,7 @@ const TABLA = 'redes_publicaciones'
 const GRAPH = 'https://graph.facebook.com/v26.0'
 const ZERNIO = 'https://zernio.com/api/v1'
 const COLUMNAS =
-  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, actualizado_en'
+  'id, titulo, tipo, estado, publicar_en, texto, laminas, video_url, portada_url, historias, colaborador, hecho_con_ia, facebook, comenta, resultado, intentos, prueba, grupo, version, gancho, actualizado_en'
 // Un paso que se cuelga no se come el tiempo de la función (300 s): Zernio publica el video de Facebook en
 // la misma llamada, por eso le toca más
 const ESPERA_META_MS = 60_000
@@ -28,13 +28,14 @@ function env(nombre: string): string {
   return v
 }
 
-async function graph<T>(ruta: string, params: Record<string, string>, metodo: 'GET' | 'POST' = 'POST'): Promise<T> {
+// También la usan las pruebas (lib/redes/pruebas/servidor.ts): métricas y borrar versiones
+export async function graph<T>(ruta: string, params: Record<string, string>, metodo: 'GET' | 'POST' | 'DELETE' = 'POST'): Promise<T> {
   const p = new URLSearchParams({ ...params, access_token: env('META_ACCESS_TOKEN') })
   const signal = AbortSignal.timeout(ESPERA_META_MS)
   const res =
     metodo === 'POST'
       ? await fetch(`${GRAPH}/${ruta}`, { method: 'POST', body: p, cache: 'no-store', signal })
-      : await fetch(`${GRAPH}/${ruta}?${p}`, { cache: 'no-store', signal })
+      : await fetch(`${GRAPH}/${ruta}?${p}`, { method: metodo, cache: 'no-store', signal })
   const r = (await res.json().catch(() => ({}))) as T & { error?: { message?: string; error_user_msg?: string } }
   if (!res.ok || r.error) {
     const extra = r.error?.error_user_msg ? ` (${r.error.error_user_msg})` : ''
@@ -70,18 +71,16 @@ async function estadoContenedor(id: string) {
 
 // dueño: la corrida que tomó la publicación (con sus intentos). Cada guardado exige que la fila siga siendo
 // suya: si otra corrida la tomó (Vercel a veces entrega el cron dos veces), esta se detiene en vez de pisarla
-function efectosReales(dueño?: { intentos: number }): Efectos {
+export function efectosReales(dueño?: { intentos: number }): Efectos {
   const ig = env('META_IG_USER_ID')
   return {
     async crearContenedor(p) {
+      // El reel (normal o de prueba) sale de parametrosReel, con pruebas
+      if (p.tipo === 'reel') return (await graph<{ id: string }>(`${ig}/media`, parametrosReel(p))).id
       const comun = {
         caption: p.texto,
         ...(p.colaborador ? { collaborators: JSON.stringify([p.colaborador]) } : {}),
         ...(p.hecho_con_ia ? { is_ai_generated: 'true' } : {}),
-      }
-      if (p.tipo === 'reel') {
-        const reel = { media_type: 'REELS', video_url: p.video_url ?? '', share_to_feed: 'true', ...(p.portada_url ? { cover_url: p.portada_url } : {}) }
-        return (await graph<{ id: string }>(`${ig}/media`, { ...reel, ...comun })).id
       }
       const hijos: string[] = []
       for (const image_url of p.laminas) hijos.push((await graph<{ id: string }>(`${ig}/media`, { image_url, is_carousel_item: 'true' })).id)

@@ -1,17 +1,20 @@
 import { after, NextResponse } from 'next/server'
 import { guardarCambio } from '@/lib/calendario/editar'
 import { rangoUtc } from '@/lib/calendario/fechas'
-import { actualizarFila, leerEntre, leerFila } from '@/lib/calendario/servidor'
+import { actualizarFila, leerEntre, leerFila, leerGrupo } from '@/lib/calendario/servidor'
 import {
   aItem,
   armarAprobar,
   armarFrenar,
+  armarGrupo,
   armarHora,
   armarSacarYa,
   elegirPendiente,
   leerPedido,
+  mensajeGrupo,
   mensajeListo,
   secretoValido,
+  tituloSinPrueba,
 } from '@/lib/redes/asistente'
 import { correrCola } from '@/lib/redes/publicacion/servidor'
 
@@ -52,6 +55,27 @@ export async function POST(request: Request) {
 
     const fila = await leerFila(id)
     if (!fila) return responder({ ok: false, error: 'No existe esa publicación' }, 404)
+
+    // Un reel de prueba son 5 versiones: se aprueban o se frenan juntas, y no se mueven de a una
+    if (fila.grupo) {
+      if (pedido.accion === 'cambiar_hora' || pedido.accion === 'sacar_ya') {
+        return responder({ ok: false, error: 'Es una prueba de 5 versiones: solo se puede aprobar o frenar completa.', publicacion: aItem(fila) }, 409)
+      }
+      const filas = await leerGrupo(fila.grupo)
+      const grupo = armarGrupo(pedido.accion, filas, ahora)
+      if (!grupo.ok) {
+        const { status, ...cuerpo } = grupo
+        return responder({ ...cuerpo, publicacion: aItem(fila) }, status)
+      }
+      let hechas = 0
+      for (const { id: version, cambio } of grupo.cambios) {
+        const guardado = await guardarCambio(version, cambio, actualizarFila)
+        if (guardado.ok) hechas++
+        else if (guardado.status === 500) console.error('[redes/asistente]', guardado.error)
+      }
+      if (!hechas) return responder({ ok: false, error: 'No se pudo guardar. Intenta de nuevo.' }, 500)
+      return responder({ ok: true, mensaje: mensajeGrupo(pedido.accion, tituloSinPrueba(fila.titulo), hechas), publicacion: aItem(fila) })
+    }
 
     const armado =
       pedido.accion === 'aprobar'

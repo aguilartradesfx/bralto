@@ -4,12 +4,14 @@ import {
   aItem,
   armarAprobar,
   armarFrenar,
+  armarGrupo,
   armarHora,
   armarSacarYa,
   elegirPendiente,
   esDeNoche,
   hora12,
   leerPedido,
+  mensajeGrupo,
   mensajeListo,
   secretoValido,
 } from './asistente.ts'
@@ -37,6 +39,10 @@ function fila(extra: Partial<Publicacion> = {}): Publicacion {
     comenta: null,
     resultado: {},
     intentos: 0,
+    prueba: false,
+    grupo: null,
+    version: null,
+    gancho: null,
     ...extra,
   }
 }
@@ -211,4 +217,75 @@ test('lo que el asistente le contesta, con día y hora de Costa Rica', () => {
     'Listo: «Espía a tu competencia» ahora sale el sábado 31 de octubre a las 5:30 p. m. Sigue en borrador: falta aprobarlo.',
   )
   assert.equal(mensajeListo('sacar_ya', p), '«Espía a tu competencia» se está publicando ya. Te aviso por aquí cuando salga.')
+})
+
+// Las 5 versiones de un reel de prueba, mañana (domingo 1) de 8:00 a 16:00 en Costa Rica
+const versionPrueba = (n: number, extra: Partial<Publicacion> = {}) =>
+  fila({
+    id: `00000000-0000-4000-8000-00000000000${n}`,
+    titulo: `Prueba ${n}/5 · Radar`,
+    tipo: 'reel',
+    estado: 'programado',
+    publicar_en: new Date(Date.UTC(2026, 10, 1, 14 + 2 * (n - 1))).toISOString(),
+    laminas: [],
+    video_url: `v${n}.mp4`,
+    colaborador: null,
+    facebook: false,
+    historias: [],
+    prueba: true,
+    grupo: 'g-1',
+    version: n,
+    ...extra,
+  })
+const grupoDe5 = () => [1, 2, 3, 4, 5].map((n) => versionPrueba(n))
+
+test('frenar grupo: las 5 versiones quedan en borrador', () => {
+  const r = armarGrupo('frenar', grupoDe5(), AHORA)
+  assert.ok(r.ok)
+  assert.equal(r.cambios.length, 5)
+  for (const c of r.cambios) assert.equal(c.cambio.estado, 'borrador')
+})
+
+test('frenar grupo a medias: las que ya salieron no se tocan', () => {
+  const filas = grupoDe5().map((v, i) => (i < 2 ? { ...v, estado: 'publicado' as const } : v))
+  const r = armarGrupo('frenar', filas, AHORA)
+  assert.ok(r.ok)
+  assert.deepEqual(
+    r.cambios.map((c) => c.id),
+    filas.slice(2).map((f) => f.id),
+  )
+})
+
+test('aprobar grupo: la que ya pasó su hora queda fuera; si pasaron todas, no se puede', () => {
+  const filas = grupoDe5().map((v, i) => ({ ...v, estado: 'borrador' as const, ...(i === 0 ? { publicar_en: '2026-10-31T19:00:00.000Z' } : {}) }))
+  const r = armarGrupo('aprobar', filas, AHORA)
+  assert.ok(r.ok)
+  assert.equal(r.cambios.length, 4)
+  for (const c of r.cambios) assert.equal(c.cambio.estado, 'programado')
+
+  const pasadas = filas.map((f) => ({ ...f, publicar_en: '2026-10-31T19:00:00.000Z' }))
+  const no = armarGrupo('aprobar', pasadas, AHORA)
+  assert.equal(no.ok, false)
+  if (!no.ok) {
+    assert.equal(no.status, 409)
+    assert.equal(no.motivo, 'hora_pasada')
+  }
+})
+
+test('dale sin id: las 5 versiones de una prueba cuentan como una sola opción', () => {
+  const carrusel = fila({ id: '00000000-0000-4000-8000-000000000009', publicar_en: '2026-11-01T16:00:00.000Z' })
+  const conCarrusel = elegirPendiente([...grupoDe5(), carrusel], AHORA, ['programado', 'borrador'])
+  assert.equal(conCarrusel.ok, false)
+  if (!conCarrusel.ok) assert.equal(conCarrusel.opciones.length, 2)
+
+  const soloPrueba = elegirPendiente([...grupoDe5()].reverse(), AHORA, ['programado'])
+  assert.deepEqual(soloPrueba, { ok: true, id: versionPrueba(1).id })
+})
+
+test('mensajeGrupo: dice cuántas versiones cambiaron', () => {
+  assert.equal(
+    mensajeGrupo('frenar', 'Radar', 3),
+    'Listo: las 3 versiones de prueba de «Radar» quedaron en borrador y no salen hasta que las apruebes.',
+  )
+  assert.equal(mensajeGrupo('aprobar', 'Radar', 5), 'Listo: las 5 versiones de prueba de «Radar» quedaron aprobadas y salen cada una a su hora.')
 })

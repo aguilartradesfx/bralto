@@ -42,12 +42,33 @@ export function validar(p: Publicacion): string | null {
     return `un carrusel lleva de 2 a 10 láminas (tiene ${p.laminas.length})`
   }
   if (p.tipo === 'reel' && !p.video_url) return 'el reel no tiene video'
+  // Una versión de prueba se le enseña solo a quien no sigue la cuenta: nada que la muestre a los seguidores
+  if (p.prueba) {
+    if (p.tipo !== 'reel') return 'solo un reel puede ser de prueba'
+    if (p.colaborador) return 'un reel de prueba no puede ir en collab'
+    if (p.facebook) return 'un reel de prueba no sale en Facebook (sale solo la ganadora)'
+    if (p.historias.length) return 'un reel de prueba no lleva historias'
+  }
   const texto = p.texto.trim()
   if (!texto) return 'no tiene texto'
   if (texto.length > 2200) return `el texto tiene ${texto.length} caracteres; Instagram deja 2200`
   const hashtags = texto.match(/#[\p{L}\p{N}_]+/gu)?.length ?? 0
   if (hashtags > 5) return `el texto tiene ${hashtags} hashtags; Instagram deja 5`
   return null
+}
+
+// Los parámetros del contenedor de un reel (sin el token). Una versión de prueba lleva trial_params: Instagram la
+// enseña primero a quien no sigue la cuenta, y pasarla a los seguidores se hace a mano en la app (MANUAL)
+export function parametrosReel(p: Publicacion): Record<string, string> {
+  return {
+    media_type: 'REELS',
+    video_url: p.video_url ?? '',
+    caption: p.texto,
+    ...(p.prueba ? { trial_params: JSON.stringify({ graduation_strategy: 'MANUAL' }) } : { share_to_feed: 'true' }),
+    ...(p.portada_url ? { cover_url: p.portada_url } : {}),
+    ...(p.colaborador && !p.prueba ? { collaborators: JSON.stringify([p.colaborador]) } : {}),
+    ...(p.hecho_con_ia ? { is_ai_generated: 'true' } : {}),
+  }
 }
 
 async function esperar(id: string, p: Publicacion, e: Efectos) {
@@ -159,7 +180,8 @@ export async function publicarFila(p: Publicacion, e: Efectos): Promise<string> 
   }
 
   await e.guardar(p.id, { estado: 'publicado', resultado: r, ultimo_error: null })
-  await e.avisar(avisoListo(p, r))
+  // Una versión de prueba no avisa al salir (serían 5 por reel): el aviso llega a los 3 días, con la ganadora
+  if (!p.prueba) await e.avisar(avisoListo(p, r))
   return `publicado: ${ig.permalink ?? ig.id}`
 }
 

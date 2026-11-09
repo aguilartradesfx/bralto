@@ -19,6 +19,14 @@
     {
       "path": "/api/cron/knox-arranques",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/pruebas",
+      "schedule": "17 * * * *"
+    },
+    {
+      "path": "/api/cron/pruebas-resumen",
+      "schedule": "0 15 * * 0"
     }
   ]
 }
