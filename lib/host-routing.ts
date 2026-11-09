@@ -83,9 +83,12 @@ export function isContractSigningPath(pathname: string): boolean {
   return pathname.startsWith(CLIENT_PRIVATE_PREFIX)
 }
 
+// El enlace de «Conectar cuentas» lleva un código privado: no debe llegar a la analítica
+const CONNECT_PATH = /^\/(?:es|en)\/conectar\//
+
 export function isPrivateSurface(host: string | null, pathname: string): boolean {
   const kind = hostKind(host)
-  return kind === 'admin' || kind === 'knox' || isPanelPath(pathname) || isContractSigningPath(pathname)
+  return kind === 'admin' || kind === 'knox' || isPanelPath(pathname) || isContractSigningPath(pathname) || CONNECT_PATH.test(pathname)
 }
 
 // La misma regla como expresión JS para scripts inline (lee `location` del navegador)
@@ -93,4 +96,5 @@ export const PRIVATE_SURFACE_JS =
   `(${JSON.stringify(PRIVATE_HOSTS)}.indexOf(location.hostname.toLowerCase())>=0` +
   `||${JSON.stringify(PANEL_EXACT)}.indexOf(location.pathname)>=0` +
   `||${JSON.stringify(PANEL_PREFIXES)}.some(function(p){return location.pathname===p||location.pathname.indexOf(p+'/')===0})` +
-  `||location.pathname.indexOf(${JSON.stringify(CLIENT_PRIVATE_PREFIX)})===0)`
+  `||location.pathname.indexOf(${JSON.stringify(CLIENT_PRIVATE_PREFIX)})===0` +
+  `||${CONNECT_PATH}.test(location.pathname))`
