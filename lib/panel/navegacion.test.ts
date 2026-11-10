@@ -63,3 +63,12 @@ test('abajo van Ayuda y Ajustes (Ayuda, que viene, solo para administradores)', 
   assert.deepEqual(NAV_PIE.map((i) => i.label), ['Ayuda', 'Ajustes'])
   assert.deepEqual(piePara(SOLO_PLAN).map((i) => i.label), ['Ajustes'])
 })
+
+test('«Ideas» está en Marketing, después del Calendario, y solo la ve el administrador', () => {
+  const marketing = NAV.find((e) => esGrupo(e) && e.id === 'marketing')
+  assert.ok(marketing && esGrupo(marketing))
+  assert.deepEqual(marketing.items.slice(0, 2).map((i) => i.href), ['/calendario', '/ideas'])
+  assert.equal(tituloDe('/ideas'), 'Ideas')
+  assert.equal(grupoActivo('/ideas'), 'marketing')
+  assert.equal(menuPara(SOLO_PLAN).some((e) => esGrupo(e) && e.items.some((i) => i.href === '/ideas')), false)
+})
