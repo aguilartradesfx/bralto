@@ -1,0 +1,39 @@
+/* ==========================================================================
+   «Conectar cuentas»: el texto usa el de las páginas legales (legal.css); aquí van el aviso, el botón
+   y la letra pequeña, con los tokens de .hm.
+   ========================================================================== */
+
+.lg-doc > .cx-aviso {
+  padding: 14px 18px;
+  border-radius: var(--r-md);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  border: 1px solid currentColor;
+}
+
+.lg-doc > .cx-aviso--bien { border-color: rgba(46, 160, 67, .55); }
+.lg-doc > .cx-aviso--mal { border-color: rgba(214, 69, 65, .55); }
+
+.cx-accion {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.lg-doc .cx-ayuda,
+.lg-doc > .cx-legal {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.lg-doc > .cx-legal { margin-top: 28px; }
+
+
+.cx-legal a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

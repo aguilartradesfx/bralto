@@ -103,6 +103,9 @@ const SURFACES: [host: string, pathname: string, isPrivate: boolean][] = [
   ['www.bralto.io', '/es/precios', false],
   ['www.bralto.io', '/propuestas/abc123', false],
   ['www.bralto.io', '/contacto', false],
+  ['www.bralto.io', '/es/conectar/abc123', true],
+  ['www.bralto.io', '/en/conectar/abc123', true],
+  ['www.bralto.io', '/es/conectarse', false],
   ['localhost', '/es', false],
 ]
 
