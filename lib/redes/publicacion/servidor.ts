@@ -1,6 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import { avisoCortada, avisoError } from './aviso'
 import { parametrosReel, probarFila, publicarFila, type Efectos } from './publicar'
+import { cuerpoComentaTikTok, cuerpoTikTok, type EfectosTikTok } from './tiktok'
 import { MAX_INTENTOS, type Publicacion } from './tipos'
 import { cuerpoAutomatizacion, leerPostFacebook, type RespuestaPost } from './zernio'
 
@@ -63,6 +64,29 @@ async function zernio<T>(ruta: string, cuerpo: unknown, clave: string): Promise<
   // 207: el post se creó pero publicar falló o quedó a medias; quien llama revisa el estado (leerPostFacebook)
   if (!res.ok && res.status !== 207) throw new Error(`Zernio ${ruta}: HTTP ${res.status} ${JSON.stringify(j).slice(0, 300)}`)
   return j as T
+}
+
+// TikTok por Zernio. Sin ZERNIO_TIKTOK_ACCOUNT_ID no se manda nada a TikTok (así se apaga)
+export function efectosTikTok(): EfectosTikTok | null {
+  const cuenta = process.env.ZERNIO_TIKTOK_ACCOUNT_ID
+  if (!cuenta) return null
+  return {
+    async programar(p, cuando) {
+      // La clave de idempotencia es por pieza: si la corrida se corta, la siguiente no la programa dos veces
+      const r = await zernio<RespuestaPost & { _id?: string }>('/posts', cuerpoTikTok(p, cuenta, cuando), `tt-${p.id}`)
+      const id = r.post?._id ?? r._id
+      if (!id) throw new Error('Zernio no devolvió el id del post de TikTok')
+      return id
+    },
+    async comenta(zernioId, p) {
+      if (!p.comenta) throw new Error('la publicación no tiene «Comenta»')
+      const cuerpo = cuerpoComentaTikTok({ cuenta: { profileId: env('ZERNIO_PROFILE_ID'), accountId: cuenta }, postId: zernioId, titulo: p.titulo, comenta: p.comenta })
+      const r = await zernio<{ automation?: { id?: string }; id?: string }>('/comment-automations', cuerpo, `comenta-tt-${zernioId}`)
+      const id = r.automation?.id ?? r.id
+      if (!id) throw new Error('Zernio no devolvió el id de la automatización')
+      return id
+    },
+  }
 }
 
 async function estadoContenedor(id: string) {
@@ -170,6 +194,7 @@ export function efectosReales(dueño?: { intentos: number }): Efectos {
 
     dormir: (ms) => new Promise((ok) => setTimeout(ok, ms)),
     ahora: () => Date.now(),
+    tiktok: efectosTikTok(),
   }
 }
 

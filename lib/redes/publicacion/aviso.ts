@@ -8,6 +8,14 @@ type Datos = Pick<Publicacion, 'titulo' | 'colaborador' | 'facebook' | 'historia
 const hora = (iso: string) =>
   new Date(iso).toLocaleTimeString('es-CR', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Costa_Rica' }).replace(/\s/g, ' ')
 
+// También lo usa el aviso de la ganadora de las pruebas
+export function estadoTikTok(t: NonNullable<Resultado['tiktok']>, conComenta: boolean): string {
+  if (!t.zernioId) return `no salió (${t.error ?? 'sin motivo'})`
+  let estado = t.programado ? `sale a las ${hora(t.programado)}` : 'programado'
+  if (conComenta) estado += t.automatizacion ? ' · respuestas activas' : ` · SIN respuestas${t.errorComenta ? ` (${t.errorComenta})` : ''}`
+  return estado
+}
+
 export function avisoListo(p: Datos, r: Resultado): string {
   const ig = r.instagram
   const lineas = [`✅ Ya salió ${p.titulo}${ig ? ` (${hora(ig.en)})` : ''}`, `Instagram: ${ig?.permalink ?? ig?.id ?? 'sin datos'}`]
@@ -27,6 +35,7 @@ export function avisoListo(p: Datos, r: Resultado): string {
     }
     lineas.push(`Facebook: ${estado}`)
   }
+  if (r.tiktok) lineas.push(`TikTok: ${estadoTikTok(r.tiktok, Boolean(p.comenta))}`)
   if (p.colaborador) lineas.push(`Collab con @${p.colaborador}: ${r.collab ?? 'sin datos'}`)
   if (p.historias.length) {
     const bien = (r.historias ?? []).filter((h) => h && !h.startsWith('error')).length

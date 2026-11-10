@@ -91,6 +91,7 @@ function efectosPruebas(dueño: { estado: EstadoPrueba; intentos: number }): Efe
     existe: sigueEnInstagram,
     publicarFacebook: (p) => pub.publicarFacebook(p),
     crearComentaFb: (postId, p) => pub.crearComenta('fb', postId, p),
+    tiktok: pub.tiktok,
     async guardar(grupo, cambios: CambiosPrueba) {
       const { data, error } = await createServiceClient()
         .from(TABLA)

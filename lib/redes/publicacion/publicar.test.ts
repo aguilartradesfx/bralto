@@ -74,9 +74,24 @@ function falsos(over: Partial<Efectos> = {}, estados: Record<string, string[]> =
     },
     async dormir() {},
     ahora: () => Date.parse('2026-10-30T16:00:05.000Z'),
+    tiktok: null,
     ...over,
   }
   return { e, llamadas, guardados, avisos }
+}
+
+// TikTok falso que anota en las mismas llamadas
+function tiktokFalso(llamadas: string[]): NonNullable<Efectos['tiktok']> {
+  return {
+    async programar(_p, cuando) {
+      llamadas.push(`tiktok:${cuando}`)
+      return 'zp-1'
+    },
+    async comenta(id) {
+      llamadas.push(`comenta:tt:${id}`)
+      return 'auto-tt'
+    },
+  }
 }
 
 const ultimo = (g: Cambios[]) => g[g.length - 1]
@@ -293,4 +308,58 @@ test('parametrosReel normal: igual que siempre, sin trial_params', () => {
   assert.equal(p.collaborators, '["bralto.io"]')
   assert.equal(p.cover_url, 'https://x/p.jpg')
   assert.equal(p.media_type, 'REELS')
+})
+
+test('con TikTok configurado, la pieza también se programa en TikTok con su «Comenta», después de Facebook', async () => {
+  const llamadas: string[] = []
+  const { e, guardados, avisos } = falsos()
+  e.tiktok = tiktokFalso(llamadas)
+  const fb = e.publicarFacebook
+  e.publicarFacebook = async (p) => (llamadas.push('facebook'), fb(p))
+  e.aceptarCollab = async (id) => void llamadas.push(`collab:${id}`)
+  await publicarFila(fila(), e)
+  assert.deepEqual(llamadas, ['facebook', 'tiktok:2026-10-30T16:03:05.000Z', 'comenta:tt:zp-1', 'collab:media-1'])
+  const fin = ultimo(guardados)
+  assert.deepEqual(fin.resultado?.tiktok, { zernioId: 'zp-1', programado: '2026-10-30T16:03:05.000Z', automatizacion: 'auto-tt' })
+  assert.match(avisos[0], /TikTok: sale a las 10:03 a\. m\. · respuestas activas/)
+})
+
+test('una versión de prueba no va a TikTok: va solo la ganadora', async () => {
+  const llamadas: string[] = []
+  const { e, guardados } = falsos({}, { 'cont-1': ['FINISHED'] })
+  e.tiktok = tiktokFalso(llamadas)
+  await publicarFila(versionDePrueba({ estado: 'publicando', comenta: null }), e)
+  assert.deepEqual(llamadas, [])
+  assert.equal(ultimo(guardados).resultado?.tiktok, undefined)
+})
+
+test('si TikTok falla, la publicación sale igual y el aviso lo dice', async () => {
+  const { e, guardados, avisos } = falsos()
+  e.tiktok = {
+    async programar() {
+      throw new Error('Zernio /posts: HTTP 400')
+    },
+    async comenta() {
+      return 'x'
+    },
+  }
+  const r = await publicarFila(fila(), e)
+  assert.match(r, /^publicado/)
+  assert.equal(ultimo(guardados).estado, 'publicado')
+  assert.match(avisos[0], /TikTok: no salió \(Zernio \/posts: HTTP 400\)/)
+})
+
+test('un reintento no vuelve a programar en TikTok lo que ya quedó programado', async () => {
+  const llamadas: string[] = []
+  const { e } = falsos()
+  e.tiktok = tiktokFalso(llamadas)
+  const hecho: Resultado = {
+    contenedor: { id: 'cont-1', creado: 0 },
+    instagram: { id: 'media-1', permalink: 'p', en: '2026-10-30T16:00:05.000Z' },
+    comentaIg: { id: 'auto-ig' },
+    facebook: { postId: 'fb-1', url: 'u', automatizacion: 'auto-fb' },
+    tiktok: { zernioId: 'zp-1', programado: 'x', automatizacion: 'auto-tt' },
+  }
+  await publicarFila(fila({ resultado: hecho }), e)
+  assert.deepEqual(llamadas, [])
 })

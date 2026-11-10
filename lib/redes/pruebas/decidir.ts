@@ -1,11 +1,13 @@
 import { horaCR } from '../../calendario/fechas.ts'
 import { hora12 } from '../asistente.ts'
+import { estadoTikTok } from '../publicacion/aviso.ts'
+import { mandarATikTok, type EfectosTikTok } from '../publicacion/tiktok.ts'
 import type { Publicacion } from '../publicacion/tipos.ts'
 import type { Metricas, Prueba, ResultadoPrueba } from './tipos.ts'
 
 // La decisión de cada prueba (lógica pura). Las 5 versiones de un reel corren 72 h con gente que no sigue la cuenta;
 // después gana la que más gente se quedó viendo pasados los primeros 3 segundos, las demás se borran, la ganadora
-// sale en Facebook y Alejandro recibe el aviso para tocar «Compartir con seguidores» (Meta no deja hacerlo por la
+// sale en Facebook y en TikTok, y Alejandro recibe el aviso para tocar «Compartir con seguidores» (Meta no deja hacerlo por la
 // API). Cada paso queda en `resultado` apenas termina: si una corrida se corta, la siguiente sigue sin repetir.
 // Las conexiones reales están en servidor.ts; acá todo llega por `EfectosPrueba`, para probarlo.
 
@@ -24,6 +26,7 @@ export type EfectosPrueba = {
   guardar(grupo: string, cambios: CambiosPrueba): Promise<void>
   avisar(texto: string): Promise<void>
   ahora(): number
+  tiktok: EfectosTikTok | null // null: TikTok no está configurado
 }
 
 const mensaje = (err: unknown) => (err instanceof Error ? err.message : String(err)).slice(0, 300)
@@ -92,6 +95,7 @@ export function avisoGanadora(p: Prueba, versiones: Publicacion[], r: ResultadoP
   const fallidas = Object.values(r.borradas ?? {}).filter((b) => b !== 'ok').length
   if (fallidas) partes.push('', `⚠️ No pude borrar ${fallidas} ${fallidas === 1 ? 'versión' : 'versiones'}: bórrala${fallidas === 1 ? '' : 's'} tú en Instagram.`)
   if (r.facebook?.error) partes.push('', `⚠️ En Facebook no salió: ${r.facebook.error}`)
+  if (g && r.tiktok) partes.push('', `TikTok: ${estadoTikTok(r.tiktok, Boolean(g.comenta))}`)
   return partes.join('\n')
 }
 
@@ -184,9 +188,17 @@ export async function avanzarGrupo(p: Prueba, versiones: Publicacion[], e: Efect
       }
       await e.guardar(p.grupo, { resultado: r })
     }
+
+    // 5. TikTok: solo la ganadora, con su «Comenta»
+    if (e.tiktok && !(r.tiktok?.zernioId && (r.tiktok.automatizacion || !ganadora.comenta))) {
+      await mandarATikTok(ganadora, r.tiktok, e.tiktok, ahora, async (t) => {
+        r.tiktok = t
+        await e.guardar(p.grupo, { resultado: r })
+      })
+    }
   }
 
-  // 5. El aviso, una sola vez
+  // 6. El aviso, una sola vez
   if (!r.aviso) {
     await e.avisar(avisoGanadora(p, versiones, r))
     r.aviso = new Date(ahora).toISOString()

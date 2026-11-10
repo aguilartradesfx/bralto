@@ -106,10 +106,59 @@ function falsos(ahora: number, datos: Record<string, Metricas | 'sin_datos' | 'n
       avisos.push(texto)
     },
     ahora: () => ahora,
+    tiktok: null,
     ...over,
   }
   return { e, llamadas, guardados, avisos, ultimo: () => guardados.at(-1) }
 }
+
+// TikTok falso que anota en las llamadas del grupo
+function conTikTok(f: ReturnType<typeof falsos>) {
+  f.e.tiktok = {
+    async programar(p, cuando) {
+      f.llamadas.push(`tiktok:${p.id}:${cuando}`)
+      return 'zp-1'
+    },
+    async comenta(id, p) {
+      f.llamadas.push(`comentaTt:${id}:${p.id}`)
+      return 'auto-tt'
+    },
+  }
+  return f
+}
+
+test('decide: la ganadora también sale en TikTok, con su «Comenta», y el aviso lo dice', async () => {
+  const datos = todas({ 1: medida(1000, 70), 2: medida(1200, 40), 3: medida(800, 50), 4: medida(500, 20), 5: medida(300, 90) })
+  const f = conTikTok(falsos(DECIDE, datos))
+  await avanzarGrupo(prueba(), cinco(), f.e)
+  const tres = new Date(DECIDE + 3 * 60_000).toISOString()
+  assert.deepEqual(
+    f.llamadas.filter((l) => l.startsWith('tiktok') || l.startsWith('comentaTt')),
+    [`tiktok:fila-2:${tres}`, 'comentaTt:zp-1:fila-2'],
+  )
+  assert.deepEqual(f.ultimo()?.resultado?.tiktok, { zernioId: 'zp-1', programado: tres, automatizacion: 'auto-tt' })
+  assert.match(f.avisos[0], /TikTok: sale a las .* · respuestas activas/)
+})
+
+test('decide sin ganadora: nada va a TikTok', async () => {
+  const f = conTikTok(falsos(DECIDE, todas({ 1: medida(0, 1), 2: medida(0, 1), 3: medida(0, 1), 4: medida(0, 1), 5: medida(0, 1) })))
+  await avanzarGrupo(prueba(), cinco(), f.e)
+  assert.deepEqual(f.llamadas.filter((l) => l.startsWith('tiktok')), [])
+})
+
+test('segunda corrida con TikTok ya programado no lo repite', async () => {
+  const hecho: ResultadoPrueba = {
+    metricas: { 'fila-1': medida(1, 1), 'fila-2': medida(9, 1), 'fila-3': medida(1, 1), 'fila-4': medida(1, 1), 'fila-5': medida(1, 1) },
+    ganadora: 'fila-2',
+    borradas: { 'fila-1': 'ok', 'fila-3': 'ok', 'fila-4': 'ok', 'fila-5': 'ok' },
+    facebook: { postId: 'pagina_99', url: 'u', automatizacion: 'auto-fb' },
+    tiktok: { zernioId: 'zp-1', programado: 'x', automatizacion: 'auto-tt' },
+    aviso: '2026-11-09T05:00:00.000Z',
+  }
+  const f = conTikTok(falsos(DECIDE + HORA, {}))
+  await avanzarGrupo(prueba({ estado: 'decidiendo', resultado: hecho }), cinco(), f.e)
+  assert.deepEqual(f.llamadas, [])
+})
 
 const todas = (m: Record<number, Metricas | 'sin_datos' | 'no_existe'>) =>
   Object.fromEntries(Object.entries(m).map(([n, v]) => [`media-${n}`, v]))
