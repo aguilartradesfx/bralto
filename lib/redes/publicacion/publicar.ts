@@ -1,10 +1,12 @@
 import { avisoError, avisoListo } from './aviso.ts'
+import { mandarATikTok, type EfectosTikTok } from './tiktok.ts'
 import { MAX_INTENTOS, type Estado, type Publicacion, type Resultado } from './tipos.ts'
 
 // Publica una fila de redes_publicaciones, paso por paso:
 //   1. Instagram: el contenedor (carrusel o reel, con collab y texto), esperar a que se procese, publicar.
-//   2. El «Comenta» de Instagram (Zernio).  3. Facebook (Zernio) y su «Comenta».
-//   4. Aceptar la collab desde la otra cuenta.  5. Las historias, en orden.  6. El aviso por Telegram.
+//   2. El «Comenta» de Instagram (Zernio).  3. Facebook (Zernio) y su «Comenta».  4. TikTok (Zernio, salvo
+//   las versiones de prueba) y su «Comenta».  5. Aceptar la collab desde la otra cuenta.  6. Las historias,
+//   en orden.  7. El aviso por Telegram.
 // Cada paso queda en `resultado` apenas termina: si una corrida se corta, la siguiente sigue donde quedó
 // sin repetir lo hecho. El contenedor se guarda antes de publicarlo para no publicar dos veces. Solo el paso 1
 // puede tumbar la publicación; lo que falla después queda anotado y sale en el aviso.
@@ -27,6 +29,7 @@ export type Efectos = {
   avisar(texto: string): Promise<void>
   dormir(ms: number): Promise<void>
   ahora(): number
+  tiktok: EfectosTikTok | null // null: TikTok no está configurado y no se manda nada
 }
 
 const ESPERA_MS = 5000
@@ -155,6 +158,14 @@ export async function publicarFila(p: Publicacion, e: Efectos): Promise<string> 
       r.facebook.errorComenta = mensaje(err)
     }
     await e.guardar(p.id, { resultado: r })
+  }
+
+  // Una versión de prueba no va a TikTok: va solo la ganadora, cuando se decide (lib/redes/pruebas)
+  if (e.tiktok && !p.prueba && !(r.tiktok?.zernioId && (r.tiktok.automatizacion || !p.comenta))) {
+    await mandarATikTok(p, r.tiktok, e.tiktok, e.ahora(), async (t) => {
+      r.tiktok = t
+      await e.guardar(p.id, { resultado: r })
+    })
   }
 
   if (p.colaborador && r.collab !== 'aceptada') {

@@ -36,6 +36,8 @@ export type Resultado = {
     errorComenta?: string
     error?: string
   }
+  // TikTok, por Zernio (tiktok.ts): el post programado y su «Comenta»
+  tiktok?: { zernioId: string | null; programado?: string; automatizacion?: string; errorComenta?: string; error?: string }
   collab?: string // 'aceptada' o 'pendiente: <motivo>'
   historias?: string[] // id de cada historia, o 'error: <motivo>'
 }

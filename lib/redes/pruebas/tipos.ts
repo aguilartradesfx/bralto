@@ -1,3 +1,5 @@
+import type { ResultadoTikTok } from '../publicacion/tiktok.ts'
+
 // Una fila de redes_pruebas (supabase/migrations/20261106_011_redes_pruebas.sql): el grupo de las 5 versiones de
 // prueba de un reel y lo que se va haciendo con él hasta elegir la ganadora.
 
@@ -21,6 +23,7 @@ export type ResultadoPrueba = {
   ganadora?: string | null
   borradas?: Record<string, 'ok' | string> // 'ok' o el error
   facebook?: { postId: string | null; url: string | null; automatizacion?: string; error?: string }
+  tiktok?: ResultadoTikTok // solo la ganadora
   aviso?: string // cuándo salió el aviso por Telegram
 }
 
