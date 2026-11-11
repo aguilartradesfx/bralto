@@ -193,7 +193,7 @@ function textoPrueba(p: NonNullable<Vista['prueba']>): string {
   if (p.estado === 'decidiendo') return `${cual} · decidiendo ahora`
   if (p.estado === 'error') return `${cual} · no se pudo decidir`
   if (p.estado === 'cancelada') return `${cual} · prueba cancelada`
-  return `${cual} · corre 3 días desde que salen las 5`
+  return `${cual} · corre 3 días desde que salen todas`
 }
 
 function Ficha({ vista }: { vista: Vista }) {
