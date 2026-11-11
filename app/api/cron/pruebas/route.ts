@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { correrPruebas } from '@/lib/redes/pruebas/servidor'
 
-// Los reels de prueba (Vercel Cron cada hora): cuando las 5 versiones de un reel cumplen 72 h, elige la ganadora,
+// Los reels de prueba (Vercel Cron cada hora): cuando todas las versiones de un reel (5 o 10) cumplen 72 h, elige la ganadora,
 // borra las demás, saca la ganadora en Facebook y avisa por Telegram para compartirla con los seguidores.
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'

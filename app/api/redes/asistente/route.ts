@@ -56,10 +56,10 @@ export async function POST(request: Request) {
     const fila = await leerFila(id)
     if (!fila) return responder({ ok: false, error: 'No existe esa publicación' }, 404)
 
-    // Un reel de prueba son 5 versiones: se aprueban o se frenan juntas, y no se mueven de a una
+    // Un reel de prueba son varias versiones (5 o 10): se aprueban o se frenan juntas, y no se mueven de a una
     if (fila.grupo) {
       if (pedido.accion === 'cambiar_hora' || pedido.accion === 'sacar_ya') {
-        return responder({ ok: false, error: 'Es una prueba de 5 versiones: solo se puede aprobar o frenar completa.', publicacion: aItem(fila) }, 409)
+        return responder({ ok: false, error: 'Es una prueba con varias versiones: solo se puede aprobar o frenar completa.', publicacion: aItem(fila) }, 409)
       }
       const filas = await leerGrupo(fila.grupo)
       const grupo = armarGrupo(pedido.accion, filas, ahora)

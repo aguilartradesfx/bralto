@@ -5,7 +5,7 @@ import { mandarATikTok, type EfectosTikTok } from '../publicacion/tiktok.ts'
 import type { Publicacion } from '../publicacion/tipos.ts'
 import type { Metricas, Prueba, ResultadoPrueba } from './tipos.ts'
 
-// La decisión de cada prueba (lógica pura). Las 5 versiones de un reel corren 72 h con gente que no sigue la cuenta;
+// La decisión de cada prueba (lógica pura). Las versiones de un reel (5 o 10) corren 72 h con gente que no sigue la cuenta;
 // después gana la que más gente se quedó viendo pasados los primeros 3 segundos, las demás se borran, la ganadora
 // sale en Facebook y en TikTok, y Alejandro recibe el aviso para tocar «Compartir con seguidores» (Meta no deja hacerlo por la
 // API). Cada paso queda en `resultado` apenas termina: si una corrida se corta, la siguiente sigue sin repetir.
