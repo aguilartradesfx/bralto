@@ -7,6 +7,7 @@ test('la clave sale de la carpeta del video, con la versión si es de prueba', (
   const base = 'https://x.supabase.co/storage/v1/object/public/videos/redes'
   assert.equal(claveDe(`${base}/2026-11-06/reel-lo-legal/reel.mp4`, null), '2026-11-06-reel-lo-legal')
   assert.equal(claveDe(`${base}/2026-11-10/reel-claude-crea-archivos/versiones/3/reel.mp4`, 3), '2026-11-10-reel-claude-crea-archivos-v3')
+  assert.equal(claveDe(`${base}/camara-2026-11-10/c001-programas-gratis/versiones/2/reel.mp4`, 2), 'camara-2026-11-10-c001-programas-gratis-v2')
   assert.equal(claveDe('https://otro.com/video.mp4', null), null)
 })
 

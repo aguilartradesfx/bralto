@@ -8,9 +8,10 @@ export const MIN_VISTAS = 80
 export const MIN_REELS = 6
 
 // 2026-11-06-reel-lo-legal (y -v3 si es una versión de prueba), a partir de la dirección del video en Supabase:
-// …/videos/redes/2026-11-06/reel-lo-legal/reel.mp4 o …/redes/2026-11-10/reel-x/versiones/3/reel.mp4
+// …/videos/redes/2026-11-06/reel-lo-legal/reel.mp4, …/redes/2026-11-10/reel-x/versiones/3/reel.mp4 o, en sus
+// videos a cámara, …/redes/camara-2026-11-10/c001-x/versiones/2/reel.mp4
 export function claveDe(videoUrl: string, version: number | null): string | null {
-  const m = videoUrl.match(/\/redes\/(\d{4}-\d{2}-\d{2})\/([^/]+)\//)
+  const m = videoUrl.match(/\/redes\/((?:[a-z]+-)?\d{4}-\d{2}-\d{2})\/([^/]+)\//)
   if (!m) return null
   return `${m[1]}-${m[2]}${version ? `-v${version}` : ''}`
 }
