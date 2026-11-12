@@ -67,8 +67,10 @@ test('abajo van Ayuda y Ajustes (Ayuda, que viene, solo para administradores)', 
 test('«Ideas» está en Marketing, después del Calendario, y solo la ve el administrador', () => {
   const marketing = NAV.find((e) => esGrupo(e) && e.id === 'marketing')
   assert.ok(marketing && esGrupo(marketing))
-  assert.deepEqual(marketing.items.slice(0, 2).map((i) => i.href), ['/calendario', '/ideas'])
+  assert.deepEqual(marketing.items.slice(0, 3).map((i) => i.href), ['/calendario', '/ideas', '/analisis'])
   assert.equal(tituloDe('/ideas'), 'Ideas')
   assert.equal(grupoActivo('/ideas'), 'marketing')
   assert.equal(menuPara(SOLO_PLAN).some((e) => esGrupo(e) && e.items.some((i) => i.href === '/ideas')), false)
+  assert.equal(tituloDe('/analisis'), 'Análisis de reels')
+  assert.equal(menuPara(SOLO_PLAN).some((e) => esGrupo(e) && e.items.some((i) => i.href === '/analisis')), false)
 })

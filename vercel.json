@@ -31,6 +31,10 @@
     {
       "path": "/api/cron/ideas",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/analisis",
+      "schedule": "40 */6 * * *"
     }
   ]
 }
