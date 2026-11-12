@@ -95,8 +95,12 @@ export function spearman(xs: number[], ys: number[]): number | null {
   return num / Math.sqrt(da * db)
 }
 
-export type NivelVeredicto = 'pocos' | 'atina' | 'algo' | 'no'
+export type NivelVeredicto = 'pocos' | 'atina' | 'no_se_nota' | 'no'
 export type Veredicto = { n: number; rho: number | null; nivel: NivelVeredicto; titulo: string; texto: string }
+
+// Desde cuánto una correlación de Spearman con n reels ya no parece casualidad (aprox. al 95%: 1.96 / √(n − 1)).
+// Con 12 reels hace falta 0.59; con 50, 0.28
+export const umbralCasualidad = (n: number) => 1.96 / Math.sqrt(n - 1)
 
 // ¿Cuando Higgsfield le da más puntaje al gancho, la gente se lo salta menos? Solo cuenta reels con predicción,
 // con el % de salto y con al menos MIN_VISTAS vistas. Las palabras siguen la regla 5/50: nada de cifras enredadas
@@ -117,10 +121,17 @@ export function veredicto(filas: Pick<AnalisisFila, 'prediccion' | 'real'>[]): V
     pares.map((f) => f.real!.salto!),
   )
   if (rho === null) return { n, rho, nivel: 'no', titulo: 'No se puede comparar', texto: 'Todos los reels tienen el mismo puntaje o el mismo salto.' }
-  // El salto baja cuando el gancho sube: si le atina, la correlación es negativa
-  if (rho <= -0.5) return { n, rho, nivel: 'atina', titulo: 'Sí le atina', texto: `En ${n} reels, cuando le da más puntaje al gancho, la gente se lo salta menos.` }
-  if (rho <= -0.25) return { n, rho, nivel: 'algo', titulo: 'Le atina un poco', texto: `En ${n} reels va más o menos en la dirección correcta, pero se equivoca seguido.` }
-  return { n, rho, nivel: 'no', titulo: 'Todavía no le atina', texto: `En ${n} reels, su puntaje del gancho no dice quién se queda y quién se va.` }
+  // El salto baja cuando el gancho sube: si le atina, la correlación es negativa y más fuerte que la casualidad
+  const umbral = umbralCasualidad(n)
+  if (rho <= -umbral) return { n, rho, nivel: 'atina', titulo: 'Sí le atina', texto: `En ${n} reels, cuando le da más puntaje al gancho, la gente se lo salta menos.` }
+  if (rho >= umbral) return { n, rho, nivel: 'no', titulo: 'No le atina', texto: `En ${n} reels pasa al revés: a los que les da más puntaje son los que la gente más se salta.` }
+  return {
+    n,
+    rho,
+    nivel: 'no_se_nota',
+    titulo: 'Todavía no se nota',
+    texto: `En ${n} reels, su puntaje del gancho no dice con claridad quién se queda y quién se va: lo que se ve puede ser casualidad. Cada reel nuevo suma.`,
+  }
 }
 
 export type Filtro = 'todos' | TipoAnalisis
