@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { claveDe, leerFiltro, ordenar, pctVisto, puestos, realDeInsights, realDePrueba, spearman, tipoDe, veredicto, MIN_REELS } from './calculos.ts'
+import { claveDe, leerFiltro, ordenar, pctVisto, puestos, realDeInsights, realDePrueba, spearman, tipoDe, umbralCasualidad, veredicto, MIN_REELS } from './calculos.ts'
 import type { Prediccion, Real } from './tipos.ts'
 
 test('la clave sale de la carpeta del video, con la versión si es de prueba', () => {
@@ -71,6 +71,15 @@ test('veredicto: más gancho y menos salto es que le atina; al revés, que no', 
   assert.equal(veredicto(atina).nivel, 'atina')
   const no = Array.from({ length: 8 }, (_, i) => ({ prediccion: pred(20 + i * 8), real: real(50 + i * 4) }))
   assert.equal(veredicto(no).nivel, 'no')
+})
+
+test('veredicto: una relación floja con pocos reels puede ser casualidad', () => {
+  // Los 12 reels del 11/11: gancho de 28 a 32 contra el salto real (rho ≈ −0.37, el umbral con 12 es 0.59)
+  const datos: [number, number][] = [[32, 57.4], [32, 60.7], [30, 61.2], [30, 69.2], [32, 69.6], [31, 73.7], [28, 75.7], [28, 76.1], [30, 77.6], [31, 79.1], [30, 82.6], [31, 87.7]]
+  const v = veredicto(datos.map(([g, s]) => ({ prediccion: pred(g), real: real(s) })))
+  assert.equal(v.nivel, 'no_se_nota')
+  assert.match(v.texto, /casualidad/)
+  assert.ok(Math.abs(umbralCasualidad(12) - 0.591) < 0.01)
 })
 
 test('filtro desconocido es «todos»', () => {
