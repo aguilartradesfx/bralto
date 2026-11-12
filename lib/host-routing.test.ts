@@ -15,13 +15,13 @@ test('hostKind reconoce hosts con mayúsculas y puerto', () => {
 
 test('isPanelPath: secciones del panel y login', () => {
   for (const p of ['/admin', '/contratos', '/contratos/nuevo', '/contratos/abc/editar', '/clientes',
-    '/solicitudes', '/solicitudes/nueva', '/usuarios', '/login', '/propuestas', '/plan-q4', '/calendario', '/calendario/abc', '/crm', '/crm/pipeline', '/crm/abc', '/knox', '/ajustes', '/pronto/finanzas', '/ideas']) {
+    '/solicitudes', '/solicitudes/nueva', '/usuarios', '/login', '/propuestas', '/plan-q4', '/calendario', '/calendario/abc', '/crm', '/crm/pipeline', '/crm/abc', '/knox', '/ajustes', '/pronto/finanzas', '/ideas', '/analisis']) {
     assert.equal(isPanelPath(p), true, p)
   }
 })
 
 test('isPanelPath: rutas públicas y falsos prefijos', () => {
-  for (const p of ['/', '/es', '/es/precios', '/c/abc', '/propuestas/abc123', '/contratosx', '/loginx', '/admin-foo', '/plan-q4x', '/calendariox', '/crmx', '/knoxx', '/es/knox', '/ajustesx', '/prontox', '/ideasx']) {
+  for (const p of ['/', '/es', '/es/precios', '/c/abc', '/propuestas/abc123', '/contratosx', '/loginx', '/admin-foo', '/plan-q4x', '/calendariox', '/crmx', '/knoxx', '/es/knox', '/ajustesx', '/prontox', '/ideasx', '/analisisx']) {
     assert.equal(isPanelPath(p), false, p)
   }
 })

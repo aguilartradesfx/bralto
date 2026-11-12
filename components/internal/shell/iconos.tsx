@@ -1,4 +1,5 @@
 import {
+  Activity,
   BadgeDollarSign,
   BarChart3,
   BookOpen,
@@ -60,6 +61,7 @@ export const ICONOS: Record<IconoNav, LucideIcon> = {
   pagos: Wallet,
   marketing: Megaphone,
   ideas: Lightbulb,
+  analisis: Activity,
   calendario: CalendarDays,
   campanas: Target,
   secuencias: Mail,
