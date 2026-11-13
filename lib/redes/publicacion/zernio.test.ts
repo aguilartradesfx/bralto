@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cuerpoAutomatizacion, leerPostFacebook } from './zernio.ts'
+import { cuerpoAutomatizacion, leerPostFacebook, MAX_RESPUESTAS, RESPUESTAS_GENERALES, respuestasPublicas } from './zernio.ts'
 import type { Comenta } from './tipos.ts'
 
 const comenta: Comenta = {
@@ -24,8 +24,33 @@ test('en Instagram pide seguir antes de mandar la guía, con el enlace marcado c
   assert.deepEqual(c.keywords, ['jarvis'])
   assert.equal(c.typoTolerance, true)
   assert.equal(c.commentReply, '¡Listo! Revisa tus mensajes 📩')
-  assert.deepEqual(c.commentReplyVariations, ['Te escribí por mensaje 🙌'])
+  assert.equal(c.commentReplyVariations[0], 'Te escribí por mensaje 🙌')
   assert.equal(c.clickTag, 'clic-jarvis')
+})
+
+test('responde en público a todos apenas comentan, no solo a quien ya recibió la guía', () => {
+  const c = cuerpoAutomatizacion({ cuenta, platformPostId: 'p', titulo: 'J', comenta, origen: 'ig' })
+  assert.equal(c.publicReplyPolicy, 'always')
+})
+
+test('las respuestas del reel van primero y las generales completan 6 sin repetir', () => {
+  const igual = <T,>(l: T[]) => l
+  const c = cuerpoAutomatizacion({ cuenta, platformPostId: 'p', titulo: 'J', comenta, origen: 'ig', mezclar: igual })
+  const todas = [c.commentReply, ...c.commentReplyVariations]
+  assert.equal(todas.length, MAX_RESPUESTAS)
+  assert.equal(new Set(todas).size, MAX_RESPUESTAS)
+  // «¡Listo! Revisa tus mensajes 📩» ya venía en el reel: no se repite
+  assert.deepEqual(todas, ['¡Listo! Revisa tus mensajes 📩', 'Te escribí por mensaje 🙌', ...RESPUESTAS_GENERALES.slice(1, 5)])
+})
+
+test('si el reel ya trae 6 o más, Zernio recibe solo 6 (la principal y 5 variaciones)', () => {
+  const propias = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+  assert.deepEqual(respuestasPublicas(propias), ['a', 'b', 'c', 'd', 'e', 'f'])
+})
+
+test('las generales salen en distinto orden de un reel a otro', () => {
+  const ordenes = new Set(Array.from({ length: 20 }, () => respuestasPublicas([]).join('|')))
+  assert.ok(ordenes.size > 1)
 })
 
 test('en Facebook manda la guía directo: Meta no dice quién sigue una página', () => {

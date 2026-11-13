@@ -11,18 +11,53 @@ export function enlaceGuia(guia: string, origen: 'ig' | 'fb') {
   return `https://www.bralto.io/es/guias/${guia}?o=${origen}`
 }
 
+// Respuestas públicas que sirven en cualquier reel: completan las de cada uno hasta las 6 que deja Zernio
+// (la principal y 5 variaciones, que rota al azar). Como se responde en público a todos apenas comentan
+// (antes de que toquen el botón del saludo), dicen «te escribí», nunca «aquí está la guía».
+export const RESPUESTAS_GENERALES = [
+  '¡Listo! Revisa tus mensajes 📩',
+  'Te escribí por mensaje 🙌 Si no lo ves, revisa tus solicitudes.',
+  '¡Te acabo de escribir! Revisa tus mensajes 📩',
+  'Va por mensaje 🚀',
+  'Ya te escribí 🙌 Toca el botón y te llega.',
+  '¡Revisa tus mensajes! Ahí te espera 👇',
+  'Te mandé un DM 📩 Tócale al botón.',
+  '¡Te escribí! Toca «¡Sí, porfa!» y es tuya 🙌',
+]
+export const MAX_RESPUESTAS = 6
+
+// Las del reel primero; después las generales en desorden, sin repetir, hasta 6
+export function respuestasPublicas(propias: string[], mezclar: <T>(l: T[]) => T[] = barajar) {
+  const todas = [...propias]
+  for (const r of mezclar(RESPUESTAS_GENERALES)) {
+    if (todas.length >= MAX_RESPUESTAS) break
+    if (!todas.includes(r)) todas.push(r)
+  }
+  return todas.slice(0, MAX_RESPUESTAS)
+}
+
+function barajar<T>(l: T[]) {
+  const c = [...l]
+  for (let i = c.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[c[i], c[j]] = [c[j], c[i]]
+  }
+  return c
+}
+
 export function cuerpoAutomatizacion(o: {
   cuenta: CuentaZernio
   platformPostId: string
   titulo: string
   comenta: Comenta
   origen: 'ig' | 'fb'
+  mezclar?: <T>(l: T[]) => T[]
 }) {
   const { comenta: c } = o
   const enlace = enlaceGuia(c.guia, o.origen)
   const conEnlace = (t: string) => t.replaceAll('{enlace}', enlace)
   const botones = (c.botones ?? []).map((b) => ({ ...b, title: conEnlace(b.title), url: conEnlace(b.url) }))
-  const [respuesta, ...variaciones] = c.respuestas.map(conEnlace)
+  const [respuesta, ...variaciones] = respuestasPublicas(c.respuestas.map(conEnlace), o.mezclar)
   const s = c.seguir
   return {
     profileId: o.cuenta.profileId,
@@ -38,7 +73,9 @@ export function cuerpoAutomatizacion(o: {
     ...(botones.length ? { buttons: botones } : {}),
     commentReply: respuesta,
     commentReplyVariations: variaciones,
-    publicReplyPolicy: 'after_dm',
+    // 'always': responde en público a todos apenas comentan. Con 'after_dm' (hasta el 13/11) solo respondía a
+    // quien ya había tocado el botón del saludo y seguía la cuenta: en el reel viral de logos quedaron 19 de 26 sin respuesta
+    publicReplyPolicy: 'always',
     dmDelaySeconds: 20,
     commentReplyDelaySeconds: 40,
     actions: { likeComment: true },
