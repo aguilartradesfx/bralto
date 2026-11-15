@@ -162,6 +162,46 @@ Cada uno distinto: color de la tela (su «piel»), orejas (conejo, gato, oso o n
 
 Cada agente de la noche marca su propio `empieza`, `termina` o `falla` con el comando `marcar`, y la instrucción de la noche se lo pide.
 
+## Modo dormir (el switch)
+
+Lo pidió Alejandro el 15/11: «un switch donde cuando yo lo active la oficina por completo se vaya a dormir, se pause, y que cuando lo vuelva a activar retome exactamente donde quedó».
+
+**Qué hace**
+- En la Oficina hay un switch, **«A dormir» / «Despertar»**, solo para admin y con confirmación.
+- **Al dormirse:**
+  - ningún agente empieza trabajo nuevo;
+  - lo que está corriendo se detiene en un punto seguro;
+  - en la escena se bajan las luces y los Knox se duermen en su escritorio;
+  - un letrero dice «La oficina duerme desde las 9:14 p. m.» y «Lo próximo» queda «en pausa».
+- **Al despertar, retoma donde quedó:**
+  - lo que quedó a medias sigue sin rehacer lo hecho: la noche usa su ronda de «retoma»;
+  - las tareas a las que les tocaba correr mientras dormían corren una vez al despertar y en orden (el reporte de la mañana, el resumen del domingo…).
+- **Publicaciones:** lo que tocaba publicar mientras dormían no sale de golpe. Se corre hacia adelante el mismo tiempo que durmieron, respetando las reglas de siempre:
+  - nunca de noche;
+  - el primer post desde las 10:00;
+  - las pruebas, de 8:00 a 22:00.
+
+  La regla de «más de 3 h de atraso no sale» no se lleva nada por haber dormido.
+
+**Lo que sigue despierto (decisión mía, se puede cambiar)**
+- El «Comenta» de Zernio sigue mandándole la guía a quien comenta, para que nadie se quede sin la suya. En la Oficina, Echo sale despierto con un letrerito: «atiende a la gente».
+- Si Alejandro lo quiere dormido también, se agrega a la lista de cosas que se pausan.
+
+**El chat mientras duermen**
+- Pueden seguir hablando, pero de cosas que no son trabajo: «¿por qué nos habremos ido a dormir?», «estoy cansado», un chiste.
+- Ni una palabra de tareas pendientes.
+- Esas frases salen de una lista por personalidad que vive en la misma página: no cuestan nada y no despiertan a nadie.
+
+**Cómo se hace**
+- Una fila con el estado de la oficina en Supabase: si está dormida, desde cuándo y quién la durmió. Solo una ruta con sesión de admin la cambia.
+- **El envoltorio de las tareas del sitio** no corre si la oficina duerme. Anota «se la saltó por dormir», para correrla al despertar.
+- **En el servidor:**
+  - `correr-noche.sh` revisa la fila antes de empezar;
+  - un vigilante revisa cada minuto y detiene la corrida si la oficina se duerme;
+  - al despertar, si la noche no terminó, la retoma.
+- **El contestador de DM** se queda callado.
+- **Las publicaciones atrasadas** las mueve el que publica cuando la oficina despierta, con las reglas de arriba.
+
 ## Fases
 
 1. **Reloj de marcar y la página con estados reales:** tablas, catálogo sembrado desde la base (no desde el código), envoltorio para las tareas del sitio, comando `marcar` en el servidor, y la página en los dos dominios con las tres vistas, el panel y la ficha.
