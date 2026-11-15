@@ -1,0 +1,146 @@
+<title>Loft de Knox</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;800&family=Silkscreen:wght@400;700&display=swap">
+<style>
+/* Loft industrial de noche en pixel art: tres vistas (maqueta, plano, maqueta y día) a lo ancho de la página. */
+:root{
+  color-scheme: dark;
+  --bg:#0d0f12; --panel:#15181d; --panel-2:#1b1f25; --line:#2a3038; --fg:#eef0f3; --muted:#9aa3af; --accent:#ff7a2f; --cream:#f3e6cc;
+  --font:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; --pixel:"Silkscreen", ui-monospace, Menlo, monospace;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:18px 40px}
+.wrap{max-width:1600px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.cab{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+h1{font-family:var(--pixel);font-weight:400;font-size:22px;margin:0;letter-spacing:.02em}
+.vivo{font-family:var(--pixel);font-size:13px;display:flex;align-items:center;gap:7px;color:#cbd5e1}
+.vivo i{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}
+.tabs{display:inline-flex;gap:4px;padding:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-left:auto}
+.tabs button{font-family:var(--pixel);font-size:14px;color:var(--muted);background:transparent;border:0;border-radius:9px;padding:8px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:#121212}
+.tabs button:focus-visible,.zoom button:focus-visible,.row:focus-visible,.cerrar:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px}
+.chips .t{font-weight:700;margin-right:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:#cbd5e1}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.vistas{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;align-items:start}
+.escena,.plano{grid-column:1;grid-row:1;position:relative;aspect-ratio:906/476;background:#0d0f12;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.escena canvas{display:block;touch-action:pan-y;cursor:grab}
+.plano canvas{display:block;cursor:pointer}
+.lado{grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:10px}
+.hoy{grid-column:1 / -1}
+.vistas.v-maqueta .plano,.vistas.v-maqueta .hoy{display:none}
+.vistas.v-plano .escena,.vistas.v-plano .hoy{display:none}
+.vistas.v-dia{grid-template-columns:minmax(0,1fr)}
+.vistas.v-dia .plano,.vistas.v-dia .lado{display:none}
+.vistas.v-dia .hoy{grid-row:2}
+@media (max-width:980px){.vistas{grid-template-columns:minmax(0,1fr)}.lado{grid-column:1;grid-row:2}.vistas.v-dia .hoy{grid-row:2}}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
+.zoom button{font-family:var(--pixel);font-size:14px;color:#fff;background:rgba(21,24,29,.88);border:1px solid var(--line);border-radius:9px;min-width:36px;height:34px;padding:0 10px;cursor:pointer}
+.zoom button:hover{background:var(--accent);color:#121212;border-color:var(--accent)}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.box.naranja{border-color:#ff7a2f66}.box.rojo{border-color:#ef444466}
+.box h4{margin:0 0 6px;font-family:var(--pixel);font-weight:400;font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.box.naranja h4{color:#ff9a5c}.box.rojo h4{color:#f87171}
+.row{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-top:1px solid #1f242b;padding:7px 0;cursor:pointer}
+.box h4+.row{border-top:0}
+.row .dot{margin-top:6px}
+.row .tx{flex:1;min-width:0;font-size:13.5px}
+.row b{font-weight:700}.row em{font-style:normal;color:var(--muted)}
+.row small{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+.row.prox{cursor:default}.row .h{color:#ff9a5c;font-weight:700;min-width:74px;font-size:13px}
+.btn{font-size:11.5px;padding:2px 9px;border-radius:6px;background:var(--accent);color:#121212;font-weight:700;align-self:center}
+.hoy{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;overflow-x:auto}
+.tl-fila{display:grid;grid-template-columns:130px minmax(560px,1fr);align-items:center;height:34px;border-top:1px solid #1f242b}
+.tl-fila.eje{height:22px;border-top:0}
+.tl-nom{font-family:var(--pixel);font-size:12px;color:#cbd5e1}
+.tl-pista{position:relative;height:100%}
+.eje .tl-pista span{position:absolute;transform:translateX(-50%);font-family:var(--pixel);font-size:11px;color:var(--muted);top:3px;white-space:nowrap}
+.tl-t{position:absolute;top:11px;width:4px;height:12px;background:#94a3b8}
+.tl-t.suave{width:2px;height:6px;top:14px;opacity:.35;background:#64748b}
+.tl-t.sig{background:transparent!important;border-left:2px dashed #a1a1aa;width:0}
+.tl-b{position:absolute;top:10px;height:14px;font-family:var(--pixel);font-size:10px;line-height:14px;padding:0 5px;white-space:nowrap;overflow:hidden;color:#0b0d10}
+.tl-b.sig{background:transparent!important;border:2px dashed #a1a1aa;color:#d4d4d8;line-height:10px}
+.tl-l{position:absolute;top:10px;font-family:var(--pixel);font-size:10.5px;white-space:nowrap;color:#d4d4d8}
+.tl-l.gris{color:#6b7280}
+.tl-ahora{position:absolute;top:-4px;bottom:-1px;width:2px;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.ficha{position:fixed;top:16px;right:16px;bottom:16px;width:min(340px,calc(100% - 32px));background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;z-index:20;
+  display:flex;flex-direction:column;gap:10px;overflow-y:auto;transform:translateX(calc(100% + 32px));transition:transform .25s ease;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.ficha.abierta{transform:none}
+@media (max-width:640px){.ficha{top:auto;left:16px;width:auto;max-height:80%;transform:translateY(calc(100% + 32px))}}
+@media (prefers-reduced-motion: reduce){.ficha{transition:none}}
+.cerrar{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);color:var(--fg);font-size:18px;cursor:pointer}
+.foto{border-radius:12px;background:radial-gradient(circle at 50% 35%, #3a2f2a, #1b1f25 70%);display:grid;place-items:center;padding:14px 0 8px;border:1px solid var(--line)}
+.foto canvas{width:84px;height:114px}
+.foto small{color:var(--muted);font-size:11px;margin-top:6px}
+.ficha h2{font-family:var(--pixel);font-weight:400;font-size:24px;margin:0;line-height:1.1}
+.rol{margin:0;color:var(--muted)}
+.estado{display:flex;align-items:center;gap:8px;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.stat{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.stat b{display:block;font-family:var(--pixel);font-size:20px;font-weight:400;color:var(--cream);font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;color:var(--muted);line-height:1.2;display:block}
+.perso{margin:0;font-size:14px}
+.frase{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--panel-2);border-radius:0 8px 8px 0;font-style:italic;font-size:14px}
+.datos{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px}
+.datos dt{color:var(--muted)}.datos dd{margin:0}
+.aviso{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;transition:all .3s ease;background:#1b1820;border:1px solid var(--accent);color:#fff;border-radius:12px;padding:9px 14px;font-size:14px;max-width:calc(100% - 32px);pointer-events:none;z-index:30}
+.aviso.ver{opacity:1;transform:translate(-50%,0)}
+.nota{color:var(--muted);font-size:13px;margin:0}
+</style>
+
+<div class="wrap">
+  <header class="cab">
+    <h1>Loft de Knox</h1>
+    <div class="vivo"><i></i><span id="activos">0 trabajando</span></div>
+    <nav class="tabs" role="tablist" aria-label="Cómo ver la oficina">
+      <button type="button" role="tab" data-v="maqueta" aria-selected="true">Maqueta</button>
+      <button type="button" role="tab" data-v="plano" aria-selected="false">Plano</button>
+      <button type="button" role="tab" data-v="dia" aria-selected="false">Maqueta y día</button>
+    </nav>
+  </header>
+  <div class="chips" id="chips"></div>
+  <div class="vistas v-maqueta" id="vistas">
+    <div class="escena"><canvas id="cv" aria-label="La oficina de los Knox en pixel art. Toca una oficina para ver su ficha."></canvas>
+      <div class="zoom"><button type="button" id="mas" aria-label="Acercar">+</button><button type="button" id="menos" aria-label="Alejar">−</button><button type="button" id="todo">Ver todo</button></div>
+    </div>
+    <div class="plano"><canvas id="cvp" aria-label="El plano de la oficina: cada Knox con su anillo de estado. Toca uno para ver su ficha."></canvas></div>
+    <aside class="lado" id="lado" aria-label="Lo de ahora"></aside>
+    <div class="hoy" id="hoy" aria-label="Lo que pasó hoy y lo que sigue"></div>
+  </div>
+  <p class="nota">Datos de ejemplo. Toca una oficina o un nombre para ver su ficha. Para acercar: los botones, Ctrl o Cmd con la rueda, o dos dedos.</p>
+</div>
+
+<aside class="ficha" id="ficha" aria-live="polite" aria-hidden="true">
+  <button class="cerrar" id="cerrar" aria-label="Cerrar la ficha">×</button>
+  <div class="foto"><canvas id="f-foto"></canvas><small>Aquí va su foto realista (nano banana)</small></div>
+  <h2 id="f-nombre"></h2><p class="rol" id="f-rol"></p><div class="estado" id="f-estado"></div>
+  <div class="stats">
+    <div class="stat"><b id="f-tareas"></b><span>tareas completadas</span></div>
+    <div class="stat"><b id="f-horas"></b><span>horas trabajadas</span></div>
+    <div class="stat"><b id="f-racha"></b><span>días sin fallar</span></div>
+  </div>
+  <p class="perso" id="f-perso"></p><p class="frase" id="f-frase"></p>
+  <dl class="datos"><dt>Área</dt><dd id="f-area"></dd><dt>Ahora</dt><dd id="f-ahora"></dd></dl>
+</aside>
+<div class="aviso" id="aviso" role="status"></div>
+
+<script src="knox-sprite.js" charset="utf-8"></script>
+<script src="loft-arte.js" charset="utf-8"></script>
+<script src="loft-equipo.js" charset="utf-8"></script>
+<script charset="utf-8">
+window.LoftGuion = [
+  { t: 1, de: 'drax', a: 'plexi', dice: 'Te paso 2 reels', responde: '¡Va!' },
+  { t: 7, de: 'atlas', a: 'ale', dice: 'Te dejé el plan', entrega: true },
+  { t: 13, de: 'plexi', a: 'lynx', dice: '¿Me revisas el guion?', responde: 'Dame un toque' },
+  { t: 19, de: 'volt', a: 'ale', dice: '8 respuestas para tu OK', entrega: true },
+  { t: 25, de: 'zap', a: 'echo', dice: 'Ya salió el post', responde: 'Prendo el Comenta' },
+  { t: 31, de: 'quark', a: 'krono', dice: 'Números de la semana', responde: 'Gracias, mae' }
+];
+</script>
+<script src="loft-mundo.js" charset="utf-8"></script>
+<script src="loft-vista.js" charset="utf-8"></script>
+<script src="plano-pixel.js" charset="utf-8"></script>
+<script src="pagina.js" charset="utf-8"></script>
