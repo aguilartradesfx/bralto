@@ -1,5 +1,5 @@
 // Mueve a los Knox por rutas reales, los dibuja en orden y deja ver la oficina como un mapa.
-// Solo anima lo que le piden (visita, decir, estados, dormir): no corre ningún guion por su cuenta.
+// Solo anima lo que le piden (visita, decir, estados, dormir, bandeja): no corre ningún guion por su cuenta.
 import type { Agente, EstadoAgente } from '../../../lib/oficina/tipos'
 import type { Mundo, Punto, Sala } from '../../../lib/oficina/mundo'
 import { dibujarFondo, listaMuebles, type Ctx } from './arte'
@@ -98,7 +98,7 @@ export function crearVista(
       const ev = k.ev as Evento
       k.modo = 'charla'; k.hasta = ahora + 3.4; k.dice = ev.dice; k.dir = 1
       if (k.dest === 'ale') {
-        bandeja.n = Math.min(5, bandeja.n + 1)
+        // el número de «PARA TI» lo pone bandeja(n) con los datos; la llegada solo se anima
         if (op.alAvisar) op.alAvisar(k.a.nombre + ' te dejó algo en tu oficina: ' + ev.dice.toLowerCase())
       } else if (ev.responde) {
         const d = porId[k.dest]
@@ -142,6 +142,8 @@ export function crearVista(
     dormida = si
     if (si) equipo.forEach((k) => { k.modo = 'quieto'; k.pos = mundo.asiento(k.a.id); k.dice = null; k.espera = 0; k.dir = 1; k.ev = null })
   }
+  // cuántas cosas hay en «PARA TI» sobre tu escritorio (sale de los datos en cada actualización)
+  function ponerBandeja(n: number) { bandeja.n = Math.max(0, Math.floor(n) || 0) }
 
   function knox(k: K, ahora: number) {
     const anda = k.modo === 'ida' || k.modo === 'vuelta', quieto = k.modo === 'quieto'
@@ -189,7 +191,7 @@ export function crearVista(
     })
     c.fillStyle = '#2a1d14'; c.font = fuente(6.5 * s); c.fillText('TU OFICINA', X(AX + 75), Y(M + 8.4))
     c.fillStyle = '#ffffff'; c.font = fuente(6 * s); c.fillText('PARA TI: ' + bandeja.n, X(AX + 51), Y(M + 207))
-    for (let i = 0; i < bandeja.n; i++) { c.fillStyle = i % 2 ? '#f3e6cc' : '#ffffff'; c.fillRect(X(AX + 24 + i * 11), Y(M + 211), 9 * s, 4 * s) }
+    for (let i = 0; i < Math.min(5, bandeja.n); i++) { c.fillStyle = i % 2 ? '#f3e6cc' : '#ffffff'; c.fillRect(X(AX + 24 + i * 11), Y(M + 211), 9 * s, 4 * s) }
     equipo.forEach((k) => {
       const x = X(k.pos[0]), top = Y(k.pos[1] - 42)
       if (k.dice) burbuja(x, top, k.dice, s, '#ffffff')
@@ -324,5 +326,5 @@ export function crearVista(
     cv.removeEventListener('dblclick', alDobleClic)
   }
 
-  return { estados, visita, dormir, decir, medir, acercar, alejar, verTodo, destruir }
+  return { estados, visita, dormir, decir, bandeja: ponerBandeja, medir, acercar, alejar, verTodo, destruir }
 }
