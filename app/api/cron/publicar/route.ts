@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { correrCola, probar } from '@/lib/redes/publicacion/servidor'
+import { conOficina, cuerpoDe, marcarPublicadas } from '@/lib/oficina/envoltorio'
+import { resumenPublicar } from '@/lib/oficina/resumenes'
 
 // Publica lo programado en redes (Vercel Cron cada 5 minutos): carruseles y reels de Instagram con su
 // collab, su «Comenta» y sus historias, y lo mismo en Facebook. Así salen a su hora sin depender de una
@@ -17,7 +19,18 @@ export async function GET(req: Request) {
   const params = new URL(req.url).searchParams
   if (params.has('probar') && !params.get('probar')) return NextResponse.json({ error: 'falta el id en ?probar=' }, { status: 400 })
   const id = params.get('probar')
-  const r = id ? await probar(id) : await correrCola()
+  if (id) {
+    const r = await probar(id)
+    console.log('[publicar]', JSON.stringify(r))
+    return NextResponse.json(r)
+  }
+  const o = await conOficina('zap', async () => {
+    const x = await correrCola()
+    // Las marcas de Zap y Tiko salen de lo que devolvió la cola, después de publicar; nunca afectan la respuesta
+    const tt = await marcarPublicadas(x)
+    return { ...resumenPublicar(x, tt), detalle: x }
+  })
+  const r = cuerpoDe(o)
   console.log('[publicar]', JSON.stringify(r))
   return NextResponse.json(r)
 }

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { actualizarReales } from '@/lib/analisis/servidor'
+import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenAnalisis } from '@/lib/oficina/resumenes'
 
 // «Análisis» (Vercel Cron, cada 6 horas): trae de Instagram los números de cada reel publicado para ponerlos al
 // lado de lo que predijo Higgsfield. Lee antes de que se borren las versiones perdedoras de las pruebas (72 h)
@@ -13,7 +15,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   try {
-    const r = await actualizarReales()
+    const o = await conOficina('quark', async () => {
+      const x = await actualizarReales()
+      return { ...resumenAnalisis(x), detalle: x }
+    }, { inicio: 'Leyendo los números de los reels' })
+    const r = cuerpoDe(o)
     console.log('[analisis]', JSON.stringify(r))
     return NextResponse.json(r)
   } catch (err) {

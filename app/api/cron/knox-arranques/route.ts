@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prepararDia, prepararFijos } from '@/lib/knox/arranque/preparar'
 import { diaCr, sumarDias } from '@/lib/knox/fechas'
+import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenArranques } from '@/lib/oficina/resumenes'
 
 // Knox deja listos la noche anterior los arranques de mañana: el saludo y lo que trae en la cabeza, ya narrados, para
 // que al abrir el centro de mando suenen al instante. Vercel Cron a las 22:00 de Costa Rica. Con ?hoy prepara también
@@ -14,22 +16,25 @@ export async function GET(req: Request) {
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
-  const hoy = diaCr(new Date())
-  const dias = new URL(req.url).searchParams.has('hoy') ? [hoy, sumarDias(hoy, 1)] : [sumarDias(hoy, 1)]
-  const resultado: Record<string, unknown> = {}
-  for (const dia of dias) {
-    try {
-      resultado[dia] = (await prepararDia(dia)) ?? 'ya estaban'
-    } catch (err) {
-      resultado[dia] = `error: ${err instanceof Error ? err.message : String(err)}`
+  const o = await conOficina('luma', async () => {
+    const hoy = diaCr(new Date())
+    const dias = new URL(req.url).searchParams.has('hoy') ? [hoy, sumarDias(hoy, 1)] : [sumarDias(hoy, 1)]
+    const resultado: Record<string, unknown> = {}
+    for (const dia of dias) {
+      try {
+        resultado[dia] = (await prepararDia(dia)) ?? 'ya estaban'
+      } catch (err) {
+        resultado[dia] = `error: ${err instanceof Error ? err.message : String(err)}`
+      }
     }
-  }
-  try {
-    await prepararFijos()
-    resultado.fijos = 'listos'
-  } catch (err) {
-    resultado.fijos = `error: ${err instanceof Error ? err.message : String(err)}`
-  }
-  console.log('[knox-arranques]', JSON.stringify(resultado))
-  return NextResponse.json(resultado)
+    try {
+      await prepararFijos()
+      resultado.fijos = 'listos'
+    } catch (err) {
+      resultado.fijos = `error: ${err instanceof Error ? err.message : String(err)}`
+    }
+    console.log('[knox-arranques]', JSON.stringify(resultado))
+    return { ...resumenArranques(resultado), detalle: resultado }
+  }, { inicio: 'Preparando los saludos de mañana' })
+  return NextResponse.json(cuerpoDe(o))
 }

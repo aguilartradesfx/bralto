@@ -1,0 +1,27 @@
+// Lo que murmuran los Knox cuando la oficina duerme: nada de trabajo, solo sueño.
+
+export const FRASES_SUENO: string[] = [
+  '¿Por qué nos habremos ido a dormir?',
+  'Estoy molido, mae',
+  'Soñé que era un pixel',
+  'Un ratito más…',
+  'Diay, ¿y la luz?',
+  'Zzz… cinco minutitos',
+  'Mae, qué sueño tan raro',
+  'Soñé con un gallo pinto gigante',
+  'Apaguen el sol, por fa',
+  'Quiero una almohada de lana',
+  'Ay, ¿ya es de día?',
+  'Shhh, que estoy soñando',
+  'Soñé que volaba en un sofá',
+  'Dejen la lamparita prendida',
+  'Estaba en la playa, mae…',
+  'Mmm… un cafecito, porfa',
+  'Qué pereza, bro',
+  'Me quedé viendo las estrellas',
+  'Cuenten ovejas conmigo',
+  'Diay, qué cobija tan rica',
+  'Soñé que me crecían alas',
+  'Compa, no ronques tan duro',
+  'Ya casi, ya casi… zzz',
+]

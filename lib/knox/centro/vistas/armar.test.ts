@@ -17,6 +17,12 @@ test('las vistas: Hoy si no se entiende', () => {
   assert.equal(esVistaConDatos('agenda'), true)
 })
 
+test('la Oficina es una vista sin datos propios', () => {
+  assert.equal(esVista('oficina'), true)
+  assert.equal(esVistaConDatos('oficina'), false)
+  assert.equal(leerVista('oficina'), 'oficina')
+})
+
 test('ventas: las abiertas de cada pipeline por etapa, en orden, con cuántas y cuánto suman', () => {
   const pipelines = [
     { id: 'p2', nombre: 'Otro', orden: 2 },

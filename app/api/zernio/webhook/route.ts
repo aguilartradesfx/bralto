@@ -1,6 +1,7 @@
 import { NextResponse, after } from 'next/server'
 import { firmaValida } from '@/lib/crm/bandeja/firma'
 import { procesarWebhook } from '@/lib/crm/bandeja/servidor'
+import { sumarEcho } from '@/lib/oficina/envoltorio'
 
 // El webhook de la bandeja de Zernio (Instagram, Messenger y WhatsApp). Revisa la firma con ZERNIO_WEBHOOK_SECRET,
 // contesta 200 al instante (Zernio espera menos de 5 s) y procesa después: guardar, y que Knox espere la ráfaga y
@@ -33,6 +34,8 @@ export async function POST(request: Request) {
     if (vistos.size > MAX_VISTOS) vistos.delete(vistos.values().next().value as string)
   }
 
+  // Echo sigue despierto aunque la oficina duerma: cada comentario recibido suma a su marca de la hora (nunca lanza)
+  if (evento === 'comment.received') after(() => sumarEcho())
   after(async () => {
     try {
       console.log(`[zernio] ${evento} ${id ?? ''}: ${await procesarWebhook(cuerpo)}`)

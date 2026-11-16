@@ -12,7 +12,7 @@ export type IconoNav =
   | 'finanzas' | 'resumen' | 'ingresos' | 'gastos' | 'flujo'
   | 'plan' | 'plan-inicio' | 'plan-tareas' | 'plan-etapas' | 'plan-equipo' | 'plan-estrategia'
   | 'documentos' | 'reportes' | 'rendimiento' | 'redes' | 'ventas-analitica' | 'a-la-medida'
-  | 'ideas' | 'analisis' | 'ayuda' | 'ajustes'
+  | 'ideas' | 'analisis' | 'oficina' | 'ayuda' | 'ajustes'
 
 // Los contadores del menú: conversaciones sin contestar y tareas pendientes
 export type Cuenta = 'mensajes' | 'tareas'
@@ -74,6 +74,7 @@ export const NAV: EntradaNav[] = [
       { href: '/calendario', label: 'Calendario de redes', icono: 'calendario' },
       { href: '/ideas', label: 'Ideas', icono: 'ideas' },
       { href: '/analisis', label: 'Análisis de reels', icono: 'analisis' },
+      { href: '/oficina', label: 'Oficina', icono: 'oficina' },
       pronto('campanas', 'Campañas', 'campanas'),
       pronto('secuencias', 'Secuencias de correo', 'secuencias'),
       pronto('plantillas', 'Plantillas', 'plantillas'),

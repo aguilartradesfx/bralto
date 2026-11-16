@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { correrPruebas } from '@/lib/redes/pruebas/servidor'
+import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenPruebas } from '@/lib/oficina/resumenes'
 
 // Los reels de prueba (Vercel Cron cada hora): cuando todas las versiones de un reel (5 o 10) cumplen 72 h, elige la ganadora,
 // borra las demás, saca la ganadora en Facebook y avisa por Telegram para compartirla con los seguidores.
@@ -13,7 +15,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   try {
-    const r = await correrPruebas()
+    const o = await conOficina('vero', async () => {
+      const x = await correrPruebas()
+      return { ...resumenPruebas(x), detalle: x }
+    })
+    const r = cuerpoDe(o)
     console.log('[pruebas]', JSON.stringify(r))
     return NextResponse.json(r)
   } catch (err) {

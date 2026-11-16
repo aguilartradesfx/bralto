@@ -37,6 +37,8 @@ test('requiredPermission por sección', () => {
   assert.equal(requiredPermission('/ideasx'), null)
   assert.equal(requiredPermission('/analisis'), 'is_admin')
   assert.equal(requiredPermission('/analisisx'), null)
+  assert.equal(requiredPermission('/oficina'), 'is_admin')
+  assert.equal(requiredPermission('/oficinax'), null)
   assert.equal(requiredPermission('/contratosx'), null)
 })
 

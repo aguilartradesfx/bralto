@@ -8,6 +8,7 @@ import { clienteDelEntorno, type ClienteZernio } from '@/lib/zernio/cliente'
 import { telefonoDe, leerEvento, type Remitente } from '@/lib/crm/bandeja/zernio'
 import * as almacen from '@/lib/crm/bandeja/almacen'
 import { atenderMensaje, type DepsKnox } from '@/lib/crm/bandeja/knox'
+import { estadoOficina, marcar } from '@/lib/oficina/servidor'
 import { procesarEvento } from '@/lib/crm/bandeja/procesar'
 import { UUID } from '@/lib/crm/validar'
 import { avisarPorTelegram as enviarTelegram } from '@/lib/telegram'
@@ -99,8 +100,20 @@ export async function procesarWebhook(cuerpo: unknown): Promise<string> {
   if (!ev) return 'no se entiende o no es de Instagram, Messenger ni WhatsApp'
   const base = db()
   const z = zernioOpcional()
+  // Con la oficina dormida el contestador se calla (los mensajes se guardan igual). `estadoOficina` no lanza
   const conKnox = ev.tipo === 'mensaje' && ev.evento === 'message.received'
-  const knox = conKnox ? (e: Parameters<typeof atenderMensaje>[1]) => atenderMensaje(depsKnox(base, z), e) : null
+  const knox = conKnox
+    ? async (e: Parameters<typeof atenderMensaje>[1]) => {
+        // El mensaje ya está guardado: aquí, con la oficina dormida, el contestador se calla
+        if ((await estadoOficina()).dormida) return 'oficina dormida'
+        const resultado = await atenderMensaje(depsKnox(base, z), e)
+        // Solo cuando de verdad escribió una respuesta (la mandó o la dejó de borrador); `marcar` no lanza
+        if (resultado === 'contestó' || resultado === 'borrador') {
+          await marcar({ agente: 'dex', tipo: 'termina', texto: 'Escribió la respuesta a un DM' })
+        }
+        return resultado
+      }
+    : null
   return procesarEvento(ev, almacen.almacenSupabase(base, z), knox)
 }
 

@@ -45,7 +45,7 @@ export function MarcoVista(p: { titulo: string; sub: string; enlace?: { texto: s
           {p.mini}
         </div>
       </header>
-      <div className={`vista-grid ${p.clase}`}>{p.children}</div>
+      <div className={`vista-grid ${p.clase}${p.clase === 'g-oficina' ? ' vista-scroll' : ''}`}>{p.children}</div>
     </section>
   )
 }
