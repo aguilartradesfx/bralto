@@ -90,6 +90,10 @@ export function taparClientes(t: string, prohibidos: string[]): string {
   return salida + chars.slice(pos).join('')
 }
 
+// «diay» se escribe «deay»: se cambia la palabra entera, conservando la mayúscula inicial.
+const RE_DIAY = /(?<![\p{L}\p{N}])([Dd])iay(?![\p{L}\p{N}])/gu
+export const aDeay = (t: string): string => t.replace(RE_DIAY, (_, d: string) => `${d}eay`)
+
 // Devuelve el motivo si el texto no puede salir, o null si está bien.
 export function problemaDeTexto(t: string, prohibidos: string[]): string | null {
   const plano = sinTildes(t)
@@ -135,7 +139,8 @@ export function repartir(n: number, desde: Date, hasta: Date, alInicio = false):
 type Obj = Record<string, unknown>
 const esObjeto = (x: unknown): x is Obj => typeof x === 'object' && x !== null && !Array.isArray(x)
 const lista = (x: unknown): unknown[] => (Array.isArray(x) ? x : [])
-const texto = (x: unknown): string | null => (typeof x === 'string' && x.trim() ? x : null)
+// Todo texto que se queda pasa por aquí: «diay» sale siempre como «deay».
+const texto = (x: unknown): string | null => (typeof x === 'string' && x.trim() ? aDeay(x) : null)
 const textos = (x: unknown): string[] => lista(x).filter((s): s is string => typeof s === 'string')
 
 type IdeaLimpia = { texto: string, por_que: string }

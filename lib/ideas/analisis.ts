@@ -128,7 +128,7 @@ export function promptIdea(c: ContextoIdea): string {
     'Reglas para tu_version:',
     '- Toma la idea y la estructura que funcionaron, pero nunca copies frases del original: escríbelo con palabras nuevas.',
     '- Llévalo a dueños de negocio (si el video es de otro tema, adapta el formato a IA para negocios).',
-    '- Español de Costa Rica, de tú (tú abres, tú pones), nunca de vos. Se vale «mae» o «diay»; nunca «pana», «tantito», «chévere» ni otros modismos de afuera.',
+    '- Español de Costa Rica, de tú (tú abres, tú pones), nunca de vos. Se vale «mae» o «deay» (así, nunca «diay»); nunca «pana», «tantito», «chévere» ni otros modismos de afuera.',
     '- Que lo entienda un niño de 5 y un señor de 50: frases cortas, sin palabras técnicas sin explicar y sin cifras enredadas.',
     '- No nombres al creador ni su marca, ni lo enlaces.',
     '- Todo en español.',

@@ -92,7 +92,7 @@ test('armarContexto tapa los nombres de clientes en todo el texto libre', () => 
 test('pedidoTertulia trae el contexto y las reglas', () => {
   const c = armarContexto(datos(), AHORA)
   const p = pedidoTertulia(c)
-  for (const t of ['pana', 'tantito', 'chévere', 'mae', 'diay', 'compa', 'basada_en', 'rincon', 'usted', 'tenés', 'sin texto antes ni después', '30', '12', '120']) {
+  for (const t of ['pana', 'tantito', 'chévere', 'mae', 'deay', 'compa', 'basada_en', 'rincon', 'usted', 'tenés', 'sin texto antes ni después', '30', '12', '120']) {
     assert.ok(p.includes(t), `falta ${t}`)
   }
   assert.ok(p.includes(JSON.stringify(c)))

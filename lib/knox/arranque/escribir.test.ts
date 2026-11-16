@@ -42,7 +42,7 @@ test('quita los que hablan de plata y los que no dicen que está revisando para 
   assert.equal(validarArranques({ arranques: [BIEN, ...malos] }).length, 1)
 })
 
-test('quita los que hablan con modismos de otros países, como «pana» o «tantito» (sí mae, bro, compa o diay)', () => {
+test('quita los que hablan con modismos de otros países, como «pana» o «tantito» (sí mae, bro, compa o deay)', () => {
   const malos = [
     { ...BIEN, saludo: 'Ale, mi pana, qué bueno que llegaste. Ya me puse a revisar todo para el reporte.' },
     { ...BIEN, frase: `Te tengo un recordatorio de Pana. ${BIEN.frase}` },
@@ -50,8 +50,15 @@ test('quita los que hablan con modismos de otros países, como «pana» o «tant
     { ...BIEN, frase: `${BIEN.frase} Qué chévere, ¿no?` },
     { ...BIEN, frase: `Órale, ${BIEN.frase}` },
   ]
-  const buenos = [BIEN, { ...BIEN, saludo: '¡Diay, compa! Estoy revisando todo para darte el reporte, dame un toque.' }]
+  const buenos = [BIEN, { ...BIEN, saludo: '¡Deay, compa! Estoy revisando todo para darte el reporte, dame un toque.' }]
   assert.equal(validarArranques({ arranques: [...buenos, ...malos] }).length, 2)
+})
+
+test('si dice «diay», lo deja como «deay» y no lo quita', () => {
+  const r = validarArranques({ arranques: [{ ...BIEN, saludo: '¡Diay, compa! Estoy revisando todo para darte el reporte.', frase: BIEN.frase.replace('loco', 'loco, diay') }] })
+  assert.equal(r.length, 1)
+  assert.match(r[0].saludo, /^¡Deay, compa!/)
+  assert.match(r[0].frase, /loco, deay/)
 })
 
 test('quita los que quedaron muy cortos o muy largos para el tiempo que tarda en cargar', () => {
