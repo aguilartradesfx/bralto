@@ -3,7 +3,7 @@
 // Nunca imprime claves.
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { validarAgentes } from '../../lib/oficina/cli.ts'
+import { filasParaSembrar, validarAgentes } from '../../lib/oficina/cli.ts'
 import { createServiceClient } from '../../lib/supabase/service.ts'
 
 try {
@@ -19,7 +19,7 @@ try {
   if ('error' in v) throw new Error(v.error)
   const { error } = await createServiceClient()
     .from('oficina_agentes')
-    .upsert(v.ok.map((a) => ({ ...a, activo: true })), { onConflict: 'id' })
+    .upsert(filasParaSembrar(v.ok), { onConflict: 'id' })
   if (error) throw new Error(`oficina_agentes: ${error.message}`)
   console.log(`Sembré ${v.ok.length} agentes`)
 } catch (e) {

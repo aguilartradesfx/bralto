@@ -84,3 +84,8 @@ export function validarAgentes(json: unknown): { ok: Agente[] } | { error: strin
   }
   return { ok }
 }
+
+// Filas para el upsert del catálogo: los campos del catálogo y activo, sin lo que mantiene el servidor (ultima_revision)
+export function filasParaSembrar(agentes: Agente[]): Omit<Agente, 'ultima_revision'>[] & { activo: true }[] {
+  return agentes.map(({ ultima_revision: _omitida, ...resto }) => ({ ...resto, activo: true as const }))
+}

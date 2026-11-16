@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { leerArgs, validarAgentes } from './cli.ts'
+import { filasParaSembrar, leerArgs, validarAgentes } from './cli.ts'
 
 const minimo = { id: 'drax', nombre: 'Drax', oficio: 'Redes', area: 'contenido', puesto: 3, donde: 'servidor' }
 
@@ -48,4 +48,12 @@ test('validarAgentes llena los valores por defecto', () => {
     ...minimo, aspecto: {}, personalidad: '', frase: '', horario: null, cada_minutos: null, ruta: null,
     estado_fijo: null, despierto_siempre: false, dura_min: 10, ultima_revision: null,
   })
+})
+test('filasParaSembrar no incluye ultima_revision y marca activo', () => {
+  const r = validarAgentes([minimo])
+  assert.ok('ok' in r)
+  const [fila] = filasParaSembrar(r.ok)
+  assert.equal('ultima_revision' in fila, false)
+  assert.equal(fila.activo, true)
+  assert.equal(fila.id, 'drax')
 })
