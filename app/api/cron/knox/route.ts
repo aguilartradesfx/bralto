@@ -19,6 +19,6 @@ export async function GET(req: Request) {
     const resumen = { id: r.id, fecha: r.fecha, escritoPor: r.escritoPor, conAudio: r.conAudio, faltan: r.datos.faltan, secciones: r.secciones.length }
     console.log('[knox]', JSON.stringify(resumen))
     return { ...resumenReporte(), detalle: resumen }
-  }, { inicio: 'Preparando el reporte de la mañana' })
+  }, { inicio: 'Estoy preparando el reporte de la mañana' })
   return NextResponse.json(cuerpoDe(o))
 }

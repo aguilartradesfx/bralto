@@ -35,6 +35,6 @@ export async function GET(req: Request) {
     }
     console.log('[knox-arranques]', JSON.stringify(resultado))
     return { ...resumenArranques(resultado), detalle: resultado }
-  }, { inicio: 'Preparando los saludos de mañana' })
+  }, { inicio: 'Estoy preparando los saludos de mañana' })
   return NextResponse.json(cuerpoDe(o))
 }

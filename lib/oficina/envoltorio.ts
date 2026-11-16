@@ -62,13 +62,13 @@ export async function conOficinaCon<T extends Resultado>(
   try {
     r = await trabajo()
   } catch (err) {
-    await seguro(() => deps.marcar({ agente, tipo: 'falla', texto: 'Algo falló y no pudo terminar', extra: { error: enUnaLinea(err) } }), undefined)
+    await seguro(() => deps.marcar({ agente, tipo: 'falla', texto: 'Algo falló y no pude terminar', extra: { error: enUnaLinea(err) } }), undefined)
     throw err
   }
 
   await seguro(async () => {
     if (r.fallo) {
-      await deps.marcar({ agente, tipo: 'falla', texto: `Falló: ${enUnaLinea(r.fallo)}` })
+      await deps.marcar({ agente, tipo: 'falla', texto: enUnaLinea(r.fallo) })
     } else if (r.hizo || op?.inicio) {
       await deps.marcar({ agente, tipo: 'termina', texto: r.resumen, dura_seg: Math.max(0, Math.round((deps.ahora() - t0) / 1000)) })
     }
@@ -117,7 +117,7 @@ export function cuerpoDe(r: Resultado | Salto): unknown {
 }
 
 export function textoEcho(n: number): string {
-  return `Le mandó la guía a ${n} ${n === 1 ? 'persona' : 'personas'}`
+  return `Le mandé la guía a ${n} ${n === 1 ? 'persona' : 'personas'}`
 }
 
 // Suma 1 a la marca «termina» de Echo de la hora actual (UTC); si no existe la crea. Nunca lanza. Un conteo perdido
@@ -151,9 +151,9 @@ export async function sumarEcho(): Promise<void> {
 export async function marcarPublicadas(r: Record<string, unknown>): Promise<number> {
   try {
     const titulos = titulosPublicados(r)
-    for (const titulo of titulosConError(r)) await marcar({ agente: 'zap', tipo: 'falla', texto: `No se pudo publicar «${titulo}»`, extra: { sin_reintento: true } })
+    for (const titulo of titulosConError(r)) await marcar({ agente: 'zap', tipo: 'falla', texto: `No pude publicar «${titulo}»`, extra: { sin_reintento: true } })
     if (!titulos.length) return 0
-    for (const titulo of titulos) await marcar({ agente: 'zap', tipo: 'publica', texto: `Publicó «${titulo}»` })
+    for (const titulo of titulos) await marcar({ agente: 'zap', tipo: 'publica', texto: `Publiqué «${titulo}»` })
     let tiktok = 0
     try {
       const desde = new Date(Date.now() - 15 * 60_000).toISOString()
@@ -166,7 +166,7 @@ export async function marcarPublicadas(r: Record<string, unknown>): Promise<numb
         const t = f.resultado?.tiktok
         if (!t?.zernioId || !t.programado || vistos.has(f.titulo)) continue
         vistos.add(f.titulo)
-        await marcar({ agente: 'tiko', tipo: 'termina', texto: `Agendó «${f.titulo}» en TikTok` })
+        await marcar({ agente: 'tiko', tipo: 'termina', texto: `Agendé «${f.titulo}» en TikTok` })
         tiktok++
       }
     } catch (e) {
