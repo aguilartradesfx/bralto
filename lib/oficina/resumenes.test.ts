@@ -18,7 +18,7 @@ test('kash: solo «→ keep» y «falló:» no es trabajo', () => {
 test('kash: un pago cerrado y una cita agendada sí', () => {
   const r = resumenPagos({ results: { A: 'paid → remove', B: 'pending → keep' } }, { resultados: { c1: 'agendada', c2: 'falló: x' } })
   assert.equal(r.hizo, true)
-  assert.equal(r.resumen, 'Cerró 1 pago y 1 cita')
+  assert.equal(r.resumen, 'Cerré 1 pago y 1 cita')
 })
 
 test('vero: solo estados de espera no es trabajo', () => {
@@ -28,13 +28,22 @@ test('vero: solo estados de espera no es trabajo', () => {
 test('vero: «decidida: …» sí', () => {
   const r = resumenPruebas({ ok: true, a: 'decidida: ganó la 2', b: 'todavía no' })
   assert.equal(r.hizo, true)
-  assert.equal(r.resumen, 'Movió 1 prueba de reels')
+  assert.equal(r.resumen, 'Ya escogí la ganadora de «a»: la versión 2')
+})
+test('vero habla en primera persona y dice qué hizo con la prueba', () => {
+  const una = (estado: string) => resumenPruebas({ ok: true, 'Reel Gmail': estado }).resumen
+  assert.equal(una('decidida: ganó la versión 3'), 'Ya escogí la ganadora de «Reel Gmail»: la versión 3')
+  assert.equal(una('decidida: ninguna versión tuvo vistas'), 'Cerré la prueba de «Reel Gmail»: ninguna versión tuvo vistas')
+  assert.equal(una('corriendo: decide el 2026-11-20T14:00:00Z'), 'Ya salieron todas las versiones de «Reel Gmail»; en 3 días escojo la ganadora')
+  assert.equal(una('cancelada: no salió ninguna versión'), 'Cancelé la prueba de «Reel Gmail»: no salió ninguna versión')
+  assert.equal(una('se cortó: vuelve a corriendo'), 'La prueba de «Reel Gmail» se cortó y la vuelvo a poner a correr')
+  assert.equal(resumenPruebas({ ok: true, a: 'decidida: ganó la versión 1', b: 'corriendo: decide el x' }).resumen, 'Moví 2 pruebas de reels')
 })
 
 test('krono: sin pruebas decididas no cuenta como éxito', () => {
   const r = resumenSemanal({ ok: true, resumen: 'todavía no hay pruebas decididas' })
   assert.equal(r.hizo, false)
-  assert.equal(r.resumen, 'No mandó el resumen: todavía no hay pruebas decididas')
+  assert.equal(r.resumen, 'No mandé el resumen: todavía no hay pruebas decididas')
   assert.equal(resumenSemanal({ ok: true, resumen: 'enviado' }).hizo, true)
 })
 
@@ -54,7 +63,7 @@ test('luma: nuevos sí, ya estaban no', () => {
 test('publicar: entradas con error se cuentan aparte y «se reintenta» no', () => {
   const x = { ok: true, Uno: 'publicado: https://x', Dos: 'error: sin video', Tres: 'se reintenta: lento', cola: 'nada por publicar' }
   assert.deepEqual(titulosConError(x), ['Dos'])
-  assert.deepEqual(resumenPublicar(x, 1), { hizo: true, resumen: 'Publicó 1 post y agendó 1 en TikTok' })
+  assert.deepEqual(resumenPublicar(x, 1), { hizo: true, resumen: 'Publiqué 1 post y agendé 1 en TikTok' })
   assert.equal(resumenPublicar({ ok: true, Dos: 'error: x' }).hizo, false)
 })
 
@@ -62,5 +71,5 @@ test('quark e inko', () => {
   assert.ok(resumenAnalisis({ ok: false, actualizados: 0, errores: ['x'] }).fallo)
   assert.equal(resumenAnalisis({ ok: true, actualizados: 2, errores: [] }).hizo, true)
   assert.equal(resumenContratos(0).hizo, false)
-  assert.equal(resumenContratos(2).resumen, 'Mandó 2 recordatorios de contrato')
+  assert.equal(resumenContratos(2).resumen, 'Mandé 2 recordatorios de contrato')
 })

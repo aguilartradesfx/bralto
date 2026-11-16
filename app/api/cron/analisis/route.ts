@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const o = await conOficina('quark', async () => {
       const x = await actualizarReales()
       return { ...resumenAnalisis(x), detalle: x }
-    }, { inicio: 'Leyendo los números de los reels' })
+    }, { inicio: 'Estoy leyendo los números de los reels' })
     const r = cuerpoDe(o)
     console.log('[analisis]', JSON.stringify(r))
     return NextResponse.json(r)

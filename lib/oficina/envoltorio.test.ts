@@ -51,8 +51,8 @@ test('hizo false: cero marcas y se llama a revisado', async () => {
 
 test('hizo true: termina con resumen y dura_seg', async () => {
   const x = armar()
-  await conOficinaCon(x.deps, 'zap', async () => { x.avanzar(12_400); return { hizo: true, resumen: 'Publicó 1 post' } })
-  assert.deepEqual(x.marcas, [{ agente: 'zap', tipo: 'termina', texto: 'Publicó 1 post', dura_seg: 12 }])
+  await conOficinaCon(x.deps, 'zap', async () => { x.avanzar(12_400); return { hizo: true, resumen: 'Publiqué 1 post' } })
+  assert.deepEqual(x.marcas, [{ agente: 'zap', tipo: 'termina', texto: 'Publiqué 1 post', dura_seg: 12 }])
   assert.deepEqual(x.revisados, ['zap'])
 })
 
@@ -62,7 +62,7 @@ test('error: marca falla en una línea y relanza el mismo error', async () => {
   await assert.rejects(conOficinaCon(x.deps, 'kash', async () => { throw err }), (e) => e === err)
   assert.equal(x.marcas.length, 1)
   assert.equal(x.marcas[0].tipo, 'falla')
-  assert.equal(x.marcas[0].texto, 'Algo falló y no pudo terminar')
+  assert.equal(x.marcas[0].texto, 'Algo falló y no pude terminar')
   const raw = (x.marcas[0].extra as { error: string }).error
   assert.match(raw, /^algo se rompió x+…$/)
   assert.ok(!raw.includes('\n'))
@@ -98,11 +98,11 @@ test('resiliencia: dormida que lanza se trata como despierta', async () => {
 test('fallo: marca falla en vez de termina, también con inicio, y revisa', async () => {
   const x = armar()
   await conOficinaCon(x.deps, 'luma', async () => ({ hizo: false, resumen: 'no pudo', fallo: 'No pude dejar listos los saludos' }), { inicio: 'Preparando' })
-  assert.deepEqual(x.marcas.map((m) => [m.tipo, m.texto]), [['empieza', 'Preparando'], ['falla', 'Falló: No pude dejar listos los saludos']])
+  assert.deepEqual(x.marcas.map((m) => [m.tipo, m.texto]), [['empieza', 'Preparando'], ['falla', 'No pude dejar listos los saludos']])
   assert.deepEqual(x.revisados, ['luma'])
 })
 
 test('textoEcho', () => {
-  assert.equal(textoEcho(1), 'Le mandó la guía a 1 persona')
-  assert.equal(textoEcho(12), 'Le mandó la guía a 12 personas')
+  assert.equal(textoEcho(1), 'Le mandé la guía a 1 persona')
+  assert.equal(textoEcho(12), 'Le mandé la guía a 12 personas')
 })

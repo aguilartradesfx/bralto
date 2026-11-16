@@ -49,6 +49,6 @@ export async function GET(req: Request) {
       ...resumenContratos(sent),
       detalle: { ok: true, reminders_sent: sent },
     }
-  }, { inicio: 'Revisando los contratos sin firmar' })
+  }, { inicio: 'Estoy revisando los contratos sin firmar' })
   return NextResponse.json(cuerpoDe(o))
 }

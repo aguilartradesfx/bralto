@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const o = await conOficina('krono', async () => {
       const x = await mandarResumen()
       return { ...resumenSemanal(x), detalle: x }
-    }, { inicio: 'Armando el resumen semanal de las pruebas' })
+    }, { inicio: 'Estoy armando el resumen semanal de las pruebas' })
     const r = cuerpoDe(o)
     console.log('[pruebas-resumen]', JSON.stringify(r))
     return NextResponse.json(r)
