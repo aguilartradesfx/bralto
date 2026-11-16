@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { mandarResumen } from '@/lib/redes/pruebas/servidor'
+import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
 
 // El resumen de los domingos (Vercel Cron, 9:00 de Costa Rica): qué gancho y qué hora ganan en las pruebas, con una
 // propuesta que Alejandro aprueba o no. No cambia nada solo.
@@ -13,7 +14,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   try {
-    const r = await mandarResumen()
+    const o = await conOficina('krono', async () => {
+      const x = await mandarResumen()
+      return { hizo: x.resumen === 'enviado', resumen: 'Mandó el resumen semanal de las pruebas', detalle: x }
+    }, { inicio: 'Armando el resumen semanal de las pruebas' })
+    const r = cuerpoDe(o)
     console.log('[pruebas-resumen]', JSON.stringify(r))
     return NextResponse.json(r)
   } catch (err) {

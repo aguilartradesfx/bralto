@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { reintentarCitas } from '@/lib/agenda/servidor'
 import { reconcilePendingOrders } from '@/lib/diagnostic/server'
+import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
 
 // Barrido de conciliación de pagos (Vercel Cron). El webhook acelera; esto garantiza:
 // toda orden pendiente hace más de 2 minutos se confirma o se vence contra el API.
@@ -13,12 +14,18 @@ export async function GET(req: Request) {
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
-  const summary = await reconcilePendingOrders({ limit: 50 })
-  console.log('[reconcile]', JSON.stringify(summary))
-  const citas = await reintentarCitas().catch((err) => {
-    console.error('[reconcile] el reintento de citas falló:', err)
-    return { revisadas: 0, resultados: {}, error: err instanceof Error ? err.message : String(err) }
+  const o = await conOficina('kash', async () => {
+    const summary = await reconcilePendingOrders({ limit: 50 })
+    console.log('[reconcile]', JSON.stringify(summary))
+    const citas = await reintentarCitas().catch((err) => {
+      console.error('[reconcile] el reintento de citas falló:', err)
+      return { revisadas: 0, resultados: {}, error: err instanceof Error ? err.message : String(err) }
+    })
+    if (citas.revisadas) console.log('[reconcile] citas', JSON.stringify(citas))
+    const pagos = summary.checked
+    const hizo = pagos > 0 || citas.revisadas > 0
+    const partes = [pagos > 0 && `${pagos} ${pagos === 1 ? 'pago' : 'pagos'}`, citas.revisadas > 0 && `${citas.revisadas} ${citas.revisadas === 1 ? 'cita' : 'citas'}`].filter(Boolean)
+    return { hizo, resumen: `Revisó ${partes.join(' y ')}`, detalle: { ...summary, citas } }
   })
-  if (citas.revisadas) console.log('[reconcile] citas', JSON.stringify(citas))
-  return NextResponse.json({ ...summary, citas })
+  return NextResponse.json(cuerpoDe(o))
 }

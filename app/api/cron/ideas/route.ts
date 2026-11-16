@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { procesarCola } from '@/lib/ideas/servidor'
+import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
 
 // «Ideas» (Vercel Cron cada 5 minutos): analiza lo que quedó pendiente al pegar y reintenta lo que falló
 export const runtime = 'nodejs'
@@ -12,7 +13,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   try {
-    const r = await procesarCola({ limite: 6 })
+    const o = await conOficina('nova', async () => {
+      const x = await procesarCola({ limite: 6 })
+      const listas = 'listas' in x ? Number(x.listas) || 0 : 0
+      return { hizo: listas > 0, resumen: listas === 1 ? 'Analizó 1 idea' : `Analizó ${listas} ideas`, detalle: x }
+    })
+    const r = cuerpoDe(o)
     console.log('[ideas]', JSON.stringify(r))
     return NextResponse.json(r)
   } catch (err) {
