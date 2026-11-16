@@ -64,13 +64,17 @@ export async function marcar(m: NuevaMarca): Promise<void> {
   try {
     let dura = m.dura_seg ?? null
     if (m.tipo === 'termina' && dura == null) {
-      const desde = new Date(Date.now() - DIA).toISOString()
-      const previa = ok<{ tipo: string, creado_en: string }[]>('oficina_marcas', await db()
-        .from('oficina_marcas').select('tipo,creado_en')
-        .eq('agente', m.agente).in('tipo', ['empieza', 'termina', 'falla']).gte('creado_en', desde)
-        .order('creado_en', { ascending: false }).limit(1))
-      const u = previa?.[0]
-      if (u?.tipo === 'empieza') dura = Math.round((Date.now() - new Date(u.creado_en).getTime()) / 1000)
+      try {
+        const desde = new Date(Date.now() - DIA).toISOString()
+        const previa = ok<{ tipo: string, creado_en: string }[]>('oficina_marcas', await db()
+          .from('oficina_marcas').select('tipo,creado_en')
+          .eq('agente', m.agente).in('tipo', ['empieza', 'termina', 'falla']).gte('creado_en', desde)
+          .order('creado_en', { ascending: false }).limit(1))
+        const u = previa?.[0]
+        if (u?.tipo === 'empieza') dura = Math.round((Date.now() - new Date(u.creado_en).getTime()) / 1000)
+      } catch (e) {
+        console.error('[oficina] marcar (duración)', e)
+      }
     }
     const { error } = await db().from('oficina_marcas').insert({
       agente: m.agente,
@@ -117,6 +121,13 @@ export async function verEntrega(id: string): Promise<void> {
   if (error) throw new Error(`oficina_marcas: ${error.message}`)
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Ids de publicaciones a revisar: solo los que tienen formato uuid (una marca mal escrita no debe romper la lectura).
+export function idsValidos(entregas: Pick<Marca, 'ref_tabla' | 'ref_id'>[]): string[] {
+  return [...new Set(entregas.filter((m) => m.ref_tabla === 'redes_publicaciones' && m.ref_id && UUID.test(m.ref_id)).map((m) => m.ref_id as string))]
+}
+
 export async function leerOficina(ahora: Date): Promise<Snapshot> {
   try {
     const c = db()
@@ -137,12 +148,16 @@ export async function leerOficina(ahora: Date): Promise<Snapshot> {
     const oficina = aEstado(ok('oficina_estado', of))
     const pubs = (ok('redes_publicaciones', pu) ?? []) as Pub[]
 
-    const ids = [...new Set(entregas.filter((m) => m.ref_tabla === 'redes_publicaciones' && m.ref_id).map((m) => m.ref_id as string))]
+    const ids = idsValidos(entregas)
     const resueltas = new Set<string>()
     if (ids.length) {
-      const filas = ok<{ id: string, estado: string }[]>('redes_publicaciones', await c.from('redes_publicaciones').select('id,estado').in('id', ids)) ?? []
-      for (const f of filas) {
-        if (f.estado === 'publicado' || f.estado === 'borrador' || f.estado === 'cancelado') resueltas.add(`redes_publicaciones:${f.id}`)
+      try {
+        const filas = ok<{ id: string, estado: string }[]>('redes_publicaciones', await c.from('redes_publicaciones').select('id,estado').in('id', ids)) ?? []
+        for (const f of filas) {
+          if (f.estado === 'publicado' || f.estado === 'borrador' || f.estado === 'cancelado') resueltas.add(`redes_publicaciones:${f.id}`)
+        }
+      } catch (e) {
+        console.error('[oficina] resueltas', e)
       }
     }
     return armarSnapshot({ agentes, marcas, entregas, numeros, oficina, pubs, resueltas }, ahora)
