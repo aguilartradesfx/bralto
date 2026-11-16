@@ -37,6 +37,11 @@ const escena = (extra: Record<string, unknown> = {}) => ({
 test('fin de ronda: 6:30 p. m. de Costa Rica', () =>
   assert.equal(finDeRonda(new Date('2026-11-16T18:30:00Z')).toISOString(), '2026-11-17T00:30:00.000Z'))
 
+test('repartir con alInicio: la primera sale justo en desde', () => {
+  const r = repartir(3, new Date('2026-11-16T18:30:00Z'), new Date('2026-11-17T00:30:00Z'), true)
+  assert.deepEqual(r.map(d => d.toISOString()), ['2026-11-16T18:30:00.000Z', '2026-11-16T20:30:00.000Z', '2026-11-16T22:30:00.000Z'])
+})
+
 test('repartir: la i-ésima va en el punto medio de su tramo', () => {
   const r = repartir(3, new Date('2026-11-16T18:30:00Z'), new Date('2026-11-17T00:30:00Z'))
   assert.deepEqual(r.map(horaCR), ['1:30 p. m.', '3:30 p. m.', '5:30 p. m.'])
@@ -235,9 +240,9 @@ test('horas: 3 posts desde las 12:30 p. m.', () => {
     posts: [post(1), post(2), post(3)],
     comentarios: [com(1, { post: 'p3' }), com(2, { post: 'p3' }), com(3, { post: 'viejo1' })],
   }))
-  assert.deepEqual(r.posts.map(p => horaCR(new Date(p.mostrar_desde))), ['1:30 p. m.', '3:30 p. m.', '5:30 p. m.'])
+  assert.deepEqual(r.posts.map(p => horaCR(new Date(p.mostrar_desde))), ['12:30 p. m.', '2:30 p. m.', '4:30 p. m.'])
   const p3 = r.comentarios.filter(c => c.post === 'p3')
-  assert.deepEqual(p3.map(c => horaCR(new Date(c.mostrar_desde))), ['5:45 p. m.', '6:15 p. m.'])
+  assert.deepEqual(p3.map(c => horaCR(new Date(c.mostrar_desde))), ['5:00 p. m.', '6:00 p. m.'])
   assert.equal(horaCR(new Date(r.comentarios.find(c => c.post === 'viejo1')!.mostrar_desde)), '3:30 p. m.')
   const fin = finDeRonda(ctx().ahora).getTime()
   for (const x of [...r.posts, ...r.comentarios]) assert.ok(new Date(x.mostrar_desde).getTime() <= fin)

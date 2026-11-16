@@ -48,8 +48,15 @@ export function armarSocial(c: SocialCrudo, ahora: Date, oficina: EstadoOficina)
     .sort((x, y) => porHora(y, x))
     .slice(0, POSTS_MAX)
     .map((p) => ({ ...p, comentarios: enHilo(comentarios.filter((k) => k.post_id === p.id)) }))
+  // El primer post que aún no se ve, si sale hoy (hora de Costa Rica); dormida, nada
+  const hoy = fechaCR(ahora)
+  const futuros = oficina.dormida
+    ? []
+    : c.posts.filter((p) => ms(p.mostrar_desde) > ahora.getTime() && fechaCR(new Date(p.mostrar_desde)) === hoy)
+  const proxima = futuros.length ? futuros.map((p) => p.mostrar_desde).reduce((a, b) => (ms(b) < ms(a) ? b : a)) : null
   return {
     foro,
+    proxima,
     ideas: c.ideas.filter(visible).sort((x, y) => porHora(y, x)),
     // Por id: la firma no depende del orden en que vinieron de la base
     fotos: [...c.fotos].sort(porId),

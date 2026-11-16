@@ -639,6 +639,8 @@ export function Oficina({
               ) : (
                 <IdeasEquipo
                   ideas={social.ideas}
+                  proxima={social.proxima}
+                  ronda={social.ronda}
                   foro={social.foro}
                   agentes={r.agentes}
                   retratos={retratos}
