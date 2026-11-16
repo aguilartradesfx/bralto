@@ -65,6 +65,7 @@ const PESTANAS: [Vista, string][] = [
   ['redes', 'Redes'],
   ['agenda', 'Agenda'],
   ['conexiones', 'Conexiones'],
+  ['oficina', 'Oficina'],
 ]
 
 // Las pestañas cambian de vista sin salir de /knox (el enlace sirve para abrirla directo)

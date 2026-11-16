@@ -247,7 +247,7 @@ export function crearVista(
   const punteros: Record<number, [number, number]> = {}
   let arrastre: { x: number; y: number; ox: number; oy: number; movio: boolean } | null = null
   let pellizco: { d: number; s: number } | null = null
-  function local(e: MouseEvent): [number, number] { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr] }
+  function local(e: MouseEvent): [number, number] { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * (cv.width / r.width), (e.clientY - r.top) * (cv.height / r.height)] }
   function alBajar(e: PointerEvent) {
     try { cv.setPointerCapture(e.pointerId) } catch { /* sin captura también sirve */ }
     punteros[e.pointerId] = [e.clientX, e.clientY]
@@ -265,13 +265,13 @@ export function crearVista(
     const ids = Object.keys(punteros)
     if (pellizco && ids.length === 2) {
       const p1 = punteros[Number(ids[0])], p2 = punteros[Number(ids[1])], r = cv.getBoundingClientRect()
-      zoom(pellizco.s * Math.hypot(p1[0] - p2[0], p1[1] - p2[1]) / pellizco.d / cam.s, ((p1[0] + p2[0]) / 2 - r.left) * dpr, ((p1[1] + p2[1]) / 2 - r.top) * dpr)
+      zoom(pellizco.s * Math.hypot(p1[0] - p2[0], p1[1] - p2[1]) / pellizco.d / cam.s, ((p1[0] + p2[0]) / 2 - r.left) * (cv.width / r.width), ((p1[1] + p2[1]) / 2 - r.top) * (cv.height / r.height))
       return
     }
     if (arrastre) {
       const dx = e.clientX - arrastre.x, dy = e.clientY - arrastre.y
       if (Math.abs(dx) + Math.abs(dy) > 5) arrastre.movio = true
-      if (arrastre.movio) { cam.ox = arrastre.ox - dx * dpr / cam.s; cam.oy = arrastre.oy - dy * dpr / cam.s; limitar() }
+      if (arrastre.movio) { const r = cv.getBoundingClientRect(); cam.ox = arrastre.ox - dx * (cv.width / r.width) / cam.s; cam.oy = arrastre.oy - dy * (cv.height / r.height) / cam.s; limitar() }
     }
   }
   function soltar(e: PointerEvent) {

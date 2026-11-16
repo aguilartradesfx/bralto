@@ -88,8 +88,8 @@ export function crearPlano(
   medir(); window.addEventListener('resize', alCambiar)
   const reloj = setInterval(() => { if (cv.offsetParent && !document.hidden) geo = dibujar(performance.now() / 1000) }, 300)
   function alClic(e: MouseEvent) {
-    const r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1
-    const x = ((e.clientX - r.left) * d - geo.ox) / geo.s, y = ((e.clientY - r.top) * d - geo.oy) / geo.s
+    const r = cv.getBoundingClientRect()
+    const x = ((e.clientX - r.left) * (cv.width / r.width) - geo.ox) / geo.s, y = ((e.clientY - r.top) * (cv.height / r.height) - geo.oy) / geo.s
     let toco: string | null = null
     caras.forEach((f) => { if (Math.abs(x - f.x) < 34 && y > f.y - 22 && y < f.y + 48) toco = f.k.id })
     alTocar(toco)

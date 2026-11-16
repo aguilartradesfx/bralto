@@ -3,12 +3,12 @@
 // parte: esa fuente no respondió («—»).
 import type { CanalCliente, Chequeo, Embudo, Esperando, ItemDia, TipoPost } from '../tipos.ts'
 
-export const VISTAS = ['hoy', 'ventas', 'redes', 'agenda', 'conexiones'] as const
+export const VISTAS = ['hoy', 'ventas', 'redes', 'agenda', 'conexiones', 'oficina'] as const
 export type Vista = (typeof VISTAS)[number]
-export type VistaConDatos = Exclude<Vista, 'hoy'>
+export type VistaConDatos = Exclude<Vista, 'hoy' | 'oficina'>
 
 export const esVista = (v: unknown): v is Vista => (VISTAS as readonly unknown[]).includes(v)
-export const esVistaConDatos = (v: unknown): v is VistaConDatos => esVista(v) && v !== 'hoy'
+export const esVistaConDatos = (v: unknown): v is VistaConDatos => esVista(v) && v !== 'hoy' && v !== 'oficina'
 export const leerVista = (v: unknown): Vista => (esVista(v) ? v : 'hoy')
 
 // Ventas -------------------------------------------------------------------------------------------------------------

@@ -411,6 +411,7 @@
 }
 .kc .boton2:hover { color: var(--ink); }
 .kc .boton2 .ic { width: 12px; height: 12px; color: var(--accent); }
+.kc .vista-scroll { display: block; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
 .kc .vista-grid { flex: 1; min-height: 0; display: grid; gap: 18px; }
 .kc .vista .glass { position: relative; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
 .kc .pv-cuerpo { flex: 1; min-height: 0; display: flex; flex-direction: column; }

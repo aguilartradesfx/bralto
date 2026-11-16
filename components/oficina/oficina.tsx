@@ -38,7 +38,7 @@ function esSnapshot(j: unknown): j is Snapshot {
     Array.isArray(s.agentes) && Array.isArray(s.marcas) && Array.isArray(s.paraTi) && Array.isArray(s.proximos)
 }
 
-export function Oficina({ inicial }: { inicial: Snapshot | null }) {
+export function Oficina({ inicial, enMarco = false }: { inicial: Snapshot | null; enMarco?: boolean }) {
   const [snap, setSnap] = useState<Snapshot | null>(inicial)
   const [cargando, setCargando] = useState(inicial == null)
   const [sinSenal, setSinSenal] = useState(false)
@@ -415,7 +415,7 @@ export function Oficina({ inicial }: { inicial: Snapshot | null }) {
     <div className={raiz}>
       <section className="of" aria-label="La oficina de Knox">
         <header className="of-cab">
-          <h1 className="of-titulo">La oficina de Knox</h1>
+          {!enMarco && <h1 className="of-titulo">La oficina de Knox</h1>}
           <div className={`of-vivo${sinSenal ? ' sin' : dormida ? ' noche' : ''}`}>
             <i aria-hidden="true" />
             <span>{vivo}</span>

@@ -23,6 +23,7 @@ import type { LeerOrbe } from './orbe'
 import * as Paneles from './paneles'
 import type { Panel } from './paneles'
 import { Polvo } from './polvo'
+import { Oficina } from '@/components/oficina/oficina'
 import { MiniKnox } from './mini-knox'
 import { MarcoVista, VistaAgendaPaneles, VistaConexionesPaneles, VistaRedesPaneles, VistaVentasPaneles } from './vistas'
 import { leerVista, type DatosVista, type Vista, type VistaConDatos } from '@/lib/knox/centro/vistas/tipos'
@@ -58,11 +59,12 @@ function direccionDe(v: Vista): string {
   return `${url.pathname}${url.search}`
 }
 
-const VISTA_INFO: Record<VistaConDatos, { titulo: string; sub: string; enlace?: { texto: string; href: string } }> = {
+const VISTA_INFO: Record<Exclude<Vista, 'hoy'>, { titulo: string; sub: string; enlace?: { texto: string; href: string } }> = {
   ventas: { titulo: 'Ventas', sub: 'Cómo va el camino a la venta', enlace: { texto: 'Abrir en el CRM', href: '/crm/pipeline' } },
   redes: { titulo: 'Redes', sub: 'Instagram y lo que sale', enlace: { texto: 'Abrir el calendario', href: '/calendario' } },
   agenda: { titulo: 'Agenda', sub: 'Hoy y mañana: citas, posts y tareas', enlace: { texto: 'Abrir las tareas', href: '/crm/tareas' } },
   conexiones: { titulo: 'Conexiones', sub: 'Lo que Knox puede leer, revisado de verdad', enlace: { texto: 'Ajustes de Knox', href: '/crm/knox' } },
+  oficina: { titulo: 'Oficina', sub: 'Quién trabaja, qué te dejaron y qué sigue', enlace: { texto: 'Abrir en el panel', href: 'https://admin.bralto.io/oficina' } },
 }
 
 // Los paneles se vuelven a dibujar solo si cambian sus datos (el subtítulo cambia varias veces por segundo)
@@ -697,7 +699,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
 
   // Al abrir una vista: sus datos (si los que hay tienen más de un minuto) y luego cada minuto mientras esté abierta
   useEffect(() => {
-    if (vista === 'hoy' || demo) return
+    if (vista === 'hoy' || vista === 'oficina' || demo) return
     const guardado = vistasRef.current[vista]
     if (!guardado || Date.now() - guardado.en > VIGENCIA_VISTA_MS) void cargarVista(vista)
     const id = setInterval(() => document.visibilityState === 'visible' && void cargarVista(vista), VIGENCIA_VISTA_MS)
@@ -848,6 +850,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
             {vista === 'ventas' && <VistaVentasPaneles datos={vistas.ventas?.datos} ahora={ahora} />}
             {vista === 'redes' && <VistaRedesPaneles datos={vistas.redes?.datos} ahora={ahora} />}
             {vista === 'agenda' && <VistaAgendaPaneles datos={vistas.agenda?.datos} ahora={ahora} />}
+            {vista === 'oficina' && <Oficina inicial={null} enMarco />}
             {vista === 'conexiones' && <VistaConexionesPaneles datos={vistas.conexiones?.datos} ahora={ahora} />}
           </MarcoVista>
         )}
