@@ -1,9 +1,10 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import type { Marca, TipoMarca } from './tipos.ts'
+import type { Marca, Social, TipoMarca } from './tipos.ts'
 import {
-  ETIQUETA, avisoDormida, chipsDe, cuandoCR, desdeCR, diaCR, encabezadoCR, horaDeTexto, horasCR, lasCR, lineaAhora, lineaDelDia, lineaFalla,
-  marcaDeAhora, marcasNuevas, momentoCR, nombreDe, proximoDe, recortar, reintento, textoPlano, ultimoDe, type AgenteSnap,
+  ETIQUETA, avisoDormida, chipsDe, cuandoCR, desdeCR, diaCR, enlaceSeguro, horaDeTexto, horasCR, lasCR, lineaAhora, lineaDelDia,
+  lineaFalla, listaDelDia, marcaDeAhora, marcasNuevas, momentoCR, nombreDe, proximoDe, recortar, reintento, textoPlano, type AgenteSnap,
+  alFallar, conOptimistas, copiaSocial, soltarOptimistas, urlOficina,
 } from './pagina.ts'
 
 // Domingo 15/11/2026, 7:24 p. m. en Costa Rica
@@ -13,7 +14,7 @@ function ag(id: string, extra: Partial<AgenteSnap> = {}): AgenteSnap {
   return {
     id, nombre: id.charAt(0).toUpperCase() + id.slice(1), oficio: 'Oficio', area: 'Contenido', puesto: 0,
     aspecto: { tela: '#cccccc', ropa: '#333333', glifo: 'lineas' }, personalidad: '', frase: '', horario: null, cada_minutos: null,
-    ruta: null, donde: 'sitio', estado_fijo: null, despierto_siempre: false, dura_min: 10, ultima_revision: null,
+    ruta: null, donde: 'sitio', estado_fijo: null, despierto_siempre: false, dura_min: 10, ultima_revision: null, lugar: null,
     estado: 'descansando', numeros: { tareas: 0, horas: 0, diasSinFallar: 0 }, ...extra,
   }
 }
@@ -64,10 +65,6 @@ test('la hora corta de las listas dice «ayer» si no es de hoy', () => {
   assert.equal(momentoCR(new Date('2026-11-12T03:15:00Z'), AHORA), 'miércoles 9:15 p. m.')
 })
 
-test('el encabezado dice el día y la hora', () => {
-  assert.equal(encabezadoCR(AHORA), 'Domingo · 7:24 p. m.')
-})
-
 test('el letrero de la oficina dormida', () => {
   assert.equal(avisoDormida({ dormida: true, desde: '2026-11-16T00:14:00Z', por: null }, AHORA), 'La oficina duerme desde las 6:14 p. m.')
   assert.equal(avisoDormida({ dormida: true, desde: '2026-11-15T19:05:00Z', por: null }, AHORA), 'La oficina duerme desde la 1:05 p. m.')
@@ -75,18 +72,40 @@ test('el letrero de la oficina dormida', () => {
   assert.equal(avisoDormida({ dormida: true, desde: null, por: null }, AHORA), 'La oficina está dormida.')
 })
 
-test('las cuentas por estado: las cinco de siempre, «a medias» y «durmiendo» solo si hay, y nunca las fijas', () => {
+test('las cuentas despierta: las cuatro de siempre y «a medias» solo si hay; nunca los que descansan ni las fijas', () => {
   const agentes = [
     ag('a', { estado: 'trabajando' }), ag('b', { estado: 'trabajando' }), ag('c', { estado: 'publicando' }), ag('d', { estado: 'listo' }),
     ag('e', { estado: 'descansando' }), ag('f', { estado: 'pedido' }), ag('g', { estado: 'a-medias' }), ag('h', { estado: 'pendiente' }),
   ]
-  assert.deepEqual(chipsDe(agentes, false).map((c) => c.texto), [
-    '2 trabajando', '1 publicando', '1 te dejó algo', '0 fallaron', '1 se quedó a medias', '1 descansando',
-  ])
-  const dormidos = [ag('a', { estado: 'durmiendo' }), ag('b', { estado: 'durmiendo' }), ag('lambda', { estado: 'trabajando' })]
-  assert.deepEqual(chipsDe(dormidos, true).map((c) => c.texto), ['1 trabajando', '2 durmiendo'])
+  const chips = chipsDe(agentes, false)
+  assert.deepEqual(chips.map((c) => c.texto), ['2 trabajando', '1 publicando', '1 te dejó algo', '0 fallaron', '1 se quedó a medias'])
+  assert.deepEqual(chips.map((c) => c.clave), ['trabajando', 'publicando', 'listo', 'fallo', 'a-medias'])
+  assert.deepEqual(chips.map((c) => c.n), [2, 1, 1, 0, 1])
   assert.deepEqual(chipsDe([ag('x', { estado: 'fallo' }), ag('y', { estado: 'listo' }), ag('z', { estado: 'listo' })], false).map((c) => c.texto),
-    ['0 trabajando', '0 publicando', '2 te dejaron algo', '1 falló', '0 descansando'])
+    ['0 trabajando', '0 publicando', '2 te dejaron algo', '1 falló'])
+})
+
+test('las cuentas dormida: los que duermen y los que se quedan de guardia', () => {
+  const dormidos = Array.from({ length: 22 }, (_, i) => ag(`k${i}`, { estado: 'durmiendo' }))
+  const guardia = [ag('lambda', { estado: 'trabajando', despierto_siempre: true }), ag('mu', { estado: 'fallo', despierto_siempre: true })]
+  const chips = chipsDe([...dormidos, ...guardia], true)
+  assert.deepEqual(chips.map((c) => c.texto), ['22 durmiendo', '2 de guardia'])
+  assert.deepEqual(chips.map((c) => c.clave), ['durmiendo', 'guardia'])
+  // recién dormida, antes de que el servidor cambie los estados, ya cuenta igual
+  assert.deepEqual(chipsDe([ag('a', { estado: 'trabajando' }), ag('b')], true).map((c) => c.texto), ['2 durmiendo'])
+  assert.deepEqual(chipsDe([ag('a'), ag('lambda', { despierto_siempre: true })], true).map((c) => c.texto), ['1 durmiendo', '1 de guardia'])
+})
+
+test('solo se abren enlaces web o del mismo sitio, con una forma conocida', () => {
+  for (const bueno of ['https://bralto.io/x', 'http://bralto.io', '/calendario/abc', '/crm/mensajes?de=hoy#arriba', '/analisis']) {
+    assert.equal(enlaceSeguro(bueno), true, bueno)
+  }
+  // «//…» va a otro sitio, y el navegador también lee como «//…» la barra invertida, el tab y el salto de línea
+  const malos = [
+    'javascript:alert(1)', '//otro.sitio/x', '/\\otro.sitio', '/\t/otro.sitio', '/\n/otro.sitio', '/', '', ' /calendario', 'calendario',
+    'https://', 'https:///otro.sitio', 'https://bralto.io/\\x', '/calendario\r/x', null,
+  ]
+  for (const malo of malos) assert.equal(enlaceSeguro(malo), false, JSON.stringify(malo))
 })
 
 test('la marca que explica lo que hace ahora', () => {
@@ -130,16 +149,6 @@ test('lo próximo de la ficha', () => {
   assert.equal(proximoDe(ag('lambda', { despierto_siempre: true }), AHORA, true), 'Cuando le llegue trabajo')
 })
 
-test('lo último que hizo: su marca más nueva con la hora', () => {
-  const marcas = [
-    mk('delta', 'termina', '2026-11-15T03:15:00Z', { texto: 'Revisó 3 piezas' }),
-    mk('delta', 'pasa', '2026-11-16T01:05:00Z', { texto: 'Le pasó el reel a Beta' }),
-  ]
-  assert.equal(ultimoDe('delta', marcas, AHORA), 'Le pasó el reel a Beta · 7:05 p. m.')
-  assert.equal(ultimoDe('delta', [marcas[0]], AHORA), 'Revisó 3 piezas · ayer 9:15 p. m.')
-  assert.equal(ultimoDe('alfa', marcas, AHORA), null)
-})
-
 test('el texto corto del plano', () => {
   const marcas = [mk('epsilon', 'empieza', '2026-11-16T01:10:00Z', { texto: 'Escribe el guion «Ideas para el lunes»' })]
   assert.equal(textoPlano(ag('epsilon', { estado: 'trabajando' }), marcas, [], AHORA), 'Escribe el guion…')
@@ -152,6 +161,15 @@ test('el texto corto del plano', () => {
   assert.equal(textoPlano(ag('delta', { estado: 'durmiendo' }), [], [], AHORA), 'durmiendo')
   assert.equal(textoPlano(ag('gama', { estado: 'fallo' }), [], [], AHORA), 'falló')
   for (const t of ['próx. 12:40 a. m.', 'se quedó a medias']) assert.ok(t.length <= 18, t)
+})
+
+test('en el plano, quien está en la sala dice «en la sala» o «de siesta»', () => {
+  const lugar = (rincon: 'cafe' | 'platica' | 'siesta') => ({ rincon, sitio: 0, con: null, hasta: null, por: 'turno' as const })
+  assert.equal(textoPlano(ag('mu', { horario: '0 2 * * *' }), [], [], AHORA, lugar('cafe')), 'en la sala')
+  assert.equal(textoPlano(ag('eta', { estado: 'pedido' }), [], [], AHORA, lugar('platica')), 'en la sala')
+  assert.equal(textoPlano(ag('alfa', { horario: '0 1 * * *' }), [], [], AHORA, lugar('siesta')), 'de siesta')
+  // sin lugar, lo de siempre
+  assert.equal(textoPlano(ag('mu', { horario: '0 2 * * *' }), [], [], AHORA, undefined), 'próx. 8:00 p. m.')
 })
 
 test('las marcas nuevas son las que no se habían visto, de la más vieja a la más nueva', () => {
@@ -240,6 +258,12 @@ test('la línea del día: solo lo de hoy, cada marca en su área y su hora', () 
   assert.deepEqual(oficina.rayas.map((r) => r.clase), ['fallo'])
   assert.equal(pidas.vacio, 'Nada pedido hoy')
   assert.equal(contenido.vacio, null)
+
+  // cada nombre sabe de quién es (en la página es un botón a su ficha)
+  assert.equal(contenido.barras[0].agente, 'alfa')
+  const etiquetas = dia.filas.flatMap((f) => f.etiquetas)
+  assert.ok(etiquetas.length >= 3)
+  for (const e of etiquetas) assert.equal(nombreDe(e.agente, agentes), e.texto)
 })
 
 test('la línea del día empieza antes de las 6 si hubo algo de madrugada, y muestra la siesta', () => {
@@ -285,4 +309,130 @@ test('las etiquetas de la línea del día no se enciman', () => {
   }).sort((p, q) => p[0] - q[0])
   for (let i = 1; i < tramos.length; i++) assert.ok(tramos[i][0] >= tramos[i - 1][1], JSON.stringify(tramos))
   for (const [a, b] of tramos) assert.ok(a >= 0 && b <= 600, JSON.stringify(tramos))
+})
+
+test('una raya de la línea del día conserva el Knox, el texto y el enlace de su marca', () => {
+  const agentes = [ag('beta', { area: 'Publicación' })]
+  const marcas = [
+    mk('beta', 'entrega', '2026-11-15T20:00:00Z', { texto: 'El plan de la semana', enlace: '/ideas' }), // 2:00 p. m.
+    mk('beta', 'termina', '2026-11-15T16:00:00Z', { texto: 'Subió el reel' }), // 10:00 a. m.
+  ]
+  const proximos = [{ cuando: '8:00 p. m.', agente: 'beta', texto: '«Post del lunes»' }]
+  const rayas = lineaDelDia({ agentes, marcas, proximos, oficina: { dormida: false, desde: null, por: null } }, AHORA).filas[0].rayas
+  const listo = rayas.find((r) => r.clase === 'listo')
+  assert.deepEqual(listo && [listo.agente, listo.texto, listo.enlace], ['beta', 'El plan de la semana', '/ideas'])
+  const hecho = rayas.find((r) => r.clase === 'hecho')
+  assert.deepEqual(hecho && [hecho.agente, hecho.texto, hecho.enlace], ['beta', 'Subió el reel', null])
+  // lo que sigue no tiene enlace: todavía no pasó
+  const sig = rayas.find((r) => r.clase === 'sig')
+  assert.deepEqual(sig && [sig.agente, sig.texto, sig.enlace], ['beta', '«Post del lunes»', null])
+})
+
+test('la lista del día: lo de hoy y lo que sigue hoy, de arriba abajo por hora', () => {
+  const agentes = [
+    ag('theta', { area: 'Contenido', puesto: 0 }),
+    ag('alfa', { area: 'Contenido', puesto: 1, estado: 'trabajando' }),
+    ag('beta', { area: 'Publicación', puesto: 2 }),
+    ag('gama', { area: 'Oficina', puesto: 3, estado: 'fallo' }),
+  ]
+  const marcas = [
+    mk('gama', 'falla', '2026-11-16T01:10:00Z', { texto: 'El cobro no contestó' }), // 7:10 p. m.
+    mk('beta', 'entrega', '2026-11-15T20:00:00Z', { texto: 'El plan de la semana', enlace: '/ideas' }), // 2:00 p. m.
+    mk('theta', 'pasa', '2026-11-15T13:05:00Z', { texto: 'Le pasó el reel a Alfa', para: 'alfa' }), // 7:05 a. m.
+    mk('theta', 'termina', '2026-11-15T13:00:00Z', { texto: 'Revisó lo de la noche' }), // 7:00 a. m.
+    mk('alfa', 'empieza', '2026-11-16T01:00:00Z'), // empezar no es una raya
+    mk('theta', 'termina', '2026-11-15T03:00:00Z'), // ayer: no sale
+    mk('nadie', 'termina', '2026-11-15T15:00:00Z'), // un Knox que no está en el catálogo: tampoco (como en la línea)
+  ]
+  const proximos = [
+    { cuando: '8:00 p. m.', agente: 'beta', texto: '«Post del lunes»' },
+    { cuando: '10:00 p. m.', agente: 'alfa', texto: 'Oficio' },
+    { cuando: '6:00 a. m.', agente: 'theta', texto: 'Oficio' }, // ya es de mañana
+  ]
+  const lista = listaDelDia({ agentes, marcas, proximos, oficina: { dormida: false, desde: null, por: null } }, AHORA)
+  assert.deepEqual(lista.map((e) => [e.cuando, e.agente, e.clase, e.futuro]), [
+    ['7:00 a. m.', 'theta', 'hecho', false],
+    ['7:05 a. m.', 'theta', 'suave', false],
+    ['2:00 p. m.', 'beta', 'listo', false],
+    ['7:10 p. m.', 'gama', 'fallo', false],
+    ['8:00 p. m.', 'beta', 'sig', true],
+    ['10:00 p. m.', 'alfa', 'sig', true],
+  ])
+  assert.deepEqual([lista[2].texto, lista[2].enlace], ['El plan de la semana', '/ideas'])
+  assert.deepEqual([lista[4].texto, lista[4].enlace], ['«Post del lunes»', null])
+  // lo que sigue va siempre después de lo hecho, aunque una marca llegue con la hora adelantada
+  const adelantada = [...marcas, mk('beta', 'publica', '2026-11-16T02:30:00Z', { texto: 'Publicó antes de tiempo' })] // 8:30 p. m.
+  const conAdelantada = listaDelDia({ agentes, marcas: adelantada, proximos, oficina: { dormida: false, desde: null, por: null } }, AHORA)
+  assert.deepEqual(conAdelantada.map((e) => e.futuro), [false, false, false, false, false, true, true])
+  // dormida, lo que sigue está en pausa: no sale
+  const dormida = listaDelDia({ agentes, marcas, proximos, oficina: { dormida: true, desde: '2026-11-16T00:00:00Z', por: null } }, AHORA)
+  assert.deepEqual(dormida.map((e) => e.futuro), [false, false, false, false])
+})
+
+// ---------- La copia del foro y lo optimista (usarOficina) ----------
+const SOCIAL: Social = {
+  foro: [{ id: 'p1', de: 'alfa', tipo: 'nota', titulo: 'T', texto: 'x', foto_id: null, likes: 3, te_gusta: false, idea_id: null, mostrar_desde: '2026-11-15T15:00:00Z', comentarios: [] }],
+  ideas: [{ id: 'i1', texto: 'Idea', por_que: 'Porque sí', de: 'beta', post_id: 'p1', estado: 'nueva', mostrar_desde: '2026-11-15T15:00:00Z', decidida_en: null }],
+  fotos: [],
+  ronda: null,
+}
+const MIN = 60_000
+
+test('la página pide el foro con la firma de su copia, salvo que no tenga copia o ya tenga 30 min', () => {
+  const copia = copiaSocial({ social: SOCIAL, firmaSocial: 'ab12cd34' }, 1_000)
+  assert.deepEqual(copia, { firma: 'ab12cd34', recibido: 1_000 })
+  assert.equal(urlOficina(copia, 1_000 + 29 * MIN), '/api/oficina?social=ab12cd34')
+  assert.equal(urlOficina(copia, 1_000 + 30 * MIN), '/api/oficina', 'a los 30 min se pide entero: los enlaces de las fotos vencen a la hora')
+  // '' es lo que contesta el servidor cuando no pudo armar el bloque: no hay copia, así que se vuelve a pedir entero
+  assert.deepEqual(copiaSocial({ social: null, firmaSocial: '' }, 1_000), { firma: null, recibido: null })
+  // con social null y una firma, tampoco hay copia nueva (la página se queda con la que tenía)
+  assert.deepEqual(copiaSocial({ social: null, firmaSocial: 'ab12cd34' }, 1_000), { firma: null, recibido: null })
+  assert.equal(urlOficina(copiaSocial({ social: null, firmaSocial: '' }, 1_000), 2_000), '/api/oficina')
+  assert.equal(urlOficina(copiaSocial(null, 1_000), 2_000), '/api/oficina')
+  assert.equal(urlOficina(null, 2_000), '/api/oficina')
+})
+
+test('lo optimista se ve al tiro y se queda hasta que el servidor lo confirma (al menos 70 s, como mucho 3 min)', () => {
+  const ideas = new Map([['i1', { valor: 'sirve' as const, desde: 0 }]])
+  const likes = new Map([['p1', { valor: true, desde: 0 }]])
+  const visto = conOptimistas(SOCIAL, ideas, likes)
+  assert.equal(visto.ideas[0].estado, 'sirve')
+  assert.equal(visto.foro[0].te_gusta, true)
+  assert.equal(SOCIAL.ideas[0].estado, 'nueva', 'no toca la copia del servidor')
+  assert.equal(conOptimistas(SOCIAL, new Map(), new Map()), SOCIAL)
+
+  const real = (estado: string) => (id: string) => (id === 'i1' ? estado : undefined)
+  // otra instancia del servidor puede traer todavía lo de antes: se queda
+  assert.equal(soltarOptimistas(ideas, real('nueva'), 30_000), false)
+  // aunque ya diga lo mismo, antes de 70 s se queda (una consulta siguiente podría traer lo viejo)
+  assert.equal(soltarOptimistas(ideas, real('sirve'), 60_000), false)
+  assert.equal(ideas.size, 1)
+  // después de 70 s, si el servidor todavía dice otra cosa, se queda; si ya lo confirma, se suelta
+  assert.equal(soltarOptimistas(ideas, real('nueva'), 90_000), false)
+  assert.equal(soltarOptimistas(ideas, real('sirve'), 90_000), true)
+  assert.equal(ideas.size, 0)
+  // a los 3 min se suelta igual (lo pudo cambiar otro)
+  assert.equal(soltarOptimistas(likes, () => false, 179_000), false)
+  assert.equal(soltarOptimistas(likes, () => false, 180_000), true)
+  assert.equal(likes.size, 0)
+})
+
+test('si dos toques seguidos no se guardan, termina viéndose lo del servidor (fallen en el orden que fallen)', () => {
+  const a = { valor: 'sirve' as const, desde: 0 } // «Me sirve»
+  const b = { valor: 'nueva' as const, desde: 1 } // el segundo toque lo deshace
+  // falla primero el primero: se sigue viendo el segundo (todavía en camino); cuando falla ese, lo del servidor
+  let r = alFallar([a, b], b, a)
+  assert.deepEqual(r, { vivas: [b], visible: b })
+  r = alFallar(r.vivas, r.visible ?? undefined, b)
+  assert.deepEqual(r, { vivas: [], visible: null })
+  // falla primero el segundo: se ve el primero (en camino o ya guardado: es lo que va a tener el servidor); cuando
+  // falla ese también, lo del servidor
+  r = alFallar([a, b], b, b)
+  assert.deepEqual(r, { vivas: [a], visible: a })
+  r = alFallar(r.vivas, r.visible ?? undefined, a)
+  assert.deepEqual(r, { vivas: [], visible: null })
+  // lo que ya se soltó (el servidor ya lo confirmó) no vuelve a aparecer
+  assert.deepEqual(alFallar([a, b], undefined, b), { vivas: [a], visible: null })
+  // una que ya no estaba entre las vivas no cambia nada
+  assert.deepEqual(alFallar([b], b, a), { vivas: [b], visible: b })
 })

@@ -28,6 +28,7 @@ export type Agente = {
   despierto_siempre: boolean
   dura_min: number
   ultima_revision: string | null
+  lugar: string | null
 }
 
 export type TipoMarca = 'empieza' | 'termina' | 'falla' | 'pasa' | 'entrega' | 'publica' | 'saltada'
@@ -91,8 +92,87 @@ export type Proximo = {
 export type Snapshot = {
   ahora: string
   oficina: EstadoOficina
-  agentes: (Agente & { estado: EstadoAgente; numeros: Numeros })[]
+  agentes: (Agente & { estado: EstadoAgente; numeros: Numeros; semana: DiaSemana[] })[]
   marcas: Marca[]
   paraTi: Marca[]
   proximos: Proximo[]
+  chat: LineaTertulia[] // la tertulia de hoy que ya salió
+  escribiendo: string | null // quién dice la próxima línea, si sale en 3 min o menos
+  pubs: Pub[] // las 10 próximas publicaciones programadas
 }
+
+export type AgenteSnap = Snapshot['agentes'][number]
+
+export type Pub = { id: string, titulo: string, publicar_en: string, prueba: boolean }
+
+export type Rincon = 'cafe' | 'platica' | 'siesta'
+
+export type LineaTertulia = {
+  id: string
+  de: string
+  para: string | null
+  texto: string
+  rincon: 'cafe' | 'platica' | null
+  idea_id: string | null
+  mostrar_desde: string
+}
+
+// dia = AAAA-MM-DD de Costa Rica
+export type FilaSemana = { agente: string, dia: string, tareas: number, falla: boolean }
+export type DiaSemana = { dia: string, etiqueta: string, tareas: number, falla: boolean }
+
+export type Comentario = {
+  id: string
+  post_id: string
+  de: string
+  texto: string
+  en_respuesta_a: string | null
+  idea_id: string | null
+  mostrar_desde: string
+}
+
+export type Post = {
+  id: string
+  de: string
+  tipo: 'nota' | 'foto' | 'debate' | 'idea'
+  titulo: string
+  texto: string
+  foto_id: string | null
+  likes: number
+  te_gusta: boolean
+  idea_id: string | null
+  mostrar_desde: string
+  comentarios: Comentario[]
+}
+
+export type EstadoIdea = 'nueva' | 'sirve' | 'no_va'
+
+export type Idea = {
+  id: string
+  texto: string
+  por_que: string
+  de: string
+  post_id: string | null
+  estado: EstadoIdea
+  mostrar_desde: string
+  decidida_en: string | null
+}
+
+export type Foto = { id: string, tipo: 'retrato' | 'grupo', agentes: string[], url: string, pie: string | null }
+
+export type Ronda = { fecha: string, resultado: 'ok' | 'falla' | 'saltada', detalle: string }
+
+export type FilaTeToca = {
+  clave: 'mensajes' | 'tareas' | 'grabar' | 'ideas'
+  n: number
+  texto: string
+  sub: string
+  boton: string
+  href: string
+}
+
+// El foro, las ideas, las fotos (con su enlace firmado) y la ronda de hoy: viajan solo cuando cambian
+export type Social = { foro: Post[], ideas: Idea[], fotos: Foto[], ronda: Ronda | null }
+
+// GET /api/oficina: `social` es null cuando la firma no cambió (la página se queda con el que tiene)
+export type RespuestaOficina = Snapshot & { teToca: FilaTeToca[], firmaSocial: string, social: Social | null }

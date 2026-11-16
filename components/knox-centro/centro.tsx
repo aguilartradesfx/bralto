@@ -59,12 +59,12 @@ function direccionDe(v: Vista): string {
   return `${url.pathname}${url.search}`
 }
 
-const VISTA_INFO: Record<Exclude<Vista, 'hoy'>, { titulo: string; sub: string; enlace?: { texto: string; href: string } }> = {
+const VISTA_INFO: Record<Exclude<Vista, 'hoy'>, { titulo: string; sub: string; enlace?: { texto: string; href: string; nueva?: boolean } }> = {
   ventas: { titulo: 'Ventas', sub: 'Cómo va el camino a la venta', enlace: { texto: 'Abrir en el CRM', href: '/crm/pipeline' } },
   redes: { titulo: 'Redes', sub: 'Instagram y lo que sale', enlace: { texto: 'Abrir el calendario', href: '/calendario' } },
   agenda: { titulo: 'Agenda', sub: 'Hoy y mañana: citas, posts y tareas', enlace: { texto: 'Abrir las tareas', href: '/crm/tareas' } },
   conexiones: { titulo: 'Conexiones', sub: 'Lo que Knox puede leer, revisado de verdad', enlace: { texto: 'Ajustes de Knox', href: '/crm/knox' } },
-  oficina: { titulo: 'Oficina', sub: 'Quién trabaja, qué te dejaron y qué sigue', enlace: { texto: 'Abrir en el panel', href: 'https://admin.bralto.io/oficina' } },
+  oficina: { titulo: 'Oficina', sub: 'Quién trabaja, qué te dejaron y qué sigue', enlace: { texto: 'Abrir en su pestaña', href: 'https://admin.bralto.io/knox-office', nueva: true } },
 }
 
 // Los paneles se vuelven a dibujar solo si cambian sus datos (el subtítulo cambia varias veces por segundo)

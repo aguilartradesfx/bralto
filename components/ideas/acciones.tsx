@@ -12,13 +12,13 @@ const DECIDIDA: Record<Decision, { titulo: string; detalle: string }> = {
 }
 
 // Los botones de cada idea: «Que lo haga Knox», «Lo grabo yo», «Descartar», y deshacer o reintentar
-export function Acciones({ id, estado, decision, conAnalisis }: { id: string; estado: EstadoIdea; decision: Decision | null; conAnalisis: boolean }) {
+export function Acciones({ id, estado, decision, grabada, conAnalisis }: { id: string; estado: EstadoIdea; decision: Decision | null; grabada: boolean; conAnalisis: boolean }) {
   const { enviar, ocupado, error } = useEnvio()
   const hacer = (accion: Accion) => () => void enviar(`/api/ideas/${id}`, 'PATCH', { accion })
   const giro = <Loader2 size={15} {...ICONO} className="animate-spin" />
 
   if (decision) {
-    const d = DECIDIDA[decision]
+    const d = decision === 'yo' && grabada ? { titulo: 'Ya la grabaste', detalle: 'Ya no sale en «Te toca».' } : DECIDIDA[decision]
     return (
       <div className="flex flex-wrap items-center gap-3">
         <span className="pn-pill">
@@ -26,7 +26,13 @@ export function Acciones({ id, estado, decision, conAnalisis }: { id: string; es
           {d.titulo}
         </span>
         <span className="text-[13px] text-fg/50">{d.detalle}</span>
-        <Boton onClick={hacer('deshacer')} disabled={ocupado} className="ml-auto !px-3 !py-1.5 !text-xs">
+        {decision === 'yo' && !grabada && (
+          <Boton principal onClick={hacer('grabada')} disabled={ocupado} className="ml-auto !px-3 !py-1.5 !text-xs">
+            {ocupado ? giro : <Check size={13} {...ICONO} />}
+            Ya la grabé
+          </Boton>
+        )}
+        <Boton onClick={hacer('deshacer')} disabled={ocupado} className={`${decision === 'yo' && !grabada ? '' : 'ml-auto '}!px-3 !py-1.5 !text-xs`}>
           {ocupado ? giro : <Undo2 size={13} {...ICONO} />}
           Deshacer
         </Boton>

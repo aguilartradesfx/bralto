@@ -26,6 +26,11 @@ export function memo<T>(clave: string, ms: number, leer: () => Promise<T>): Prom
   return valor
 }
 
+// La próxima lectura de esa clave va a la fuente (después de escribir algo que la cambia)
+export function olvidar(clave: string) {
+  guardado.delete(clave)
+}
+
 export function valor<T>(r: PromiseSettledResult<T>, nombre: string): T | null {
   if (r.status === 'fulfilled') return r.value
   console.error(`[knox-centro] no se pudo leer ${nombre}:`, r.reason instanceof Error ? r.reason.message : r.reason)

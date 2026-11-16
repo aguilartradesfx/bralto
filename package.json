@@ -11,6 +11,9 @@
     "plan:seed": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/plan-q4-seed.ts",
     "crm:importar": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/crm/importar-ghl.ts",
     "oficina:marcar": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/oficina/marcar.ts",
+    "oficina:tertulia": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/oficina/tertulia.ts",
+    "oficina:foto": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/oficina/foto.ts",
+    "oficina:foto-grupo": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/oficina/foto-grupo.ts",
     "oficina:sembrar": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/oficina/sembrar.ts",
     "crm:bandeja": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/crm/bandeja-inicial.ts"
   },

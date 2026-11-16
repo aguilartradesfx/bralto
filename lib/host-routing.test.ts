@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { hostKind, isContractSigningPath, isPanelPath, isPrivateSurface, PRIVATE_SURFACE_JS, resolveHostRouting } from './host-routing.ts'
+import { hostKind, OFICINA_PATH, isContractSigningPath, isPanelPath, isPrivateSurface, PRIVATE_SURFACE_JS, resolveHostRouting } from './host-routing.ts'
 
 test('hostKind reconoce hosts con mayúsculas y puerto', () => {
   assert.equal(hostKind('Admin.Bralto.io:443'), 'admin')
@@ -15,13 +15,13 @@ test('hostKind reconoce hosts con mayúsculas y puerto', () => {
 
 test('isPanelPath: secciones del panel y login', () => {
   for (const p of ['/admin', '/contratos', '/contratos/nuevo', '/contratos/abc/editar', '/clientes',
-    '/solicitudes', '/solicitudes/nueva', '/usuarios', '/login', '/propuestas', '/plan-q4', '/calendario', '/calendario/abc', '/crm', '/crm/pipeline', '/crm/abc', '/knox', '/ajustes', '/pronto/finanzas', '/ideas', '/analisis', '/oficina']) {
+    '/solicitudes', '/solicitudes/nueva', '/usuarios', '/login', '/propuestas', '/plan-q4', '/calendario', '/calendario/abc', '/crm', '/crm/pipeline', '/crm/abc', '/knox', '/ajustes', '/pronto/finanzas', '/ideas', '/analisis', '/oficina', '/knox-office']) {
     assert.equal(isPanelPath(p), true, p)
   }
 })
 
 test('isPanelPath: rutas públicas y falsos prefijos', () => {
-  for (const p of ['/', '/es', '/es/precios', '/c/abc', '/propuestas/abc123', '/contratosx', '/loginx', '/admin-foo', '/plan-q4x', '/calendariox', '/crmx', '/knoxx', '/es/knox', '/ajustesx', '/prontox', '/ideasx', '/analisisx', '/oficinax']) {
+  for (const p of ['/', '/es', '/es/precios', '/c/abc', '/propuestas/abc123', '/contratosx', '/loginx', '/admin-foo', '/plan-q4x', '/calendariox', '/crmx', '/knoxx', '/es/knox', '/ajustesx', '/prontox', '/ideasx', '/analisisx', '/oficinax', '/knox-officex']) {
     assert.equal(isPanelPath(p), false, p)
   }
 })
@@ -130,4 +130,12 @@ test('PRIVATE_SURFACE_JS (snippet inline de GTM) decide igual que isPrivateSurfa
     // location.hostname del navegador nunca trae puerto
     assert.equal(evaluate({ hostname: host, pathname }), expected, `${host}${pathname}`)
   }
+})
+
+test('/knox-office: el panel lo sirve, y desde knox.bralto.io se manda a admin (nunca a knox)', () => {
+  assert.deepEqual(resolveHostRouting('admin.bralto.io', '/knox-office'), { action: 'next' })
+  assert.deepEqual(resolveHostRouting('knox.bralto.io', '/knox-office'), { action: 'redirect', url: 'https://admin.bralto.io/knox-office' })
+  assert.deepEqual(resolveHostRouting('www.bralto.io', '/knox-office'), { action: 'redirect', url: 'https://admin.bralto.io/knox-office' })
+  assert.deepEqual(resolveHostRouting('localhost:3000', '/knox-office'), { action: 'next' })
+  assert.equal(OFICINA_PATH, '/knox-office')
 })

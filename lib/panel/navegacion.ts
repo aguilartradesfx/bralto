@@ -23,6 +23,8 @@ export interface ItemNav {
   icono: IconoNav
   pronto?: boolean
   cuenta?: Cuenta
+  // Se abre en otra pestaña del navegador (pantalla completa propia, fuera del panel)
+  nueva?: boolean
 }
 
 export interface GrupoNav {
@@ -74,7 +76,7 @@ export const NAV: EntradaNav[] = [
       { href: '/calendario', label: 'Calendario de redes', icono: 'calendario' },
       { href: '/ideas', label: 'Ideas', icono: 'ideas' },
       { href: '/analisis', label: 'Análisis de reels', icono: 'analisis' },
-      { href: '/oficina', label: 'Oficina', icono: 'oficina' },
+      { href: '/knox-office', label: 'Oficina', icono: 'oficina', nueva: true },
       pronto('campanas', 'Campañas', 'campanas'),
       pronto('secuencias', 'Secuencias de correo', 'secuencias'),
       pronto('plantillas', 'Plantillas', 'plantillas'),

@@ -1,10 +1,13 @@
 // Lo que la página de la Oficina de Knox dice con palabras: etiquetas de estado, horas de Costa Rica, qué hace cada Knox,
-// lo próximo y la línea del día. Lógica pura (sin DOM): la usa components/oficina y se prueba con node --test.
-import type { Agente, EstadoAgente, EstadoOficina, Marca, Numeros, Proximo } from './tipos.ts'
+// lo próximo y la línea del día; y cómo se queda con el foro (la firma de su copia y lo optimista).
+// Lógica pura (sin DOM): la usa components/oficina y se prueba con node --test.
+import type { Agente, AgenteSnap, EstadoAgente, EstadoIdea, EstadoOficina, Marca, Proximo, RespuestaOficina, Social } from './tipos.ts'
+import type { LugarSala } from './sala.ts'
 import { horaCR, siguienteCorrida } from './horario.ts'
 import { FRECUENTE_MIN } from './estado.ts'
+import { socialVencido } from './social.ts'
 
-export type AgenteSnap = Agente & { estado: EstadoAgente; numeros: Numeros }
+export type { AgenteSnap }
 
 const MIN = 60_000
 const HORA = 60 * MIN
@@ -70,10 +73,6 @@ export function momentoCR(fecha: Date, ahora: Date): string {
   return `${fechaCorta(fecha.getTime())} ${h}`
 }
 
-export function encabezadoCR(ahora: Date): string {
-  return `${capital(diaSemana(ahora.getTime()))} · ${horaCR(ahora)}`
-}
-
 // 'desde las 7:00 p. m.', 'desde la 1:05 p. m.' o 'desde ayer a las 11:50 p. m.'
 export function desdeCR(fecha: Date, ahora: Date): string {
   return 'desde ' + (diaCR(fecha.getTime()) === diaCR(ahora.getTime()) ? lasCR(fecha) : cuandoCR(fecha, ahora))
@@ -91,27 +90,40 @@ export function recortar(s: string, n: number): string {
   return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s
 }
 
-// Las cuentas de arriba: las cinco de siempre (aunque estén en cero), y «a medias» y «durmiendo» solo si hay.
-// Los que esperan que les pidas algo y los que todavía no empiezan no cambian solos: se ven en la oficina, no aquí.
-// Dormida, solo las que tienen a alguien (si no, serían cinco ceros).
-export type Chip = { estado: EstadoAgente; n: number; texto: string }
-const ORDEN: EstadoAgente[] = ['trabajando', 'publicando', 'listo', 'fallo', 'a-medias', 'descansando', 'durmiendo']
-const SIEMPRE = new Set<EstadoAgente>(['trabajando', 'publicando', 'listo', 'fallo', 'descansando'])
+// Solo se abren enlaces con una forma conocida: una ruta del sitio («/calendario/…») o «http(s)://» y su sitio. Una marca
+// mal escrita no puede meter un «javascript:» ni un «//otro.sitio», y en ninguna parte van barras invertidas ni
+// caracteres de control: el navegador los quita o los lee como «/», y «/\otro.sitio» o «/<tab>/otro.sitio» se irían a
+// otro sitio.
+const FORMA_SEGURA = /^(\/[a-z0-9]|https?:\/\/[a-z0-9])/i
+const RARO = /[\\\u0000-\u001f\u007f]/
+export const enlaceSeguro = (e: string | null): e is string => !!e && FORMA_SEGURA.test(e) && !RARO.test(e)
 
-function cuenta(e: EstadoAgente, n: number): string {
+// Las cuentas de arriba. Despierta: las cuatro de siempre (aunque estén en cero) y «a medias» solo si hay; los que
+// descansan, los que esperan que les pidas algo y los que todavía no empiezan se ven en la oficina, no aquí.
+// Dormida: los que duermen y los que se quedan de guardia (los despierto_siempre), sin ceros. Se cuentan por quién
+// se queda despierto, no por el estado: así sale bien también en el ratito antes de que el servidor lo cambie.
+export type Chip = { clave: EstadoAgente | 'guardia'; n: number; texto: string }
+const ORDEN: EstadoAgente[] = ['trabajando', 'publicando', 'listo', 'fallo', 'a-medias']
+const SIEMPRE = new Set<Chip['clave']>(['trabajando', 'publicando', 'listo', 'fallo'])
+
+function cuenta(clave: Chip['clave'], n: number): string {
   const uno = n === 1
-  switch (e) {
+  switch (clave) {
     case 'listo': return uno ? '1 te dejó algo' : `${n} te dejaron algo`
     case 'fallo': return uno ? '1 falló' : `${n} fallaron`
     case 'a-medias': return uno ? '1 se quedó a medias' : `${n} se quedaron a medias`
-    default: return `${n} ${e}` // trabajando, publicando, descansando, durmiendo
+    case 'guardia': return `${n} de guardia`
+    default: return `${n} ${clave}` // trabajando, publicando, durmiendo
   }
 }
 
-export function chipsDe(agentes: { estado: EstadoAgente }[], dormida: boolean): Chip[] {
-  return ORDEN.map((estado) => ({ estado, n: agentes.filter((a) => a.estado === estado).length }))
-    .filter((c) => c.n > 0 || (!dormida && SIEMPRE.has(c.estado)))
-    .map((c) => ({ ...c, texto: cuenta(c.estado, c.n) }))
+export function chipsDe(agentes: { estado: EstadoAgente; despierto_siempre: boolean }[], dormida: boolean): Chip[] {
+  const chip = (clave: Chip['clave'], n: number): Chip => ({ clave, n, texto: cuenta(clave, n) })
+  if (dormida) {
+    const guardia = agentes.filter((a) => a.despierto_siempre).length
+    return [chip('durmiendo', agentes.length - guardia), chip('guardia', guardia)].filter((c) => c.n > 0)
+  }
+  return ORDEN.map((clave) => chip(clave, agentes.filter((a) => a.estado === clave).length)).filter((c) => c.n > 0 || SIEMPRE.has(c.clave))
 }
 
 export const trabajandoAhora = (agentes: { estado: EstadoAgente }[]): number =>
@@ -188,16 +200,11 @@ export function proximoDe(a: Agente, ahora: Date, dormida: boolean): string {
   return sig ? capital(cuandoCR(sig, ahora, { hoy: true })) : 'Sin hora fija'
 }
 
-// «Lo último que hizo»: su marca más nueva (de las últimas 24 h) con la hora
-export function ultimoDe(id: string, marcas: Marca[], ahora: Date): string | null {
-  const m = masNueva(marcas.filter((x) => x.agente === id))
-  return m ? `${m.texto} · ${momentoCR(new Date(m.creado_en), ahora)}` : null
-}
-
-// El texto chiquito debajo de cada carita del plano (cabe en 18 letras)
+// El texto chiquito debajo de cada carita del plano (cabe en 18 letras). Quien está en la sala: «en la sala» o «de siesta».
 const corto = (s: string) => recortar(s, 18)
 
-export function textoPlano(a: AgenteSnap, marcas: Marca[], paraTi: Marca[], ahora: Date): string {
+export function textoPlano(a: AgenteSnap, marcas: Marca[], paraTi: Marca[], ahora: Date, lugar?: LugarSala): string {
+  if (lugar) return lugar.rincon === 'siesta' ? 'de siesta' : 'en la sala'
   switch (a.estado) {
     case 'trabajando':
     case 'publicando':
@@ -235,9 +242,11 @@ export function horaDeTexto(s: string): number | null {
 // naranja = te dejó algo, rojo = falló, tenue = le pasó trabajo a otro) y punteadas para lo que sigue hoy.
 // Barras: las corridas abiertas, de su inicio a ahora. Las posiciones van en % del ancho de la pista.
 export type ClaseRaya = 'hecho' | 'suave' | 'sig' | 'publicando' | 'listo' | 'fallo'
-export type RayaDia = { x: number; clase: ClaseRaya; titulo: string }
-export type BarraDia = { x: number; w: number; estado: EstadoAgente; titulo: string; texto: string | null }
-export type EtiquetaDia = { texto: string; x: number; lado: 'der' | 'izq' }
+// agente, texto y enlace: de quién es, su frase y a dónde lleva (en grande, cada raya es un botón con su frase y «Abrir»)
+export type RayaDia = { x: number; clase: ClaseRaya; titulo: string; agente: string; texto: string; enlace: string | null }
+// agente: de quién es (en la página, la barra y el nombre abren su ficha)
+export type BarraDia = { x: number; w: number; estado: EstadoAgente; titulo: string; texto: string | null; agente: string }
+export type EtiquetaDia = { texto: string; x: number; lado: 'der' | 'izq'; agente: string }
 export type FilaDia = { area: string; rayas: RayaDia[]; barras: BarraDia[]; etiquetas: EtiquetaDia[]; vacio: string | null }
 export type LineaDia = { ejes: { x: number; texto: string }[]; ahora: number; sueno: { x: number; w: number } | null; filas: FilaDia[] }
 
@@ -250,13 +259,26 @@ const CLASE: Partial<Record<Marca['tipo'], ClaseRaya>> = { termina: 'hecho', fal
 // Qué etiquetas se ponen primero si no caben todas (menor = antes)
 const PRIORIDAD: [ClaseRaya, number][] = [['fallo', 1], ['listo', 2], ['publicando', 4], ['hecho', 4]]
 
-type Candidata = { texto: string; x: number; x2: number; prioridad: number; orden: number; futuro: boolean; clave: string; barra?: BarraDia }
+type Candidata = { texto: string; agente: string; x: number; x2: number; prioridad: number; orden: number; futuro: boolean; clave: string; barra?: BarraDia }
+type DatosDia = { agentes: AgenteSnap[]; marcas: Marca[]; proximos: Proximo[]; oficina: EstadoOficina }
 
-export function lineaDelDia(
-  d: { agentes: AgenteSnap[]; marcas: Marca[]; proximos: Proximo[]; oficina: EstadoOficina },
-  ahora: Date,
-  anchoPx = 900,
-): LineaDia {
+// Lo que sigue hoy, de «Lo próximo» (dormida: nada, está en pausa). Viene en orden; si la hora baja, ya es de mañana.
+function siguenHoy(d: DatosDia, hAhora: number): { p: Proximo; a: AgenteSnap; h: number }[] {
+  const siguen: { p: Proximo; a: AgenteSnap; h: number }[] = []
+  if (d.oficina.dormida) return siguen
+  let previa = -Infinity
+  for (const p of d.proximos) {
+    const h = horaDeTexto(p.cuando)
+    if (h == null) continue
+    if (h < previa || h < hAhora - 0.5) break
+    previa = h
+    const a = d.agentes.find((x) => x.id === p.agente)
+    if (a && h >= hAhora) siguen.push({ p, a, h })
+  }
+  return siguen
+}
+
+export function lineaDelDia(d: DatosDia, ahora: Date, anchoPx = 900): LineaDia {
   const ahoraMs = ahora.getTime(), hoy = diaCR(ahoraMs), hAhora = horasCR(ahoraMs)
   const deHoy = d.marcas.filter((m) => diaCR(t(m.creado_en)) === hoy)
   const desde = d.oficina.dormida && d.oficina.desde ? t(d.oficina.desde) : NaN
@@ -292,40 +314,31 @@ export function lineaDelDia(
       const clase = CLASE[m.tipo]
       if (!clase) continue
       const ms = t(m.creado_en), x = X(horasCR(ms))
-      fila.rayas.push({ x, clase, titulo: `${horaCR(new Date(ms))} · ${a.nombre} · ${m.texto}` })
+      fila.rayas.push({ x, clase, titulo: `${horaCR(new Date(ms))} · ${a.nombre} · ${m.texto}`, agente: a.id, texto: m.texto, enlace: m.enlace })
       ultima[clase] = { x, ms }
     }
     for (const [clase, prioridad] of PRIORIDAD) {
       const u = ultima[clase]
-      if (u) cands[i].push({ texto: a.nombre, x: u.x, x2: u.x, prioridad, orden: u.ms, futuro: false, clave: a.id })
+      if (u) cands[i].push({ texto: a.nombre, agente: a.id, x: u.x, x2: u.x, prioridad, orden: u.ms, futuro: false, clave: a.id })
     }
     if (a.estado === 'trabajando' || a.estado === 'a-medias') {
       const emp = masNueva(d.marcas.filter((m) => m.agente === a.id && m.tipo === 'empieza'))
       if (emp) {
         const ms = t(emp.creado_en)
         const x0 = diaCR(ms) === hoy ? X(horasCR(ms)) : 0
-        const barra: BarraDia = { x: x0, w: Math.max(0.3, xAhora - x0), estado: a.estado, titulo: `${a.nombre} · ${emp.texto} · ${desdeCR(new Date(ms), ahora)}`, texto: null }
+        const barra: BarraDia = { x: x0, w: Math.max(0.3, xAhora - x0), estado: a.estado, titulo: `${a.nombre} · ${emp.texto} · ${desdeCR(new Date(ms), ahora)}`, texto: null, agente: a.id }
         fila.barras.push(barra)
         // orden negativo: entre las barras va primero la que empezó antes (la que se ve de borde a borde)
-        cands[i].push({ texto: a.nombre, x: x0, x2: x0 + barra.w, prioridad: 0, orden: -ms, futuro: false, clave: a.id, barra })
+        cands[i].push({ texto: a.nombre, agente: a.id, x: x0, x2: x0 + barra.w, prioridad: 0, orden: -ms, futuro: false, clave: a.id, barra })
       }
     }
   }
 
-  // lo que sigue hoy, punteado (dormida: en pausa). «Lo próximo» viene en orden; si la hora baja, ya es de mañana
-  if (!d.oficina.dormida) {
-    let previa = -Infinity
-    for (const p of d.proximos) {
-      const h = horaDeTexto(p.cuando)
-      if (h == null) continue
-      if (h < previa || h < hAhora - 0.5) break
-      previa = h
-      const a = d.agentes.find((x) => x.id === p.agente)
-      if (!a || h < hAhora) continue
-      const i = areas.indexOf(a.area), x = X(h)
-      filas[i].rayas.push({ x, clase: 'sig', titulo: `${p.cuando} · ${a.nombre} · ${p.texto}` })
-      cands[i].push({ texto: a.nombre, x, x2: x, prioridad: 3, orden: -h, futuro: true, clave: a.id + ':sig' })
-    }
+  // lo que sigue hoy, punteado
+  for (const { p, a, h } of siguenHoy(d, hAhora)) {
+    const i = areas.indexOf(a.area), x = X(h)
+    filas[i].rayas.push({ x, clase: 'sig', titulo: `${p.cuando} · ${a.nombre} · ${p.texto}`, agente: a.id, texto: p.texto, enlace: null })
+    cands[i].push({ texto: a.nombre, agente: a.id, x, x2: x, prioridad: 3, orden: -h, futuro: true, clave: a.id + ':sig' })
   }
 
   // etiquetas: las más importantes primero, sin encimarse, sin tapar una barra ni pasar la línea de ahora
@@ -337,8 +350,8 @@ export function lineaDelDia(
       a >= 0 && b <= anchoPx &&
       ocupado.every(([p, q]) => b + SEP_PX <= p || a >= q + SEP_PX) &&
       barras.every(([p, q], j) => fila.barras[j] === propia || b + 2 <= p || a >= q + 2)
-    const poner = (texto: string, x: number, lado: 'der' | 'izq', a: number, b: number) => {
-      fila.etiquetas.push({ texto, x, lado })
+    const poner = (c: Candidata, lado: 'der' | 'izq', a: number, b: number) => {
+      fila.etiquetas.push({ texto: c.texto, x: c.x, lado, agente: c.agente })
       ocupado.push([a, b])
     }
     if (!fila.rayas.some((r) => r.clase !== 'sig') && !fila.barras.length) {
@@ -356,7 +369,7 @@ export function lineaDelDia(
         if (p2 - p1 >= w + 10 && libre(p1, p1 + w + 10, c.barra)) {
           c.barra.texto = c.texto
           ocupado.push([p1, p1 + w + 10])
-        } else if (libre(p1 - SEP_PX - w, p1 - SEP_PX)) poner(c.texto, c.x, 'izq', p1 - SEP_PX - w, p1 - SEP_PX)
+        } else if (libre(p1 - SEP_PX - w, p1 - SEP_PX)) poner(c, 'izq', p1 - SEP_PX - w, p1 - SEP_PX)
         else return
         puestas.add(c.clave)
         return
@@ -364,8 +377,8 @@ export function lineaDelDia(
       const derA = p1 + SEP_PX, derB = p1 + SEP_PX + w, izqA = p1 - SEP_PX - w, izqB = p1 - SEP_PX
       const derOk = c.futuro ? libre(derA, derB) : derB <= pxAhora - 2 && libre(derA, derB)
       const izqOk = c.futuro ? izqA >= pxAhora + 2 && libre(izqA, izqB) : libre(izqA, izqB)
-      if (derOk) poner(c.texto, c.x, 'der', derA, derB)
-      else if (izqOk) poner(c.texto, c.x, 'izq', izqA, izqB)
+      if (derOk) poner(c, 'der', derA, derB)
+      else if (izqOk) poner(c, 'izq', izqA, izqB)
       else return
       puestas.add(c.clave)
     })
@@ -377,4 +390,90 @@ export function lineaDelDia(
     sueno = { x: x0, w: Math.max(0, xAhora - x0) }
   }
   return { ejes, ahora: xAhora, sueno, filas }
+}
+
+// La línea del día como lista (al lado, donde a lo ancho no cabe): las mismas rayas de lineaDelDia, de arriba abajo
+// por hora. Lo hecho hoy va primero y lo que sigue hoy después (futuro), aunque una marca llegue con la hora adelantada:
+// entre las dos va la raya de «Ahora».
+export type EntradaDia = { cuando: string; agente: string; texto: string; clase: ClaseRaya; enlace: string | null; futuro: boolean }
+
+export function listaDelDia(d: DatosDia, ahora: Date): EntradaDia[] {
+  const ahoraMs = ahora.getTime(), hoy = diaCR(ahoraMs)
+  const ids = new Set(d.agentes.map((a) => a.id))
+  const hechas: { ms: number; e: EntradaDia }[] = []
+  for (const m of d.marcas) {
+    const clase = CLASE[m.tipo], ms = t(m.creado_en)
+    if (!clase || !ids.has(m.agente) || diaCR(ms) !== hoy) continue
+    hechas.push({ ms, e: { cuando: horaCR(new Date(ms)), agente: m.agente, texto: m.texto, clase, enlace: m.enlace, futuro: false } })
+  }
+  hechas.sort((p, q) => p.ms - q.ms)
+  const siguen = siguenHoy(d, horasCR(ahoraMs)).map(({ p }): EntradaDia => ({
+    cuando: p.cuando, agente: p.agente, texto: p.texto, clase: 'sig', enlace: null, futuro: true,
+  }))
+  return [...hechas.map((h) => h.e), ...siguen]
+}
+
+// ---------- La copia del foro y lo optimista (usarOficina) ----------
+// El foro, las ideas y las fotos viajan solo cuando cambian: la página manda la firma de la copia que tiene y cuándo
+// le llegó. '' es lo que contesta el servidor cuando no pudo armar el bloque: eso no es una copia.
+export type CopiaSocial = { firma: string | null; recibido: number | null }
+
+export function copiaSocial(r: Pick<RespuestaOficina, 'social' | 'firmaSocial'> | null, recibidoMs: number): CopiaSocial {
+  return r?.social && r.firmaSocial ? { firma: r.firmaSocial, recibido: recibidoMs } : { firma: null, recibido: null }
+}
+
+// A dónde se pide la foto: con la firma de la copia, salvo que no haya copia o tenga 30 min (los enlaces de las fotos
+// vencen a la hora: así llegan nuevos)
+export function urlOficina(c: CopiaSocial | null, ahoraMs: number): string {
+  return c?.firma && !socialVencido(c.recibido, ahoraMs) ? `/api/oficina?social=${encodeURIComponent(c.firma)}` : '/api/oficina'
+}
+
+// «Me sirve», «No va» y el me gusta se ven al tiro. Cada instancia del servidor guarda el foro 1 min en memoria, así que
+// una consulta puede traer todavía lo de antes: lo optimista se queda al menos 70 s y hasta que el servidor lo confirme
+// (o 3 min, por si lo cambió otro).
+export type Optimista<T> = { valor: T; desde: number }
+export const OPTIMISTA_MIN_MS = 70_000
+export const OPTIMISTA_MAX_MS = 3 * 60_000
+
+// Suelta lo optimista que ya se puede soltar; dice si soltó algo
+export function soltarOptimistas<T>(m: Map<string, Optimista<T>>, real: (id: string) => T | undefined, ahoraMs: number): boolean {
+  let solto = false
+  for (const [id, o] of m) {
+    const edad = ahoraMs - o.desde
+    if (edad >= OPTIMISTA_MAX_MS || (edad >= OPTIMISTA_MIN_MS && real(id) === o.valor)) {
+      m.delete(id)
+      solto = true
+    }
+  }
+  return solto
+}
+
+// Una escritura optimista falló. Sale de las que siguen en pie (las mandadas, todavía en camino o ya guardadas, en el
+// orden en que se mandaron) y, si era la que se veía, se ve la última que queda: es lo que va a tener el servidor. Sin
+// ninguna, null: se ve lo del servidor. Así, si dos toques seguidos fallan, nunca se queda pegado lo optimista.
+// visible: lo que se ve ahora (undefined si ya se soltó).
+export function alFallar<T>(
+  vivas: readonly Optimista<T>[],
+  visible: Optimista<T> | undefined,
+  fallida: Optimista<T>,
+): { vivas: Optimista<T>[]; visible: Optimista<T> | null } {
+  const quedan = vivas.filter((o) => o !== fallida)
+  if (visible !== fallida) return { vivas: quedan, visible: visible ?? null }
+  return { vivas: quedan, visible: quedan[quedan.length - 1] ?? null }
+}
+
+// Lo que se ve: la copia del servidor con lo optimista encima (sin tocar la copia)
+export function conOptimistas(s: Social, ideas: ReadonlyMap<string, Optimista<EstadoIdea>>, likes: ReadonlyMap<string, Optimista<boolean>>): Social {
+  if (!ideas.size && !likes.size) return s
+  return {
+    ...s,
+    ideas: s.ideas.map((i) => {
+      const o = ideas.get(i.id)
+      return o ? { ...i, estado: o.valor } : i
+    }),
+    foro: s.foro.map((p) => {
+      const o = likes.get(p.id)
+      return o ? { ...p, te_gusta: o.valor } : p
+    }),
+  }
 }

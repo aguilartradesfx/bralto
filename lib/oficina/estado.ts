@@ -1,9 +1,11 @@
-// Lógica pura de la Oficina de Knox: estado de cada agente, números, «Para ti» y «Lo próximo».
-import type { Agente, EstadoAgente, EstadoOficina, Marca, Numeros, Proximo, Snapshot } from './tipos.ts'
-import { horaCR, siguienteCorrida } from './horario.ts'
+// Lógica pura de la Oficina de Knox: estado de cada agente, números, «Para ti», «Lo próximo», su semana y el chat.
+import type {
+  Agente, DiaSemana, EstadoAgente, EstadoOficina, FilaSemana, LineaTertulia, Marca, Numeros, Proximo, Pub, Snapshot,
+} from './tipos.ts'
+import { fechaCR, horaCR, siguienteCorrida } from './horario.ts'
 
 export type FilaNumeros = { agente: string, tareas: number, segundos: number, ultima_falla: string | null, primera: string | null }
-export type Pub = { id: string, titulo: string, publicar_en: string, prueba: boolean }
+export type { Pub }
 
 // Una revisión que corre cada hora o menos es «frecuente»: no sale en «Lo próximo» ni se corre al despertar
 export const FRECUENTE_MIN = 60
@@ -53,14 +55,15 @@ export function paraTi(entregas: Marca[], resueltas: Set<string>, ahora: Date): 
     .sort((x, y) => t(y.creado_en) - t(x.creado_en))
 }
 
-export function proximos(agentes: Agente[], pubs: Pub[], ahora: Date, n = 5): Proximo[] {
+// cuando: cómo se escribe la hora (la columna, solo la hora; en grande, con el día si no es hoy)
+export function proximos(agentes: Agente[], pubs: Pub[], ahora: Date, n = 5, cuando: (d: Date) => string = horaCR): Proximo[] {
   const items: { real: Date, p: Proximo }[] = []
   for (const a of agentes) {
     if (a.cada_minutos != null && a.cada_minutos <= FRECUENTE_MIN) continue
     if (a.estado_fijo || !a.horario) continue
     const sig = siguienteCorrida(a.horario, ahora)
     if (!sig) continue
-    items.push({ real: sig, p: { cuando: horaCR(sig), agente: a.id, texto: a.oficio } })
+    items.push({ real: sig, p: { cuando: cuando(sig), agente: a.id, texto: a.oficio } })
   }
   for (const p of pubs) {
     const real = new Date(p.publicar_en)
@@ -68,11 +71,55 @@ export function proximos(agentes: Agente[], pubs: Pub[], ahora: Date, n = 5): Pr
     items.push({
       real,
       p: p.prueba
-        ? { cuando: horaCR(real), agente: 'vero', texto: `prueba de «${p.titulo}»` }
-        : { cuando: horaCR(real), agente: 'zap', texto: `«${p.titulo}»` },
+        ? { cuando: cuando(real), agente: 'vero', texto: `prueba de «${p.titulo}»` }
+        : { cuando: cuando(real), agente: 'zap', texto: `«${p.titulo}»` },
     })
   }
   return items.sort((x, y) => x.real.getTime() - y.real.getTime()).slice(0, n).map((i) => i.p)
+}
+
+// Las etiquetas de la semana por día (domingo = 0); el último día dice «Hoy»
+const INICIAL_DIA = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
+
+// Sus últimos 7 días de Costa Rica, el último hoy: tareas terminadas y si hubo falla (0 y sin falla si no hay fila)
+export function semanaDe(filas: FilaSemana[], agente: string, ahora: Date): DiaSemana[] {
+  const mias = filas.filter((f) => f.agente === agente)
+  return Array.from({ length: 7 }, (_, i) => {
+    const dia = fechaCR(new Date(ahora.getTime() - (6 - i) * DIA))
+    const delDia = mias.filter((f) => f.dia === dia)
+    return {
+      dia,
+      etiqueta: i === 6 ? 'Hoy' : INICIAL_DIA[new Date(`${dia}T12:00:00Z`).getUTCDay()],
+      tareas: delDia.reduce((s, f) => s + Number(f.tareas), 0),
+      falla: delDia.some((f) => f.falla),
+    }
+  })
+}
+
+const ESCRIBIENDO_MS = 3 * MIN
+
+// Mientras la oficina duerme no sale nada programado (el chat, el foro y las ideas) desde la hora en que se durmió:
+// sale solo lo de antes de este corte. Despierta, no hay corte; dormida sin esa hora, no sale nada.
+export function corteDormida(oficina: EstadoOficina): number {
+  if (!oficina.dormida) return Infinity
+  const desde = oficina.desde ? t(oficina.desde) : NaN
+  return Number.isFinite(desde) ? desde : -Infinity
+}
+
+// La tertulia que se ve: las líneas de hoy que ya salieron, por hora. Dormida, nada desde que se durmió y nadie escribe;
+// despierta, «escribiendo» es quien dice la próxima línea si sale en 3 min o menos.
+export function chatVisible(lineas: LineaTertulia[], ahora: Date, oficina: EstadoOficina): { chat: LineaTertulia[], escribiendo: string | null } {
+  const ahoraMs = ahora.getTime()
+  const hoy = fechaCR(ahora)
+  const corte = corteDormida(oficina)
+  const porHora = [...lineas].sort((x, y) => t(x.mostrar_desde) - t(y.mostrar_desde))
+  const chat = porHora.filter((l) => {
+    const ms = t(l.mostrar_desde)
+    return ms <= ahoraMs && ms < corte && fechaCR(new Date(ms)) === hoy
+  })
+  const proxima = oficina.dormida ? undefined : porHora.find((l) => t(l.mostrar_desde) > ahoraMs)
+  const escribiendo = proxima && t(proxima.mostrar_desde) - ahoraMs <= ESCRIBIENDO_MS ? proxima.de : null
+  return { chat, escribiendo }
 }
 
 export function armarSnapshot(d: {
@@ -83,10 +130,13 @@ export function armarSnapshot(d: {
   oficina: EstadoOficina
   pubs: Pub[]
   resueltas: Set<string>
+  tertulia: LineaTertulia[]
+  semana: FilaSemana[]
 }, ahora: Date): Snapshot {
   const ids = new Set(d.agentes.map((a) => a.id))
   const marcas = d.marcas.filter((m) => ids.has(m.agente))
   const pendientes = paraTi(d.entregas.filter((m) => ids.has(m.agente)), d.resueltas, ahora)
+  const { chat, escribiendo } = chatVisible(d.tertulia.filter((l) => ids.has(l.de)), ahora, d.oficina)
   return {
     ahora: ahora.toISOString(),
     oficina: d.oficina,
@@ -94,9 +144,16 @@ export function armarSnapshot(d: {
       ...a,
       estado: estadoDe(a, marcas.filter((m) => m.agente === a.id), ahora, d.oficina, pendientes),
       numeros: numerosDe(d.numeros.find((f) => f.agente === a.id), ahora),
+      semana: semanaDe(d.semana, a.id, ahora),
     })),
     marcas,
     paraTi: pendientes,
     proximos: proximos(d.agentes, d.pubs, ahora),
+    chat,
+    escribiendo,
+    pubs: d.pubs
+      .filter((p) => t(p.publicar_en) > ahora.getTime())
+      .sort((x, y) => t(x.publicar_en) - t(y.publicar_en))
+      .slice(0, 10),
   }
 }

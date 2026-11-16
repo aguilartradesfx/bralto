@@ -27,7 +27,7 @@ const Flecha = () => (
 )
 
 // El marco: el título, el botón para abrir la pantalla vieja del panel (secundario) y Knox en pequeño
-export function MarcoVista(p: { titulo: string; sub: string; enlace?: { texto: string; href: string }; mini: ReactNode; clase: string; children: ReactNode }) {
+export function MarcoVista(p: { titulo: string; sub: string; enlace?: { texto: string; href: string; nueva?: boolean }; mini: ReactNode; clase: string; children: ReactNode }) {
   return (
     <section className="vista" aria-label={p.titulo}>
       <header className="vista-cab">
@@ -37,7 +37,7 @@ export function MarcoVista(p: { titulo: string; sub: string; enlace?: { texto: s
         </div>
         <div className="acciones">
           {p.enlace && (
-            <a className="boton2" href={p.enlace.href}>
+            <a className="boton2" href={p.enlace.href} {...(p.enlace.nueva ? { target: '_blank', rel: 'noopener' } : {})}>
               {p.enlace.texto}
               <Flecha />
             </a>

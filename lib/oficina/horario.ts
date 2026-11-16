@@ -75,3 +75,20 @@ export function horaCR(fecha: Date): string {
   const mm = String(d.getUTCMinutes()).padStart(2, '0')
   return `${h % 12 || 12}:${mm} ${h < 12 ? 'a. m.' : 'p. m.'}`
 }
+
+// Fecha de Costa Rica como 'AAAA-MM-DD'.
+export function fechaCR(d: Date): string {
+  return new Date(d.getTime() - 6 * 60 * MINUTO).toISOString().slice(0, 10)
+}
+
+// Esa hora de Costa Rica (h:m) el mismo día de Costa Rica que `d`.
+export function aLaHoraCR(d: Date, h: number, m: number): Date {
+  const [a, mes, dia] = fechaCR(d).split('-').map(Number)
+  return new Date(Date.UTC(a, mes - 1, dia, h + 6, m))
+}
+
+// Hora de Costa Rica como número decimal, p. ej. 12.5 para las 12:30.
+export function horaDecimalCR(d: Date): number {
+  const c = new Date(d.getTime() - 6 * 60 * MINUTO)
+  return c.getUTCHours() + c.getUTCMinutes() / 60
+}

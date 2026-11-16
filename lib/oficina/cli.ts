@@ -59,6 +59,9 @@ export function validarAgentes(json: unknown): { ok: Agente[] } | { error: strin
     if (a.estado_fijo !== undefined && a.estado_fijo !== null && a.estado_fijo !== 'pendiente' && a.estado_fijo !== 'pedido') {
       return { error: `Agente ${nombre}: estado_fijo debe ser pendiente, pedido o null` }
     }
+    if (a.lugar !== undefined && a.lugar !== null && !(typeof a.lugar === 'string' && /^(\/[a-z0-9]|https:\/\/)/.test(a.lugar))) {
+      return { error: `Agente ${nombre}: lugar debe ser una ruta del panel (/algo), un enlace https:// o null` }
+    }
     if (ids.has(a.id as string)) return { error: `Agente ${nombre}: id repetido` }
     if (puestos.has(a.puesto as number)) return { error: `Agente ${nombre}: puesto ${a.puesto} repetido` }
     ids.add(a.id as string)
@@ -80,6 +83,7 @@ export function validarAgentes(json: unknown): { ok: Agente[] } | { error: strin
       despierto_siempre: (a.despierto_siempre ?? false) as boolean,
       dura_min: (a.dura_min ?? 10) as number,
       ultima_revision: (a.ultima_revision ?? null) as string | null,
+      lugar: (a.lugar ?? null) as string | null,
     })
   }
   return { ok }
