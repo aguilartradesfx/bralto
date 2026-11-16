@@ -25,9 +25,9 @@ test('dos posts a las 10:00 CR: el segundo a las 10:30', () => {
 })
 test('un post una hora antes de desde no se toca', () =>
   assert.deepEqual(reprogramar([pub('a', '2026-11-16T15:00:00Z')], new Date('2026-11-16T16:00:00Z'), new Date('2026-11-16T18:00:00Z')), []))
-test('con margen de 10 min mueve uno 5 min antes de desde, nunca antes de ahora; uno 1 h antes no', () => {
+test('con margen de 3 h mueve uno 1 h antes de desde, nunca antes de ahora; uno 4 h antes no', () => {
   const ahora = new Date('2026-11-16T18:00:00Z')
-  const r = reprogramar([pub('a', '2026-11-16T15:55:00Z'), pub('b', '2026-11-16T15:00:00Z')], new Date('2026-11-16T16:00:00Z'), ahora, 10 * MIN)
+  const r = reprogramar([pub('a', '2026-11-16T15:00:00Z'), pub('b', '2026-11-16T12:00:00Z')], new Date('2026-11-16T16:00:00Z'), ahora, 3 * 60 * MIN)
   assert.equal(r.length, 1)
   assert.equal(r[0].id, 'a')
   assert.ok(new Date(r[0].publicar_en).getTime() >= ahora.getTime())

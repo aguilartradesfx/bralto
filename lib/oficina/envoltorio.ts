@@ -3,9 +3,10 @@
 // Regla de oro: la capa de la oficina nunca frena, atrasa ni cambia el resultado del trabajo real.
 import { createServiceClient } from '../supabase/service.ts'
 import { estadoOficina, marcar, revisado, ultimaSaltada } from './servidor.ts'
+import { titulosConError, titulosPublicados } from './resumenes.ts'
 import type { NuevaMarca } from './tipos.ts'
 
-export type Resultado = { hizo: boolean, resumen: string, detalle?: unknown }
+export type Resultado = { hizo: boolean, resumen: string, fallo?: string, detalle?: unknown }
 export type Salto = { salto: 'dormida' }
 export type Opciones = { inicio?: string }
 
@@ -47,6 +48,7 @@ export async function conOficinaCon<T extends Resultado>(
       if (ultima && deps.ahora() - ultima.getTime() < HORA) return
       await deps.marcar({ agente, tipo: 'saltada', texto: TEXTO_SALTADA })
     }, undefined)
+    console.log(`[oficina] ${agente} se saltó: oficina dormida`)
     return { salto: 'dormida' }
   }
 
@@ -65,7 +67,9 @@ export async function conOficinaCon<T extends Resultado>(
   }
 
   await seguro(async () => {
-    if (r.hizo || op?.inicio) {
+    if (r.fallo) {
+      await deps.marcar({ agente, tipo: 'falla', texto: `Falló: ${enUnaLinea(r.fallo)}` })
+    } else if (r.hizo || op?.inicio) {
       await deps.marcar({ agente, tipo: 'termina', texto: r.resumen, dura_seg: Math.max(0, Math.round((deps.ahora() - t0) / 1000)) })
     }
   }, undefined)
@@ -142,16 +146,12 @@ export async function sumarEcho(): Promise<void> {
   }
 }
 
-// Títulos de lo que salió en una corrida de la cola de publicar: la cola responde { ok, [título]: 'publicado: …' }
-export function titulosPublicados(r: Record<string, unknown>): string[] {
-  return Object.entries(r).filter(([k, v]) => k !== 'ok' && typeof v === 'string' && v.startsWith('publicado:')).map(([k]) => k)
-}
-
 // Las marcas de Zap (salió un post) y de Tiko (se agendó en TikTok) a partir de lo que devolvió la cola. Solo lee.
 // Nunca lanza ni toca lo publicado.
 export async function marcarPublicadas(r: Record<string, unknown>): Promise<number> {
   try {
     const titulos = titulosPublicados(r)
+    for (const titulo of titulosConError(r)) await marcar({ agente: 'zap', tipo: 'falla', texto: `No pude publicar «${titulo}»` })
     if (!titulos.length) return 0
     for (const titulo of titulos) await marcar({ agente: 'zap', tipo: 'publica', texto: `Publicó «${titulo}»` })
     let tiktok = 0

@@ -101,9 +101,11 @@ export async function procesarWebhook(cuerpo: unknown): Promise<string> {
   const base = db()
   const z = zernioOpcional()
   // Con la oficina dormida el contestador se calla (los mensajes se guardan igual). `estadoOficina` no lanza
-  const conKnox = ev.tipo === 'mensaje' && ev.evento === 'message.received' && !(await estadoOficina()).dormida
+  const conKnox = ev.tipo === 'mensaje' && ev.evento === 'message.received'
   const knox = conKnox
     ? async (e: Parameters<typeof atenderMensaje>[1]) => {
+        // El mensaje ya está guardado: aquí, con la oficina dormida, el contestador se calla
+        if ((await estadoOficina()).dormida) return 'oficina dormida'
         const resultado = await atenderMensaje(depsKnox(base, z), e)
         // Solo cuando de verdad escribió una respuesta (la mandó o la dejó de borrador); `marcar` no lanza
         if (resultado === 'contestó' || resultado === 'borrador') {

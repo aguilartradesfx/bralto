@@ -9,7 +9,10 @@ const HORA = 60 * MIN
 const DIA = 24 * HORA
 const CR = 6 * HORA // Costa Rica es UTC−6 todo el año
 const SEPARACION = 30 * MIN
-const MARGEN_DEFECTO = 10 * MIN
+// Lo que el publicador todavía acepta publicar (3 h tarde): todo eso conserva su atraso al despertar
+const MARGEN_DESPERTAR = 3 * HORA
+// Igual que el rescate del publicador (lib/redes/publicacion/servidor.ts): «publicando» sin tocar hace más de 15 min
+const TRABADA_MS = 15 * MIN
 const FRECUENTE_MIN = 15
 
 type Pub = { id: string, publicar_en: string, prueba: boolean }
@@ -56,7 +59,7 @@ export function reprogramar(
 // Paso 1 del despertar: se llama ANTES de dejar la oficina despierta. Lanza si la base falla.
 export async function moverAtrasadas(desde: Date, ahora: Date): Promise<number> {
   const db = createServiceClient()
-  const piso = new Date(desde.getTime() - MARGEN_DEFECTO).toISOString()
+  const piso = new Date(desde.getTime() - MARGEN_DESPERTAR).toISOString()
   const { data, error } = await db
     .from('redes_publicaciones')
     .select('id, publicar_en, prueba')
@@ -64,7 +67,20 @@ export async function moverAtrasadas(desde: Date, ahora: Date): Promise<number> 
     .gte('publicar_en', piso)
     .lt('publicar_en', ahora.toISOString())
   if (error) throw new Error(`redes_publicaciones: ${error.message}`)
-  const movidas = reprogramar((data ?? []) as Pub[], desde, ahora, MARGEN_DEFECTO)
+  // Las que quedaron «publicando» y el rescate del publicador recogería: solo cambia su hora, el estado lo maneja él
+  const trabadas = await db
+    .from('redes_publicaciones')
+    .select('id, publicar_en, prueba')
+    .eq('estado', 'publicando')
+    .lt('actualizado_en', new Date(ahora.getTime() - TRABADA_MS).toISOString())
+    .gte('publicar_en', piso)
+    .lt('publicar_en', ahora.toISOString())
+  if (trabadas.error) throw new Error(`redes_publicaciones: ${trabadas.error.message}`)
+  const estados = new Map<string, string>()
+  for (const f of (data ?? []) as Pub[]) estados.set(f.id, 'programado')
+  for (const f of (trabadas.data ?? []) as Pub[]) estados.set(f.id, 'publicando')
+  const todas = [...((data ?? []) as Pub[]), ...((trabadas.data ?? []) as Pub[])]
+  const movidas = reprogramar(todas, desde, ahora, MARGEN_DESPERTAR)
   if (idEstado() !== 1) {
     console.info(`[oficina] simulación: moverían ${movidas.length} publicaciones atrasadas`)
     return movidas.length
@@ -75,7 +91,7 @@ export async function moverAtrasadas(desde: Date, ahora: Date): Promise<number> 
       .from('redes_publicaciones')
       .update({ publicar_en: m.publicar_en, actualizado_en: new Date().toISOString() })
       .eq('id', m.id)
-      .eq('estado', 'programado')
+      .eq('estado', estados.get(m.id) ?? 'programado')
       .select('id')
     if (r.error) throw new Error(`redes_publicaciones: ${r.error.message}`)
     if (r.data && r.data.length > 0) n++

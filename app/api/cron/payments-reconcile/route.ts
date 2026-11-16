@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { reintentarCitas } from '@/lib/agenda/servidor'
 import { reconcilePendingOrders } from '@/lib/diagnostic/server'
 import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenPagos } from '@/lib/oficina/resumenes'
 
 // Barrido de conciliación de pagos (Vercel Cron). El webhook acelera; esto garantiza:
 // toda orden pendiente hace más de 2 minutos se confirma o se vence contra el API.
@@ -22,10 +23,7 @@ export async function GET(req: Request) {
       return { revisadas: 0, resultados: {}, error: err instanceof Error ? err.message : String(err) }
     })
     if (citas.revisadas) console.log('[reconcile] citas', JSON.stringify(citas))
-    const pagos = summary.checked
-    const hizo = pagos > 0 || citas.revisadas > 0
-    const partes = [pagos > 0 && `${pagos} ${pagos === 1 ? 'pago' : 'pagos'}`, citas.revisadas > 0 && `${citas.revisadas} ${citas.revisadas === 1 ? 'cita' : 'citas'}`].filter(Boolean)
-    return { hizo, resumen: `Revisó ${partes.join(' y ')}`, detalle: { ...summary, citas } }
+    return { ...resumenPagos(summary, citas), detalle: { ...summary, citas } }
   })
   return NextResponse.json(cuerpoDe(o))
 }

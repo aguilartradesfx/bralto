@@ -16,7 +16,10 @@ const DESPIERTA: EstadoOficina = { dormida: false, desde: null, por: null }
 const db = () => createServiceClient()
 
 export function idEstado(env: NodeJS.ProcessEnv = process.env): number {
-  return env.OFICINA_ESTADO_ID === '2' ? 2 : 1
+  // Un valor explícito gana; sin él, una vista previa de Vercel nunca controla la oficina de producción
+  if (env.OFICINA_ESTADO_ID === '1') return 1
+  if (env.OFICINA_ESTADO_ID === '2') return 2
+  return env.VERCEL_ENV === 'preview' ? 2 : 1
 }
 
 function ok<T>(tabla: string, r: { data: T | null, error: { message: string } | null }): T | null {

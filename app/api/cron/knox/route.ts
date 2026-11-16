@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { generarReporte } from '@/lib/knox/reporte'
 import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenReporte } from '@/lib/oficina/resumenes'
 
 // Knox prepara el reporte del día a las 6:00 de Costa Rica (Vercel Cron), así al abrir el panel ya está
 // listo para hablar.
@@ -17,7 +18,7 @@ export async function GET(req: Request) {
     const r = await generarReporte()
     const resumen = { id: r.id, fecha: r.fecha, escritoPor: r.escritoPor, conAudio: r.conAudio, faltan: r.datos.faltan, secciones: r.secciones.length }
     console.log('[knox]', JSON.stringify(resumen))
-    return { hizo: true, resumen: 'Preparó el reporte del día', detalle: resumen }
+    return { ...resumenReporte(), detalle: resumen }
   }, { inicio: 'Preparando el reporte de la mañana' })
   return NextResponse.json(cuerpoDe(o))
 }

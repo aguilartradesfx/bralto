@@ -93,6 +93,13 @@ test('resiliencia: dormida que lanza se trata como despierta', async () => {
   assert.equal((r as { hizo: boolean }).hizo, true)
 })
 
+test('fallo: marca falla en vez de termina, también con inicio, y revisa', async () => {
+  const x = armar()
+  await conOficinaCon(x.deps, 'luma', async () => ({ hizo: false, resumen: 'no pudo', fallo: 'No pude dejar listos los saludos' }), { inicio: 'Preparando' })
+  assert.deepEqual(x.marcas.map((m) => [m.tipo, m.texto]), [['empieza', 'Preparando'], ['falla', 'Falló: No pude dejar listos los saludos']])
+  assert.deepEqual(x.revisados, ['luma'])
+})
+
 test('textoEcho', () => {
   assert.equal(textoEcho(1), 'Le mandó la guía a 1 persona')
   assert.equal(textoEcho(12), 'Le mandó la guía a 12 personas')

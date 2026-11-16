@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { correrCola, probar } from '@/lib/redes/publicacion/servidor'
-import { conOficina, cuerpoDe, marcarPublicadas, titulosPublicados } from '@/lib/oficina/envoltorio'
+import { conOficina, cuerpoDe, marcarPublicadas } from '@/lib/oficina/envoltorio'
+import { resumenPublicar } from '@/lib/oficina/resumenes'
 
 // Publica lo programado en redes (Vercel Cron cada 5 minutos): carruseles y reels de Instagram con su
 // collab, su «Comenta» y sus historias, y lo mismo en Facebook. Así salen a su hora sin depender de una
@@ -25,11 +26,9 @@ export async function GET(req: Request) {
   }
   const o = await conOficina('zap', async () => {
     const x = await correrCola()
-    const n = titulosPublicados(x).length
     // Las marcas de Zap y Tiko salen de lo que devolvió la cola, después de publicar; nunca afectan la respuesta
-    const tt = n > 0 ? await marcarPublicadas(x) : 0
-    const resumen = `Publicó ${n} ${n === 1 ? 'post' : 'posts'}${tt > 0 ? ` y agendó ${tt} en TikTok` : ''}`
-    return { hizo: n > 0, resumen, detalle: x }
+    const tt = await marcarPublicadas(x)
+    return { ...resumenPublicar(x, tt), detalle: x }
   })
   const r = cuerpoDe(o)
   console.log('[publicar]', JSON.stringify(r))

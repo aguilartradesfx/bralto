@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prepararDia, prepararFijos } from '@/lib/knox/arranque/preparar'
 import { diaCr, sumarDias } from '@/lib/knox/fechas'
 import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenArranques } from '@/lib/oficina/resumenes'
 
 // Knox deja listos la noche anterior los arranques de mañana: el saludo y lo que trae en la cabeza, ya narrados, para
 // que al abrir el centro de mando suenen al instante. Vercel Cron a las 22:00 de Costa Rica. Con ?hoy prepara también
@@ -33,8 +34,7 @@ export async function GET(req: Request) {
       resultado.fijos = `error: ${err instanceof Error ? err.message : String(err)}`
     }
     console.log('[knox-arranques]', JSON.stringify(resultado))
-    const nuevos = Object.entries(resultado).filter(([k, v]) => k !== 'fijos' && typeof v === 'object' && v !== null).length
-    return { hizo: nuevos > 0, resumen: 'Dejó listos los saludos de mañana', detalle: resultado }
+    return { ...resumenArranques(resultado), detalle: resultado }
   }, { inicio: 'Preparando los saludos de mañana' })
   return NextResponse.json(cuerpoDe(o))
 }

@@ -7,6 +7,9 @@ test('idEstado lee OFICINA_ESTADO_ID y cae a 1', () => {
   assert.equal(idEstado({ OFICINA_ESTADO_ID: '1' }), 1)
   assert.equal(idEstado({}), 1)
   assert.equal(idEstado({ OFICINA_ESTADO_ID: '99' }), 1)
+  assert.equal(idEstado({ VERCEL_ENV: 'preview' }), 2)
+  assert.equal(idEstado({ VERCEL_ENV: 'production' }), 1)
+  assert.equal(idEstado({ OFICINA_ESTADO_ID: '1', VERCEL_ENV: 'preview' }), 1)
 })
 
 test('idsValidos deja solo uuids de redes_publicaciones, sin repetir', () => {

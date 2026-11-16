@@ -3,6 +3,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { getResend, FROM } from '@/lib/email/resend'
 import { emailContractReminder } from '@/lib/email/templates'
 import { conOficina, cuerpoDe } from '@/lib/oficina/envoltorio'
+import { resumenContratos } from '@/lib/oficina/resumenes'
 
 // Vercel Cron — runs daily at 10am CR time (UTC-6 → 16:00 UTC)
 export async function GET(req: Request) {
@@ -45,8 +46,7 @@ export async function GET(req: Request) {
       }
     }
     return {
-      hizo: sent > 0,
-      resumen: sent === 1 ? 'Mandó 1 recordatorio de contrato' : `Mandó ${sent} recordatorios de contrato`,
+      ...resumenContratos(sent),
       detalle: { ok: true, reminders_sent: sent },
     }
   }, { inicio: 'Revisando los contratos sin firmar' })
