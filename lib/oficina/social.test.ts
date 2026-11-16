@@ -145,3 +145,21 @@ test('leerMeGusta: pide un booleano en si', () => {
   assert.deepEqual(leerMeGusta({ si: 'sí' }), { ok: false, error: 'Falta decir si te gusta' })
   assert.deepEqual(leerMeGusta(null), { ok: false, error: 'Falta decir si te gusta' })
 })
+
+test('armarSocial: proxima es el primer post de hoy que aún no se ve', () => {
+  const s = armarSocial(crudo({ posts: [post('p1', en(-30)), post('a', en(90)), post('b', en(45))] }), AHORA, DESPIERTA)
+  assert.equal(s.proxima, en(45))
+})
+
+test('armarSocial: proxima es null si el siguiente post es de mañana', () => {
+  const s = armarSocial(crudo({ posts: [post('p1', en(-30)), post('manana', en(24 * 60))] }), AHORA, DESPIERTA)
+  assert.equal(s.proxima, null)
+})
+
+test('armarSocial: proxima es null con la oficina dormida', () => {
+  assert.equal(armarSocial(crudo(), AHORA, dormidaDesde(-30)).proxima, null)
+})
+
+test('armarSocial: proxima es null si no hay posts por salir', () => {
+  assert.equal(armarSocial(crudo({ posts: [post('p1', en(-120))] }), AHORA, DESPIERTA).proxima, null)
+})

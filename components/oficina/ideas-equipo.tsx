@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useId, useLayoutEffect, useRef } from 'react'
-import type { EstadoIdea, Idea, Post } from '@/lib/oficina/tipos'
-import { accionIdea, contarIdeas, cuandoCorto, filtrarIdeas, focoAlDecidir, type FiltroIdeas } from '@/lib/oficina/foro'
+import type { EstadoIdea, Idea, Post, Ronda } from '@/lib/oficina/tipos'
+import { accionIdea, avisoRonda, contarIdeas, cuandoCorto, filtrarIdeas, focoAlDecidir, type FiltroIdeas } from '@/lib/oficina/foro'
+import { fechaCR, horaCR } from '@/lib/oficina/horario'
 import { nombreDe, type AgenteSnap } from '@/lib/oficina/pagina'
 import { Cara } from './cara'
 import { citar } from './ficha'
@@ -19,10 +20,18 @@ type Accion = 'sirve' | 'no_va' | 'deshacer'
 const FILTROS: [FiltroIdeas, string][] = [['todas', 'Todas'], ['nueva', 'Nuevas'], ['sirve', 'Me sirven'], ['no_va', 'No van']]
 const ESTADO: Record<EstadoIdea, string> = { nueva: 'Nueva', sirve: 'Te sirve', no_va: 'No va' }
 const SIN_IDEAS: Record<FiltroIdeas, string> = {
-  todas: 'Todavía no hay ideas del equipo. Salen del chat y del foro, después de la tertulia de las 12:30 p. m.',
+  todas: 'Todavía no hay ideas del equipo. Salen del chat y del foro, después de la tertulia, que corre todos los días a las 12:30 p. m.',
   nueva: 'No hay ideas nuevas: ya respondiste todas.',
   sirve: 'Todavía no marcaste ninguna con «Me sirve».',
   no_va: 'Todavía no marcaste ninguna con «No va».',
+}
+
+// «Todas» sin ninguna idea: si la tertulia de hoy ya corrió, cuándo sale lo primero; si falló o se saltó, el aviso
+function vacioTodas(p: { proxima: string | null, ronda: Ronda | null, ahora: Date }): string {
+  if (p.proxima) return `La tertulia de hoy ya corrió. Las ideas van saliendo con las publicaciones, desde las ${horaCR(new Date(p.proxima))}.`
+  const aviso = avisoRonda(p.ronda, fechaCR(p.ahora))
+  if (aviso) return `${aviso}.`
+  return SIN_IDEAS.todas
 }
 
 type Comun = {
@@ -37,6 +46,8 @@ type Boton = 'sirve' | 'no_va'
 
 export function IdeasEquipo(p: Comun & {
   ideas: Idea[]
+  proxima: string | null
+  ronda: Ronda | null
   foco: string | null
   vez: number
   filtro: FiltroIdeas
@@ -103,7 +114,7 @@ export function IdeasEquipo(p: Comun & {
             ))}
           </ul>
         ) : (
-          <p className="of-ideas-vacio">{SIN_IDEAS[p.filtro]}</p>
+          <p className="of-ideas-vacio">{p.filtro === 'todas' && !p.ideas.length ? vacioTodas(p) : SIN_IDEAS[p.filtro]}</p>
         )}
       </div>
     </div>

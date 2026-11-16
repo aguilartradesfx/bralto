@@ -172,7 +172,7 @@ export type FilaTeToca = {
 }
 
 // El foro, las ideas, las fotos (con su enlace firmado) y la ronda de hoy: viajan solo cuando cambian
-export type Social = { foro: Post[], ideas: Idea[], fotos: Foto[], ronda: Ronda | null }
+export type Social = { foro: Post[], proxima: string | null, ideas: Idea[], fotos: Foto[], ronda: Ronda | null }
 
 // GET /api/oficina: `social` es null cuando la firma no cambió (la página se queda con el que tiene)
 export type RespuestaOficina = Snapshot & { teToca: FilaTeToca[], firmaSocial: string, social: Social | null }

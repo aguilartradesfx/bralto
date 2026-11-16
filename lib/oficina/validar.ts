@@ -124,9 +124,10 @@ export function finDeRonda(ahora: Date): Date {
 }
 
 // La i-ésima va en desde + (i + 0.5) × (hasta − desde) / n; si no hay tramo, todo en `desde`.
-export function repartir(n: number, desde: Date, hasta: Date): Date[] {
+// Con `alInicio`, la i-ésima va en desde + i × (hasta − desde) / n: la primera sale justo en `desde`.
+export function repartir(n: number, desde: Date, hasta: Date, alInicio = false): Date[] {
   const tramo = Math.max(0, hasta.getTime() - desde.getTime())
-  return Array.from({ length: n }, (_, i) => new Date(desde.getTime() + ((i + 0.5) * tramo) / n))
+  return Array.from({ length: n }, (_, i) => new Date(desde.getTime() + ((i + (alInicio ? 0 : 0.5)) * tramo) / n))
 }
 
 // ---------- ayudas ----------
@@ -295,7 +296,9 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
   if (fin.getTime() <= inicio.getTime()) fin = inicio
   const iso = (d: Date) => d.toISOString()
 
-  const horaPost = new Map(posts.map((p, i) => [p.clave, repartir(posts.length, inicio, fin)[i]]))
+  // Los posts: el primero sale apenas se guarda la ronda y los demás se reparten por la tarde
+  const horasPost = repartir(posts.length, inicio, fin, true)
+  const horaPost = new Map(posts.map((p, i) => [p.clave, horasPost[i]]))
   const horaOrigen = new Map<string, Date>()
   const limpiaPosts = posts.map(p => {
     const h = horaPost.get(p.clave)!

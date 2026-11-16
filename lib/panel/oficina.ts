@@ -94,7 +94,7 @@ async function bloqueSocial(ahora: Date, firmaCliente: string | null, oficina: P
     if (firma === firmaCliente) return { firmaSocial: firma, social: null }
     const urls = await firmarFotos(s.fotos.map((f) => f.ruta))
     const fotos = s.fotos.flatMap(({ ruta, ...f }) => (urls[ruta] ? [{ ...f, url: urls[ruta] }] : []))
-    return { firmaSocial: firma, social: { foro: s.foro, ideas: s.ideas, fotos, ronda: s.ronda } }
+    return { firmaSocial: firma, social: { foro: s.foro, proxima: s.proxima, ideas: s.ideas, fotos, ronda: s.ronda } }
   } catch (e) {
     console.error('[oficina] bloque social:', mensaje(e))
     return { firmaSocial: firmaCliente ?? '', social: null }
