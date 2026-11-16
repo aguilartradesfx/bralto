@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { contarFiltros, filtrarIdeas, leerAccion, MAX_INTENTOS, rescatar, temaDeIdea, type IdeaFila } from './cola.ts'
+import { cambioPorGrabar, contarFiltros, filtrarIdeas, leerAccion, MAX_INTENTOS, rescatar, temaDeIdea, type IdeaFila } from './cola.ts'
 import type { Analisis } from './analisis.ts'
 import type { Metricas } from './metricas.ts'
 
@@ -34,6 +34,7 @@ const fila = (x: Partial<IdeaFila> = {}): IdeaFila => ({
   analisis,
   decision: null,
   decidida_en: null,
+  grabada_en: null,
   tema_id: null,
   error: null,
   intentos: 1,
@@ -74,6 +75,7 @@ test('las acciones del panel', () => {
   assert.deepEqual(leerAccion({ accion: 'descartar' }), { ok: true, accion: 'descartar' })
   assert.deepEqual(leerAccion({ accion: 'deshacer' }), { ok: true, accion: 'deshacer' })
   assert.deepEqual(leerAccion({ accion: 'reintentar' }), { ok: true, accion: 'reintentar' })
+  assert.deepEqual(leerAccion({ accion: 'grabada' }), { ok: true, accion: 'grabada' })
   assert.equal(leerAccion({ accion: 'borrar' }).ok, false)
   assert.equal(leerAccion(null).ok, false)
 })
@@ -101,4 +103,16 @@ test('los filtros: nuevas (sin decidir), para Knox, las que grabas tú y descart
   assert.deepEqual(filtrarIdeas(ideas, 'yo').map((i) => i.id), ['d'])
   assert.deepEqual(filtrarIdeas(ideas, 'descartadas').map((i) => i.id), ['e'])
   assert.deepEqual(contarFiltros(ideas), { nuevas: 3, knox: 1, yo: 1, descartadas: 1 })
+})
+
+test('«Ya la grabé»: solo en las que grabas tú y una sola vez; deshacer vuelve un paso', () => {
+  const ahora = new Date('2026-11-16T15:00:00.000Z')
+  assert.deepEqual(cambioPorGrabar({ decision: 'yo', grabada_en: null }, 'grabada', ahora), { cambios: { grabada_en: '2026-11-16T15:00:00.000Z' } })
+  assert.deepEqual(cambioPorGrabar({ decision: 'knox', grabada_en: null }, 'grabada', ahora), { status: 409, error: 'Solo se marcan las que vas a grabar tú' })
+  assert.deepEqual(cambioPorGrabar({ decision: null, grabada_en: null }, 'grabada', ahora), { status: 409, error: 'Solo se marcan las que vas a grabar tú' })
+  assert.deepEqual(cambioPorGrabar({ decision: 'yo', grabada_en: '2026-11-15T10:00:00.000Z' }, 'grabada', ahora), { status: 409, error: 'Ya estaba marcada como grabada' })
+  assert.deepEqual(cambioPorGrabar({ decision: 'yo', grabada_en: '2026-11-15T10:00:00.000Z' }, 'deshacer', ahora), { cambios: { grabada_en: null } })
+  assert.equal(cambioPorGrabar({ decision: 'yo', grabada_en: null }, 'deshacer', ahora), null)
+  assert.equal(cambioPorGrabar({ decision: 'knox', grabada_en: null }, 'knox', ahora), null)
+  assert.equal(cambioPorGrabar({ decision: null, grabada_en: null }, 'yo', ahora), null)
 })

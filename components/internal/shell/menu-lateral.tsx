@@ -179,9 +179,13 @@ function Grupo({ grupo, abierto, activo, corto, onAlternar, children }: { grupo:
 
 function Entrada({ item, on, cuenta, corto, sub = false, onNavegar }: { item: ItemNav; on: boolean; cuenta?: number; corto: boolean; sub?: boolean; onNavegar?: () => void }) {
   const Icono = ICONOS[item.icono]
+  // Las que traen su propia pantalla completa (la Oficina) se abren en otra pestaña
+  const Enlace = item.nueva ? 'a' : Link
+  const extra = item.nueva ? { target: '_blank', rel: 'noopener' } : {}
   return (
     <li>
-      <Link
+      <Enlace
+        {...extra}
         href={item.href}
         onClick={onNavegar}
         aria-current={on ? 'page' : undefined}
@@ -196,7 +200,7 @@ function Entrada({ item, on, cuenta, corto, sub = false, onNavegar }: { item: It
         {!corto && item.pronto && <span className="pn-pronto">Pronto</span>}
         {!corto && !!cuenta && <span className={`pn-count ${item.cuenta === 'mensajes' ? 'pn-count--accent' : ''}`}>{cuenta > 99 ? '99+' : cuenta}</span>}
         {corto && !!cuenta && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[var(--pn-accent)]" aria-hidden />}
-      </Link>
+      </Enlace>
     </li>
   )
 }

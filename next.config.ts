@@ -38,7 +38,11 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@splinetool/react-spline', '@splinetool/runtime'],
   // El índice de servicios vivía en /precios (sin precios): los enlaces viejos y los anuncios siguen
   async redirects() {
-    return [{ source: '/:locale(es|en)/precios', destination: '/:locale/servicios', permanent: true }]
+    return [
+      { source: '/:locale(es|en)/precios', destination: '/:locale/servicios', permanent: true },
+      // La Oficina se mudó a su propia pestaña (el navegador conserva el #)
+      { source: '/oficina', destination: '/knox-office', permanent: false },
+    ]
   },
 }
 

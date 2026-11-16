@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { estadoDe, numerosDe, paraTi, proximos, armarSnapshot } from './estado.ts'
-import type { Agente, Marca, TipoMarca, EstadoOficina } from './tipos.ts'
+import { estadoDe, numerosDe, paraTi, proximos, armarSnapshot, semanaDe, chatVisible, corteDormida } from './estado.ts'
+import type { Agente, Marca, TipoMarca, EstadoOficina, FilaSemana, LineaTertulia } from './tipos.ts'
 
 const AHORA = new Date('2026-11-15T20:00:00Z')
 const hace = (min: number) => new Date(AHORA.getTime() - min * 60000).toISOString()
@@ -10,7 +10,7 @@ const agente = (o: Partial<Agente> = {}): Agente => ({
   id: 'ana', nombre: 'Ana', oficio: 'revisa cosas', area: 'prueba', puesto: 1,
   aspecto: { tela: '#000', ropa: '#111', glifo: 'x' }, personalidad: '', frase: '',
   horario: null, cada_minutos: null, ruta: null, donde: 'servidor', estado_fijo: null,
-  despierto_siempre: false, dura_min: 10, ultima_revision: null, ...o,
+  despierto_siempre: false, dura_min: 10, ultima_revision: null, lugar: null, ...o,
 })
 let n = 0
 const marca = (tipo: TipoMarca, min: number, o: Partial<Marca> = {}): Marca => ({
@@ -106,8 +106,18 @@ test('proximos: publicaciones, pruebas, orden y límite', () => {
   assert.ok(!r.some((p) => p.texto.includes('Pasada')))
   assert.equal(proximos(ags, pubs, AHORA, 1).length, 1)
 })
+test('proximos: la hora se puede escribir de otra forma (en grande, con el día)', () => {
+  const ags = [agente({ id: 'noche', oficio: 'o', horario: '0 1 * * *' }), agente({ id: 'temprano', oficio: 'p', horario: '0 12 * * *' })]
+  const pubs = [{ id: '1', titulo: 'Tarde', publicar_en: '2026-11-15T23:00:00Z', prueba: false }]
+  const r = proximos(ags, pubs, AHORA, 5, (d) => d.toISOString())
+  assert.deepEqual(r.map((p) => [p.cuando, p.agente]), [
+    ['2026-11-15T23:00:00.000Z', 'zap'], ['2026-11-16T01:00:00.000Z', 'noche'], ['2026-11-16T12:00:00.000Z', 'temprano'],
+  ])
+  // sin la forma, la hora de siempre
+  assert.deepEqual(proximos(ags, pubs, AHORA).map((p) => p.cuando), ['5:00 p. m.', '7:00 p. m.', '6:00 a. m.'])
+})
 
-const base = { numeros: [], oficina: despierta, pubs: [], resueltas: new Set<string>() }
+const base = { numeros: [], oficina: despierta, pubs: [], resueltas: new Set<string>(), tertulia: [], semana: [] }
 test('armarSnapshot con catálogo vacío no rompe', () => {
   const s = armarSnapshot({ ...base, agentes: [], marcas: [marca('empieza', 1)], entregas: [] }, AHORA)
   assert.deepEqual(s.agentes, [])
@@ -122,4 +132,84 @@ test('armarSnapshot ignora huérfanas', () => {
   assert.deepEqual(s.paraTi.map((m) => m.id), [mia.id])
   assert.equal(s.agentes[0].estado, 'listo')
   assert.deepEqual(s.agentes[0].numeros, { tareas: 0, horas: 0, diasSinFallar: 0 })
+})
+
+// ---------- la semana de cada uno ----------
+// Miércoles 18/11/2026, 2:00 p. m. en Costa Rica
+const MIERCOLES = new Date('2026-11-18T20:00:00Z')
+const fila = (agente: string, dia: string, tareas: number, falla = false): FilaSemana => ({ agente, dia, tareas, falla })
+
+test('semanaDe: 7 días que terminan en «Hoy», con ceros donde no hay filas y el día con falla marcado', () => {
+  const filas = [fila('ana', '2026-11-15', 3), fila('ana', '2026-11-17', 1, true), fila('ana', '2026-11-10', 5), fila('otro', '2026-11-18', 9, true)]
+  assert.deepEqual(semanaDe(filas, 'ana', MIERCOLES), [
+    { dia: '2026-11-12', etiqueta: 'J', tareas: 0, falla: false },
+    { dia: '2026-11-13', etiqueta: 'V', tareas: 0, falla: false },
+    { dia: '2026-11-14', etiqueta: 'S', tareas: 0, falla: false },
+    { dia: '2026-11-15', etiqueta: 'D', tareas: 3, falla: false },
+    { dia: '2026-11-16', etiqueta: 'L', tareas: 0, falla: false },
+    { dia: '2026-11-17', etiqueta: 'M', tareas: 1, falla: true },
+    { dia: '2026-11-18', etiqueta: 'Hoy', tareas: 0, falla: false },
+  ])
+})
+
+test('semanaDe: «Hoy» es el día de Costa Rica (a las 11:30 p. m. todavía es hoy)', () => {
+  const s = semanaDe([fila('ana', '2026-11-18', 2)], 'ana', new Date('2026-11-19T05:30:00Z'))
+  assert.equal(s.length, 7)
+  assert.equal(s[0].dia, '2026-11-12')
+  assert.deepEqual(s[6], { dia: '2026-11-18', etiqueta: 'Hoy', tareas: 2, falla: false })
+})
+
+// ---------- el chat de la tertulia ----------
+// Lunes 16/11/2026, 2:00 p. m. en Costa Rica
+const DOS_PM = new Date('2026-11-16T20:00:00Z')
+const linea = (id: string, de: string, mostrar_desde: string): LineaTertulia => ({
+  id, de, para: null, texto: `línea ${id}`, rincon: null, idea_id: null, mostrar_desde,
+})
+const nueveAm = linea('9am', 'ana', '2026-11-16T15:00:00Z')
+const unaYMedia = linea('1:30pm', 'beto', '2026-11-16T19:30:00Z')
+const tresPm = linea('3pm', 'ana', '2026-11-16T21:00:00Z')
+const deAyer = linea('ayer', 'beto', '2026-11-15T23:00:00Z')
+const enDosMin = linea('2:02pm', 'carla', '2026-11-16T20:02:00Z')
+const enCincoMin = linea('2:05pm', 'dani', '2026-11-16T20:05:00Z')
+
+test('chatVisible: a las 2:00 p. m. no sale la línea de las 3:00 p. m. ni la de ayer', () => {
+  const r = chatVisible([tresPm, unaYMedia, deAyer, nueveAm], DOS_PM, despierta)
+  assert.deepEqual(r.chat.map((l) => l.id), ['9am', '1:30pm'])
+})
+
+test('chatVisible: dormida desde la 1:00 p. m., esconde la de la 1:30 y nadie está escribiendo', () => {
+  const dormidaALaUna: EstadoOficina = { dormida: true, desde: '2026-11-16T19:00:00Z', por: 'x' }
+  const r = chatVisible([nueveAm, unaYMedia, enDosMin], DOS_PM, dormidaALaUna)
+  assert.deepEqual(r.chat.map((l) => l.id), ['9am'])
+  assert.equal(r.escribiendo, null)
+})
+
+test('corteDormida: despierta, ninguno; dormida, la hora en que se durmió; sin esa hora, todo queda fuera', () => {
+  assert.equal(corteDormida(despierta), Infinity)
+  assert.equal(corteDormida({ dormida: false, desde: '2026-11-16T19:00:00Z', por: null }), Infinity)
+  assert.equal(corteDormida({ dormida: true, desde: '2026-11-16T19:00:00Z', por: 'x' }), Date.parse('2026-11-16T19:00:00Z'))
+  assert.equal(corteDormida({ dormida: true, desde: null, por: null }), -Infinity)
+  assert.equal(corteDormida({ dormida: true, desde: 'no es una hora', por: null }), -Infinity)
+})
+
+test('chatVisible: despierta, escribe quien dice la próxima línea si sale en 3 min o menos', () => {
+  assert.equal(chatVisible([nueveAm, enCincoMin, enDosMin], DOS_PM, despierta).escribiendo, 'carla')
+  assert.equal(chatVisible([nueveAm, enCincoMin], DOS_PM, despierta).escribiendo, null)
+})
+
+test('armarSnapshot suma el chat de hoy, la semana de cada uno y las 10 próximas publicaciones', () => {
+  const pubs = Array.from({ length: 12 }, (_, i) => ({
+    id: `p${i}`, titulo: `Pub ${i}`, publicar_en: new Date(AHORA.getTime() + (12 - i) * 3_600_000).toISOString(), prueba: i % 2 === 0,
+  }))
+  const pasada = { id: 'pasada', titulo: 'Ya salió', publicar_en: hace(30), prueba: false }
+  const s = armarSnapshot({
+    ...base, agentes: [agente()], marcas: [], entregas: [], pubs: [pasada, ...pubs],
+    tertulia: [linea('de-ana', 'ana', hace(10)), linea('de-fantasma', 'fantasma', hace(5))],
+    semana: [fila('ana', '2026-11-15', 4, true)],
+  }, AHORA)
+  assert.deepEqual(s.pubs.map((p) => p.id), ['p11', 'p10', 'p9', 'p8', 'p7', 'p6', 'p5', 'p4', 'p3', 'p2'])
+  assert.deepEqual(s.chat.map((l) => l.id), ['de-ana'])
+  assert.equal(s.escribiendo, null)
+  assert.equal(s.agentes[0].semana.length, 7)
+  assert.deepEqual(s.agentes[0].semana[6], { dia: '2026-11-15', etiqueta: 'Hoy', tareas: 4, falla: true })
 })

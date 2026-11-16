@@ -22,6 +22,7 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
   ['/ideas', 'is_admin'],
   ['/analisis', 'is_admin'],
   ['/oficina', 'is_admin'],
+  ['/knox-office', 'is_admin'],
   // Lo que viene (Próximamente): por ahora solo lo ven los administradores. /ajustes solo pide sesión
   ['/pronto', 'is_admin'],
 ]

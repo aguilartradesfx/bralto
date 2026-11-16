@@ -18,6 +18,7 @@ export type IdeaFila = {
   analisis: Analisis | null
   decision: Decision | null
   decidida_en: string | null
+  grabada_en: string | null
   tema_id: string | null
   error: string | null
   intentos: number
@@ -27,7 +28,7 @@ export type IdeaFila = {
 }
 
 export const COLUMNAS_IDEA =
-  'id, url, red, origen, estado, metricas, analisis, decision, decidida_en, tema_id, error, intentos, creada_en, actualizada_en, analizada_en'
+  'id, url, red, origen, estado, metricas, analisis, decision, decidida_en, grabada_en, tema_id, error, intentos, creada_en, actualizada_en, analizada_en'
 
 // Al tercer intento fallido queda en error (con «Reintentar» en el panel)
 export const MAX_INTENTOS = 3
@@ -52,13 +53,29 @@ export function leerFiltro(v: unknown): Filtro {
   return typeof v === 'string' && (FILTROS as string[]).includes(v) ? (v as Filtro) : 'nuevas'
 }
 
-export type Accion = 'knox' | 'yo' | 'descartar' | 'deshacer' | 'reintentar'
-const ACCIONES: Accion[] = ['knox', 'yo', 'descartar', 'deshacer', 'reintentar']
+export type Accion = 'knox' | 'yo' | 'descartar' | 'deshacer' | 'reintentar' | 'grabada'
+const ACCIONES: Accion[] = ['knox', 'yo', 'descartar', 'deshacer', 'reintentar', 'grabada']
 
 export function leerAccion(body: unknown): { ok: true; accion: Accion } | { ok: false; error: string } {
   const a = body && typeof body === 'object' ? (body as { accion?: unknown }).accion : undefined
   if (typeof a === 'string' && (ACCIONES as string[]).includes(a)) return { ok: true, accion: a as Accion }
   return { ok: false, error: 'Esa acción no existe' }
+}
+
+// «Ya la grabé»: marca las que grabas tú (y sale de «Te toca»); «Deshacer» sobre una grabada vuelve un solo paso.
+// null = no es de esto y sigue lo de siempre
+export function cambioPorGrabar(
+  f: Pick<IdeaFila, 'decision' | 'grabada_en'>,
+  accion: Accion,
+  ahora: Date,
+): { cambios: { grabada_en: string | null } } | { status: number; error: string } | null {
+  if (accion === 'grabada') {
+    if (f.decision !== 'yo') return { status: 409, error: 'Solo se marcan las que vas a grabar tú' }
+    if (f.grabada_en) return { status: 409, error: 'Ya estaba marcada como grabada' }
+    return { cambios: { grabada_en: ahora.toISOString() } }
+  }
+  if (accion === 'deshacer' && f.grabada_en) return { cambios: { grabada_en: null } }
+  return null
 }
 
 // Lo que se hace con una idea que quedó «analizando» porque la corrida se cortó

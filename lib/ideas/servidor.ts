@@ -3,7 +3,7 @@
 import { createServiceClient } from '@/lib/supabase/service'
 import { sinElCreador } from './analisis'
 import { buscarNumeros } from './apify'
-import { COLUMNAS_IDEA, MAX_INTENTOS, rescatar, temaDeIdea, type Accion, type IdeaFila } from './cola'
+import { cambioPorGrabar, COLUMNAS_IDEA, MAX_INTENTOS, rescatar, temaDeIdea, type Accion, type IdeaFila } from './cola'
 import { detectarEnlaces, resolverCorto } from './enlaces'
 import { analizarConGemini } from './gemini'
 
@@ -149,6 +149,13 @@ export async function aplicarAccion(id: string, accion: Accion): Promise<Resulta
   const f = data as IdeaFila | null
   if (!f) return falla(404, 'Esa idea ya no existe')
   const ahora = new Date().toISOString()
+
+  const grabar = cambioPorGrabar(f, accion, new Date(ahora))
+  if (grabar) {
+    if ('error' in grabar) return falla(grabar.status, grabar.error)
+    await guardar(f.id, grabar.cambios)
+    return { ok: true }
+  }
 
   if (accion === 'reintentar') {
     if (f.estado !== 'error' && !(f.estado === 'pendiente' && f.error)) return falla(409, 'Esta idea no tiene error')

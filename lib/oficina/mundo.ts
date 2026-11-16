@@ -1,7 +1,9 @@
-// El plano de la Oficina de Knox: 24 oficinas con puerta de verdad, pasillos, la oficina de Ale
-// y por dónde se camina (A*). Todo es geometría pura: nada de canvas ni de DOM.
+// El plano de la Oficina de Knox: 24 oficinas con puerta de verdad, pasillos, la oficina de Ale, la sala de abajo
+// (café, plática y siesta) y por dónde se camina (A*). Todo es geometría pura: nada de canvas ni de DOM.
+import type { Rincon } from './tipos.ts'
 
 export type Punto = [number, number]
+export type Recuadro = { x: number; y: number; w: number; h: number }
 
 export type Sala = {
   puesto: number
@@ -25,11 +27,13 @@ export type Medidas = {
   AX: number
   FILAS: number[]
   PAS: number[]
+  HO: number // donde terminan las oficinas (y tu oficina y el pasillo de la izquierda); abajo va la sala
+  PUERTA: [number, number] // la puerta del fondo de tu oficina: dónde empieza y qué tan ancha es
 }
 
 export type Mundo = {
-  W: 906
-  H: 476
+  W: number
+  H: number
   salas: Sala[]
   libre(x: number, y: number): boolean
   ruta(a: Punto, b: Punto): Punto[]
@@ -37,16 +41,49 @@ export type Mundo = {
   visita(id: string): Punto
   PARA_TI: Punto
   medidas: Medidas
+  sala: Recuadro // el cuarto de la sala, con sus tres rincones
+  rincon(r: Rincon): Recuadro
+  sitio(r: Rincon, i: number): Punto // dónde quedan los pies de quien se sienta ahí
 }
 
 const M = 6, HL = 24, RW = 120, RH = 96, CH = 40, AW = 150, X0 = M + HL, AX = X0 + 6 * RW
 const FILAS = [M, M + RH + CH, M + 2 * RH + CH, M + 3 * RH + 2 * CH]
 const PAS = [M + RH, M + 3 * RH + CH]
-const W = AX + AW + M, H = M + 4 * RH + 2 * CH + M
+// La sala: una franja nueva abajo, a todo lo ancho. Las oficinas llegan hasta HO; la sala va de SY a SY + SH, con tres
+// rincones de 240 px entre el pasillo de la izquierda y el paso que queda debajo de tu oficina.
+const HO = M + 4 * RH + 2 * CH, SY = HO + M, SH = 104, RIN = 240
+const W = AX + AW + M, H = SY + SH + M
 const CEL = 4, GW = Math.ceil(W / CEL), GH = Math.ceil(H / CEL)
 const PARA_TI: Punto = [AX + 50, M + 242]
+// Por dónde se camina en la sala: un carril al frente, de punta a punta (los muebles quedan detrás)
+const CARRIL = SY + 88, CARRIL_H = 12
+// La puerta del fondo de tu oficina, que da al paso de debajo (alineada con las celdas)
+const PUERTA_X = AX + 66, PUERTA_W = 20
 
-export const MEDIDAS: Medidas = { M, HL, RW, RH, CH, AW, X0, AX, FILAS, PAS }
+// Cuántos caben en cada rincón: 4 bancos en la barra del café, 2 sillones y un sofá de 2 en la plática, y en la siesta
+// un sofá (acostado) y 2 pufs
+export const CUPO: Record<Rincon, number> = { cafe: 4, platica: 4, siesta: 3 }
+const RINCON_X: Record<Rincon, number> = { cafe: X0, platica: X0 + RIN, siesta: X0 + 2 * RIN }
+// Los sitios, contados desde la esquina de su rincón: cada uno en el centro de su celda, para que la ruta llegue derecho.
+// En orden: café, los bancos de izquierda a derecha; plática, los 2 sillones frente a frente y los 2 puestos del sofá;
+// siesta, el sofá y los 2 pufs. Los que llegan juntos se sientan en sitios vecinos (0 y 1, 2 y 3).
+const SITIOS: Record<Rincon, Punto[]> = {
+  cafe: [[44, 78], [84, 78], [124, 78], [164, 78]],
+  platica: [[72, 78], [168, 78], [104, 54], [136, 54]],
+  siesta: [[88, 54], [152, 78], [192, 78]],
+}
+
+export const MEDIDAS: Medidas = { M, HL, RW, RH, CH, AW, X0, AX, FILAS, PAS, HO, PUERTA: [PUERTA_X, PUERTA_W] }
+// El tamaño del mundo en pixeles del dibujo: la página le da a la maqueta esta misma proporción
+export const MUNDO_W = W
+export const MUNDO_H = H
+
+const SALA: Recuadro = { x: X0, y: SY, w: 3 * RIN, h: SH }
+const rinconDe = (r: Rincon): Recuadro => ({ x: RINCON_X[r], y: SY, w: RIN, h: SH })
+function sitioDe(r: Rincon, i: number): Punto {
+  const s = SITIOS[r][Math.max(0, Math.min(SITIOS[r].length - 1, Math.floor(i) || 0))]
+  return [RINCON_X[r] + s[0], SY + s[1]]
+}
 
 export function crearMundo(agentes: { id: string; puesto: number }[]): Mundo {
   const libre = new Uint8Array(GW * GH)
@@ -68,7 +105,8 @@ export function crearMundo(agentes: { id: string; puesto: number }[]): Mundo {
 
   // por dónde se puede caminar: el carril va por el centro del pasillo
   PAS.forEach((py) => marcar(M + 4, py + 22, AX - M - 2, 14, 1))
-  marcar(M + 4, PAS[0] + 22, HL - 6, PAS[1] - PAS[0] + 14, 1)
+  // el pasillo de la izquierda: de un pasillo al otro y, junto a la fila de abajo, hasta el carril de la sala
+  marcar(M + 4, PAS[0] + 22, HL - 6, CARRIL + CARRIL_H - (PAS[0] + 22), 1)
   salas.forEach((s) => {
     const x = s.rx, y = s.ry
     marcar(x + 6, y + 48, RW - 12, RH - 54, 1)
@@ -77,10 +115,22 @@ export function crearMundo(agentes: { id: string; puesto: number }[]): Mundo {
     marcar(x + 32, y + 57, 68, 24, 0); marcar(x + 98, y + 44, 22, 34, 0); marcar(x + 98, y + 80, 22, 16, 0)
     marcar(x + 58, y + 50, 16, 22, 1)
   })
-  marcar(AX + 6, M + 48, AW - 12, H - 2 * M - 54, 1)
+  marcar(AX + 6, M + 48, AW - 12, HO - M - 54, 1)
   PAS.forEach((py) => marcar(AX - 10, py + 22, 20, 14, 1))
   marcar(AX + 34, M + 46, 84, 40, 0); marcar(AX + 16, M + 212, 70, 20, 0); marcar(AX + 16, M + 372, 60, 30, 0)
   marcar(AX + 122, M + 44, 22, 34, 0); marcar(AX + 6, M + 420, 22, 40, 0); marcar(AX + 122, M + 420, 22, 40, 0)
+
+  // la sala: el carril de punta a punta (del pasillo de la izquierda al paso de debajo de tu oficina), el paso, la puerta
+  // del fondo de tu oficina y, de cada sitio, su pasada derecho hasta el carril. Los muebles no se pisan: nadie camina
+  // por detrás de quien está sentado.
+  marcar(M + 4, CARRIL, W - 2 * M - 8, CARRIL_H, 1)
+  marcar(AX + 6, SY + 4, AW - 12, CARRIL + CARRIL_H - SY - 4, 1)
+  marcar(PUERTA_X, HO - 10, PUERTA_W, M + 14, 1)
+  ;(Object.keys(SITIOS) as Rincon[]).forEach((r) => SITIOS[r].forEach((_, i) => {
+    const [x, y] = sitioDe(r, i)
+    marcar(x - 2, y - 2, 4, CARRIL - y + 2, 1)
+  }))
+  marcar(AX + 8, SY + 4, 18, 20, 0); marcar(AX + AW - 26, SY + 4, 18, 20, 0) // las matas del paso
 
   function esLibre(x: number, y: number): boolean {
     const i = Math.floor(x / CEL), j = Math.floor(y / CEL)
@@ -163,9 +213,10 @@ export function crearMundo(agentes: { id: string; puesto: number }[]): Mundo {
   }
 
   return {
-    W: 906, H: 476, salas, libre: esLibre, ruta,
+    W, H, salas, libre: esLibre, ruta,
     asiento: (id) => { const s = salaDe[id]; return s ? [s.asiento[0], s.asiento[1]] : [PARA_TI[0], PARA_TI[1]] },
     visita: (id) => { const s = salaDe[id]; return s ? [s.visita[0], s.visita[1]] : [PARA_TI[0], PARA_TI[1]] },
     PARA_TI, medidas: MEDIDAS,
+    sala: { ...SALA }, rincon: rinconDe, sitio: sitioDe,
   }
 }

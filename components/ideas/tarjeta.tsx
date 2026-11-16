@@ -129,7 +129,7 @@ export function TarjetaIdea({ idea, ahora }: { idea: IdeaFila; ahora: string }) 
       )}
 
       <footer className="mt-5 border-t border-fg/[0.06] pt-4">
-        <Acciones id={idea.id} estado={idea.estado} decision={idea.decision} conAnalisis={Boolean(a)} />
+        <Acciones id={idea.id} estado={idea.estado} decision={idea.decision} grabada={Boolean(idea.grabada_en)} conAnalisis={Boolean(a)} />
       </footer>
     </article>
   )

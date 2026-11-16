@@ -46,7 +46,7 @@ test('validarAgentes llena los valores por defecto', () => {
   assert.ok('ok' in r)
   assert.deepEqual(r.ok[0], {
     ...minimo, aspecto: {}, personalidad: '', frase: '', horario: null, cada_minutos: null, ruta: null,
-    estado_fijo: null, despierto_siempre: false, dura_min: 10, ultima_revision: null,
+    estado_fijo: null, despierto_siempre: false, dura_min: 10, ultima_revision: null, lugar: null,
   })
 })
 test('filasParaSembrar no incluye ultima_revision y marca activo', () => {
@@ -56,4 +56,22 @@ test('filasParaSembrar no incluye ultima_revision y marca activo', () => {
   assert.equal('ultima_revision' in fila, false)
   assert.equal(fila.activo, true)
   assert.equal(fila.id, 'drax')
+})
+test('validarAgentes acepta lugar: ruta del panel o enlace https', () => {
+  for (const lugar of ['/calendario', 'https://knox.bralto.io']) {
+    const r = validarAgentes([{ ...minimo, lugar }])
+    assert.ok('ok' in r, lugar)
+    assert.equal(r.ok[0].lugar, lugar)
+  }
+})
+test('validarAgentes rechaza lugar peligroso', () => {
+  for (const lugar of ['javascript:alert(1)', '//otro.com', 'http://x.com', '/', '', 5]) {
+    assert.ok('error' in validarAgentes([{ ...minimo, lugar }]), String(lugar))
+  }
+})
+test('sin lugar queda null y filasParaSembrar lo lleva', () => {
+  const r = validarAgentes([minimo])
+  assert.ok('ok' in r)
+  assert.equal(r.ok[0].lugar, null)
+  assert.equal(filasParaSembrar(r.ok)[0].lugar, null)
 })

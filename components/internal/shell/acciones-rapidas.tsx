@@ -50,6 +50,7 @@ export function AccionesRapidas({ abierto, onCerrar, menu, perfil }: { abierto: 
         icono: ICONOS[it.icono],
         pronto: it.pronto,
         href: it.href,
+        externo: it.nueva,
       })),
     )
     const crear = CREAR.filter((c) => hasPermission(perfil, requiredPermission(c.href))).map((c) => ({ id: c.href, label: c.label, grupo: 'Crear', icono: Plus, href: c.href }))
