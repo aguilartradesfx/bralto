@@ -267,3 +267,12 @@ test('horas: si ya pasó el fin, todo va al inicio', () => {
   const r = ok(ronda({ posts: [post(1)], chat: [linea(1)], comentarios: [com(1)] }), tarde)
   for (const x of [...r.posts, ...r.chat, ...r.comentarios]) assert.equal(x.mostrar_desde, tarde.ahora.toISOString())
 })
+
+test('«diay» sale como «deay» (mayúscula conservada), sin tocar otras palabras, y la línea no se bota', () => {
+  const r = ok(ronda({ chat: [linea(1, { texto: 'Diay, mae, ya salió' }), linea(2, { texto: 'diay y mediaya diaya' }), linea(3, { texto: 'el prediay' })] }))
+  assert.equal(r.chat.length, 3)
+  assert.equal(r.chat[0].texto, 'Deay, mae, ya salió')
+  assert.equal(r.chat[1].texto, 'deay y mediaya diaya')
+  assert.equal(r.chat[2].texto, 'el prediay')
+  assert.deepEqual(r.botadas, [])
+})

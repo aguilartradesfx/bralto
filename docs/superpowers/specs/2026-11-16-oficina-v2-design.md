@@ -48,7 +48,7 @@ Lo dijo él: «obvio con cautela, si no, consumimos muchos recursos solo en su o
   - se leen solo desde el servidor, después de `is_admin`.
 - **Pixeles nítidos** como en la fase 1: se dibuja a 1× y se amplía con `imageSmoothingEnabled = false`.
 - Textos en español de Costa Rica, con tuteo y nunca «pana». Que lo entienda un niño de 5 y un señor de 50.
-  - Entre ellos hablan de tú, con «mae», «diay» y «compa».
+  - Entre ellos hablan de tú, con «mae», «deay» y «compa».
   - Ni nombres de clientes ni datos de personas.
 - **Gasto:**
   - Los textos los escribe el servidor una vez al día con el plan de Claude que ya se paga (`claude -p`), así que no suman gasto aparte.

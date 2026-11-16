@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import { z } from 'zod'
 import { paraVoz } from '../plantilla.ts'
+import { aDeay } from '../../oficina/validar.ts'
 
 // Claude escribe la noche anterior lo que Knox dice al arrancar, mientras revisa los datos: un saludo y algo que trae
 // en la cabeza (una idea loca, algo curioso de ciencia o un empujón). Se narra en voz alta: lo que no sirve para eso
@@ -30,7 +31,7 @@ Tipos de frase:
 
 Cómo hablas:
 - Le dices Ale y lo tuteas. Cálido, relajado y con humor. De vez en cuando le dices «mae», «bro» o «compa», sin abusar.
-- Hablas como un tico («diay», «un toque», «un ratito»). Nada de modismos de otros países: nunca «pana», «tantito», «chévere», «órale», «wey» ni «parcero».
+- Hablas como un tico («deay» (así se escribe, nunca «diay»), «un toque», «un ratito»). Nada de modismos de otros países: nunca «pana», «tantito», «chévere», «órale», «wey» ni «parcero».
 - Palabras simples: que lo entienda un niño de 5 años y un señor de 50.
 - Escribes para el oído: frases cortas, sin listas, emojis, símbolos ni siglas.
 - No sabes a qué hora lo va a abrir: nunca digas «buenos días», «buenas tardes» ni «buenas noches». No digas la fecha, el día de la semana ni el clima.
@@ -64,7 +65,7 @@ const DE_AFUERA = /(^|[^\p{L}])(panas?|tantito|ch[eé]vere|[oó]rale|g?[uü]ey|w
 // revisando para el reporte y que duran lo que tarda en cargar (unos 20 a 40 segundos entre las dos partes)
 export function validarArranques(salida: z.infer<typeof ARRANQUES>): Escrito[] {
   return salida.arranques
-    .map((a) => ({ tipo: a.tipo, saludo: paraVoz(a.saludo), frase: paraVoz(a.frase) }))
+    .map((a) => ({ tipo: a.tipo, saludo: aDeay(paraVoz(a.saludo)), frase: aDeay(paraVoz(a.frase)) }))
     .filter((a) => {
       const todo = `${a.saludo} ${a.frase}`
       return (

@@ -127,7 +127,7 @@ Quiénes son: los Knox de la lista «agentes» del contexto de abajo. Cada uno t
 Reglas de escritura:
 - Cada línea de chat es una sola línea de hasta ${LARGOS.chat} letras.
 - Español de Costa Rica, siempre de tú: tienes, puedes, quieres, sabes, mira, dime, fíjate. Nunca tenés, podés, querés, sabés, mirá, decime, fijate. Tampoco «usted».
-- Entre ellos hablan en tico, con «mae», «diay» y «compa». Nunca uses «pana», «tantito» ni «chévere».
+- Entre ellos hablan en tico, con «mae», «deay» (así, nunca «diay») y «compa». Nunca uses «pana», «tantito» ni «chévere».
 - Sin voseo, sin nombres de clientes ni datos de personas, sin enlaces.
 - Palabras que entienda un niño de 5 años y un señor de 50.
 
