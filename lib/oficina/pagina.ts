@@ -2,6 +2,7 @@
 // lo próximo y la línea del día. Lógica pura (sin DOM): la usa components/oficina y se prueba con node --test.
 import type { Agente, EstadoAgente, EstadoOficina, Marca, Numeros, Proximo } from './tipos.ts'
 import { horaCR, siguienteCorrida } from './horario.ts'
+import { FRECUENTE_MIN } from './estado.ts'
 
 export type AgenteSnap = Agente & { estado: EstadoAgente; numeros: Numeros }
 
@@ -11,7 +12,7 @@ const DIA = 24 * HORA
 const CR = 6 * HORA // Costa Rica: UTC−6 todo el año
 const t = (iso: string) => new Date(iso).getTime()
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-const frecuente = (a: Agente) => a.cada_minutos != null && a.cada_minutos <= 15
+const frecuente = (a: Agente) => a.cada_minutos != null && a.cada_minutos <= FRECUENTE_MIN
 
 export const ETIQUETA: Record<EstadoAgente, string> = {
   trabajando: 'Trabajando',
@@ -158,17 +159,18 @@ export function lineaAhora(a: AgenteSnap, marcas: Marca[], paraTi: Marca[], ahor
 // Cuándo falló y cuándo se reintenta: 'Falló a las 7:10 p. m. · se reintenta a las 7:30 p. m.'
 export function lineaFalla(a: AgenteSnap, marcas: Marca[], ahora: Date): string | null {
   const m = masNueva(marcas.filter((x) => x.agente === a.id && x.tipo === 'falla'))
-  const partes = [m ? 'falló ' + cuandoCR(new Date(m.creado_en), ahora) : null, reintento(a, ahora)].filter((p): p is string => !!p)
+  const sin = m?.extra?.sin_reintento === true
+  const partes = [m ? 'falló ' + cuandoCR(new Date(m.creado_en), ahora) : null, reintento(a, ahora, sin)].filter((p): p is string => !!p)
   return partes.length ? capital(partes.join(' · ')) : null
 }
 
 // Cuándo vuelve a intentar lo que falló (null si no tiene hora fija)
-export function reintento(a: Agente, ahora: Date): string | null {
-  if (frecuente(a)) return 'se reintenta en unos minutos'
+export function reintento(a: Agente, ahora: Date, sinReintento = false): string | null {
+  if (sinReintento) return 'No se vuelve a intentar sola: revísala en el Calendario.'
   if (a.estado_fijo === 'pedido') return 'se reintenta cuando lo pidas'
-  if (!a.horario) return null
-  const sig = siguienteCorrida(a.horario, ahora)
-  return sig ? 'se reintenta ' + cuandoCR(sig, ahora) : null
+  const sig = a.horario ? siguienteCorrida(a.horario, ahora) : null
+  if (sig) return 'se reintenta ' + cuandoCR(sig, ahora)
+  return frecuente(a) ? 'se reintenta en unos minutos' : null
 }
 
 // «Lo próximo» de la ficha
@@ -177,7 +179,7 @@ export function proximoDe(a: Agente, ahora: Date, dormida: boolean): string {
   if (a.estado_fijo === 'pendiente') return 'Todavía no empieza'
   if (a.estado_fijo === 'pedido') return 'Cuando lo pidas'
   if (frecuente(a)) {
-    const base = `Revisa cada ${a.cada_minutos} min`
+    const base = a.cada_minutos === 60 ? 'Revisa cada hora' : `Revisa cada ${a.cada_minutos} min`
     const ult = a.ultima_revision ? new Date(a.ultima_revision) : null
     return ult && !Number.isNaN(ult.getTime()) ? `${base} · última vez: ${momentoCR(ult, ahora)}` : base
   }

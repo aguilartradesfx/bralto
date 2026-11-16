@@ -2,6 +2,8 @@
 // Lo cargan `node --test` y una ruta de Next.js: imports relativos con .ts, sin `server-only`,
 // y ningún cliente se crea al importar.
 import { createServiceClient } from '../supabase/service.ts'
+import { FRECUENTE_MIN } from './estado.ts'
+import { siguienteCorrida } from './horario.ts'
 import { idEstado, marcar } from './servidor.ts'
 
 const MIN = 60_000
@@ -13,7 +15,8 @@ const SEPARACION = 30 * MIN
 const MARGEN_DESPERTAR = 3 * HORA
 // Igual que el rescate del publicador (lib/redes/publicacion/servidor.ts): «publicando» sin tocar hace más de 15 min
 const TRABADA_MS = 15 * MIN
-const FRECUENTE_MIN = 15
+// Si su próxima corrida regular cae dentro de esta ventana, ella misma la corre (evita correos repetidos a clientes)
+const PROXIMA_MS = 60 * MIN
 
 type Pub = { id: string, publicar_en: string, prueba: boolean }
 
@@ -54,6 +57,19 @@ export function reprogramar(
     salida.push({ id: p.id, publicar_en: new Date(nueva).toISOString() })
   }
   return salida
+}
+
+export type AgenteDespertar = { id: string, ruta: string | null, cada_minutos: number | null, horario?: string | null }
+
+// De los agentes que se saltaron (en orden), los que hay que correr ahora: con ruta, no frecuentes,
+// y cuya próxima corrida regular no esté a menos de una hora.
+export function aCorrerAlDespertar<T extends AgenteDespertar>(agentes: T[], ahora: Date): (T & { ruta: string })[] {
+  return agentes.filter((r): r is T & { ruta: string } => {
+    if (!r.ruta) return false
+    if (r.cada_minutos != null && r.cada_minutos <= FRECUENTE_MIN) return false
+    const sig = r.horario ? siguienteCorrida(r.horario, ahora) : null
+    return !(sig && sig.getTime() - ahora.getTime() <= PROXIMA_MS)
+  })
 }
 
 // Paso 1 del despertar: se llama ANTES de dejar la oficina despierta. Lanza si la base falla.
@@ -113,16 +129,16 @@ export async function despertar(desde: Date, ahora: Date, base: string): Promise
     const orden: string[] = []
     for (const f of (m.data ?? []) as { agente: string }[]) if (!orden.includes(f.agente)) orden.push(f.agente)
 
-    let rutas: { id: string, ruta: string | null, cada_minutos: number | null }[] = []
+    let rutas: AgenteDespertar[] = []
     if (orden.length > 0) {
-      const ag = await db.from('oficina_agentes').select('id, ruta, cada_minutos').in('id', orden)
+      const ag = await db.from('oficina_agentes').select('id, ruta, cada_minutos, horario').in('id', orden)
       if (ag.error) throw new Error(`oficina_agentes: ${ag.error.message}`)
       rutas = (ag.data ?? []) as typeof rutas
     }
-    const aCorrer = orden
-      .map(id => rutas.find(r => r.id === id))
-      .filter((r): r is { id: string, ruta: string, cada_minutos: number | null } =>
-        !!r && !!r.ruta && (r.cada_minutos == null || r.cada_minutos > FRECUENTE_MIN))
+    const aCorrer = aCorrerAlDespertar(
+      orden.map(id => rutas.find(r => r.id === id)).filter((r): r is AgenteDespertar => !!r),
+      ahora,
+    )
 
     if (idEstado() !== 1) {
       console.info(`[oficina] simulación: correría ${aCorrer.length} tareas: ${aCorrer.map(r => r.id).join(', ')}`)
@@ -130,10 +146,17 @@ export async function despertar(desde: Date, ahora: Date, base: string): Promise
     }
 
     const corridas: string[] = []
-    for (const r of aCorrer) {
+    const secreto = process.env.CRON_SECRET
+    if (!secreto && aCorrer.length) console.error('[oficina]', 'falta CRON_SECRET: no corro las tareas atrasadas')
+    for (const r of secreto ? aCorrer : []) {
       try {
-        const res = await fetch(new URL(r.ruta, base), {
-          headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
+        const url = new URL(r.ruta, base)
+        if (url.origin !== new URL(base).origin) {
+          console.error('[oficina]', `${r.id}: ruta de otro origen, la salto`)
+          continue
+        }
+        const res = await fetch(url, {
+          headers: { Authorization: `Bearer ${secreto}` },
           signal: AbortSignal.timeout(120_000),
         })
         if (!res.ok) console.error('[oficina]', `${r.id} respondió ${res.status}`)

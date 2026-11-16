@@ -5,6 +5,8 @@ import { horaCR, siguienteCorrida } from './horario.ts'
 export type FilaNumeros = { agente: string, tareas: number, segundos: number, ultima_falla: string | null, primera: string | null }
 export type Pub = { id: string, titulo: string, publicar_en: string, prueba: boolean }
 
+// Una revisión que corre cada hora o menos es «frecuente»: no sale en «Lo próximo» ni se corre al despertar
+export const FRECUENTE_MIN = 60
 const MIN = 60_000
 const DIA = 24 * 60 * MIN
 const t = (iso: string) => new Date(iso).getTime()
@@ -54,7 +56,7 @@ export function paraTi(entregas: Marca[], resueltas: Set<string>, ahora: Date): 
 export function proximos(agentes: Agente[], pubs: Pub[], ahora: Date, n = 5): Proximo[] {
   const items: { real: Date, p: Proximo }[] = []
   for (const a of agentes) {
-    if (a.cada_minutos != null && a.cada_minutos <= 15) continue
+    if (a.cada_minutos != null && a.cada_minutos <= FRECUENTE_MIN) continue
     if (a.estado_fijo || !a.horario) continue
     const sig = siguienteCorrida(a.horario, ahora)
     if (!sig) continue

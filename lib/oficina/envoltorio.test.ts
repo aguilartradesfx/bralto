@@ -62,9 +62,11 @@ test('error: marca falla en una línea y relanza el mismo error', async () => {
   await assert.rejects(conOficinaCon(x.deps, 'kash', async () => { throw err }), (e) => e === err)
   assert.equal(x.marcas.length, 1)
   assert.equal(x.marcas[0].tipo, 'falla')
-  assert.match(x.marcas[0].texto, /^Falló: algo se rompió x+…$/)
-  assert.ok(!x.marcas[0].texto.includes('\n'))
-  assert.ok(x.marcas[0].texto.length <= 150)
+  assert.equal(x.marcas[0].texto, 'Algo falló y no pudo terminar')
+  const raw = (x.marcas[0].extra as { error: string }).error
+  assert.match(raw, /^algo se rompió x+…$/)
+  assert.ok(!raw.includes('\n'))
+  assert.ok(raw.length <= 140)
 })
 
 test('inicio: empieza y termina, también con hizo false', async () => {

@@ -62,7 +62,7 @@ export async function conOficinaCon<T extends Resultado>(
   try {
     r = await trabajo()
   } catch (err) {
-    await seguro(() => deps.marcar({ agente, tipo: 'falla', texto: `Falló: ${enUnaLinea(err)}` }), undefined)
+    await seguro(() => deps.marcar({ agente, tipo: 'falla', texto: 'Algo falló y no pudo terminar', extra: { error: enUnaLinea(err) } }), undefined)
     throw err
   }
 
@@ -151,7 +151,7 @@ export async function sumarEcho(): Promise<void> {
 export async function marcarPublicadas(r: Record<string, unknown>): Promise<number> {
   try {
     const titulos = titulosPublicados(r)
-    for (const titulo of titulosConError(r)) await marcar({ agente: 'zap', tipo: 'falla', texto: `No pude publicar «${titulo}»` })
+    for (const titulo of titulosConError(r)) await marcar({ agente: 'zap', tipo: 'falla', texto: `No se pudo publicar «${titulo}»`, extra: { sin_reintento: true } })
     if (!titulos.length) return 0
     for (const titulo of titulos) await marcar({ agente: 'zap', tipo: 'publica', texto: `Publicó «${titulo}»` })
     let tiktok = 0

@@ -88,6 +88,10 @@ test('proximos: deja fuera cada_minutos 5, incluye la noche', () => {
   const r = proximos(ags, [], AHORA)
   assert.deepEqual(r, [{ cuando: '7:00 p. m.', agente: 'noche', texto: 'produce de noche' }])
 })
+test('proximos: deja fuera cada_minutos 60 (cada hora es frecuente)', () => {
+  const r = proximos([agente({ id: 'vero', horario: '0 * * * *', cada_minutos: 60 })], [], AHORA)
+  assert.deepEqual(r, [])
+})
 test('proximos: publicaciones, pruebas, orden y límite', () => {
   const ags = [agente({ id: 'noche', oficio: 'o', horario: '0 1 * * *' })]
   const pubs = [

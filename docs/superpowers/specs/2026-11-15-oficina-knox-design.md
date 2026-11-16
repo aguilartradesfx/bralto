@@ -206,7 +206,7 @@ Lo pidió Alejandro el 15/11: «un switch donde cuando yo lo active la oficina p
 
 1. **Reloj de marcar y la página con estados reales:** tablas, catálogo sembrado desde la base (no desde el código), envoltorio para las tareas del sitio, comando `marcar` en el servidor, y la página en los dos dominios con las tres vistas, el panel y la ficha.
 2. **El chat de la oficina.**
-3. **Knox con más detalle y fotos de perfil:** sprites en pixel art y una foto realista por Knox con nano banana (unos $2 por los 24). Antes, una prueba con uno. Solo con el OK de gasto de Alejandro.
+3. **Knox con más detalle y fotos de perfil:** sprites en pixel art y una foto realista por Knox con nano banana. Antes, una prueba con uno. Solo con el OK de gasto de Alejandro.
 4. **Los agentes de Instagram nuevos** marcan desde el primer día, a medida que se construyen.
 
 ## Lo que queda al constructor

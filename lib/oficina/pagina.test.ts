@@ -106,16 +106,20 @@ test('la marca que explica lo que hace ahora', () => {
 })
 
 test('cuándo se reintenta lo que falló', () => {
-  assert.equal(reintento(ag('gama', { cada_minutos: 5, horario: '*/5 * * * *' }), AHORA), 'se reintenta en unos minutos')
+  assert.equal(reintento(ag('gama', { cada_minutos: 5, horario: '*/5 * * * *' }), AHORA), 'se reintenta a las 7:25 p. m.')
+  assert.equal(reintento(ag('gama2', { cada_minutos: 5 }), AHORA), 'se reintenta en unos minutos')
   assert.equal(reintento(ag('iota', { horario: '30 1 * * *' }), AHORA), 'se reintenta a las 7:30 p. m.')
   assert.equal(reintento(ag('xi', { horario: '0 12 * * *' }), AHORA), 'se reintenta mañana a las 6:00 a. m.')
   assert.equal(reintento(ag('eta', { estado_fijo: 'pedido' }), AHORA), 'se reintenta cuando lo pidas')
   assert.equal(reintento(ag('epsilon'), AHORA), null)
+  assert.equal(reintento(ag('vero', { cada_minutos: 60, horario: '0 * * * *' }), AHORA), 'se reintenta a las 8:00 p. m.')
+  assert.equal(reintento(ag('zap', { horario: '30 1 * * *' }), AHORA, true), 'No se vuelve a intentar sola: revísala en el Calendario.')
 })
 
 test('lo próximo de la ficha', () => {
   assert.equal(proximoDe(ag('beta', { cada_minutos: 5, ultima_revision: '2026-11-16T01:20:00Z' }), AHORA, false), 'Revisa cada 5 min · última vez: 7:20 p. m.')
   assert.equal(proximoDe(ag('beta', { cada_minutos: 5 }), AHORA, false), 'Revisa cada 5 min')
+  assert.equal(proximoDe(ag('vero', { cada_minutos: 60 }), AHORA, false), 'Revisa cada hora')
   assert.equal(proximoDe(ag('eta', { estado_fijo: 'pedido' }), AHORA, false), 'Cuando lo pidas')
   assert.equal(proximoDe(ag('zeta', { estado_fijo: 'pendiente', horario: '0 12 * * 1' }), AHORA, false), 'Todavía no empieza')
   assert.equal(proximoDe(ag('iota', { horario: '30 1 * * *' }), AHORA, false), 'Hoy a las 7:30 p. m.')
@@ -184,9 +188,11 @@ test('la línea de «Ahora» para cada estado', () => {
   assert.equal(lineaAhora(ag('gama', { estado: 'fallo' }), marcas, paraTi, AHORA), 'El cobro no contestó')
   assert.equal(lineaAhora(ag('zeta', { estado: 'listo' }), marcas, paraTi, AHORA), 'Te dejó: el plan de la semana')
   assert.equal(lineaAhora(ag('delta', { estado: 'descansando' }), marcas, paraTi, AHORA), null)
-  assert.equal(lineaFalla(ag('gama', { estado: 'fallo', cada_minutos: 5 }), marcas, AHORA), 'Falló a las 7:10 p. m. · se reintenta en unos minutos')
+  assert.equal(lineaFalla(ag('gama', { estado: 'fallo', cada_minutos: 5, horario: null }), marcas, AHORA), 'Falló a las 7:10 p. m. · se reintenta en unos minutos')
   assert.equal(lineaFalla(ag('iota', { estado: 'fallo', horario: '30 1 * * *' }), [], AHORA), 'Se reintenta a las 7:30 p. m.')
   assert.equal(lineaFalla(ag('epsilon', { estado: 'fallo' }), [], AHORA), null)
+  const sin = [mk('zap', 'falla', '2026-11-16T01:10:00Z', { texto: 'No se pudo publicar «X»', extra: { sin_reintento: true } })]
+  assert.equal(lineaFalla(ag('zap', { estado: 'fallo', horario: '30 1 * * *' }), sin, AHORA), 'Falló a las 7:10 p. m. · No se vuelve a intentar sola: revísala en el Calendario.')
 })
 
 test('la línea del día: solo lo de hoy, cada marca en su área y su hora', () => {

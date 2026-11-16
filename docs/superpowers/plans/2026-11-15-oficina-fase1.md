@@ -400,7 +400,7 @@ test('hora de Costa Rica', () => {
 
 ### Task 13: El servidor marca y respeta el modo dormir (fuera del repo)
 
-**Files:** en el servidor (`ssh -i ~/.ssh/bralto_vps knox@<servidor>`), dentro de `~/Documents/Bralto-redes/servidor/`: Modify `correr-noche.sh` y `tarea-noche.md`; Create `oficina-vigia.sh` y su línea de crontab. Primero se actualiza el clon del sitio en el servidor a esta rama, o a `main` después del merge, para que exista `scripts/oficina/marcar.ts`.
+**Files:** en el servidor (en el servidor), dentro de `~/Documents/Bralto-redes/servidor/`: Modify `correr-noche.sh` y `tarea-noche.md`; Create `oficina-vigia.sh` y su línea de crontab. Primero se actualiza el clon del sitio en el servidor a esta rama, o a `main` después del merge, para que exista `scripts/oficina/marcar.ts`.
 
 **Interfaces:**
 - Consumes: `marcar.ts estado` (sale con código 3 si la oficina duerme) y `marcar.ts <agente> <tipo> "<texto>"` (Task 8).

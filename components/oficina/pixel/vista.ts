@@ -187,7 +187,7 @@ export function crearVista(
       c.fillStyle = COL[noche(k) ? 'durmiendo' : k.estado]; c.fillRect(X(sa.rx + 34), Y(sa.ry + 6), 4 * s, 4 * s)
       c.fillStyle = '#2a1d14'; c.font = fuente(7 * s); c.fillText(k.a.nombre, X(sa.rx + 64), Y(sa.ry + 8.4))
       if (k.estado === 'pendiente' && !dormida) cartel(X(sa.rx + 64), Y(sa.ry + 52), 'pronto', s)
-      else if (dormida && k.a.despierto_siempre) cartel(X(sa.rx + 64), Y(sa.ry + 52), 'atiende a la gente', s)
+      else if (dormida && k.a.despierto_siempre) cartel(X(sa.rx + 64), Y(sa.ry + 52), k.a.id === 'echo' ? 'atiende a la gente' : 'de guardia', s)
     })
     c.fillStyle = '#2a1d14'; c.font = fuente(6.5 * s); c.fillText('TU OFICINA', X(AX + 75), Y(M + 8.4))
     c.fillStyle = '#ffffff'; c.font = fuente(6 * s); c.fillText('PARA TI: ' + bandeja.n, X(AX + 51), Y(M + 207))
@@ -275,7 +275,7 @@ export function crearVista(
     }
   }
   function soltar(e: PointerEvent) {
-    const clic = arrastre && !arrastre.movio && Object.keys(punteros).length === 1
+    const clic = e.type !== 'pointercancel' && arrastre && !arrastre.movio && Object.keys(punteros).length === 1
     delete punteros[e.pointerId]
     if (Object.keys(punteros).length < 2) pellizco = null
     if (clic) {

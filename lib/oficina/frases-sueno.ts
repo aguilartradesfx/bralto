@@ -22,6 +22,6 @@ export const FRASES_SUENO: string[] = [
   'Cuenten ovejas conmigo',
   'Diay, qué cobija tan rica',
   'Soñé que me crecían alas',
-  'Compa, no ronque tan duro',
+  'Compa, no ronques tan duro',
   'Ya casi, ya casi… zzz',
 ]

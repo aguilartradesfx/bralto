@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { reprogramar } from './despertar.ts'
+import { aCorrerAlDespertar, reprogramar } from './despertar.ts'
 
 // Costa Rica = UTC-6: 18:00 CR = 00:00 UTC del día siguiente.
 const MIN = 60_000
@@ -35,4 +35,16 @@ test('con margen de 3 h mueve uno 1 h antes de desde, nunca antes de ahora; uno 
 test('dentro de la ventana conserva la hora desplazada', () => {
   const r = reprogramar([pub('a', '2026-11-16T16:15:00Z')], new Date('2026-11-16T16:00:00Z'), new Date('2026-11-16T17:00:00Z'))
   assert.deepEqual(r, [{ id: 'a', publicar_en: '2026-11-16T17:15:00.000Z' }])
+})
+
+test('aCorrerAlDespertar: salta lo que corre en menos de una hora y lo frecuente', () => {
+  const ahora = new Date('2026-11-15T15:30:00Z') // 9:30 CR
+  const ags = [
+    { id: 'pronto', ruta: '/a', cada_minutos: null, horario: '0 16 * * *' }, // 10:00 CR, en 30 min
+    { id: 'lejos', ruta: '/b', cada_minutos: null, horario: '0 18 * * *' }, // 12:00 CR, en 2.5 h
+    { id: 'tarde', ruta: '/c', cada_minutos: null, horario: '0 0 * * *' },
+    { id: 'hora', ruta: '/d', cada_minutos: 60, horario: '0 * * * *' },
+    { id: 'sinruta', ruta: null, cada_minutos: null, horario: '0 0 * * *' },
+  ]
+  assert.deepEqual(aCorrerAlDespertar(ags, ahora).map((a) => a.id), ['lejos', 'tarde'])
 })

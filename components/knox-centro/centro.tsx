@@ -850,7 +850,7 @@ export function CentroKnox({ iniciales, demo, vistaInicial }: { iniciales: strin
             {vista === 'ventas' && <VistaVentasPaneles datos={vistas.ventas?.datos} ahora={ahora} />}
             {vista === 'redes' && <VistaRedesPaneles datos={vistas.redes?.datos} ahora={ahora} />}
             {vista === 'agenda' && <VistaAgendaPaneles datos={vistas.agenda?.datos} ahora={ahora} />}
-            {vista === 'oficina' && <Oficina inicial={null} enMarco />}
+            {vista === 'oficina' && (demo ? <p>La Oficina se ve con tu sesión.</p> : <Oficina inicial={null} enMarco />)}
             {vista === 'conexiones' && <VistaConexionesPaneles datos={vistas.conexiones?.datos} ahora={ahora} />}
           </MarcoVista>
         )}
