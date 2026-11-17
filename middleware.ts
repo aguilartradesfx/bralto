@@ -7,6 +7,7 @@ import { OPT_IN_REGION, REGION_COOKIE, requiresOptIn } from './lib/consent'
 import { preferredLocale } from './lib/locale'
 import { isPanelPath, resolveHostRouting } from './lib/host-routing'
 import { hasPermission, requiredPermission, type PanelPermission } from './lib/panel-access'
+import { rutaDeLogin } from './lib/panel/siguiente'
 import { esAvisoDeMeta } from './lib/eliminar-datos/ruta'
 import type { UserProfile } from './types/user-profiles'
 
@@ -83,7 +84,8 @@ async function guardPanel(request: NextRequest, rewriteTo?: string): Promise<Nex
       }
     )
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.redirect(new URL('/login', request.url))
+    // Sin sesión: al login, con el enlace que pidió para volver ahí después (el #ancla lo conserva el navegador)
+    if (!user) return NextResponse.redirect(new URL(rutaDeLogin(request.nextUrl.pathname, request.nextUrl.search), request.url))
 
     const permission = requiredPermission(rewriteTo ?? request.nextUrl.pathname)
     if (permission) {

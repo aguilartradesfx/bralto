@@ -1,11 +1,12 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { KeyRound, Mail } from 'lucide-react'
 import { ThemeToggle } from '@/components/home/theme-toggle'
 import { Marca } from '@/components/internal/shell/menu-lateral'
 import { TRAZO } from '@/components/internal/shell/iconos'
 import { Barrita, Medidor } from '@/components/internal/inicio/graficas'
+import { conAncla, siguienteSeguro } from '@/lib/panel/siguiente'
 import { login } from './actions'
 
 const CAMPO =
@@ -13,6 +14,12 @@ const CAMPO =
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, null)
+  // El enlace que pidió antes de entrar (?next=…, más el #ancla que el navegador guardó), para volver ahí
+  const [siguiente, setSiguiente] = useState('')
+  useEffect(() => {
+    const destino = siguienteSeguro(new URLSearchParams(window.location.search).get('next'))
+    if (destino) setSiguiente(conAncla(destino, window.location.hash))
+  }, [])
 
   return (
     <div className="grid min-h-dvh gap-4 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:p-4">
@@ -33,6 +40,7 @@ export default function LoginPage() {
           <p className="mt-1.5 text-[15px] text-fg/55">Entra con tu cuenta para seguir.</p>
 
           <form action={formAction} className="mt-8 space-y-4">
+            {siguiente && <input type="hidden" name="next" value={siguiente} />}
             <div>
               <label className="mb-1.5 block text-[12px] text-fg/50" htmlFor="email">
                 Correo

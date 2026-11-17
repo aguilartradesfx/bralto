@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getCurrentSession } from '@/lib/panel-session'
 import { hasPermission } from '@/lib/panel-access'
+import { rutaDeLogin } from '@/lib/panel/siguiente'
 import { leerFiltro } from '@/lib/guiones/reglas'
 import { leerGuiones } from '@/lib/guiones/servidor'
 import type { GuionFila } from '@/lib/guiones/tipos'
@@ -13,7 +14,7 @@ export const dynamic = 'force-dynamic'
 export default async function GuionesPage({ searchParams }: { searchParams: Promise<{ f?: string | string[] }> }) {
   // El middleware ya lo exige; acá también, antes de leer con service role
   const { user, profile } = await getCurrentSession()
-  if (!user) redirect('/login')
+  if (!user) redirect(rutaDeLogin('/guiones'))
   if (!hasPermission(profile, 'is_admin')) redirect('/admin')
 
   let guiones: GuionFila[] = []

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { hostKind } from '@/lib/host-routing'
+import { siguienteSeguro } from '@/lib/panel/siguiente'
 
 export async function login(_: unknown, formData: FormData) {
   const supabase = await createClient()
@@ -17,6 +18,8 @@ export async function login(_: unknown, formData: FormData) {
     return { error: 'El correo o la contraseña no coinciden. Revísalos y prueba de nuevo.' }
   }
 
-  // En knox.bralto.io se entra directo al centro de mando; en el panel, al Inicio
-  redirect(hostKind((await headers()).get('host')) === 'knox' ? '/' : '/admin')
+  // Al enlace que pidió (si es una ruta segura de este sitio); si no, en knox.bralto.io al centro de mando y en el
+  // panel al Inicio
+  const siguiente = siguienteSeguro(formData.get('next'))
+  redirect(siguiente ?? (hostKind((await headers()).get('host')) === 'knox' ? '/' : '/admin'))
 }
