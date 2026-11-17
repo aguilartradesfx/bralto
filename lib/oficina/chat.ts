@@ -1,7 +1,7 @@
 // El chat de la Oficina: lo que pasó de verdad hoy (las marcas que cuentan algo), la tertulia del día y lo que dicen
 // dormidos (las frases de sueño las arma la página mientras la oficina duerme: tipo 'sueno'), por hora.
 // Puro: lo usa components/oficina y se prueba con node --test.
-import type { LineaTertulia, Marca } from './tipos.ts'
+import type { LineaTertulia, Marca, RinconChat } from './tipos.ts'
 import { fechaCR } from './horario.ts'
 
 export type LineaChat = {
@@ -12,6 +12,9 @@ export type LineaChat = {
   cuando: string // ISO
   tipo: 'marca' | 'tertulia' | 'sueno'
   idea_id: string | null
+  // dónde se dijo (solo en la tertulia): el café, la plática de la sala o de visita en la oficina de `donde`
+  rincon: RinconChat | null
+  donde: string | null
 }
 
 // «empieza» y «saltada» no se cuentan: no dicen nada que haya pasado
@@ -35,10 +38,25 @@ export function lineasDelChat(marcas: Marca[], tertulia: LineaTertulia[], ahora:
       cuando: m.creado_en,
       tipo: 'marca',
       idea_id: null,
+      rincon: null,
+      donde: null,
     }))
   const deTertulia: LineaChat[] = tertulia
     .filter((l) => deHoy(l.mostrar_desde) && ms(l.mostrar_desde) <= ahora.getTime())
-    .map((l) => ({ id: l.id, de: l.de, para: l.para, texto: l.texto, cuando: l.mostrar_desde, tipo: 'tertulia', idea_id: l.idea_id }))
+    .map((l) => ({
+      id: l.id, de: l.de, para: l.para, texto: l.texto, cuando: l.mostrar_desde, tipo: 'tertulia', idea_id: l.idea_id,
+      rincon: l.rincon ?? null, donde: l.donde ?? null,
+    }))
   // el orden es estable: a la misma hora, la marca va antes que lo que comentan de ella
   return [...deMarcas, ...deTertulia, ...suenos].sort((a, b) => ms(a.cuando) - ms(b.cuando)).slice(-CHAT_MAX)
+}
+
+// Dónde fue, discreto, al lado de quién habla: «en el café», «en la sala» o «en la oficina de Lynx» (null: sin lugar)
+export function dondeLinea(l: Pick<LineaChat, 'rincon' | 'donde'>, nombreDe: (id: string) => string): string | null {
+  switch (l.rincon) {
+    case 'cafe': return 'en el café'
+    case 'platica': return 'en la sala'
+    case 'visita': return l.donde ? `en la oficina de ${nombreDe(l.donde)}` : null
+    default: return null
+  }
 }

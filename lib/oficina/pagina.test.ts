@@ -172,6 +172,11 @@ test('en el plano, quien está en la sala dice «en la sala» o «de siesta»', 
   assert.equal(textoPlano(ag('mu', { horario: '0 2 * * *' }), [], [], AHORA, undefined), 'próx. 8:00 p. m.')
 })
 
+test('en el plano, quien está de visita en otra oficina dice «de visita»', () => {
+  assert.equal(textoPlano(ag('mu', { horario: '0 2 * * *' }), [], [], AHORA, undefined, { anfitrion: 'lynx' }), 'de visita')
+  assert.equal(textoPlano(ag('eta', { estado: 'pedido' }), [], [], AHORA, undefined, { anfitrion: 'lynx' }), 'de visita')
+})
+
 test('las marcas nuevas son las que no se habían visto, de la más vieja a la más nueva', () => {
   const a = mk('alfa', 'pasa', '2026-11-16T01:00:00Z'), b = mk('epsilon', 'pasa', '2026-11-16T01:05:00Z'), c = mk('beta', 'entrega', '2026-11-16T01:10:00Z')
   assert.deepEqual(marcasNuevas(new Set([a.id]), [c, b, a]).map((m) => m.id), [b.id, c.id])

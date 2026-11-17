@@ -200,10 +200,12 @@ export function proximoDe(a: Agente, ahora: Date, dormida: boolean): string {
   return sig ? capital(cuandoCR(sig, ahora, { hoy: true })) : 'Sin hora fija'
 }
 
-// El texto chiquito debajo de cada carita del plano (cabe en 18 letras). Quien está en la sala: «en la sala» o «de siesta».
+// El texto chiquito debajo de cada carita del plano (cabe en 18 letras). Quien está de visita en otra oficina: «de visita»;
+// en la sala: «en la sala» o «de siesta».
 const corto = (s: string) => recortar(s, 18)
 
-export function textoPlano(a: AgenteSnap, marcas: Marca[], paraTi: Marca[], ahora: Date, lugar?: LugarSala): string {
+export function textoPlano(a: AgenteSnap, marcas: Marca[], paraTi: Marca[], ahora: Date, lugar?: LugarSala, visita?: { anfitrion: string }): string {
+  if (visita) return 'de visita'
   if (lugar) return lugar.rincon === 'siesta' ? 'de siesta' : 'en la sala'
   switch (a.estado) {
     case 'trabajando':

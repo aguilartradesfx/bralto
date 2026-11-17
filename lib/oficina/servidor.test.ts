@@ -68,3 +68,48 @@ test('fotoDeFila: el pie de una foto de grupo es el título de su escena; un ret
     { id: 'r1', tipo: 'retrato', agentes: ['ana'], ruta: 'retratos/ana.jpg', pie: null })
   assert.equal(fotoDeFila({ ...grupo, ruta: null }), null)
 })
+
+test('guardar pone las líneas de cada charla seguidas y con su hilo, cada una para el otro, con su rincón y, en las visitas, el anfitrión', async () => {
+  const { filasChat } = await import('./servidor.ts')
+  let n = 0
+  const nuevo = () => `id-${++n}`
+  const filas = filasChat({
+    chat: [
+      { de: 'ana', para: null, texto: 'Suelta', rincon: null, idea: 'c1', mostrar_desde: '2026-11-16T18:40:00.000Z' },
+      { de: 'cata', para: 'ana', texto: 'Al café', rincon: 'cafe', idea: null, mostrar_desde: '2026-11-16T19:30:00.000Z' },
+    ],
+    charlas: [
+      { donde: 'cafe', anfitrion: null, lineas: [
+        { de: 'ana', para: 'beto', texto: 'Mae', mostrar_desde: '2026-11-16T19:00:00.000Z' },
+        { de: 'beto', para: 'ana', texto: 'Deay', mostrar_desde: '2026-11-16T19:01:30.000Z' },
+      ] },
+      { donde: 'visita', anfitrion: 'lynx', lineas: [
+        { de: 'krono', para: 'lynx', texto: '¿Y el gancho?', mostrar_desde: '2026-11-16T20:00:00.000Z' },
+        { de: 'lynx', para: 'krono', texto: 'Ganó el 2', mostrar_desde: '2026-11-16T20:01:10.000Z' },
+        { de: 'krono', para: 'lynx', texto: 'Tuanis', mostrar_desde: '2026-11-16T20:02:20.000Z' },
+      ] },
+    ],
+  }, nuevo, (clave) => (clave === 'c1' ? 'idea-guardada' : null))
+  // por hora: la suelta, el café, la otra suelta y la visita
+  assert.deepEqual(filas.map((f) => f.texto), ['Suelta', 'Mae', 'Deay', 'Al café', '¿Y el gancho?', 'Ganó el 2', 'Tuanis'])
+  const [suelta, cafe1, cafe2, alCafe, v1, v2, v3] = filas
+  assert.deepEqual([suelta.hilo, suelta.donde, suelta.rincon, suelta.idea_id], [null, null, null, 'idea-guardada'])
+  assert.deepEqual([alCafe.hilo, alCafe.rincon, alCafe.para], [null, 'cafe', 'ana'])
+  // cada charla con su hilo, distinto del de la otra y de cualquier id
+  assert.ok(cafe1.hilo && cafe1.hilo === cafe2.hilo)
+  assert.ok(v1.hilo && v1.hilo === v2.hilo && v2.hilo === v3.hilo)
+  assert.notEqual(cafe1.hilo, v1.hilo)
+  assert.equal(new Set(filas.map((f) => f.id)).size, filas.length)
+  assert.ok(!filas.some((f) => f.id === cafe1.hilo || f.id === v1.hilo))
+  assert.deepEqual([cafe1, cafe2].map((f) => [f.de, f.para, f.rincon, f.donde]), [['ana', 'beto', 'cafe', null], ['beto', 'ana', 'cafe', null]])
+  assert.deepEqual([v1, v2, v3].map((f) => [f.de, f.para, f.rincon, f.donde]), [
+    ['krono', 'lynx', 'visita', 'lynx'], ['lynx', 'krono', 'visita', 'lynx'], ['krono', 'lynx', 'visita', 'lynx'],
+  ])
+  // las líneas de una charla nunca llevan idea
+  assert.ok([cafe1, cafe2, v1, v2, v3].every((f) => f.idea_id === null))
+  // seguidas: entre la primera y la última de un hilo no hay otra línea
+  for (const hilo of [cafe1.hilo, v1.hilo]) {
+    const pos = filas.map((f, i) => (f.hilo === hilo ? i : -1)).filter((i) => i >= 0)
+    assert.equal(pos[pos.length - 1] - pos[0] + 1, pos.length)
+  }
+})

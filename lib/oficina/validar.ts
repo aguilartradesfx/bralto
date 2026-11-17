@@ -1,12 +1,17 @@
-// El validador de la tertulia: limpia lo que escribe Claude antes de guardar nada.
+// El validador de la tertulia: limpia lo que escribe Claude antes de guardar nada y le pone a cada cosa su hora.
 // Lo que no pasa se bota con su motivo; solo un `crudo` que no es un objeto da error.
 
-import { aLaHoraCR } from './horario.ts'
+import type { Turno } from './tipos.ts'
+import { finDeTurno } from './turnos.ts'
 
 export type IdeaCruda = { texto: string, por_que: string, basada_en: string[] }
 
+export type DondeCharla = 'cafe' | 'platica' | 'visita'
+
 export type RondaCruda = {
   chat: { de: string, para: string | null, texto: string, rincon: string | null, idea: string | null }[]
+  // Una plática de ida y vuelta entre 2 Knox; en una visita, visita_a es a quien visitan (y el que llega habla primero)
+  charlas: { donde: DondeCharla, visita_a?: string | null, lineas: { de: string, texto: string }[] }[]
   posts: { clave: string, de: string, tipo: 'nota' | 'debate' | 'idea', titulo: string, texto: string, likes: number, basada_en: string[], idea: IdeaCruda | null }[]
   comentarios: { clave: string, post: string, de: string, texto: string, responde_a: string | null, idea: IdeaCruda | null }[]
   escena: { de: string, agentes: string[], titulo: string, donde: string, que: string, texto: string, likes: number } | null
@@ -20,11 +25,21 @@ export type CtxValidar = {
   prohibidos: string[]
   // Ya hay una escena esperando su foto: cualquier escena nueva se bota
   escenaEsperando: boolean
+  // El turno de la ronda: dice hasta cuándo salen sus cosas y si puede llevar escena (solo el mediodía)
+  turno: Turno
   ahora: Date
+}
+
+// Cada línea de una charla le habla al otro (para); anfitrion: en una visita, a quien visitan
+export type CharlaLimpia = {
+  donde: DondeCharla
+  anfitrion: string | null
+  lineas: { de: string, para: string, texto: string, mostrar_desde: string }[]
 }
 
 export type RondaLimpia = {
   chat: { de: string, para: string | null, texto: string, rincon: 'cafe' | 'platica' | null, idea: string | null, mostrar_desde: string }[]
+  charlas: CharlaLimpia[]
   posts: { clave: string, de: string, tipo: 'nota' | 'debate' | 'idea', titulo: string, texto: string, likes: number, mostrar_desde: string }[]
   comentarios: { clave: string, post: string, de: string, texto: string, responde_a: string | null, mostrar_desde: string }[]
   ideas: { origen: string, de: string, texto: string, por_que: string, mostrar_desde: string }[]
@@ -32,10 +47,13 @@ export type RondaLimpia = {
   botadas: string[]
 }
 
-export const TOPES = { chat: 30, publicaciones: 3, comentarios: 12, ideas: 3 }
+// Por ronda (hay tres al día). chat: las líneas sueltas más las de las charlas
+export const TOPES = { chat: 30, charlas: 6, publicaciones: 1, comentarios: 4, ideas: 1 }
 export const LARGOS = { chat: 120, titulo: 80, post: 600, comentario: 240, idea: 120, por_que: 200, escena: 140 }
+export const LINEAS_CHARLA = { min: 2, max: 5 }
 
 const TIPOS_POST = ['nota', 'debate', 'idea']
+const DONDES: DondeCharla[] = ['cafe', 'platica', 'visita']
 const MINUTO = 60_000
 
 // ---------- textos ----------
@@ -123,8 +141,9 @@ const variasLineas = (t: string) =>
 
 // ---------- horas ----------
 
-export function finDeRonda(ahora: Date): Date {
-  return aLaHoraCR(ahora, 18, 30)
+// Hasta cuándo salen las cosas de la ronda: las 12:30 (mañana), las 4:00 p. m. (mediodía) o las 6:30 p. m. (tarde)
+export function finDeRonda(ahora: Date, turno: Turno): Date {
+  return finDeTurno(ahora, turno)
 }
 
 // La i-ésima va en desde + (i + 0.5) × (hasta − desde) / n; si no hay tramo, todo en `desde`.
@@ -132,6 +151,53 @@ export function finDeRonda(ahora: Date): Date {
 export function repartir(n: number, desde: Date, hasta: Date, alInicio = false): Date[] {
   const tramo = Math.max(0, hasta.getTime() - desde.getTime())
   return Array.from({ length: n }, (_, i) => new Date(desde.getTime() + ((i + (alInicio ? 0 : 0.5)) * tramo) / n))
+}
+
+// Entre una línea de una charla y la siguiente, de 1 a 2 minutos: más tarda la respuesta más larga
+export function pausaAntes(texto: string): number {
+  return MINUTO + Math.round(MINUTO * Math.min(1, texto.length / LARGOS.chat))
+}
+
+// Las charlas y las líneas sueltas, intercaladas parejo en el orden en que vienen (a igual lugar, la charla primero)
+export function intercalar(charlas: number, sueltas: number): { tipo: 'charla' | 'suelta', i: number }[] {
+  const todas = [
+    ...Array.from({ length: charlas }, (_, i) => ({ tipo: 'charla' as const, i, lugar: (i + 0.5) / charlas })),
+    ...Array.from({ length: sueltas }, (_, i) => ({ tipo: 'suelta' as const, i, lugar: (i + 0.5) / sueltas })),
+  ]
+  return todas
+    .sort((a, b) => a.lugar - b.lugar || (a.tipo === b.tipo ? a.i - b.i : a.tipo === 'charla' ? -1 : 1))
+    .map(({ tipo, i }) => ({ tipo, i }))
+}
+
+// Cuándo empieza cada unidad del chat (una charla dura de su primera a su última línea; una línea suelta, nada): en
+// orden, sin encimarse y con el mismo aire entre una y otra (medio aire al principio y al final del tramo). Si no
+// caben en el tramo, van seguidas desde `inicio`, a un minuto una de otra.
+// `desde`: lo más temprano que puede salir (la línea que cita una idea no sale antes que su idea). Si le tocaba antes,
+// va al primer hueco desde esa hora, sin pegarse a las demás.
+export function horasDelChat(unidades: { dura: number, desde?: number }[], inicio: number, fin: number): number[] {
+  const n = unidades.length
+  if (!n) return []
+  const libre = fin - inicio - unidades.reduce((s, u) => s + u.dura, 0)
+  const aire = libre > 0 ? libre / n : MINUTO
+  const horas: number[] = []
+  let t = inicio + (libre > 0 ? aire / 2 : 0)
+  for (const u of unidades) {
+    horas.push(t)
+    t += u.dura + aire
+  }
+  const sep = Math.min(MINUTO, aire / 2)
+  const tarde = (i: number) => (unidades[i].desde ?? -Infinity) > horas[i]
+  const puestas: [number, number][] = horas.flatMap((h, i) => (tarde(i) ? [] : [[h, h + unidades[i].dura] as [number, number]]))
+  const mover = unidades.map((_, i) => i).filter(tarde).sort((a, b) => unidades[a].desde! - unidades[b].desde!)
+  for (const i of mover) {
+    const { dura, desde } = unidades[i] as { dura: number, desde: number }
+    const cabe = (h: number) => puestas.every(([a, b]) => h + dura <= a - sep || h >= b + sep)
+    // siempre hay uno: después de la última
+    const h = [desde, ...puestas.map(([, b]) => b + sep)].filter((x) => x >= desde).sort((x, y) => x - y).find(cabe)!
+    horas[i] = h
+    puestas.push([h, h + dura])
+  }
+  return horas
 }
 
 // ---------- ayudas ----------
@@ -226,6 +292,7 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
     const e = crudo.escena
     const que = 'escena'
     do {
+      if (ctx.turno !== 'mediodia') { botar(que, 'solo va en la ronda del mediodía'); break }
       if (ctx.escenaEsperando) { botar(que, 'ya hay una esperando su foto'); break }
       if (!esObjeto(e)) { botar(que, 'no tiene la forma esperada'); break }
       if (typeof e.de !== 'string' || !ctx.hablan.has(e.de)) { botar(que, 'habla alguien que no está en la oficina'); break }
@@ -246,8 +313,9 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
     } while (false)
   }
 
-  // --- chat ---
-  let chat: { de: string, para: string | null, texto: string, rincon: 'cafe' | 'platica' | null, idea: string | null }[] = []
+  // --- chat (las líneas sueltas) ---
+  type Suelta = { que: string, de: string, para: string | null, texto: string, rincon: 'cafe' | 'platica' | null, idea: string | null }
+  let chat: Suelta[] = []
   lista(crudo.chat).forEach((x, i) => {
     const que = `chat ${i + 1}`
     if (!esObjeto(x)) return botar(que, 'no tiene la forma esperada')
@@ -262,15 +330,71 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
     const mal = problema(cuerpo)
     if (mal) return botar(que, mal)
     chat.push({
-      de: x.de, para, texto: cortar(unaLinea(cuerpo), LARGOS.chat),
+      que, de: x.de, para, texto: cortar(unaLinea(cuerpo), LARGOS.chat),
       rincon: x.rincon === 'cafe' || x.rincon === 'platica' ? x.rincon : null,
       idea: typeof x.idea === 'string' ? x.idea : null,
     })
   })
 
+  // --- charlas: 2 Knox que se turnan, de 2 a 5 líneas; la que tiene algo mal se bota entera ---
+  type Charla = { que: string, donde: DondeCharla, anfitrion: string | null, lineas: { de: string, para: string, texto: string }[] }
+  let charlas: Charla[] = []
+  lista(crudo.charlas).forEach((x, i) => {
+    const que = `charla ${i + 1}`
+    if (!esObjeto(x)) return botar(que, 'no tiene la forma esperada')
+    const donde = DONDES.find(d => d === x.donde)
+    if (!donde) return botar(que, 'no dice si es en el café, en la sala o de visita')
+    const crudas = lista(x.lineas)
+    if (crudas.length < LINEAS_CHARLA.min || crudas.length > LINEAS_CHARLA.max) {
+      return botar(que, `tiene ${crudas.length} ${crudas.length === 1 ? 'línea' : 'líneas'} (van de ${LINEAS_CHARLA.min} a ${LINEAS_CHARLA.max})`)
+    }
+    if (!crudas.every(esObjeto)) return botar(que, 'una línea no tiene la forma esperada')
+    const lineas = crudas as Obj[]
+    if (!lineas.every(l => typeof l.de === 'string' && ctx.hablan.has(l.de))) return botar(que, 'habla alguien que no está en la oficina')
+    const quienes = [...new Set(lineas.map(l => l.de as string))]
+    if (quienes.length !== 2) return botar(que, 'no es entre 2 Knox')
+    if (lineas.some((l, j) => j > 0 && l.de === lineas[j - 1].de)) return botar(que, 'no se turnan')
+    let anfitrion: string | null = null
+    if (donde === 'visita') {
+      if (typeof x.visita_a !== 'string' || !quienes.includes(x.visita_a)) return botar(que, 'visita a alguien que no está en la charla')
+      if (lineas[0].de === x.visita_a) return botar(que, 'el que llega no habla primero')
+      anfitrion = x.visita_a
+    }
+    const limpias: Charla['lineas'] = []
+    for (const l of lineas) {
+      const cuerpo = texto(l.texto)
+      if (!cuerpo) return botar(que, 'una línea no trae texto')
+      const t = unaLinea(cuerpo)
+      if (t.length > LARGOS.chat) return botar(que, `una línea pasa de ${LARGOS.chat} letras`)
+      const mal = problema(t)
+      if (mal) return botar(que, `una línea ${mal}`)
+      const de = l.de as string
+      limpias.push({ de, para: quienes.find(q => q !== de)!, texto: t })
+    }
+    charlas.push({ que, donde, anfitrion, lineas: limpias })
+  })
+
   // --- topes, en el orden en que vienen ---
-  chat.slice(TOPES.chat).forEach((_, i) => botar(`chat ${TOPES.chat + i + 1}`, 'pasa del tope'))
-  chat = chat.slice(0, TOPES.chat)
+  // El chat: primero las charlas (hasta 6, enteras) y con lo que quede de las 30 líneas, las sueltas
+  let enCharlas = 0
+  charlas = charlas.filter((c, i) => {
+    if (i >= TOPES.charlas || enCharlas + c.lineas.length > TOPES.chat) { botar(c.que, 'pasa del tope'); return false }
+    enCharlas += c.lineas.length
+    return true
+  })
+  const sueltas = TOPES.chat - enCharlas
+  chat.slice(sueltas).forEach(l => botar(l.que, 'pasa del tope'))
+  chat = chat.slice(0, sueltas)
+
+  // Las publicaciones (la escena ocupa un lugar entre ellas), los comentarios de las que quedan y después las ideas de
+  // lo que quedó
+  const lugares = TOPES.publicaciones
+  posts.slice(lugares).forEach(p => botar(`post ${p.clave}`, 'pasa del tope'))
+  posts = posts.slice(0, lugares)
+  if (escena && posts.length >= lugares) { botar('escena', 'no hay lugar entre las publicaciones'); escena = null }
+  comentarios = comentarios.filter(c => ctx.postsViejos.has(c.post) || posts.some(p => p.clave === c.post))
+  comentarios.slice(TOPES.comentarios).forEach(c => botar(`comentario ${c.clave}`, 'pasa del tope'))
+  comentarios = comentarios.slice(0, TOPES.comentarios)
 
   let ideasVistas = 0
   const dentroDelTope = (dueno: { idea: IdeaLimpia | null }, que: string, alQuitar?: () => void) => {
@@ -283,25 +407,16 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
   for (const p of posts) dentroDelTope(p, `post ${p.clave}`, () => { if (p.tipo === 'idea') p.tipo = 'nota' })
   for (const c of comentarios) dentroDelTope(c, `comentario ${c.clave}`)
 
-  comentarios.slice(TOPES.comentarios).forEach(c => botar(`comentario ${c.clave}`, 'pasa del tope'))
-  comentarios = comentarios.slice(0, TOPES.comentarios)
-
-  const lugares = TOPES.publicaciones
-  posts.slice(lugares).forEach(p => botar(`post ${p.clave}`, 'pasa del tope'))
-  posts = posts.slice(0, lugares)
-  if (escena && posts.length >= lugares) { botar('escena', 'no hay lugar entre las publicaciones'); escena = null }
-  comentarios = comentarios.filter(c => ctx.postsViejos.has(c.post) || posts.some(p => p.clave === c.post))
-
   // Un post idea sin idea queda como nota.
   for (const p of posts) if (p.tipo === 'idea' && !p.idea) p.tipo = 'nota'
 
-  // --- horas ---
+  // --- horas: todo sale entre ahora y el fin de su turno ---
   const inicio = ctx.ahora
-  let fin = finDeRonda(ctx.ahora)
+  let fin = finDeRonda(ctx.ahora, ctx.turno)
   if (fin.getTime() <= inicio.getTime()) fin = inicio
   const iso = (d: Date) => d.toISOString()
 
-  // Los posts: el primero sale apenas se guarda la ronda y los demás se reparten por la tarde
+  // Los posts: el primero sale apenas se guarda la ronda y los demás se reparten en el tramo
   const horasPost = repartir(posts.length, inicio, fin, true)
   const horaPost = new Map(posts.map((p, i) => [p.clave, horasPost[i]]))
   const horaOrigen = new Map<string, Date>()
@@ -329,15 +444,28 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
     ...comentarios.filter(c => c.idea).map(c => ({ origen: c.clave, de: c.de, ...c.idea! })),
   ].map(i => ({ ...i, mostrar_desde: iso(horaOrigen.get(i.origen)!) }))
 
-  const horasChat = repartir(chat.length, inicio, fin)
+  // El chat: las charlas y las sueltas, intercaladas en el tramo y sin encimarse. Las líneas de una charla van seguidas,
+  // de 1 a 2 minutos una de otra; una suelta que cita una idea no sale antes que su idea.
+  const pausas = charlas.map(c => c.lineas.map((l, j) => (j === 0 ? 0 : pausaAntes(l.texto))))
+  const desdeIdea = chat.map(l => (l.idea && horaOrigen.has(l.idea) ? horaOrigen.get(l.idea)!.getTime() : undefined))
+  const orden = intercalar(charlas.length, chat.length)
+  const horas = horasDelChat(orden.map(u => (u.tipo === 'charla'
+    ? { dura: pausas[u.i].reduce((s, p) => s + p, 0) }
+    : { dura: 0, desde: desdeIdea[u.i] })), inicio.getTime(), fin.getTime())
+  const horaDe = new Map(orden.map((u, k) => [`${u.tipo}:${u.i}`, horas[k]]))
+
   const limpiaChat = chat
-    .map((l, i) => {
-      const idea = l.idea && horaOrigen.has(l.idea) ? l.idea : null
-      const t = Math.max(horasChat[i].getTime(), idea ? horaOrigen.get(idea)!.getTime() : 0)
-      return { ...l, idea, t }
-    })
+    .map((l, i) => ({ de: l.de, para: l.para, texto: l.texto, rincon: l.rincon, idea: desdeIdea[i] === undefined ? null : l.idea, t: horaDe.get(`suelta:${i}`)! }))
     .sort((a, b) => a.t - b.t) // estable: a igual hora, el orden en que vinieron
     .map(({ t, ...l }) => ({ ...l, mostrar_desde: iso(new Date(t)) }))
+  const limpiaCharlas: CharlaLimpia[] = orden.filter(u => u.tipo === 'charla').map(({ i }) => {
+    let t = horaDe.get(`charla:${i}`)!
+    return {
+      donde: charlas[i].donde,
+      anfitrion: charlas[i].anfitrion,
+      lineas: charlas[i].lineas.map((l, j) => ({ ...l, mostrar_desde: iso(new Date((t += pausas[i][j]))) })),
+    }
+  })
 
-  return { chat: limpiaChat, posts: limpiaPosts, comentarios: limpiaComentarios, ideas, escena, botadas }
+  return { chat: limpiaChat, charlas: limpiaCharlas, posts: limpiaPosts, comentarios: limpiaComentarios, ideas, escena, botadas }
 }

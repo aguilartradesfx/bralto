@@ -21,8 +21,12 @@ function ag(id: string, extra: Partial<AgenteSnap> = {}): AgenteSnap {
 }
 
 // Una línea de la tertulia que salió hace `hace` minutos (negativo: todavía no sale)
-function linea(id: string, de: string, para: string | null, rincon: 'cafe' | 'platica' | null, hace: number, ahora = MANANA): LineaTertulia {
-  return { id, de, para, texto: '¿Un cafecito?', rincon, idea_id: null, mostrar_desde: new Date(ahora.getTime() - hace * MIN).toISOString() }
+function linea(id: string, de: string, para: string | null, rincon: LineaTertulia['rincon'], hace: number, ahora = MANANA, extra: Partial<LineaTertulia> = {}): LineaTertulia {
+  return { id, de, para, texto: '¿Un cafecito?', rincon, donde: null, hilo: null, idea_id: null, mostrar_desde: new Date(ahora.getTime() - hace * MIN).toISOString(), ...extra }
+}
+// Las líneas que ya salieron de una charla (un hilo) que se turnan entre `a` y `b`, `a` primero, hace tantos minutos
+function charla(hilo: string, a: string, b: string, rincon: 'cafe' | 'platica' | 'visita', haces: number[], ahora = MANANA): LineaTertulia[] {
+  return haces.map((hace, i) => linea(`${hilo}-${i}`, i % 2 ? b : a, i % 2 ? a : b, rincon, hace, ahora, { hilo, donde: rincon === 'visita' ? b : null }))
 }
 
 const repartir = (agentes: AgenteSnap[], lineas: LineaTertulia[], ahora = MANANA) => repartirSala({ agentes, lineas, ahora, dormida: false })
@@ -180,4 +184,63 @@ test('lo que dice de quien está en la sala', () => {
   assert.equal(textoSala(l({ rincon: 'platica', con: 'krono', por: 'tertulia' }), nombre), 'Platicando con Krono')
   assert.equal(textoSala(l({ rincon: 'platica' }), nombre), 'Descansando en los sillones')
   assert.equal(textoSala(l({ rincon: 'siesta', hasta: CUATRO, por: 'siesta' }), nombre), 'En siesta hasta las 4:00 p. m.')
+})
+
+// ---------- charlas y visitas ----------
+
+test('una charla al café: la pareja se sienta en el orden en que la abrieron y nadie cambia de sitio con cada línea', () => {
+  const agentes = [ag('krono'), ag('quark')]
+  // abrió Krono hace 6 min; Quark contestó hace 4 y Krono otra vez hace 2
+  const lineas = charla('h1', 'krono', 'quark', 'cafe', [6, 4, 2])
+  for (let n = 1; n <= 3; n++) {
+    const r = repartir(agentes, lineas.slice(0, n))
+    assert.deepEqual([r.krono?.sitio, r.quark?.sitio], [0, 1], `con ${n} líneas`)
+    assert.deepEqual([r.krono.con, r.quark.con, r.krono.por], ['quark', 'krono', 'tertulia'])
+  }
+  // se queda hasta 20 min después de su última línea
+  const ultima = Date.parse(lineas[2].mostrar_desde)
+  assert.equal(repartir(agentes, lineas).krono.hasta, new Date(ultima + 20 * MIN).toISOString())
+  assert.deepEqual(por(repartir(agentes, lineas, new Date(ultima + 20 * MIN)), 'tertulia'), [])
+})
+
+test('las líneas de una visita no llevan a nadie a la sala', () => {
+  const r = repartir([ag('krono'), ag('lynx')], charla('h1', 'krono', 'lynx', 'visita', [3, 1]))
+  assert.deepEqual(por(r, 'tertulia'), [])
+  assert.ok(!Object.values(r).some((l) => !['cafe', 'platica', 'siesta'].includes(l.rincon)))
+})
+
+test('quien está de visita, y quien la recibe, no va a la sala: ni por la tertulia, ni de siesta, ni de turno', () => {
+  const visitas = { krono: { anfitrion: 'lynx' } }
+  // una línea al café de Krono con Quark: como Krono está de visita, no va ninguno de los dos
+  const conCafe = repartirSala({ agentes: [ag('krono'), ag('quark'), ag('lynx')], lineas: [linea('l1', 'krono', 'quark', 'cafe', 2)], ahora: MANANA, dormida: false, visitas })
+  assert.deepEqual(conCafe, {})
+  // de turno: solo quedan los demás
+  const turno = repartirSala({ agentes: ['krono', 'lynx', 'a', 'b'].map((id) => ag(id)), lineas: [], ahora: MANANA, dormida: false, visitas })
+  assert.deepEqual(por(turno, 'turno'), ['a', 'b'])
+  // de siesta tampoco
+  const noche = ['krono', 'lynx', 'n1'].map((id) => ag(id, { horario: '0 1 * * *' }))
+  const siesta = repartirSala({ agentes: noche, lineas: [], ahora: SIESTA, dormida: false, visitas })
+  assert.deepEqual(por(siesta, 'siesta'), ['n1'])
+})
+
+test('un rato más nuevo gana: si uno de la pareja del café se fue de visita, ninguno de los dos vuelve al café', () => {
+  const agentes = [ag('krono'), ag('quark'), ag('lynx')]
+  // el café de Krono y Quark terminó hace 8 min (seguiría hasta dentro de 12), pero Krono visitó a Lynx hace 3
+  const lineas = [...charla('cafe', 'krono', 'quark', 'cafe', [12, 10, 8]), ...charla('vis', 'krono', 'lynx', 'visita', [4, 3])]
+  const r = repartir(agentes, lineas)
+  assert.equal(r.krono, undefined)
+  assert.equal(r.quark, undefined, 'Quark no se queda solo en el café ni va de turno: la pareja nunca se parte')
+  assert.equal(r.lynx?.por, 'turno')
+  // sin la visita, los dos siguen en el café
+  assert.deepEqual(por(repartir(agentes, lineas.slice(0, 3)), 'tertulia'), ['krono', 'quark'])
+})
+
+test('un rato más nuevo gana: la pareja nueva del café se sienta aunque uno venga de otra charla', () => {
+  const agentes = [ag('krono'), ag('quark'), ag('atlas')]
+  const lineas = [...charla('vieja', 'krono', 'quark', 'platica', [15, 13]), ...charla('nueva', 'atlas', 'krono', 'cafe', [3, 2])]
+  const r = repartir(agentes, lineas)
+  assert.deepEqual([r.atlas?.rincon, r.krono?.rincon], ['cafe', 'cafe'])
+  assert.deepEqual([r.atlas.sitio, r.krono.sitio], [0, 1])
+  // Quark se queda en su escritorio (su charla ya terminó para Krono) y tampoco va de turno
+  assert.equal(r.quark, undefined)
 })

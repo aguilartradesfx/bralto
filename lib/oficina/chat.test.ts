@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import type { LineaTertulia, Marca, TipoMarca } from './tipos.ts'
-import { CHAT_MAX, lineasDelChat, type LineaChat } from './chat.ts'
+import { CHAT_MAX, dondeLinea, lineasDelChat, type LineaChat } from './chat.ts'
 
 // Domingo 15/11/2026, 7:24 p. m. en Costa Rica (hoy empezó a las 06:00 UTC del 15)
 const AHORA = new Date('2026-11-16T01:24:00.000Z')
@@ -14,7 +14,7 @@ function mk(agente: string, tipo: TipoMarca, creado_en: string, extra: Partial<M
 }
 
 function linea(id: string, de: string, mostrar_desde: string, extra: Partial<LineaTertulia> = {}): LineaTertulia {
-  return { id, de, para: null, texto: `línea ${id}`, rincon: null, idea_id: null, mostrar_desde, ...extra }
+  return { id, de, para: null, texto: `línea ${id}`, rincon: null, donde: null, hilo: null, idea_id: null, mostrar_desde, ...extra }
 }
 
 test('el chat: las marcas que cuentan algo y la tertulia de hoy, por hora', () => {
@@ -51,7 +51,9 @@ test('el chat: las marcas que cuentan algo y la tertulia de hoy, por hora', () =
   const charla = l.find((x) => x.tipo === 'tertulia')!
   assert.deepEqual(charla, {
     id: 't1', de: 'gama', para: 'alfa', texto: 'línea t1', cuando: '2026-11-15T20:30:00Z', tipo: 'tertulia', idea_id: 'idea-1',
+    rincon: null, donde: null,
   })
+  assert.deepEqual([entrega.rincon, entrega.donde], [null, null])
 })
 
 test('el chat sin nada de hoy queda vacío', () => {
@@ -65,7 +67,7 @@ test('el chat se queda con las 120 líneas más nuevas: marcas, tertulia y lo qu
   const minutos = Array.from({ length: 150 }, (_, i) => (i * 97) % 150) // una permutación de 0…149
   const marcas = minutos.slice(0, 90).map((m) => mk('alfa', 'termina', iso(m), { id: `m${m}` }))
   const tertulia = minutos.slice(90, 130).map((m) => linea(`t${m}`, 'beta', iso(m)))
-  const suenos: LineaChat[] = minutos.slice(130).map((m) => ({ id: `s${m}`, de: 'gama', para: null, texto: 'Zzz', cuando: iso(m), tipo: 'sueno', idea_id: null }))
+  const suenos: LineaChat[] = minutos.slice(130).map((m) => ({ id: `s${m}`, de: 'gama', para: null, texto: 'Zzz', cuando: iso(m), tipo: 'sueno', idea_id: null, rincon: null, donde: null }))
 
   const l = lineasDelChat(marcas, tertulia, AHORA, suenos)
 
@@ -74,4 +76,19 @@ test('el chat se queda con las 120 líneas más nuevas: marcas, tertulia y lo qu
   // las que quedan son los minutos 30…149, de la más vieja a la más nueva
   assert.deepEqual(l.map((x) => Date.parse(x.cuando)), Array.from({ length: 120 }, (_, i) => base + (30 + i) * 60_000))
   assert.deepEqual(new Set(l.map((x) => x.tipo)), new Set(['marca', 'tertulia', 'sueno']))
+})
+
+test('las líneas de una charla llevan dónde fue: el café, la sala o la oficina de quien visitan', () => {
+  const tertulia = [
+    linea('c1', 'alfa', '2026-11-15T20:00:00Z', { para: 'beta', rincon: 'cafe', hilo: 'h1' }),
+    linea('p1', 'gama', '2026-11-15T21:00:00Z', { para: 'delta', rincon: 'platica', hilo: 'h2' }),
+    linea('v1', 'eta', '2026-11-15T22:00:00Z', { para: 'lynx', rincon: 'visita', donde: 'lynx', hilo: 'h3' }),
+    linea('s1', 'alfa', '2026-11-15T23:00:00Z'),
+  ]
+  const l = lineasDelChat([], tertulia, AHORA)
+  assert.deepEqual(l.map((x) => [x.id, x.rincon, x.donde]), [['c1', 'cafe', null], ['p1', 'platica', null], ['v1', 'visita', 'lynx'], ['s1', null, null]])
+  const nombre = (id: string) => ({ lynx: 'Lynx' })[id] ?? id
+  assert.deepEqual(l.map((x) => dondeLinea(x, nombre)), ['en el café', 'en la sala', 'en la oficina de Lynx', null])
+  // una visita sin anfitrión no dice nada
+  assert.equal(dondeLinea({ rincon: 'visita', donde: null }, nombre), null)
 })

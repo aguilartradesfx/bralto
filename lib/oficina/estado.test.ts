@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { estadoDe, numerosDe, paraTi, proximos, armarSnapshot, semanaDe, chatVisible, corteDormida } from './estado.ts'
+import { estadoDe, numerosDe, paraTi, proximos, armarSnapshot, semanaDe, chatVisible, corteDormida, visitasDelDia } from './estado.ts'
 import type { Agente, Marca, TipoMarca, EstadoOficina, FilaSemana, LineaTertulia } from './tipos.ts'
 
 const AHORA = new Date('2026-11-15T20:00:00Z')
@@ -162,8 +162,8 @@ test('semanaDe: «Hoy» es el día de Costa Rica (a las 11:30 p. m. todavía es 
 // ---------- el chat de la tertulia ----------
 // Lunes 16/11/2026, 2:00 p. m. en Costa Rica
 const DOS_PM = new Date('2026-11-16T20:00:00Z')
-const linea = (id: string, de: string, mostrar_desde: string): LineaTertulia => ({
-  id, de, para: null, texto: `línea ${id}`, rincon: null, idea_id: null, mostrar_desde,
+const linea = (id: string, de: string, mostrar_desde: string, o: Partial<LineaTertulia> = {}): LineaTertulia => ({
+  id, de, para: null, texto: `línea ${id}`, rincon: null, donde: null, hilo: null, idea_id: null, mostrar_desde, ...o,
 })
 const nueveAm = linea('9am', 'ana', '2026-11-16T15:00:00Z')
 const unaYMedia = linea('1:30pm', 'beto', '2026-11-16T19:30:00Z')
@@ -212,4 +212,33 @@ test('armarSnapshot suma el chat de hoy, la semana de cada uno y las 10 próxima
   assert.equal(s.escribiendo, null)
   assert.equal(s.agentes[0].semana.length, 7)
   assert.deepEqual(s.agentes[0].semana[6], { dia: '2026-11-15', etiqueta: 'Hoy', tareas: 4, falla: true })
+})
+
+// ---------- las visitas que van a la página ----------
+const deVisita = (id: string, de: string, para: string, mostrar_desde: string) =>
+  linea(id, de, mostrar_desde, { para, rincon: 'visita', donde: para === 'lynx' || de === 'lynx' ? 'lynx' : para, hilo: 'h1' })
+
+test('visitasDelDia: las líneas de visita de hoy, también las que salen más tarde, sin su texto y por hora', () => {
+  const lineas = [
+    deVisita('v2', 'lynx', 'ana', '2026-11-16T20:04:00Z'), // 2:04 p. m.: todavía no sale
+    deVisita('v1', 'ana', 'lynx', '2026-11-16T20:02:00Z'),
+    linea('cafe', 'ana', '2026-11-16T19:00:00Z', { para: 'beto', rincon: 'cafe', hilo: 'h2' }),
+    linea('suelta', 'ana', '2026-11-16T19:30:00Z'),
+    deVisita('ayer', 'ana', 'lynx', '2026-11-15T20:02:00Z'),
+  ]
+  const v = visitasDelDia(lineas, DOS_PM, despierta)
+  assert.deepEqual(v.map((l) => l.id), ['v1', 'v2'])
+  assert.deepEqual(v[0], { id: 'v1', de: 'ana', para: 'lynx', rincon: 'visita', donde: 'lynx', hilo: 'h1', mostrar_desde: '2026-11-16T20:02:00Z' })
+  assert.ok(!('texto' in v[0]))
+  // dormida desde las 2:03 p. m.: la de las 2:04 ya no
+  assert.deepEqual(visitasDelDia(lineas, DOS_PM, { dormida: true, desde: '2026-11-16T20:03:00Z', por: 'x' }).map((l) => l.id), ['v1'])
+})
+
+test('armarSnapshot manda las visitas de hoy (de los Knox del catálogo) aunque su chat todavía no salga', () => {
+  const s = armarSnapshot({
+    ...base, agentes: [agente(), agente({ id: 'lynx', nombre: 'Lynx' })], marcas: [], entregas: [],
+    tertulia: [deVisita('v1', 'ana', 'lynx', hace(-1)), deVisita('v2', 'lynx', 'ana', hace(-3)), deVisita('f', 'fantasma', 'lynx', hace(-1))],
+  }, AHORA)
+  assert.deepEqual(s.chat, [])
+  assert.deepEqual(s.visitas.map((l) => l.id), ['v1', 'v2'])
 })

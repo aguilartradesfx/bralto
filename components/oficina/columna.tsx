@@ -2,12 +2,13 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { FilaTeToca, Marca, Proximo, Pub } from '@/lib/oficina/tipos'
-import type { LineaChat } from '@/lib/oficina/chat'
+import { dondeLinea, type LineaChat } from '@/lib/oficina/chat'
 import type { Seccion } from '@/lib/oficina/direccion'
 import { proximos as listaProximos } from '@/lib/oficina/estado'
 import { ahoraFicha } from '@/lib/oficina/ficha'
 import { enlaceSeguro, lineaAhora, lineaFalla, momentoCR, nombreDe, type AgenteSnap } from '@/lib/oficina/pagina'
 import type { LugarSala } from '@/lib/oficina/sala'
+import type { Visita } from '@/lib/oficina/visitas'
 import { COL } from './pixel/vista'
 import { Cara } from './cara'
 import { BotonIcono, NOMBRE } from './grande'
@@ -182,6 +183,7 @@ export function ParaTi(p: {
 
 // ---------- Chat ----------
 // Lo que hablan entre ellos y lo que pasó de verdad, por hora. Arranca abajo y solo baja solo si ya estabas abajo.
+// Las líneas de una charla dicen dónde fue, discreto: «en el café», «en la sala» o «en la oficina de Lynx».
 // Al lado y en grande, la lista llena el alto que hay.
 export function Chat(p: {
   lineas: LineaChat[]
@@ -260,6 +262,7 @@ export function Chat(p: {
         {p.lineas.map((l) => {
           const k = clave(l)
           const puede = ids.has(l.de)
+          const donde = dondeLinea(l, nombre)
           return (
             <li
               key={k}
@@ -275,6 +278,7 @@ export function Chat(p: {
                 <span className="of-msg-cab">
                   <b>{nombre(l.de)}</b>
                   {l.para && <> → {nombre(l.para)}</>}
+                  {donde && <span className="of-msg-donde"> · {donde}</span>}
                 </span>
                 <span className="of-msg-tx">
                   {l.texto}
@@ -312,7 +316,7 @@ export function Chat(p: {
 
 // ---------- Ahora / Falló / Lo próximo ----------
 // Con más espacio (al lado y en grande): todos los Knox con lo que hace cada uno o hasta cuándo descansa (lo mismo que
-// dice su ficha, también si está en la sala), las fallas y los 20 próximos (con el día cuando no es hoy).
+// dice su ficha, también si está en la sala o de visita), las fallas y los 20 próximos (con el día cuando no es hoy).
 const PROXIMOS_AMPLIO = 20
 
 export function Ahora(p: {
@@ -322,6 +326,7 @@ export function Ahora(p: {
   proximos: Proximo[] // los 5 que manda el servidor
   pubs: Pub[] // con más espacio, «Lo próximo» completo se arma con estas
   sala: Record<string, LugarSala> // quién está en la sala y dónde
+  visitas: Record<string, Visita> // quién está de visita y en la oficina de quién
   dormida: boolean
   ahora: Date
   tamano: Tamano
@@ -344,7 +349,11 @@ export function Ahora(p: {
   const equipo = amplio ? p.agentes.slice().sort((x, y) => x.puesto - y.puesto) : vivos
   const nombre = (id: string) => nombreDe(id, p.agentes)
   const queHace = (a: AgenteSnap) => {
-    if (amplio) return ahoraFicha(a, { marcas: p.marcas, paraTi: p.paraTi, ahora: p.ahora, dormida: p.dormida, lugar: p.sala[a.id] ?? null, nombreDe: nombre })
+    if (amplio) {
+      return ahoraFicha(a, {
+        marcas: p.marcas, paraTi: p.paraTi, ahora: p.ahora, dormida: p.dormida, lugar: p.sala[a.id] ?? null, visita: p.visitas[a.id] ?? null, nombreDe: nombre,
+      })
+    }
     if (p.dormida) return a.despierto_siempre ? guardia(a) : 'Duerme'
     return lineaAhora(a, p.marcas, p.paraTi, p.ahora) ?? 'En lo suyo'
   }

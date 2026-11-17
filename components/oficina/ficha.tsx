@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import type { Aspecto, DiaSemana, Foto, Marca, Post, Pub } from '@/lib/oficina/tipos'
-import type { LineaChat } from '@/lib/oficina/chat'
+import { dondeLinea, type LineaChat } from '@/lib/oficina/chat'
 import type { LugarSala } from '@/lib/oficina/sala'
+import type { Visita } from '@/lib/oficina/visitas'
 import { ahoraFicha, fotosDe, lugarDe, marcasDeHoy, notaProximo, proximosDeAgente, ultimoEnForo } from '@/lib/oficina/ficha'
 import { horaCR } from '@/lib/oficina/horario'
 import { ETIQUETA, enlaceSeguro, lineaFalla, momentoCR, nombreDe, recortar, type AgenteSnap } from '@/lib/oficina/pagina'
@@ -121,6 +122,7 @@ export function Ficha(p: {
   fotos: Foto[]
   foro: Post[]
   lugar: LugarSala | null // dónde está en la sala, si está
+  visita: Visita | null // en la oficina de quién está de visita, si está
   dormida: boolean
   ahora: Date
   cerrar(): void
@@ -178,10 +180,15 @@ function Contenido(p: Parameters<typeof Ficha>[0] & { a: AgenteSnap }) {
   const { a } = p
   const nombre = (id: string) => nombreDe(id, p.agentes)
   const para = (id: string | null) => (id ? <small>{id === 'ale' ? 'Para ti' : `Para ${nombre(id)}`}</small> : null)
+  // en el chat: a quién le habló y dónde («Para Quark · en el café»)
+  const paraYDonde = (l: LineaChat) => {
+    const partes = [l.para ? (l.para === 'ale' ? 'Para ti' : `Para ${nombre(l.para)}`) : null, dondeLinea(l, nombre)].filter(Boolean)
+    return partes.length ? <small>{partes.join(' · ')}</small> : null
+  }
 
   const suyas = fotosDe(a.id, p.fotos, p.foro) // su retrato, si hay, va primero
   const retrato = suyas[0]?.tipo === 'retrato' ? suyas[0] : null
-  const ahora = ahoraFicha(a, { marcas: p.marcas, paraTi: p.paraTi, ahora: p.ahora, dormida: p.dormida, lugar: p.lugar, nombreDe: nombre })
+  const ahora = ahoraFicha(a, { marcas: p.marcas, paraTi: p.paraTi, ahora: p.ahora, dormida: p.dormida, lugar: p.lugar, visita: p.visita, nombreDe: nombre })
   const falla = a.estado === 'fallo' ? lineaFalla(a, p.marcas, p.ahora) : null
   const hoy = marcasDeHoy(a.id, p.marcas, p.ahora)
   const dejo = p.paraTi.filter((m) => m.agente === a.id)
@@ -317,7 +324,7 @@ function Contenido(p: Parameters<typeof Ficha>[0] & { a: AgenteSnap }) {
                 <span className="of-fit-h">{momentoCR(new Date(l.cuando), p.ahora)}</span>
                 <span className="of-fit-tx">
                   {citar(l.texto)}
-                  {para(l.para)}
+                  {paraYDonde(l)}
                 </span>
                 <span />
               </li>

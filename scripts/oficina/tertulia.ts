@@ -1,8 +1,10 @@
-// La ronda diaria de la tertulia de la Oficina de Knox (la corre el cron del servidor a las 12:30 p. m. de Costa Rica).
+// Una ronda de la tertulia de la Oficina de Knox. El cron del servidor la corre tres veces al día, a las 8:30 a. m.,
+// 12:30 p. m. y 4:00 p. m. de Costa Rica: el turno (mañana, mediodía o tarde) sale de la hora, y un turno que ya salió
+// bien hoy no se repite.
 //   npm run oficina:tertulia                                  → la ronda de verdad (guarda y anota)
 //   npm run oficina:tertulia -- --probar                      → le pregunta a Claude y muestra lo limpio, sin guardar
 //   npm run oficina:tertulia -- --simular [--respuesta <archivo>] → muestra el pedido (y lo limpio, con una respuesta guardada); no llama a Claude ni guarda
-//   npm run oficina:tertulia -- anotar <falla|saltada> "<detalle>" → anota el resultado del día (lo usa el cron si algo se rompe antes)
+//   npm run oficina:tertulia -- anotar <falla|saltada> "<detalle>" → anota el resultado del turno de esta hora (lo usa el cron si algo se rompe antes)
 // Sale con 1 solo si la ronda quedó en «falla».
 import { spawn } from 'node:child_process'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
@@ -11,6 +13,7 @@ import { join } from 'node:path'
 import { fechaCR } from '../../lib/oficina/horario.ts'
 import { argsClaude, correrRonda, entornoClaude, type DepsRonda } from '../../lib/oficina/ronda.ts'
 import { anotarRonda, estadoOficina, guardarRonda, leerDatosRonda, rondaDe } from '../../lib/oficina/servidor.ts'
+import { TURNOS, turnoDe } from '../../lib/oficina/turnos.ts'
 
 const OCHO_MIN = 8 * 60_000
 
@@ -59,8 +62,9 @@ try {
       console.error('Uso: anotar <falla|saltada> "<detalle>"')
       process.exit(2)
     }
-    await anotarRonda({ fecha: fechaCR(ahora), resultado, detalle: detalle.replace(/\s+/g, ' ').trim().slice(0, 200) })
-    console.log(`Anotada: ${resultado}`)
+    const turno = turnoDe(ahora)
+    await anotarRonda({ fecha: fechaCR(ahora), turno, resultado, detalle: detalle.replace(/\s+/g, ' ').trim().slice(0, 200) })
+    console.log(`Anotada la tertulia ${TURNOS[turno].de}: ${resultado}`)
     process.exit(resultado === 'falla' ? 1 : 0)
   }
 
@@ -77,12 +81,12 @@ try {
 
   const r = await correrRonda(deps, ahora, { modo, respuesta })
   if (modo === 'real') {
-    console.log(`Ronda: ${r.resultado}${r.detalle ? ` — ${r.detalle}` : ''}`)
+    console.log(`Ronda ${TURNOS[r.turno].de}: ${r.resultado}${r.detalle ? ` — ${r.detalle}` : ''}`)
   } else {
     // El pedido ya trae los nombres de clientes tapados; nunca se imprimen los prohibidos.
     if (r.pedido) console.log(r.pedido)
     if (r.limpia) console.log('\n--- Lo limpio ---\n' + JSON.stringify(r.limpia, null, 2))
-    console.log(`\n${r.resultado}: ${r.detalle}`)
+    console.log(`\n${r.resultado} (${TURNOS[r.turno].de}): ${r.detalle}`)
   }
   process.exit(r.resultado === 'falla' ? 1 : 0)
 } catch (e) {

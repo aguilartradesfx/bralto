@@ -9,6 +9,7 @@ import { contarIdeas, filtrarIdeas, filtroDeVerIdeas, marcaVisto, nuevosDelForo,
 import { FRASES_SUENO } from '@/lib/oficina/frases-sueno'
 import { avisoDormida, nombreDe, recortar, textoPlano, type Chip } from '@/lib/oficina/pagina'
 import { repartirSala } from '@/lib/oficina/sala'
+import { repartirVisitas } from '@/lib/oficina/visitas'
 import { Cabecera } from './cabecera'
 import { Ahora, Chat, ParaTi, type Tamano } from './columna'
 import { Ficha } from './ficha'
@@ -115,7 +116,8 @@ export function Oficina({
   const enGrande = modo === 'grande' ? seccion : null
 
   // Lo nuevo desde la última consulta: «pasa» camina a la oficina del otro (o lo dice en voz alta), «entrega» camina a
-  // tu oficina y avisa abajo, y cada línea de la tertulia que recién sale va en nube sobre quien la dice.
+  // tu oficina y avisa abajo, y cada línea de la tertulia que recién sale (también las de las charlas) va en nube sobre
+  // quien la dice, esté donde esté: en su escritorio, en la sala o de visita.
   const alNuevas = useCallback((marcas: Marca[], lineas: LineaTertulia[], r: RespuestaOficina) => {
     const v = vista2d.current
     const ahora = Date.parse(r.ahora)
@@ -408,7 +410,10 @@ export function Oficina({
         ultimaFrase = i
         const texto = FRASES_SUENO[i]
         vista2d.current?.decir(quien, texto)
-        const linea: LineaChat = { id: `sueno-${Date.now()}-${++n}`, de: quien, para: null, texto, cuando: new Date().toISOString(), tipo: 'sueno', idea_id: null }
+        const linea: LineaChat = {
+          id: `sueno-${Date.now()}-${++n}`, de: quien, para: null, texto, cuando: new Date().toISOString(), tipo: 'sueno', idea_id: null,
+          rincon: null, donde: null,
+        }
         setSuenos((s) => [...s, linea].slice(-SUENOS_MAX))
       }
       quien = elegir()
@@ -441,18 +446,23 @@ export function Oficina({
     return m
   }, [social])
 
-  // quién está en la sala y dónde (con cada foto y cada medio minuto): la maqueta, el plano y sus textos lo usan
-  const sala = useMemo(
-    () => (r ? repartirSala({ agentes: r.agentes, lineas: r.chat, ahora, dormida: r.oficina.dormida }) : {}),
+  // quién está de visita en la oficina de otro y quién en la sala, y dónde (con cada foto y cada medio minuto): la
+  // maqueta, el plano, sus textos y las fichas lo usan. Quien está de visita (o la recibe) no va a la sala.
+  const visitas = useMemo(
+    () => (r ? repartirVisitas({ lineas: r.visitas ?? [], agentes: r.agentes, ahora, dormida: r.oficina.dormida }) : {}),
     [r, ahora],
+  )
+  const sala = useMemo(
+    () => (r ? repartirSala({ agentes: r.agentes, lineas: r.chat, ahora, dormida: r.oficina.dormida, visitas }) : {}),
+    [r, ahora, visitas],
   )
 
   // los textos de debajo de cada carita del plano (con cada foto y cada medio minuto, no en cada cuadro)
   const textos = useMemo(() => {
     const t: Record<string, string> = {}
-    if (r && vista === 'plano') for (const a of r.agentes) t[a.id] = textoPlano(a, r.marcas, r.paraTi, ahora, sala[a.id])
+    if (r && vista === 'plano') for (const a of r.agentes) t[a.id] = textoPlano(a, r.marcas, r.paraTi, ahora, sala[a.id], visitas[a.id])
     return t
-  }, [r, ahora, vista, sala])
+  }, [r, ahora, vista, sala, visitas])
 
   // la ficha se cierra con Esc o tocando afuera (la maqueta, el plano y las listas abren otra en su lugar; lo que se toca
   // en el visor es del visor)
@@ -549,6 +559,7 @@ export function Oficina({
             proximos={r.proximos}
             pubs={r.pubs}
             sala={sala}
+            visitas={visitas}
             dormida={dormida}
             ahora={ahora}
             abrirFicha={abrir}
@@ -566,6 +577,7 @@ export function Oficina({
             bandeja={paraTiN}
             dormida={dormida}
             sala={sala}
+            visitas={visitas}
             aLoAlto={telefono}
             alTocar={tocar}
             api={ponerApi}
@@ -705,6 +717,7 @@ export function Oficina({
           fotos={social?.fotos ?? []}
           foro={social?.foro ?? []}
           lugar={agenteFicha ? sala[agenteFicha.id] ?? null : null}
+          visita={agenteFicha ? visitas[agenteFicha.id] ?? null : null}
           dormida={dormida}
           ahora={ahora}
           cerrar={cerrar}

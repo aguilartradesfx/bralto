@@ -99,6 +99,9 @@ export type Snapshot = {
   chat: LineaTertulia[] // la tertulia de hoy que ya salió
   escribiendo: string | null // quién dice la próxima línea, si sale en 3 min o menos
   pubs: Pub[] // las 10 próximas publicaciones programadas
+  // las líneas de las visitas de hoy, también las que salen más tarde, sin su texto: la maqueta lleva al visitante a la
+  // oficina del otro desde un minuto antes de que hable (repartirVisitas)
+  visitas: LineaVisita[]
 }
 
 export type AgenteSnap = Snapshot['agentes'][number]
@@ -107,15 +110,28 @@ export type Pub = { id: string, titulo: string, publicar_en: string, prueba: boo
 
 export type Rincon = 'cafe' | 'platica' | 'siesta'
 
+// Dónde se dijo una línea: en el café o en la plática de la sala, o de visita en la oficina de otro (null: desde su escritorio)
+export type RinconChat = 'cafe' | 'platica' | 'visita'
+
 export type LineaTertulia = {
   id: string
   de: string
   para: string | null
   texto: string
-  rincon: 'cafe' | 'platica' | null
+  rincon: RinconChat | null
+  // en una visita, el anfitrión (a quien visitan); si no, null
+  donde: string | null
+  // las líneas de una misma charla llevan el mismo hilo; una línea suelta, null
+  hilo: string | null
   idea_id: string | null
   mostrar_desde: string
 }
+
+// Una línea de una visita sin su texto (lo que la maqueta necesita para saber quién está de visita y dónde)
+export type LineaVisita = Pick<LineaTertulia, 'id' | 'de' | 'para' | 'rincon' | 'donde' | 'hilo' | 'mostrar_desde'>
+
+// Los tres turnos de la tertulia (turnos.ts)
+export type Turno = 'manana' | 'mediodia' | 'tarde'
 
 // dia = AAAA-MM-DD de Costa Rica
 export type FilaSemana = { agente: string, dia: string, tareas: number, falla: boolean }
@@ -160,7 +176,8 @@ export type Idea = {
 
 export type Foto = { id: string, tipo: 'retrato' | 'grupo', agentes: string[], url: string, pie: string | null }
 
-export type Ronda = { fecha: string, resultado: 'ok' | 'falla' | 'saltada', detalle: string }
+// Una por turno de cada día
+export type Ronda = { fecha: string, turno: Turno, resultado: 'ok' | 'falla' | 'saltada', detalle: string }
 
 export type FilaTeToca = {
   clave: 'mensajes' | 'tareas' | 'grabar' | 'ideas'
@@ -171,7 +188,7 @@ export type FilaTeToca = {
   href: string
 }
 
-// El foro, las ideas, las fotos (con su enlace firmado) y la ronda de hoy: viajan solo cuando cambian
+// El foro, las ideas, las fotos (con su enlace firmado) y la última ronda de hoy: viajan solo cuando cambian
 export type Social = { foro: Post[], proxima: string | null, ideas: Idea[], fotos: Foto[], ronda: Ronda | null }
 
 // GET /api/oficina: `social` es null cuando la firma no cambió (la página se queda con el que tiene)
