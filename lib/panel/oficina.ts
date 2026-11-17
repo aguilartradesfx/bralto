@@ -55,6 +55,19 @@ export const FUENTES_TE_TOCA: ((oficina: Promise<EstadoOficina>) => Promise<Cuen
     const n = await contar('lab_ideas', db().from('lab_ideas').select('id', { count: 'exact', head: true }).eq('decision', 'yo').is('grabada_en', null))
     return { clave: 'grabar', n }
   },
+  // Guiones que escribió la noche para grabar a cámara y todavía no tienen video: cuántos son y el más nuevo
+  async () => {
+    const { data, count, error } = await db()
+      .from('redes_guiones')
+      .select('id, titulo', { count: 'exact' })
+      .eq('estado', 'listo')
+      .order('dia', { ascending: false })
+      .order('creado_en', { ascending: false })
+      .limit(1)
+    if (error) throw new Error(`redes_guiones: ${error.message}`)
+    const g = data?.[0] as { id: string, titulo: string } | undefined
+    return g ? { clave: 'guiones', n: count ?? 1, id: g.id, titulo: g.titulo } : { clave: 'guiones', n: 0, id: '', titulo: '' }
+  },
   // Ideas nuevas del equipo que ya se ven: con la oficina dormida, solo las de antes de dormirse (el corte del chat y del foro)
   async (oficina) => {
     const corte = corteDormida(await oficina)

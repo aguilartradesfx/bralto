@@ -49,3 +49,28 @@ test('filasTeToca: respeta el orden en que llegan las cuentas', () => {
   assert.deepEqual(r.map((f) => f.clave), ['ideas', 'grabar', 'mensajes'])
   assert.equal(r[0].href, '#ideas')
 })
+
+test('filasTeToca: los guiones por grabar dicen el título del más nuevo y llevan a su ancla en /guiones', () => {
+  const id = '3f1c2a7e-1111-4a1a-9a9a-000000000001'
+  assert.deepEqual(filasTeToca([{ clave: 'guiones', n: 1, id, titulo: 'Ordena tus pedidos' }]), [
+    { clave: 'guiones', n: 1, texto: 'Por grabar: «Ordena tus pedidos»', sub: 'Te espera para grabarlo a cámara', boton: 'Abrir el guion', href: `/guiones#${id}` },
+  ])
+  assert.deepEqual(filasTeToca([{ clave: 'guiones', n: 2, id, titulo: 'Ordena tus pedidos' }]).map((f) => f.sub), ['Y 1 guion más te espera'])
+  assert.deepEqual(filasTeToca([{ clave: 'guiones', n: 4, id, titulo: 'Ordena tus pedidos' }]).map((f) => f.sub), ['Y 3 guiones más te esperan'])
+  assert.deepEqual(filasTeToca([{ clave: 'guiones', n: 0, id: '', titulo: '' }]), [])
+})
+
+test('filasTeToca: un título larguísimo se corta', () => {
+  const [f] = filasTeToca([{ clave: 'guiones', n: 1, id: 'x', titulo: 'Palabra '.repeat(20).trim() }])
+  assert.ok(f.texto.length <= 'Por grabar: «»'.length + 70, f.texto)
+  assert.match(f.texto, /…»$/)
+})
+
+test('filasTeToca: los guiones van en el orden en que llegan, junto a las demás', () => {
+  const r = filasTeToca([
+    { clave: 'grabar', n: 1 },
+    { clave: 'guiones', n: 1, id: 'x', titulo: 'Uno' },
+    { clave: 'ideas', n: 1 },
+  ])
+  assert.deepEqual(r.map((f) => f.clave), ['grabar', 'guiones', 'ideas'])
+})
