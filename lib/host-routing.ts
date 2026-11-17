@@ -19,7 +19,7 @@ export const KNOX_PATH = '/knox'
 // La Oficina de Knox: pantalla completa propia, fuera del menú del panel
 export const OFICINA_PATH = '/knox-office'
 
-const PANEL_PREFIXES = ['/admin', '/contratos', '/clientes', '/solicitudes', '/usuarios', '/plan-q4', '/calendario', '/crm', '/knox', '/ajustes', '/pronto', '/ideas', '/analisis', '/oficina', OFICINA_PATH]
+const PANEL_PREFIXES = ['/admin', '/contratos', '/clientes', '/solicitudes', '/usuarios', '/plan-q4', '/calendario', '/crm', '/knox', '/ajustes', '/pronto', '/ideas', '/guiones', '/analisis', '/oficina', OFICINA_PATH]
 // Sin subrutas: /propuestas/<slug> es la página pública de cada propuesta
 const PANEL_EXACT = ['/login', '/propuestas']
 

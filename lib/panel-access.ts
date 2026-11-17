@@ -20,6 +20,7 @@ const ROUTE_PERMISSIONS: [prefix: string, permission: PanelPermission][] = [
   ['/crm', 'is_admin'],
   ['/knox', 'is_admin'],
   ['/ideas', 'is_admin'],
+  ['/guiones', 'is_admin'],
   ['/analisis', 'is_admin'],
   ['/oficina', 'is_admin'],
   ['/knox-office', 'is_admin'],

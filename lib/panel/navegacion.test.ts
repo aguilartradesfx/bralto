@@ -67,8 +67,8 @@ test('abajo van Ayuda y Ajustes (Ayuda, que viene, solo para administradores)', 
 test('«Ideas» está en Marketing, después del Calendario, y solo la ve el administrador', () => {
   const marketing = NAV.find((e) => esGrupo(e) && e.id === 'marketing')
   assert.ok(marketing && esGrupo(marketing))
-  assert.deepEqual(marketing.items.slice(0, 4).map((i) => i.href), ['/calendario', '/ideas', '/analisis', '/knox-office'])
-  assert.equal(marketing.items[3].nueva, true)
+  assert.deepEqual(marketing.items.slice(0, 5).map((i) => i.href), ['/calendario', '/ideas', '/guiones', '/analisis', '/knox-office'])
+  assert.equal(marketing.items[4].nueva, true)
   assert.equal(tituloDe('/ideas'), 'Ideas')
   assert.equal(grupoActivo('/ideas'), 'marketing')
   assert.equal(menuPara(SOLO_PLAN).some((e) => esGrupo(e) && e.items.some((i) => i.href === '/ideas')), false)
@@ -77,4 +77,18 @@ test('«Ideas» está en Marketing, después del Calendario, y solo la ve el adm
   assert.equal(tituloDe('/knox-office'), 'Oficina')
   assert.equal(menuPara(SOLO_PLAN).some((e) => esGrupo(e) && e.items.some((i) => i.href === '/knox-office')), false)
   assert.equal(menuPara(ADMIN).some((e) => esGrupo(e) && e.items.some((i) => i.href === '/knox-office')), true)
+})
+
+test('«Guiones» va en Marketing justo después de Ideas, solo para el administrador', () => {
+  const marketing = NAV.find((e) => esGrupo(e) && e.id === 'marketing')
+  assert.ok(marketing && esGrupo(marketing))
+  const i = marketing.items.findIndex((x) => x.href === '/guiones')
+  assert.equal(marketing.items[i - 1].href, '/ideas')
+  assert.deepEqual(marketing.items[i], { href: '/guiones', label: 'Guiones', icono: 'guiones' })
+  assert.equal(tituloDe('/guiones'), 'Guiones')
+  assert.equal(grupoActivo('/guiones'), 'marketing')
+  assert.equal(menuPara(ADMIN).some((e) => esGrupo(e) && e.items.some((x) => x.href === '/guiones')), true)
+  assert.equal(menuPara(SOLO_PLAN).some((e) => esGrupo(e) && e.items.some((x) => x.href === '/guiones')), false)
+  // /guionesx no es Guiones
+  assert.equal(tituloDe('/guionesx'), 'Panel')
 })
