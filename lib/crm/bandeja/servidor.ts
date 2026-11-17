@@ -10,6 +10,7 @@ import * as almacen from '@/lib/crm/bandeja/almacen'
 import { atenderMensaje, type DepsKnox } from '@/lib/crm/bandeja/knox'
 import { estadoOficina, marcar } from '@/lib/oficina/servidor'
 import { procesarEvento } from '@/lib/crm/bandeja/procesar'
+import { comillas } from '@/lib/crm/bandeja/asociar'
 import { UUID } from '@/lib/crm/validar'
 import { avisarPorTelegram as enviarTelegram } from '@/lib/telegram'
 import {
@@ -17,11 +18,15 @@ import {
   vistaPrevia,
   type AjustesKnox,
   type AutorBandeja,
+  type ContactoResumen,
   type ConversacionDetalle,
   type ConversacionLista,
   type DecisionLista,
   type Filtro,
+  type ListaBandeja,
   type MensajeHilo,
+  type ResumenBandeja,
+  type VistaLista,
 } from '@/lib/crm/bandeja/vista'
 
 const db = () => createServiceClient()
@@ -140,9 +145,14 @@ type FilaBandeja = {
   pendiente_aviso: string | null
 }
 
-export async function listarBandeja(filtro: Filtro, cuantas: number): Promise<{ filas: ConversacionLista[]; hayMas: boolean }> {
-  const { data, error } = await db().rpc('crm_bandeja', { filtro, limite: cuantas + 1 })
-  if (error) throw new Error(`crm_bandeja: ${error.message}`)
+// La lista de la bandeja. red y q (búsqueda por nombre, @ o número) son opcionales
+export async function listarBandeja(
+  filtro: Filtro,
+  cuantas: number,
+  { red = null, q = '' }: { red?: CanalKnox | null; q?: string } = {},
+): Promise<{ filas: ConversacionLista[]; hayMas: boolean }> {
+  const { data, error } = await db().rpc('crm_bandeja_lista', { filtro, red, buscar: q || null, limite: cuantas + 1 })
+  if (error) throw new Error(`crm_bandeja_lista: ${error.message}`)
   const filas = (data ?? []) as FilaBandeja[]
   return {
     hayMas: filas.length > cuantas,
@@ -162,11 +172,47 @@ export async function listarBandeja(filtro: Filtro, cuantas: number): Promise<{ 
   }
 }
 
-export async function resumenBandeja(): Promise<{ porResponder: number; sinLeer: number; pendientes: number }> {
+export async function resumenBandeja(): Promise<ResumenBandeja> {
   const { data, error } = await db().rpc('crm_bandeja_resumen')
   if (error) throw new Error(`crm_bandeja_resumen: ${error.message}`)
   const r = ((data ?? []) as { por_responder: number; sin_leer: number; pendientes: number }[])[0]
   return { porResponder: r?.por_responder ?? 0, sinLeer: r?.sin_leer ?? 0, pendientes: r?.pendientes ?? 0 }
+}
+
+// La lista y los números de arriba juntos (la bandeja de dos paneles los pide así)
+export async function leerListaBandeja(vista: VistaLista, cuantas: number): Promise<ListaBandeja> {
+  const [lista, resumen] = await Promise.all([listarBandeja(vista.filtro, cuantas, vista), resumenBandeja()])
+  return { ...lista, resumen }
+}
+
+// Lo del CRM al lado del chat: datos, oportunidades abiertas (con su etapa) y cuántas tareas faltan
+async function resumenContacto(id: string): Promise<ContactoResumen | null> {
+  const base = db()
+  const [c, o, t] = await Promise.all([
+    base.from('crm_contactos').select('id, nombre, apellido, telefono, correo, empresa, etiquetas').eq('id', id).maybeSingle(),
+    base
+      .from('crm_oportunidades')
+      .select('id, nombre, valor, crm_etapas(nombre)')
+      .eq('contacto_id', id)
+      .eq('estado', 'abierta')
+      .order('actualizado_en', { ascending: false })
+      .limit(3),
+    base.from('crm_tareas').select('id', { count: 'exact', head: true }).eq('contacto_id', id).eq('hecha', false),
+  ])
+  for (const r of [c, o, t]) if (r.error) throw new Error(`bandeja (contacto): ${r.error.message}`)
+  const fila = c.data as { id: string; nombre: string; apellido: string; telefono: string | null; correo: string | null; empresa: string | null; etiquetas: string[] | null } | null
+  if (!fila) return null
+  const ops = (o.data ?? []) as unknown as { id: string; nombre: string; valor: number | string | null; crm_etapas: { nombre: string } | null }[]
+  return {
+    id: fila.id,
+    nombre: `${fila.nombre} ${fila.apellido}`.trim(),
+    telefono: fila.telefono,
+    correo: fila.correo,
+    empresa: fila.empresa,
+    etiquetas: fila.etiquetas ?? [],
+    oportunidades: ops.map((x) => ({ id: x.id, nombre: x.nombre, etapa: x.crm_etapas?.nombre ?? null, valor: Number(x.valor) || 0 })),
+    tareas: t.count ?? 0,
+  }
 }
 
 const AUTORES = new Set(['persona', 'ale', 'knox', 'automatizacion', 'sistema'])
@@ -213,6 +259,13 @@ export async function leerConversacion(id: string): Promise<ConversacionDetalle 
   const pend = p.data as { id: string; respuesta: string | null; decision: DecisionKnox | null; error: string | null; creado_en: string } | null
   const contacto = conv.crm_contactos ? `${conv.crm_contactos.nombre} ${conv.crm_contactos.apellido}`.trim() : null
   const telefono = telefonoDe(canal, conv.participante_id)
+  // El resumen del CRM es un extra: si falla, el chat se abre igual
+  const resumen = conv.contacto_id
+    ? await resumenContacto(conv.contacto_id).catch((err) => {
+        console.error('[bandeja] no se pudo leer el contacto:', err instanceof Error ? err.message : err)
+        return null
+      })
+    : null
   return {
     id: conv.id as string,
     canal,
@@ -230,6 +283,7 @@ export async function leerConversacion(id: string): Promise<ConversacionDetalle 
     pendiente: pend
       ? { id: pend.id, respuesta: pend.respuesta, aviso: pend.decision?.aviso ?? null, motivo: pend.decision?.motivo ?? null, error: pend.error, creadoEn: pend.creado_en }
       : null,
+    contacto: resumen,
   }
 }
 
@@ -240,6 +294,18 @@ export async function marcarConversacionLeida(id: string) {
   } catch (err) {
     console.error('[bandeja] no se pudo marcar como leída:', err instanceof Error ? err.message : err)
   }
+}
+
+// La conversación sigue abierta en la pantalla: queda leída, pero solo se escribe si la persona escribió después de la
+// última vez (el refresco de cada rato no toca la base si no entró nada)
+export async function marcarLeidaSiEntroAlgo(id: string, ultimoEntranteEn: string | null) {
+  if (!UUID.test(id) || !ultimoEntranteEn) return
+  const { error } = await db()
+    .from('crm_conversaciones')
+    .update({ leido_en: new Date().toISOString() })
+    .eq('id', id)
+    .or(`leido_en.is.null,leido_en.lt.${comillas(ultimoEntranteEn)}`)
+  if (error) console.error('[bandeja] no se pudo marcar como leída:', error.message)
 }
 
 export async function ajustesKnox(): Promise<AjustesKnox> {

@@ -19,6 +19,6 @@ export default async function ConversacionPage({ params }: { params: Promise<{ i
   // Abrirla es leerla
   await marcarConversacionLeida(c.id)
 
-  // key: al pasar de una conversación a otra, la caja arranca vacía
-  return <Conversacion key={c.id} c={c} modo={ajustes.modo} ahora={new Date().toISOString()} />
+  // key: al pasar de una conversación a otra, todo arranca de cero (la caja vacía, el hilo abajo)
+  return <Conversacion key={c.id} inicial={c} modo={ajustes.modo} ahora={new Date().toISOString()} />
 }
