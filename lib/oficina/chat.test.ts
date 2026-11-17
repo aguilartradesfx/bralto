@@ -92,3 +92,12 @@ test('las líneas de una charla llevan dónde fue: el café, la sala o la oficin
   // una visita sin anfitrión no dice nada
   assert.equal(dondeLinea({ rincon: 'visita', donde: null }, nombre), null)
 })
+
+test('la etiqueta de una visita sale de «donde», aunque la línea llegue con rincon null (como la manda el servidor)', () => {
+  const nombre = (id: string) => ({ lynx: 'Lynx' })[id] ?? id
+  assert.equal(dondeLinea({ rincon: null, donde: 'lynx' }, nombre), 'en la oficina de Lynx')
+  const l = lineasDelChat([], [linea('v1', 'eta', '2026-11-15T22:00:00Z', { para: 'lynx', rincon: null, donde: 'lynx', hilo: 'h3' })], AHORA)
+  assert.deepEqual([l[0].rincon, l[0].donde], [null, 'lynx'])
+  assert.equal(dondeLinea(l[0], nombre), 'en la oficina de Lynx')
+  assert.equal(dondeLinea({ rincon: null, donde: null }, nombre), null)
+})

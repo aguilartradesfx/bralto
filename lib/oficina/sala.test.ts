@@ -244,3 +244,15 @@ test('un rato más nuevo gana: la pareja nueva del café se sienta aunque uno ve
   // Quark se queda en su escritorio (su charla ya terminó para Krono) y tampoco va de turno
   assert.equal(r.quark, undefined)
 })
+
+test('con las visitas como llegan a la página (rincon null y su «donde»): no llevan a nadie a la sala y un rato más nuevo igual gana', () => {
+  const agentes = [ag('krono'), ag('quark'), ag('lynx')]
+  const comoLlega = (ls: LineaTertulia[]) => ls.map((l) => (l.rincon === 'visita' ? { ...l, rincon: null } : l))
+  const visita = comoLlega(charla('vis', 'krono', 'lynx', 'visita', [4, 3]))
+  assert.deepEqual(visita.map((l) => [l.rincon, l.donde]), [[null, 'lynx'], [null, 'lynx']])
+  assert.deepEqual(por(repartir(agentes, visita), 'tertulia'), [])
+  // el café de Krono y Quark terminó hace 8 min y Krono visitó a Lynx hace 3: ninguno vuelve al café
+  const r = repartir(agentes, [...charla('cafe', 'krono', 'quark', 'cafe', [12, 10, 8]), ...visita])
+  assert.equal(r.krono, undefined)
+  assert.equal(r.quark, undefined)
+})

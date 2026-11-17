@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { HORAS_TERTULIA, ORDEN_TURNOS, TURNOS, esTurno, finDeTurno, turnoDe } from './turnos.ts'
+import { HORAS_TERTULIA, ORDEN_TURNOS, TURNOS, esTurno, finDeTurno, tramoDeTurno, turnoDe } from './turnos.ts'
 
 // Lunes 16/11/2026 en Costa Rica (UTC−6): «h:m» de Costa Rica → la fecha en UTC
 const cr = (h: number, m = 0) => new Date(Date.UTC(2026, 10, 16, h + 6, m))
@@ -45,4 +45,19 @@ test('esTurno y cómo se dice cada uno', () => {
   for (const t of ['manana', 'mediodia', 'tarde']) assert.ok(esTurno(t), t)
   for (const t of ['mañana', 'noche', '', null, 3]) assert.equal(esTurno(t), false, String(t))
   assert.deepEqual(ORDEN_TURNOS.map((t) => TURNOS[t].de), ['de la mañana', 'del mediodía', 'de la tarde'])
+})
+
+test('tramoDeTurno: la parte del día de cada turno, la misma de turnoDe (hasta no entra)', () => {
+  const tramo = (t: Parameters<typeof tramoDeTurno>[1]) => {
+    const { desde, hasta } = tramoDeTurno(cr(10), t)
+    return [desde.toISOString(), hasta.toISOString()]
+  }
+  assert.deepEqual(tramo('manana'), ['2026-11-16T06:00:00.000Z', '2026-11-16T18:30:00.000Z'])
+  assert.deepEqual(tramo('mediodia'), ['2026-11-16T18:30:00.000Z', '2026-11-16T22:00:00.000Z'])
+  assert.deepEqual(tramo('tarde'), ['2026-11-16T22:00:00.000Z', '2026-11-17T06:00:00.000Z'])
+  for (const t of ORDEN_TURNOS) {
+    const { desde, hasta } = tramoDeTurno(cr(10), t)
+    assert.equal(turnoDe(desde), t, t)
+    assert.equal(turnoDe(new Date(hasta.getTime() - 60_000)), t, t)
+  }
 })

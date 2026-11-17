@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { estadoDe, numerosDe, paraTi, proximos, armarSnapshot, semanaDe, chatVisible, corteDormida, visitasDelDia } from './estado.ts'
+import { estadoDe, numerosDe, paraTi, proximos, armarSnapshot, semanaDe, chatVisible, corteDormida, visitasDelDia, lineaParaLaPagina } from './estado.ts'
 import type { Agente, Marca, TipoMarca, EstadoOficina, FilaSemana, LineaTertulia } from './tipos.ts'
 
 const AHORA = new Date('2026-11-15T20:00:00Z')
@@ -241,4 +241,25 @@ test('armarSnapshot manda las visitas de hoy (de los Knox del catálogo) aunque 
   }, AHORA)
   assert.deepEqual(s.chat, [])
   assert.deepEqual(s.visitas.map((l) => l.id), ['v1', 'v2'])
+})
+
+test('el chat de la foto nunca lleva rincon «visita» (una página vieja se caía con él): va null, con su «donde» y su hilo', () => {
+  const s = armarSnapshot({
+    ...base, agentes: [agente(), agente({ id: 'lynx', nombre: 'Lynx' })], marcas: [], entregas: [],
+    tertulia: [
+      deVisita('v1', 'ana', 'lynx', hace(3)),
+      deVisita('v2', 'lynx', 'ana', hace(2)),
+      linea('c1', 'ana', hace(1), { para: 'lynx', rincon: 'cafe', hilo: 'h9' }),
+      linea('s1', 'lynx', hace(1)),
+    ],
+  }, AHORA)
+  assert.equal(s.chat.length, 4)
+  // lo que cualquier página, también la de antes, sabe leer
+  for (const l of s.chat) assert.ok(l.rincon === null || l.rincon === 'cafe' || l.rincon === 'platica', JSON.stringify(l))
+  const v1 = s.chat.find((l) => l.id === 'v1')!
+  assert.deepEqual([v1.rincon, v1.donde, v1.hilo], [null, 'lynx', 'h1'])
+  assert.equal(s.chat.find((l) => l.id === 'c1')!.rincon, 'cafe')
+  // quién está de visita sale de `visitas`, con el rincón de verdad
+  assert.deepEqual(s.visitas.map((l) => [l.id, l.rincon, l.donde]), [['v1', 'visita', 'lynx'], ['v2', 'visita', 'lynx']])
+  assert.deepEqual(lineaParaLaPagina(linea('x', 'ana', hace(1), { rincon: 'platica' })).rincon, 'platica')
 })

@@ -12,7 +12,8 @@ export type LineaChat = {
   cuando: string // ISO
   tipo: 'marca' | 'tertulia' | 'sueno'
   idea_id: string | null
-  // dónde se dijo (solo en la tertulia): el café, la plática de la sala o de visita en la oficina de `donde`
+  // dónde se dijo (solo en la tertulia): el café, la plática de la sala o, con `donde`, de visita en la oficina de ese
+  // Knox (en la página, las líneas de una visita llegan con rincon null y su `donde`)
   rincon: RinconChat | null
   donde: string | null
 }
@@ -51,12 +52,11 @@ export function lineasDelChat(marcas: Marca[], tertulia: LineaTertulia[], ahora:
   return [...deMarcas, ...deTertulia, ...suenos].sort((a, b) => ms(a.cuando) - ms(b.cuando)).slice(-CHAT_MAX)
 }
 
-// Dónde fue, discreto, al lado de quién habla: «en el café», «en la sala» o «en la oficina de Lynx» (null: sin lugar)
+// Dónde fue, discreto, al lado de quién habla: «en la oficina de Lynx» (si trae `donde`), «en el café» o «en la sala»
+// (null: sin lugar)
 export function dondeLinea(l: Pick<LineaChat, 'rincon' | 'donde'>, nombreDe: (id: string) => string): string | null {
-  switch (l.rincon) {
-    case 'cafe': return 'en el café'
-    case 'platica': return 'en la sala'
-    case 'visita': return l.donde ? `en la oficina de ${nombreDe(l.donde)}` : null
-    default: return null
-  }
+  if (l.donde) return `en la oficina de ${nombreDe(l.donde)}`
+  if (l.rincon === 'cafe') return 'en el café'
+  if (l.rincon === 'platica') return 'en la sala'
+  return null
 }

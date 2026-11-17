@@ -1,7 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  validarRonda, problemaDeTexto, cortar, repartir, finDeRonda, horasDelChat, intercalar, pausaAntes, TOPES, type CtxValidar, type RondaLimpia,
+  validarRonda, problemaDeTexto, cortar, repartir, finDeRonda, horasDelChat, intercalar, pausaAntes, aDeay, normalizarDonde, TOPES,
+  type CtxValidar, type RondaLimpia,
 } from './validar.ts'
 import { horaCR } from './horario.ts'
 
@@ -254,12 +255,15 @@ test('topes por ronda: 30 líneas, 4 comentarios, 1 idea', () => {
   assert.equal(r.chat[0].idea, null)
 })
 
-test('topes por ronda: 1 publicación, y la escena ocupa su lugar', () => {
+test('topes por ronda: 1 publicación; la escena del mediodía va aparte y no le quita su lugar', () => {
   const tres = ok(ronda({ posts: [1, 2, 3].map(n => post(n)), escena: escena(), comentarios: [com(1, { post: 'p3' }), com(2, { post: 'p1' })] }))
   assert.deepEqual(tres.posts.map(p => p.clave), ['p1'])
-  assert.equal(tres.escena, null)
+  assert.equal(tres.escena?.titulo, 'Cafecito')
   assert.deepEqual(tres.comentarios.map(c => c.clave), ['c2'])
-  assert.deepEqual(tres.botadas, ['post p2: pasa del tope', 'post p3: pasa del tope', 'escena: no hay lugar entre las publicaciones'])
+  assert.deepEqual(tres.botadas, ['post p2: pasa del tope', 'post p3: pasa del tope'])
+  // una publicación y una escena van las dos
+  const las2 = ok(ronda({ posts: [post(1)], escena: escena() }))
+  assert.deepEqual([las2.posts.length, !!las2.escena, las2.botadas.length], [1, true, 0])
   const sola = ok(ronda({ escena: escena() }))
   assert.equal(sola.posts.length, 0)
   assert.ok(sola.escena)
@@ -504,4 +508,44 @@ test('horasDelChat: la que no puede salir antes de una hora va al primer hueco d
   assert.deepEqual(dos, [h(60), h(61), h(75)])
   // si ya le tocaba después, se queda donde estaba
   assert.deepEqual(horasDelChat([{ dura: 0, desde: h(5) }, { dura: 0 }], 0, h(100)), [h(25), h(75)])
+})
+
+// ---------- arreglos: «deay» y dónde ----------
+
+test('aDeay: «diay» sin importar mayúsculas ni tildes, con el mismo estilo de mayúsculas, y sin tocar otras palabras', () => {
+  assert.equal(aDeay('diay'), 'deay')
+  assert.equal(aDeay('Diay, mae'), 'Deay, mae')
+  assert.equal(aDeay('¡DIAY!'), '¡DEAY!')
+  assert.equal(aDeay('Díay'), 'Deay')
+  assert.equal(aDeay('diáy, ya'), 'deay, ya')
+  assert.equal(aDeay('DÍAY MAE'), 'DEAY MAE')
+  assert.equal(aDeay('dIaY'), 'deay')
+  assert.equal(aDeay('di\u0301ay'), 'deay') // la tilde suelta (NFD)
+  assert.equal(aDeay('Diay y diay'), 'Deay y deay')
+  for (const t of ['mediaya', 'el prediay', 'diays', 'diay2', '2diay', 'Díaz', 'día', 'deay']) assert.equal(aDeay(t), t, t)
+})
+
+test('normalizarDonde: sin importar mayúsculas ni tildes, y «sala» es la plática', () => {
+  const casos: [unknown, string | null][] = [
+    ['cafe', 'cafe'], ['café', 'cafe'], ['Cafe', 'cafe'], ['CAFÉ', 'cafe'], [' café ', 'cafe'],
+    ['platica', 'platica'], ['plática', 'platica'], ['sala', 'platica'], ['Sala', 'platica'],
+    ['visita', 'visita'], ['Visita', 'visita'],
+    ['siesta', null], ['la sala', null], ['', null], [null, null], [3, null],
+  ]
+  for (const [x, esperado] of casos) assert.equal(normalizarDonde(x), esperado, String(x))
+})
+
+test('charlas: «café», «Cafe», «sala» o «plática» no botan la charla', () => {
+  for (const [donde, queda] of [['café', 'cafe'], ['Cafe', 'cafe'], ['sala', 'platica'], ['plática', 'platica'], ['Visita', 'visita']] as const) {
+    const r = ok(ronda({ charlas: [charla(2, { donde, visita_a: donde === 'Visita' ? 'beto' : null })] }))
+    assert.deepEqual(r.botadas, [], donde)
+    assert.equal(r.charlas[0].donde, queda, donde)
+  }
+})
+
+test('chat: el rincón de una suelta también: «café» es el café, «sala» la plática y una suelta nunca es de visita', () => {
+  const r = ok(ronda({
+    chat: [linea(1, { rincon: 'café' }), linea(2, { rincon: 'Sala' }), linea(3, { rincon: 'Plática' }), linea(4, { rincon: 'visita' }), linea(5, { rincon: 'siesta' })],
+  }))
+  assert.deepEqual(r.chat.map(l => [l.texto, l.rincon]), [['Linea 1', 'cafe'], ['Linea 2', 'platica'], ['Linea 3', 'platica'], ['Linea 4', null], ['Linea 5', null]])
 })

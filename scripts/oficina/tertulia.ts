@@ -1,6 +1,6 @@
 // Una ronda de la tertulia de la Oficina de Knox. El cron del servidor la corre tres veces al día, a las 8:30 a. m.,
-// 12:30 p. m. y 4:00 p. m. de Costa Rica: el turno (mañana, mediodía o tarde) sale de la hora, y un turno que ya salió
-// bien hoy no se repite.
+// 12:30 p. m. y 4:00 p. m. de Costa Rica: el turno (mañana, mediodía o tarde) sale de la hora. Un turno que ya salió
+// bien hoy no se repite; uno que falló o se saltó se puede volver a correr a mano si no dejó líneas guardadas.
 //   npm run oficina:tertulia                                  → la ronda de verdad (guarda y anota)
 //   npm run oficina:tertulia -- --probar                      → le pregunta a Claude y muestra lo limpio, sin guardar
 //   npm run oficina:tertulia -- --simular [--respuesta <archivo>] → muestra el pedido (y lo limpio, con una respuesta guardada); no llama a Claude ni guarda
@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fechaCR } from '../../lib/oficina/horario.ts'
 import { argsClaude, correrRonda, entornoClaude, type DepsRonda } from '../../lib/oficina/ronda.ts'
-import { anotarRonda, estadoOficina, guardarRonda, leerDatosRonda, rondaDe } from '../../lib/oficina/servidor.ts'
+import { anotarRonda, estadoOficina, guardarRonda, hayChatEntre, leerDatosRonda, rondaDe } from '../../lib/oficina/servidor.ts'
 import { TURNOS, turnoDe } from '../../lib/oficina/turnos.ts'
 
 const OCHO_MIN = 8 * 60_000
@@ -46,6 +46,7 @@ async function preguntarAClaude(pedido: string): Promise<string> {
 const deps: DepsRonda = {
   dormida: async () => (await estadoOficina()).dormida,
   rondaDe,
+  hayChat: hayChatEntre,
   leerDatos: leerDatosRonda,
   preguntar: preguntarAClaude,
   guardar: guardarRonda,

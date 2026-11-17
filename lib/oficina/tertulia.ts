@@ -179,7 +179,7 @@ const cuantos = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? un
 function reglasEscena(turno: Turno): string {
   if (turno !== 'mediodia') return '- En esta ronda no va escena (la foto del foro solo se propone en la del mediodía): devuelve "escena": null.'
   return `- La escena es una foto para el foro, de 1 a 4 Knox con «con_foto» en true: dónde están y qué hacen. Por ejemplo, un almuerzo en una soda, un rato en la playa, una vuelta en moto o un día de trabajo en la oficina. Si no hay buena escena, null.
-- La escena cuenta como la publicación de la ronda: si propones una, no escribas otra publicación.
+- La escena no cuenta como la publicación de la ronda: puede ir junto con ella.
 - Si «escena_esperando» es true, ya hay una foto esperando turno: devuelve "escena": null.`
 }
 

@@ -157,9 +157,10 @@ test('pedidoTertulia: dice qué tertulia es y pide seguir lo que ya se habló si
   assert.ok(p.includes('"ya_se_hablo":{'))
 })
 
-test('pedidoTertulia: la escena solo se ofrece en la ronda del mediodía, y cuenta como su publicación', () => {
+test('pedidoTertulia: la escena solo se ofrece en la ronda del mediodía, y no cuenta como su publicación', () => {
   const mediodia = pedidoTertulia(armarContexto(datos(), AHORA))
-  assert.ok(mediodia.includes('La escena cuenta como la publicación de la ronda'))
+  assert.ok(mediodia.includes('La escena no cuenta como la publicación de la ronda: puede ir junto con ella.'))
+  assert.ok(!mediodia.includes('no escribas otra publicación'))
   assert.ok(mediodia.includes('"escena":{"de":"id_agente"'))
   for (const ahora of [new Date('2026-11-16T14:30:00Z'), new Date('2026-11-16T22:00:00Z')]) {
     const p = pedidoTertulia(armarContexto(datos(), ahora))

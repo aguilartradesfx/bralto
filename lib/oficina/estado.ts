@@ -133,6 +133,13 @@ export function visitasDelDia(lineas: LineaTertulia[], ahora: Date, oficina: Est
     .map(({ id, de, para, rincon, donde, hilo, mostrar_desde }) => ({ id, de, para, rincon, donde, hilo, mostrar_desde }))
 }
 
+// Las líneas de una visita van al chat de la página con rincon null (con su «donde» y su hilo): una página de antes
+// (una pestaña abierta desde antes del cambio o la app de la Mac) no conoce el rincón 'visita' y su sala se caía con
+// él. Quién está de visita sale de `visitas`, que lleva el rincón de verdad.
+export function lineaParaLaPagina(l: LineaTertulia): LineaTertulia {
+  return l.rincon === 'visita' ? { ...l, rincon: null } : l
+}
+
 export function armarSnapshot(d: {
   agentes: Agente[]
   marcas: Marca[]
@@ -161,7 +168,7 @@ export function armarSnapshot(d: {
     marcas,
     paraTi: pendientes,
     proximos: proximos(d.agentes, d.pubs, ahora),
-    chat,
+    chat: chat.map(lineaParaLaPagina),
     escribiendo,
     pubs: d.pubs
       .filter((p) => t(p.publicar_en) > ahora.getTime())

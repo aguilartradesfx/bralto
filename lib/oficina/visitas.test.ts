@@ -75,11 +75,42 @@ test('una visita por visitante: la más nueva', () => {
   }
 })
 
-test('dos visitas a la vez de distintos visitantes, cada uno donde va', () => {
-  const r = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'krono', [0, 2])])
+test('dos visitas a la vez de distintos visitantes, cada uno donde va (también dos a la misma oficina)', () => {
+  const agentes = [...AGENTES, ag('zap')]
+  const r = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'zap', [0, 2])], { agentes })
   assert.deepEqual(Object.keys(r).sort(), ['krono', 'quark'])
   assert.equal(r.krono.anfitrion, 'lynx')
-  assert.equal(r.quark.anfitrion, 'krono')
+  assert.equal(r.quark.anfitrion, 'zap')
+  const misma = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'lynx', [0, 2])])
+  assert.deepEqual([misma.krono?.anfitrion, misma.quark?.anfitrion], ['lynx', 'lynx'])
+})
+
+test('no se ve la visita a quien anda en ese momento de visita en otra oficina', () => {
+  // Quark busca a Krono, pero Krono anda donde Lynx: solo se ve la de Krono
+  const r = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'krono', [0.5, 2])])
+  assert.deepEqual(Object.keys(r), ['krono'])
+  assert.equal(r.krono.anfitrion, 'lynx')
+  // cuando Krono vuelve (4 min después de su última línea), la de Quark ya se ve
+  const luego = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'krono', [3, 5])], { ahora: new Date(AHORA.getTime() + 5.5 * MIN) })
+  assert.deepEqual(Object.keys(luego), ['quark'])
+  // si Krono no está libre, su visita no se ve y él está en su oficina: la de Quark sí
+  const ocupado = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'krono', [0.5, 2])], {
+    agentes: [ag('krono', { estado: 'trabajando' }), ag('lynx'), ag('quark')],
+  })
+  assert.deepEqual(Object.keys(ocupado), ['quark'])
+})
+
+test('en una cadena, cada visita mira si su anfitrión está o no en su oficina', () => {
+  // Zap busca a Quark, Quark a Krono y Krono a Lynx: Krono va donde Lynx, Quark se queda (Krono no está) y Zap lo encuentra
+  const agentes = [...AGENTES, ag('zap')]
+  const r = repartir([...visita('h1', 'krono', 'lynx', [0, 1]), ...visita('h2', 'quark', 'krono', [0.2, 1]), ...visita('h3', 'zap', 'quark', [0.4, 1])], { agentes })
+  assert.deepEqual(Object.fromEntries(Object.entries(r).map(([id, v]) => [id, v.anfitrion])), { krono: 'lynx', zap: 'quark' })
+})
+
+test('si dos se visitan a la vez, se ve la más nueva', () => {
+  const r = repartir([...visita('h1', 'krono', 'lynx', [-2, -1]), ...visita('h2', 'lynx', 'krono', [0, 1])])
+  assert.deepEqual(Object.keys(r), ['lynx'])
+  assert.equal(r.lynx.anfitrion, 'krono')
 })
 
 test('el visitante sale de la charla aunque la primera línea sea del anfitrión, y las líneas que no son de visita no cuentan', () => {

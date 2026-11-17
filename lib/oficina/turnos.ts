@@ -35,3 +35,14 @@ export function finDeTurno(ahora: Date, turno: Turno): Date {
   const [h, m] = TURNOS[turno].hasta
   return aLaHoraCR(ahora, h, m)
 }
+
+// El tramo del día de Costa Rica que es de ese turno (el mismo de turnoDe): la mañana, de las 00:00 a las 12:30; el
+// mediodía, de 12:30 a 4:00 p. m.; la tarde, de 4:00 p. m. a medianoche. `hasta` no entra.
+export function tramoDeTurno(ahora: Date, turno: Turno): { desde: Date, hasta: Date } {
+  const i = ORDEN_TURNOS.indexOf(turno)
+  const sig = ORDEN_TURNOS[i + 1]
+  return {
+    desde: i === 0 ? aLaHoraCR(ahora, 0, 0) : aLaHoraCR(ahora, ...TURNOS[turno].corre),
+    hasta: sig ? aLaHoraCR(ahora, ...TURNOS[sig].corre) : aLaHoraCR(ahora, 24, 0),
+  }
+}

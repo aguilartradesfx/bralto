@@ -55,14 +55,16 @@ test('ahora, en la sala: «Tomándose un café con Quark» o «En siesta hasta l
   assert.equal(ahoraFicha(ag('drax', { horario: '0 1 * * *' }), base({ lugar: siesta })), 'En siesta hasta las 4:00 p. m.')
 })
 
-test('ahora, de visita: «De visita en la oficina de Lynx» mientras dure (gana a la sala; lo que tiene en marcha y dormida, no)', () => {
+test('ahora, de visita: «De visita en la oficina de Lynx» mientras dure (gana a lo que te dejó y a la sala; dormida, no)', () => {
   const nombres = (id: string) => ({ lynx: 'Lynx', quark: 'Quark' })[id] ?? id
   const visita = { anfitrion: 'lynx' }
   assert.equal(ahoraFicha(ag('krono', { horario: '0 15 * * 0' }), base({ visita, nombreDe: nombres })), 'De visita en la oficina de Lynx')
   assert.equal(ahoraFicha(ag('krono', { estado: 'pedido', estado_fijo: 'pedido' }), base({ visita, nombreDe: nombres })), 'De visita en la oficina de Lynx')
   assert.equal(ahoraFicha(ag('krono'), base({ visita, lugar: sala({ con: 'quark', por: 'tertulia' }), nombreDe: nombres })), 'De visita en la oficina de Lynx')
+  // aunque te haya dejado algo (está «listo»), mientras dura la visita dice dónde anda
   const entrega = mk('krono', 'entrega', '2026-11-16T15:50:00Z', { texto: '2 guiones' })
-  assert.equal(ahoraFicha(ag('krono', { estado: 'listo' }), base({ visita, paraTi: [entrega], nombreDe: nombres })), 'Te dejó: 2 guiones')
+  assert.equal(ahoraFicha(ag('krono', { estado: 'listo' }), base({ visita, paraTi: [entrega], nombreDe: nombres })), 'De visita en la oficina de Lynx')
+  assert.equal(ahoraFicha(ag('krono', { estado: 'listo' }), base({ paraTi: [entrega], nombreDe: nombres })), 'Te dejó: 2 guiones')
   assert.equal(ahoraFicha(ag('krono'), base({ visita, dormida: true, nombreDe: nombres })), 'Duerme en su escritorio')
   // sin visita, lo de siempre
   assert.equal(ahoraFicha(ag('krono'), base({ visita: null })), 'Descansa hasta que le llegue trabajo')

@@ -17,7 +17,9 @@ const ms = (iso: string) => new Date(iso).getTime()
 // Quién está de visita y en qué oficina, ahora: desde 1 minuto antes de la primera línea del hilo hasta 4 minutos
 // después de la última. Solo si la oficina no duerme, el anfitrión existe y el visitante está libre con la regla de la
 // sala (descansa, te dejó algo o espera que le pidas algo, y no trabaja en los próximos 10 min). Una visita por
-// visitante: la más nueva.
+// visitante: la más nueva. Y no se ve si en ese momento su anfitrión anda de visita en otra oficina (si la visita del
+// anfitrión tampoco se ve, él está en su escritorio y la que lo busca sí se ve); si dos se visitan a la vez, gana la
+// más nueva.
 export function repartirVisitas(d: { lineas: LineaVisita[], agentes: AgenteSnap[], ahora: Date, dormida: boolean }): Record<string, Visita> {
   const visitas: Record<string, Visita> = {}
   if (d.dormida) return visitas
@@ -39,16 +41,36 @@ export function repartirVisitas(d: { lineas: LineaVisita[], agentes: AgenteSnap[
     hilos.set(l.hilo, { anfitrion: l.donde, visitante, primera: t, ultima: t })
   }
   const ahoraMs = d.ahora.getTime()
-  const elegida = new Map<string, { hilo: string, primera: number }>()
+  const candidatas = new Map<string, { anfitrion: string, hilo: string, primera: number, desde: number, hasta: number }>()
   for (const [hilo, h] of hilos) {
     const desde = h.primera - ANTES_MIN * MIN, hasta = h.ultima + DESPUES_MIN * MIN
     if (ahoraMs < desde || ahoraMs >= hasta) continue
     const quien = porId.get(h.visitante)
     if (!quien || !porId.has(h.anfitrion) || !libreParaSala(quien, d.ahora)) continue
-    const antes = elegida.get(h.visitante)
+    const antes = candidatas.get(h.visitante)
     if (antes && (antes.primera > h.primera || (antes.primera === h.primera && antes.hilo > hilo))) continue
-    elegida.set(h.visitante, { hilo, primera: h.primera })
-    visitas[h.visitante] = { anfitrion: h.anfitrion, hilo, desde: new Date(desde).toISOString(), hasta: new Date(hasta).toISOString() }
+    candidatas.set(h.visitante, { anfitrion: h.anfitrion, hilo, primera: h.primera, desde, hasta })
+  }
+
+  // Una se ve si su anfitrión no anda fuera (en una visita suya que sí se ve). Se mira de la más nueva a la más vieja:
+  // en una vuelta (dos que se visitan a la vez), la primera que se miró se ve.
+  const seVe = new Map<string, boolean>()
+  const mirando = new Set<string>()
+  const decidir = (visitante: string): boolean => {
+    const ya = seVe.get(visitante)
+    if (ya !== undefined) return ya
+    if (mirando.has(visitante)) return true
+    mirando.add(visitante)
+    const { anfitrion } = candidatas.get(visitante)!
+    const si = !(candidatas.has(anfitrion) && decidir(anfitrion))
+    mirando.delete(visitante)
+    seVe.set(visitante, si)
+    return si
+  }
+  const orden = [...candidatas].sort(([, x], [, y]) => y.primera - x.primera || (x.hilo < y.hilo ? -1 : x.hilo > y.hilo ? 1 : 0))
+  for (const [visitante, v] of orden) {
+    if (!decidir(visitante)) continue
+    visitas[visitante] = { anfitrion: v.anfitrion, hilo: v.hilo, desde: new Date(v.desde).toISOString(), hasta: new Date(v.hasta).toISOString() }
   }
   return visitas
 }

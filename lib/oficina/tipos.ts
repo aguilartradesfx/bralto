@@ -96,7 +96,7 @@ export type Snapshot = {
   marcas: Marca[]
   paraTi: Marca[]
   proximos: Proximo[]
-  chat: LineaTertulia[] // la tertulia de hoy que ya salió
+  chat: LineaTertulia[] // la tertulia de hoy que ya salió (las líneas de una visita, con rincon null y su «donde»)
   escribiendo: string | null // quién dice la próxima línea, si sale en 3 min o menos
   pubs: Pub[] // las 10 próximas publicaciones programadas
   // las líneas de las visitas de hoy, también las que salen más tarde, sin su texto: la maqueta lleva al visitante a la

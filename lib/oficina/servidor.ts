@@ -370,6 +370,15 @@ export async function leerDatosRonda(ahora: Date): Promise<DatosRonda> {
   }
 }
 
+// ¿Ya hay líneas de la tertulia guardadas entre `desde` (entra) y `hasta` (no entra)? Para no repetir una ronda que se
+// guardó pero no alcanzó a anotarse
+export async function hayChatEntre(desde: Date, hasta: Date): Promise<boolean> {
+  const { count, error } = await db().from('oficina_chat').select('id', { count: 'exact', head: true })
+    .gte('mostrar_desde', desde.toISOString()).lt('mostrar_desde', hasta.toISOString())
+  if (error) throw new Error(`oficina_chat: ${error.message}`)
+  return (count ?? 0) > 0
+}
+
 // La ronda de ese turno de ese día (una por turno)
 export async function rondaDe(fecha: string, turno: Turno): Promise<Ronda | null> {
   const f = ok<Ronda>('oficina_rondas', await db().from('oficina_rondas').select('fecha,turno,resultado,detalle').eq('fecha', fecha).eq('turno', turno).maybeSingle())

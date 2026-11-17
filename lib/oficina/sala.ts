@@ -53,16 +53,18 @@ function encuentros(lineas: LineaTertulia[], ahoraMs: number, ids: Set<string>):
   const porClave = new Map<string, Encuentro & { primera: number }>()
   for (const l of lineas) {
     const t = ms(l.mostrar_desde)
-    if (l.rincon !== 'cafe' && l.rincon !== 'platica' && l.rincon !== 'visita') continue
+    // a la página, las líneas de una visita le llegan con rincon null y su «donde» (el anfitrión)
+    const rincon = l.rincon ?? (l.donde ? 'visita' : null)
+    if (rincon !== 'cafe' && rincon !== 'platica' && rincon !== 'visita') continue
     if (!(t <= ahoraMs)) continue
     const clave = l.hilo ? `h:${l.hilo}` : `l:${l.id}`
     const grupo = l.para && l.para !== l.de && ids.has(l.para) ? [l.de, l.para] : [l.de]
     const e = porClave.get(clave)
-    if (!e) porClave.set(clave, { clave, rincon: l.rincon, grupo, ultima: t, primera: t })
+    if (!e) porClave.set(clave, { clave, rincon, grupo, ultima: t, primera: t })
     else {
       e.ultima = Math.max(e.ultima, t)
       // el que abrió la charla queda primero: así nadie cambia de sitio con cada línea
-      if (t < e.primera) { e.primera = t; e.grupo = grupo; e.rincon = l.rincon }
+      if (t < e.primera) { e.primera = t; e.grupo = grupo; e.rincon = rincon }
     }
   }
   return [...porClave.values()].map(({ primera: _, ...e }) => e)

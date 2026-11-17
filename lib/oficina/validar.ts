@@ -108,9 +108,23 @@ export function taparClientes(t: string, prohibidos: string[]): string {
   return salida + chars.slice(pos).join('')
 }
 
-// «diay» se escribe «deay»: se cambia la palabra entera, conservando la mayúscula inicial.
-const RE_DIAY = /(?<![\p{L}\p{N}])([Dd])iay(?![\p{L}\p{N}])/gu
-export const aDeay = (t: string): string => t.replace(RE_DIAY, (_, d: string) => `${d}eay`)
+// «diay» se escribe «deay»: se cambia la palabra entera, sin importar mayúsculas ni tildes (DIAY, Díay, diáy…), con el
+// mismo estilo de mayúsculas que traía (DEAY, Deay o deay). Nunca toca otras palabras («mediaya», «prediay»).
+const RE_PALABRA = /(?<![\p{L}\p{M}\p{N}])[\p{L}\p{M}]+(?![\p{L}\p{M}\p{N}])/gu
+export const aDeay = (t: string): string => t.replace(RE_PALABRA, (p) => {
+  if (sinTildes(p) !== 'diay') return p
+  if (p === p.toUpperCase()) return 'DEAY'
+  return p[0] === p[0].toLowerCase() ? 'deay' : 'Deay'
+})
+
+// El rincón como lo guarda la base, sin importar mayúsculas ni tildes: «Café» → cafe, «plática» → platica, y «sala»
+// (la plática es la de la sala) → platica. null si no es ninguno.
+export function normalizarDonde(x: unknown): DondeCharla | null {
+  if (typeof x !== 'string') return null
+  const t = sinTildes(x).trim()
+  const d = t === 'sala' ? 'platica' : t
+  return DONDES.find(o => o === d) ?? null
+}
 
 // Devuelve el motivo si el texto no puede salir, o null si está bien.
 export function problemaDeTexto(t: string, prohibidos: string[]): string | null {
@@ -329,9 +343,10 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
     if (!cuerpo) return botar(que, 'sin texto')
     const mal = problema(cuerpo)
     if (mal) return botar(que, mal)
+    const rincon = normalizarDonde(x.rincon) // una suelta no es de visita: solo el café o la plática
     chat.push({
       que, de: x.de, para, texto: cortar(unaLinea(cuerpo), LARGOS.chat),
-      rincon: x.rincon === 'cafe' || x.rincon === 'platica' ? x.rincon : null,
+      rincon: rincon === 'cafe' || rincon === 'platica' ? rincon : null,
       idea: typeof x.idea === 'string' ? x.idea : null,
     })
   })
@@ -342,7 +357,7 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
   lista(crudo.charlas).forEach((x, i) => {
     const que = `charla ${i + 1}`
     if (!esObjeto(x)) return botar(que, 'no tiene la forma esperada')
-    const donde = DONDES.find(d => d === x.donde)
+    const donde = normalizarDonde(x.donde)
     if (!donde) return botar(que, 'no dice si es en el café, en la sala o de visita')
     const crudas = lista(x.lineas)
     if (crudas.length < LINEAS_CHARLA.min || crudas.length > LINEAS_CHARLA.max) {
@@ -386,12 +401,10 @@ export function validarRonda(crudo: unknown, ctx: CtxValidar): RondaLimpia | { e
   chat.slice(sueltas).forEach(l => botar(l.que, 'pasa del tope'))
   chat = chat.slice(0, sueltas)
 
-  // Las publicaciones (la escena ocupa un lugar entre ellas), los comentarios de las que quedan y después las ideas de
-  // lo que quedó
-  const lugares = TOPES.publicaciones
-  posts.slice(lugares).forEach(p => botar(`post ${p.clave}`, 'pasa del tope'))
-  posts = posts.slice(0, lugares)
-  if (escena && posts.length >= lugares) { botar('escena', 'no hay lugar entre las publicaciones'); escena = null }
+  // Las publicaciones, los comentarios de las que quedan y después las ideas de lo que quedó. La escena (solo en la
+  // ronda del mediodía) va aparte: no ocupa el lugar de la publicación; su tope es el de las fotos por semana.
+  posts.slice(TOPES.publicaciones).forEach(p => botar(`post ${p.clave}`, 'pasa del tope'))
+  posts = posts.slice(0, TOPES.publicaciones)
   comentarios = comentarios.filter(c => ctx.postsViejos.has(c.post) || posts.some(p => p.clave === c.post))
   comentarios.slice(TOPES.comentarios).forEach(c => botar(`comentario ${c.clave}`, 'pasa del tope'))
   comentarios = comentarios.slice(0, TOPES.comentarios)

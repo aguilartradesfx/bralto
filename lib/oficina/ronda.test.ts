@@ -28,10 +28,13 @@ const BUENA = JSON.stringify({
 })
 
 function falsas(extra: Partial<DepsRonda> = {}) {
-  const llamadas = { dormida: 0, rondaDe: [] as [string, Turno][], leerDatos: 0, preguntar: [] as string[], guardar: 0, anotar: [] as Ronda[] }
+  const llamadas = {
+    dormida: 0, rondaDe: [] as [string, Turno][], hayChat: [] as [string, string][], leerDatos: 0, preguntar: [] as string[], guardar: 0, anotar: [] as Ronda[],
+  }
   const deps: DepsRonda = {
     dormida: async () => { llamadas.dormida++; return false },
     rondaDe: async (fecha, turno) => { llamadas.rondaDe.push([fecha, turno]); return null },
+    hayChat: async (desde, hasta) => { llamadas.hayChat.push([desde.toISOString(), hasta.toISOString()]); return false },
     leerDatos: async () => { llamadas.leerDatos++; return DATOS },
     preguntar: async (pedido) => { llamadas.preguntar.push(pedido); return BUENA },
     guardar: async (_l: RondaLimpia) => { llamadas.guardar++ },
@@ -85,14 +88,48 @@ test('otro turno de hoy que ya salió no frena este', async () => {
   assert.equal(llamadas.guardar, 1)
 })
 
-test('un turno que falló o se saltó hoy se puede volver a correr', async () => {
+test('un turno que falló o se saltó hoy se puede volver a correr si no dejó líneas guardadas', async () => {
   for (const resultado of ['falla', 'saltada'] as const) {
     const { deps, llamadas } = falsas({ rondaDe: async (fecha, turno) => ({ fecha, turno, resultado, detalle: 'x' }) })
     const r = await correrRonda(deps, AHORA, { modo: 'real' })
     assert.equal(r.resultado, 'ok', resultado)
     assert.equal(llamadas.guardar, 1, resultado)
     assert.deepEqual(llamadas.anotar.map((a) => [a.turno, a.resultado]), [['mediodia', 'ok']], resultado)
+    // mira las líneas del tramo del mediodía de hoy: de 12:30 a 4:00 p. m.
+    assert.deepEqual(llamadas.hayChat, [['2026-11-16T18:30:00.000Z', '2026-11-16T22:00:00.000Z']], resultado)
   }
+})
+
+test('un turno que falló o se saltó pero ya dejó líneas guardadas no se repite: queda saltada, con el motivo', async () => {
+  for (const resultado of ['falla', 'saltada'] as const) {
+    const { deps, llamadas } = falsas({
+      rondaDe: async (fecha, turno) => ({ fecha, turno, resultado, detalle: 'Claude tardó más de 8 minutos' }),
+      hayChat: async () => true,
+    })
+    const r = await correrRonda(deps, AHORA, { modo: 'real' })
+    assert.equal(r.resultado, 'saltada', resultado)
+    assert.deepEqual(llamadas.anotar, [{
+      fecha: '2026-11-16', turno: 'mediodia', resultado: 'saltada',
+      detalle: 'Ya había líneas de la tertulia del mediodía guardadas: no se vuelve a correr para no repetirla',
+    }], resultado)
+    assert.deepEqual([llamadas.leerDatos, llamadas.preguntar.length, llamadas.guardar], [0, 0, 0], resultado)
+  }
+})
+
+test('sin ronda anotada de ese turno, ni se miran las líneas guardadas', async () => {
+  const { deps, llamadas } = falsas({ hayChat: async () => { throw new Error('no debía preguntar') } })
+  const r = await correrRonda(deps, AHORA, { modo: 'real' })
+  assert.equal(r.resultado, 'ok')
+})
+
+test('las líneas que se miran son las del tramo de ese turno: la mañana desde la medianoche y la tarde hasta la medianoche', async () => {
+  const falla = async (fecha: string, turno: Turno): Promise<Ronda> => ({ fecha, turno, resultado: 'falla', detalle: 'x' })
+  const manana = falsas({ rondaDe: falla })
+  await correrRonda(manana.deps, new Date('2026-11-16T14:30:00Z'), { modo: 'real' })
+  assert.deepEqual(manana.llamadas.hayChat, [['2026-11-16T06:00:00.000Z', '2026-11-16T18:30:00.000Z']])
+  const tarde = falsas({ rondaDe: falla })
+  await correrRonda(tarde.deps, new Date('2026-11-16T22:00:00Z'), { modo: 'real' })
+  assert.deepEqual(tarde.llamadas.hayChat, [['2026-11-16T22:00:00.000Z', '2026-11-17T06:00:00.000Z']])
 })
 
 test('dormida: anota saltada y no pregunta', async () => {

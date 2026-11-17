@@ -1,15 +1,18 @@
 // Una ronda de la tertulia (hay tres al día: mañana, mediodía y tarde; el turno sale de la hora): lee los datos, le
-// pide el JSON a Claude, lo limpia, lo guarda y anota cómo salió. Un turno que ya salió bien hoy no se repite.
+// pide el JSON a Claude, lo limpia, lo guarda y anota cómo salió. Un turno que ya salió bien hoy no se repite, y uno
+// que falló o se saltó tampoco si ya dejó líneas guardadas.
 // Las dependencias entran por parámetro: aquí no se toca la base ni se lanza Claude (eso va en servidor.ts y tertulia.ts del script).
 import { fechaCR, horaDecimalCR } from './horario.ts'
 import type { Ronda, Turno } from './tipos.ts'
 import { armarContexto, ctxValidar, leerRespuesta, pedidoTertulia, type DatosRonda } from './tertulia.ts'
-import { TURNOS, turnoDe } from './turnos.ts'
+import { TURNOS, tramoDeTurno, turnoDe } from './turnos.ts'
 import { validarRonda, type RondaLimpia } from './validar.ts'
 
 export type DepsRonda = {
   dormida(): Promise<boolean>
   rondaDe(fecha: string, turno: Turno): Promise<Ronda | null>
+  // ¿Hay líneas de la tertulia guardadas entre `desde` (entra) y `hasta` (no entra)?
+  hayChat(desde: Date, hasta: Date): Promise<boolean>
   leerDatos(ahora: Date): Promise<DatosRonda>
   preguntar(pedido: string): Promise<string>
   guardar(l: RondaLimpia, ahora: Date): Promise<void>
@@ -61,8 +64,17 @@ export async function correrRonda(deps: DepsRonda, ahora: Date, op: OpRonda): Pr
 
   if (real) {
     if (!puedeCorrer(ahora)) return { resultado: 'nada', turno, detalle: 'Fuera de hora' }
-    // Si ya salió bien, correrla otra vez no duplica nada; una que falló o se saltó se puede volver a correr a mano
-    if ((await deps.rondaDe(fecha, turno))?.resultado === 'ok') return { resultado: 'nada', turno, detalle: `Ya hubo tertulia ${TURNOS[turno].de} hoy` }
+    // Si ya salió bien, correrla otra vez no duplica nada
+    const previa = await deps.rondaDe(fecha, turno)
+    if (previa?.resultado === 'ok') return { resultado: 'nada', turno, detalle: `Ya hubo tertulia ${TURNOS[turno].de} hoy` }
+    // Una que falló o se saltó se puede volver a correr a mano, salvo que ya haya líneas suyas guardadas (la cortaron
+    // después de guardar y antes de anotarse): correrla otra vez la repetiría
+    if (previa) {
+      const { desde, hasta } = tramoDeTurno(ahora, turno)
+      if (await deps.hayChat(desde, hasta)) {
+        return anotar('saltada', `Ya había líneas de la tertulia ${TURNOS[turno].de} guardadas: no se vuelve a correr para no repetirla`)
+      }
+    }
     if (await deps.dormida()) return anotar('saltada', 'La oficina dormía')
   }
 
