@@ -7,15 +7,17 @@ import { resumenBandeja } from '@/lib/crm/bandeja/servidor'
 import { esperando } from '@/lib/knox/centro/servidor'
 import { conTope, memo, MIN, olvidar } from '@/lib/knox/centro/memoria'
 import { corteDormida } from '@/lib/oficina/estado'
-import { aLaHoraCR } from '@/lib/oficina/horario'
+import { aLaHoraCR, fechaCR } from '@/lib/oficina/horario'
 import { firmarFotos, leerOficina, leerSocialCrudo } from '@/lib/oficina/servidor'
 import { armarSocial, firmaSocial } from '@/lib/oficina/social'
-import { filasTeToca, type CuentaTeToca } from '@/lib/oficina/te-toca'
+import { desdeGuiones, filasTeToca, type CuentaTeToca, type GuionTeToca } from '@/lib/oficina/te-toca'
 import type { EstadoOficina, FilaTeToca, RespuestaOficina } from '@/lib/oficina/tipos'
 
 const DIA = 24 * 60 * MIN
 const CLAVE_TE_TOCA = 'oficina:te-toca'
 const CLAVE_SOCIAL = 'oficina:social'
+// Guiones «Por grabar» que caben en «Te toca» (uno por día, más el de mañana)
+const GUIONES_TE_TOCA = 5
 
 const db = () => createServiceClient()
 const mensaje = (e: unknown) => (e instanceof Error ? e.message : String(e))
@@ -55,18 +57,20 @@ export const FUENTES_TE_TOCA: ((oficina: Promise<EstadoOficina>) => Promise<Cuen
     const n = await contar('lab_ideas', db().from('lab_ideas').select('id', { count: 'exact', head: true }).eq('decision', 'yo').is('grabada_en', null))
     return { clave: 'grabar', n }
   },
-  // Guiones que escribió la noche para grabar a cámara y todavía no tienen video: cuántos son y el más nuevo
+  // Guiones de la noche para grabar a cámara que todavía no tienen video, de hace 2 días en adelante: uno por fila
   async () => {
-    const { data, count, error } = await db()
+    const hoy = fechaCR(new Date())
+    const { data, error } = await db()
       .from('redes_guiones')
-      .select('id, titulo', { count: 'exact' })
+      .select('id, titulo, dia')
       .eq('estado', 'listo')
+      .gte('dia', desdeGuiones(hoy))
       .order('dia', { ascending: false })
       .order('creado_en', { ascending: false })
-      .limit(1)
+      .limit(GUIONES_TE_TOCA)
     if (error) throw new Error(`redes_guiones: ${error.message}`)
-    const g = data?.[0] as { id: string, titulo: string } | undefined
-    return g ? { clave: 'guiones', n: count ?? 1, id: g.id, titulo: g.titulo } : { clave: 'guiones', n: 0, id: '', titulo: '' }
+    const guiones = (data ?? []) as GuionTeToca[]
+    return { clave: 'guiones', n: guiones.length, hoy, guiones }
   },
   // Ideas nuevas del equipo que ya se ven: con la oficina dormida, solo las de antes de dormirse (el corte del chat y del foro)
   async (oficina) => {

@@ -180,7 +180,7 @@ export type Foto = { id: string, tipo: 'retrato' | 'grupo', agentes: string[], u
 export type Ronda = { fecha: string, turno: Turno, resultado: 'ok' | 'falla' | 'saltada', detalle: string }
 
 export type FilaTeToca = {
-  clave: 'mensajes' | 'tareas' | 'grabar' | 'guiones' | 'ideas'
+  clave: 'mensajes' | 'tareas' | 'grabar' | 'ideas' | `guion:${string}`
   n: number
   texto: string
   sub: string
