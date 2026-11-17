@@ -17,6 +17,11 @@ create table if not exists public.redes_guiones (
   estado text not null default 'listo'
     check (estado in ('listo', 'subido', 'editando', 'programado', 'error', 'descartado')),
   videos jsonb not null default '[]'::jsonb check (jsonb_typeof(videos) = 'array'),   -- [{ ruta, nombre, bytes, subido_en }], ruta adentro de «crudos»
+  -- Las subidas pedidas que todavía no avisaron que terminaron: [{ ruta, pedido_en }]. Se suman al pedir la URL firmada
+  -- y se quitan al registrar el video o al cancelar (escrituras condicionales sobre actualizado_en).
+  -- Contrato con el editor del servidor: solo toma un guion en «subido» si `pendientes` no tiene ninguna entrada de menos
+  -- de 2 horas (lo que vale la URL firmada; las más viejas no cuentan) y si `subido_en` tiene más de 15 minutos.
+  pendientes jsonb not null default '[]'::jsonb check (jsonb_typeof(pendientes) = 'array'),
   carpeta text,                                 -- la carpeta del guion en el servidor
   detalle text,                                 -- por qué falló, o una nota
   grabado_en timestamptz,

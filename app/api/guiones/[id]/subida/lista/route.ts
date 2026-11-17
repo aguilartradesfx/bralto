@@ -3,7 +3,8 @@ import { requireApiPermission } from '@/lib/panel-session'
 import { registrarSubida } from '@/lib/guiones/servidor'
 import { esId } from '@/lib/guiones/vista'
 
-// El video ya subió: { ruta } → se revisa que esté en el bucket, se suma a `videos` y el guion queda «Subido»
+// El video ya subió: { ruta } → se revisa que esté en el bucket, se suma a `videos`, sale de pendientes y el guion
+// queda «Subido». Si el archivo no llegó, responde con `codigo: 'no_esta'` (la página entonces lo vuelve a subir).
 export const runtime = 'nodejs'
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -18,7 +19,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   try {
     const r = await registrarSubida(id, ruta)
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status })
+    if (!r.ok) return NextResponse.json({ error: r.error, ...(r.codigo ? { codigo: r.codigo } : {}) }, { status: r.status })
     return NextResponse.json({ ok: true, estado: r.estado, videos: r.videos })
   } catch (err) {
     console.error('[guiones] subida lista', err instanceof Error ? err.message : err)

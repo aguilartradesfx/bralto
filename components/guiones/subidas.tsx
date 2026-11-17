@@ -3,24 +3,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Check, RotateCcw, X } from 'lucide-react'
-import { avanceLegible, EN_CURSO, errorDeSubida, revisarArchivo, SE_CORTO, type Fase, type TipoVideo } from '@/lib/guiones/subida'
+import { avanceLegible, comoReintentar, EN_CURSO, errorDeSubida, revisarArchivo, SE_CORTO, type Fase, type TipoVideo } from '@/lib/guiones/subida'
 import { tamanoLegible } from '@/lib/guiones/vista'
 import { Boton, ICONO } from '@/components/crm/piezas'
 import { usarPantallaPrendida } from './pantalla-prendida'
 
-// Las subidas de videos desde el teléfono. Cada archivo: pide la URL firmada (POST /api/guiones/<id>/subida), sube el
-// archivo con XHR directo a Supabase Storage (el progreso de verdad) y avisa que terminó (POST …/subida/lista).
-// «Reintentar» vuelve a pedir desde cero. Mientras sube, la pantalla no se apaga y cerrar la página pide confirmar.
+// Las subidas de videos desde el teléfono. Cada archivo: pide la URL firmada (POST /api/guiones/<id>/subida; el servidor
+// lo anota como pendiente y no edita el guion mientras tanto), sube el archivo con XHR directo a Supabase Storage (el
+// avance de verdad) y avisa que terminó (POST …/subida/lista). «Reintentar» hace solo lo que falta (lib/guiones/subida.ts:
+// comoReintentar); «Cancelar» y «Quitar» le avisan al servidor que ya no la espere. Mientras sube, la pantalla no se
+// apaga y cerrar la página pide confirmar.
 
-export type Subida = { clave: string; guion: string; nombre: string; bytes: number; fase: Fase; progreso: number; error: string | null; invalida: boolean }
+// `yaSubio`: el PUT llegó a Storage (si algo falló después, «Reintentar» solo avisa)
+export type Subida = { clave: string; guion: string; nombre: string; bytes: number; fase: Fase; progreso: number; error: string | null; invalida: boolean; yaSubio: boolean }
 
-type Interna = Subida & { archivo: File; tipo: TipoVideo | null; xhr: XMLHttpRequest | null; cancelada: boolean; avisada: boolean }
+type Interna = Subida & { archivo: File; tipo: TipoVideo | null; ruta: string | null; xhr: XMLHttpRequest | null; cancelada: boolean; avisada: boolean }
 
 const A_LA_VEZ = 3
 const PINTAR_CADA_MS = 200
 const SIN_SESION = 'Se cerró tu sesión. Vuelve a entrar al panel y toca «Reintentar».'
 
 const enCurso = (s: Pick<Subida, 'fase'>) => EN_CURSO.includes(s.fase)
+
+type FallaApi = Error & { codigo?: string }
 
 async function pedir<T>(url: string, body: unknown): Promise<T> {
   let res: Response
@@ -30,9 +35,24 @@ async function pedir<T>(url: string, body: unknown): Promise<T> {
     throw new Error(SE_CORTO)
   }
   if (res.status === 401) throw new Error(SIN_SESION)
-  const data = (await res.json().catch(() => null)) as (T & { error?: unknown }) | null
-  if (!res.ok || !data) throw new Error(typeof data?.error === 'string' ? data.error : 'No se pudo. Toca «Reintentar».')
+  const data = (await res.json().catch(() => null)) as (T & { error?: unknown; codigo?: unknown }) | null
+  if (!res.ok || !data) {
+    const e: FallaApi = new Error(typeof data?.error === 'string' ? data.error : 'No se pudo. Toca «Reintentar».')
+    if (typeof data?.codigo === 'string') e.codigo = data.codigo
+    throw e
+  }
   return data
+}
+
+// Que el servidor ya no espere esa subida (y borre el archivo si alcanzó a llegar sin anotarse). Si falla, la
+// pendiente vence sola a las 2 horas.
+function soltarEnServidor(guion: string, ruta: string) {
+  void fetch(`/api/guiones/${guion}/subida/cancelar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ruta }),
+    keepalive: true,
+  }).catch(() => {})
 }
 
 export function usarSubidas({ alTerminar }: { alTerminar(guion: string): void }) {
@@ -97,19 +117,42 @@ export function usarSubidas({ alTerminar }: { alTerminar(guion: string): void })
 
   const correr = useCallback(
     async (it: Interna) => {
-      cambiar(it, { fase: 'preparando', progreso: 0, error: null })
+      const avisar = (ruta: string) => pedir(`/api/guiones/${it.guion}/subida/lista`, { ruta })
       try {
+        const plan = comoReintentar({ ruta: it.ruta, subido: it.yaSubio })
+        let reemplaza: string | null = null
+        if (plan.paso === 'subir') reemplaza = plan.reemplaza
+        else {
+          cambiar(it, { fase: 'revisando', progreso: 1, error: null })
+          try {
+            await avisar(plan.ruta)
+            cambiar(it, { fase: 'lista' })
+            return
+          } catch (e) {
+            // Se cortó sin saber si llegó: si el servidor dice que no está, se vuelve a subir soltando esa ruta
+            if (plan.paso !== 'revisar' || (e as FallaApi).codigo !== 'no_esta') throw e
+            reemplaza = plan.ruta
+          }
+        }
+        cambiar(it, { fase: 'preparando', progreso: 0, error: null })
         const { ruta, url } = await pedir<{ ruta: string; url: string }>(`/api/guiones/${it.guion}/subida`, {
           nombre: it.archivo.name,
           bytes: it.archivo.size,
           tipo: it.tipo,
+          ...(reemplaza ? { reemplaza } : {}),
         })
-        if (it.cancelada) return
+        it.ruta = ruta
+        it.yaSubio = false
+        if (it.cancelada) {
+          soltarEnServidor(it.guion, ruta)
+          return
+        }
         cambiar(it, { fase: 'subiendo' })
         await subirArchivo(it, url)
+        it.yaSubio = true
         if (it.cancelada) return
         cambiar(it, { fase: 'revisando', progreso: 1 })
-        await pedir(`/api/guiones/${it.guion}/subida/lista`, { ruta })
+        await avisar(ruta)
         cambiar(it, { fase: 'lista' })
       } catch (e) {
         if (!it.cancelada) cambiar(it, { fase: 'error', error: e instanceof Error ? e.message : 'No se pudo subir' })
@@ -148,6 +191,8 @@ export function usarSubidas({ alTerminar }: { alTerminar(guion: string): void })
           progreso: 0,
           error: r.ok ? null : r.error,
           invalida: !r.ok,
+          yaSubio: false,
+          ruta: null,
           xhr: null,
           cancelada: false,
           avisada: false,
@@ -163,7 +208,7 @@ export function usarSubidas({ alTerminar }: { alTerminar(guion: string): void })
     (clave: string) => {
       const it = items.current.find((i) => i.clave === clave)
       if (!it || it.fase !== 'error' || it.invalida) return
-      cambiar(it, { fase: 'esperando', progreso: 0, error: null, cancelada: false, avisada: false })
+      cambiar(it, { fase: 'esperando', progreso: it.yaSubio ? 1 : 0, error: null, avisada: false })
       siguiente.current()
     },
     [cambiar],
@@ -172,9 +217,10 @@ export function usarSubidas({ alTerminar }: { alTerminar(guion: string): void })
   const quitar = useCallback(
     (clave: string) => {
       const it = items.current.find((i) => i.clave === clave)
-      if (!it || it.fase === 'revisando') return
+      if (!it || it.fase === 'revisando' || it.fase === 'lista') return
       it.cancelada = true
       it.xhr?.abort()
+      if (it.ruta) soltarEnServidor(it.guion, it.ruta)
       items.current = items.current.filter((i) => i !== it)
       repintar()
       revisarFin(it.guion)
@@ -205,7 +251,10 @@ export function usarSubidas({ alTerminar }: { alTerminar(guion: string): void })
     return () => window.removeEventListener('beforeunload', avisar)
   }, [activas])
 
-  const porGuion = (guion: string): Subida[] => items.current.filter((i) => i.guion === guion).map(({ archivo: _a, xhr: _x, cancelada: _c, avisada: _v, tipo: _t, ...s }) => s)
+  const porGuion = (guion: string): Subida[] =>
+    items.current
+      .filter((i) => i.guion === guion)
+      .map(({ archivo: _a, xhr: _x, cancelada: _c, avisada: _v, tipo: _t, ruta: _r, ...s }) => s)
 
   return { porGuion, subir, reintentar, quitar, limpiar, activas }
 }
@@ -234,7 +283,7 @@ export function ListaSubidas(p: { subidas: Subida[]; alReintentar(clave: string)
                 </p>
                 <p className={`flex shrink-0 items-center gap-1 text-[13px] tabular-nums ${s.fase === 'error' ? 'text-red-300' : s.fase === 'lista' ? 'text-fg' : 'text-fg/60'}`}>
                   {s.fase === 'lista' && <Check size={14} {...ICONO} />}
-                  {avanceLegible(s.fase, s.progreso)}
+                  {avanceLegible(s.fase, s.progreso, s.yaSubio)}
                 </p>
               </div>
               {enCurso(s) && (
@@ -269,6 +318,7 @@ export function ListaSubidas(p: { subidas: Subida[]; alReintentar(clave: string)
                   {s.error}
                 </p>
               )}
+              {s.fase === 'error' && s.yaSubio && <p className="mt-1 text-[13px] leading-snug text-fg/55">El video ya llegó: «Reintentar» solo le avisa al servidor.</p>}
               {s.fase === 'error' && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {!s.invalida && (
@@ -287,7 +337,9 @@ export function ListaSubidas(p: { subidas: Subida[]; alReintentar(clave: string)
           )
         })}
       </ul>
-      {subiendo && <p className="mt-4 text-[13px] text-fg/55">No cierres esta página hasta que termine.</p>}
+      {subiendo && (
+        <p className="mt-4 text-[13px] leading-snug text-fg/70">Deja esta página abierta mientras sube: en el iPhone, si te sales de Safari, la subida se puede detener.</p>
+      )}
       {todoListo && (
         <p role="status" className="mt-4 text-sm font-medium leading-snug text-fg">
           {listas === 1 ? 'Listo: ya está subido. El servidor lo edita y te aviso por Telegram.' : 'Listo: ya están subidos. El servidor los edita y te aviso por Telegram.'}

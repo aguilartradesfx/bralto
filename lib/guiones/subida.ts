@@ -90,6 +90,31 @@ export function revisarArchivo(a: { name: string; size: number; type: string }):
   return revisar(a.name, a.size, a.type)
 }
 
+export const SIN_TAMANO = 'El servidor todavía no dice cuánto pesa el video. Toca «Reintentar» en un momento.'
+
+// Lo que dice Storage del archivo ya subido, antes de anotarlo. Sin tamaño no se anota (nada de 0 bytes) ni se borra
+// (puede que Storage todavía no lo diga); vacío, de más de 2 GB o que no es video: se borra.
+export function revisarSubido(a: {
+  bytes: number | null
+  tipo: string | null
+}): { ok: true; bytes: number } | { ok: false; borrar: boolean; status: number; error: string } {
+  if (typeof a.bytes !== 'number' || !Number.isFinite(a.bytes) || a.bytes < 0) return { ok: false, borrar: false, status: 409, error: SIN_TAMANO }
+  if (a.bytes === 0) return { ok: false, borrar: true, status: 400, error: VACIO }
+  if (a.bytes > MAX_BYTES) return { ok: false, borrar: true, status: 400, error: MUY_GRANDE }
+  if (a.tipo && !esTipoVideo(a.tipo)) return { ok: false, borrar: true, status: 400, error: NO_ES_VIDEO }
+  return { ok: true, bytes: a.bytes }
+}
+
+// «Reintentar» de un video: si el PUT dio 2xx, solo falta avisar; si se cortó sin saber si llegó, primero se pregunta
+// (si el servidor dice que no está, se vuelve a subir soltando esa ruta); si nunca se pidió la URL, desde cero.
+export function comoReintentar(it: {
+  ruta: string | null
+  subido: boolean
+}): { paso: 'avisar'; ruta: string } | { paso: 'revisar'; ruta: string } | { paso: 'subir'; reemplaza: string | null } {
+  if (!it.ruta) return { paso: 'subir', reemplaza: null }
+  return it.subido ? { paso: 'avisar', ruta: it.ruta } : { paso: 'revisar', ruta: it.ruta }
+}
+
 export const SE_CORTO = 'Se cortó la conexión. Revisa el internet y toca «Reintentar».'
 
 // Lo que contesta Storage cuando el video no entra, dicho en simple (status 0 = no hubo respuesta)
@@ -111,7 +136,8 @@ export function errorDeSubida(status: number, cuerpo: string): string {
 export type Fase = 'esperando' | 'preparando' | 'subiendo' | 'revisando' | 'lista' | 'error'
 export const EN_CURSO: Fase[] = ['esperando', 'preparando', 'subiendo', 'revisando']
 
-export function avanceLegible(fase: Fase, progreso: number): string {
+// `yaSubio`: el archivo llegó a Storage y lo que falló fue el aviso (no se dice «No subió»)
+export function avanceLegible(fase: Fase, progreso: number, yaSubio = false): string {
   switch (fase) {
     case 'esperando':
       return 'En fila'
@@ -125,6 +151,6 @@ export function avanceLegible(fase: Fase, progreso: number): string {
     case 'lista':
       return 'Subido'
     case 'error':
-      return 'No subió'
+      return yaSubio ? 'Falta avisar' : 'No subió'
   }
 }

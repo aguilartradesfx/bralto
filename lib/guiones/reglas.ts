@@ -1,6 +1,6 @@
 // Las reglas de «Guiones» sin base de datos: las pestañas del panel, lo que se puede hacer en cada estado, cómo entra
 // un video y cómo se dice cada estado en simple.
-import type { EstadoGuion, GuionFila, VideoGuion } from './tipos.ts'
+import type { EstadoGuion, GuionFila, Pendiente, VideoGuion } from './tipos.ts'
 
 export type Filtro = 'grabar' | 'editando' | 'listos' | 'todos'
 export const FILTROS: Filtro[] = ['grabar', 'editando', 'listos', 'todos']
@@ -71,14 +71,74 @@ export function cambioPorAccion(
   return { cambios: { estado: f.videos.length ? 'subido' : 'listo', detalle: null } }
 }
 
-// Un video que terminó de subir: se suma (una sola vez) y el guion queda «Subido», con la hora del último que llegó
-export function sumarVideo(
-  f: Pick<GuionFila, 'estado' | 'videos'>,
-  video: VideoGuion,
-): { cambios: { videos: VideoGuion[]; estado: 'subido'; subido_en: string } } | { repetido: true } | Falla {
-  if (f.videos.some((v) => v.ruta === video.ruta)) return { repetido: true }
+// Lo que vale una URL firmada de subida: una pendiente más vieja ya no cuenta (tampoco para el editor del servidor)
+export const VENCE_PENDIENTE_MS = 2 * 60 * 60_000
+const MAX_PENDIENTES = 30
+
+export function vigentes(pendientes: Pendiente[], ahora: Date): Pendiente[] {
+  return pendientes.filter((p) => ahora.getTime() - Date.parse(p.pedido_en) < VENCE_PENDIENTE_MS)
+}
+
+// Al pedir la URL firmada: la subida queda pendiente y el editor espera. `reemplaza`: la de un intento que no llegó
+// (así no se queda esperando por ella). De paso se van las vencidas.
+export function sumarPendiente(
+  f: Pick<GuionFila, 'estado' | 'pendientes'>,
+  ruta: string,
+  ahora: Date,
+  reemplaza: string | null = null,
+): { cambios: { pendientes: Pendiente[] } } | Falla {
   if (!puedeSubir(f.estado)) return noRecibeVideos(f.estado)
-  return { cambios: { videos: [...f.videos, video], estado: 'subido', subido_en: video.subido_en } }
+  const otras = vigentes(f.pendientes, ahora).filter((p) => p.ruta !== ruta && p.ruta !== reemplaza)
+  if (otras.length >= MAX_PENDIENTES) return { status: 429, error: 'Hay demasiados videos subiéndose a la vez. Espera a que terminen.' }
+  return { cambios: { pendientes: [...otras, { ruta, pedido_en: ahora.toISOString() }] } }
+}
+
+// Al cancelar una subida: sale de las pendientes (null si no estaba: no hay nada que escribir)
+export function quitarPendiente(f: Pick<GuionFila, 'pendientes'>, ruta: string, ahora: Date): { cambios: { pendientes: Pendiente[] } } | null {
+  if (!f.pendientes.some((p) => p.ruta === ruta)) return null
+  return { cambios: { pendientes: vigentes(f.pendientes, ahora).filter((p) => p.ruta !== ruta) } }
+}
+
+export type CambiosVideo = { videos: VideoGuion[]; estado: 'subido'; subido_en: string; pendientes: Pendiente[]; grabado_en?: string }
+
+// Un video que terminó de subir: se suma una sola vez, sale de las pendientes, el guion queda «Subido» con la hora del
+// último que llegó y el primero anota grabado_en. Si ya estaba anotado, solo se limpia su pendiente (si seguía ahí).
+export function sumarVideo(
+  f: Pick<GuionFila, 'estado' | 'videos' | 'pendientes' | 'grabado_en'>,
+  video: VideoGuion,
+  ahora: Date,
+): { cambios: CambiosVideo } | { repetido: true; cambios: { pendientes: Pendiente[] } | null } | Falla {
+  const sinEsta = vigentes(f.pendientes, ahora).filter((p) => p.ruta !== video.ruta)
+  if (f.videos.some((v) => v.ruta === video.ruta)) {
+    return { repetido: true, cambios: f.pendientes.some((p) => p.ruta === video.ruta) ? { pendientes: sinEsta } : null }
+  }
+  if (!puedeSubir(f.estado)) return noRecibeVideos(f.estado)
+  return {
+    cambios: {
+      videos: [...f.videos, video],
+      estado: 'subido',
+      subido_en: video.subido_en,
+      pendientes: sinEsta,
+      ...(f.grabado_en ? {} : { grabado_en: video.subido_en }),
+    },
+  }
+}
+
+// La página pregunta cada 30 s mientras algo se edita, pero deja de hacerlo si en 15 minutos no cambió nada ni nadie
+// hizo nada (vuelve al tocar la página o al volver a verla)
+export const REFRESCAR_MS = 30_000
+export const QUIETO_MS = 15 * 60_000
+
+export function debeRefrescar(o: { ahora: number; visible: boolean; ultimoCambio: number; ultimaActividad: number }): boolean {
+  return o.visible && o.ahora - Math.max(o.ultimoCambio, o.ultimaActividad) < QUIETO_MS
+}
+
+// Lo que cambia cuando el servidor avanza un guion (el orden de la lista no importa)
+export function firmaGuiones(guiones: Pick<GuionFila, 'id' | 'estado' | 'actualizado_en'>[]): string {
+  return guiones
+    .map((g) => `${g.id}:${g.estado}:${g.actualizado_en}`)
+    .sort()
+    .join('|')
 }
 
 // El color del puntito de cada estado (las clases de .pn-pill > i en components/internal/panel.css)

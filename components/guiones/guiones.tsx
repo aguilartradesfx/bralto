@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { contarFiltros, enFiltro, FILTRO_LABEL, FILTROS, filtroDe, resumenGuiones, type Filtro } from '@/lib/guiones/reglas'
+import { contarFiltros, debeRefrescar, enFiltro, FILTRO_LABEL, FILTROS, filtroDe, firmaGuiones, REFRESCAR_MS, resumenGuiones, type Filtro } from '@/lib/guiones/reglas'
 import type { GuionFila } from '@/lib/guiones/tipos'
 import { idDeAncla } from '@/lib/guiones/vista'
 import { Encabezado, Vacio } from '@/components/crm/piezas'
@@ -17,8 +17,6 @@ const VACIO: Record<Filtro, string> = {
   todos: 'Todavía no hay guiones. Cada noche llega uno para que lo grabes a cámara.',
 }
 
-// Mientras el servidor edita, la página se pone al día sola (para ver cuándo queda listo)
-const REFRESCAR_MS = 30_000
 const RESALTAR_MS = 3_000
 
 const urlDe = (f: Filtro) => (f === 'grabar' ? '/guiones' : `/guiones?f=${f}`)
@@ -33,14 +31,24 @@ export function Guiones({ guiones, filtro: inicial, hoy, ahora, error }: { guion
   const [resaltado, setResaltado] = useState<string | null>(null)
   const [leyendo, setLeyendo] = useState<string | null>(null)
 
+  // La última vez que él hizo algo en la página (la que se pone al día sola deja de preguntar si nadie hace nada)
+  const actividad = useRef(0)
+  const despertar = useCallback(() => {
+    actividad.current = Date.now()
+  }, [])
+
   const fijar = useCallback((id: string) => setFijos((s) => (s.has(id) ? s : new Set(s).add(id))), [])
   const subidas = usarSubidas({ alTerminar: fijar })
 
-  const elegir = useCallback((f: Filtro) => {
-    setFiltro(f)
-    setFijos(new Set())
-    window.history.replaceState(null, '', urlDe(f))
-  }, [])
+  const elegir = useCallback(
+    (f: Filtro) => {
+      despertar()
+      setFiltro(f)
+      setFijos(new Set())
+      window.history.replaceState(null, '', urlDe(f))
+    },
+    [despertar],
+  )
 
   // El ancla: al abrir la página y cuando cambia el #
   const lista = useRef(guiones)
@@ -71,14 +79,39 @@ export function Guiones({ guiones, filtro: inicial, hoy, ahora, error }: { guion
     }
   }, [])
 
+  // Mientras el servidor edita, la página se pone al día sola cada 30 s para ver cuándo queda lista. Si en 15 minutos no
+  // cambió nada ni él hizo nada, deja de preguntar; al volver a la página (o al tocar algo) se pone al día otra vez.
+  const firma = firmaGuiones(guiones)
+  const cambio = useRef({ firma: '', en: 0 })
+  useEffect(() => {
+    if (cambio.current.firma !== firma) cambio.current = { firma, en: Date.now() }
+  }, [firma])
   const editando = guiones.some((g) => g.estado === 'subido' || g.estado === 'editando')
   useEffect(() => {
     if (!editando) return
+    despertar()
+    let dormida = false
     const t = setInterval(() => {
-      if (document.visibilityState === 'visible') router.refresh()
+      const ok = debeRefrescar({ ahora: Date.now(), visible: document.visibilityState === 'visible', ultimoCambio: cambio.current.en, ultimaActividad: actividad.current })
+      dormida = !ok
+      if (ok) router.refresh()
     }, REFRESCAR_MS)
-    return () => clearInterval(t)
-  }, [editando, router])
+    const volver = () => {
+      if (document.visibilityState !== 'visible') return
+      despertar()
+      if (dormida) {
+        dormida = false
+        router.refresh()
+      }
+    }
+    window.addEventListener('focus', volver)
+    document.addEventListener('visibilitychange', volver)
+    return () => {
+      clearInterval(t)
+      window.removeEventListener('focus', volver)
+      document.removeEventListener('visibilitychange', volver)
+    }
+  }, [editando, router, despertar])
 
   const cuentas = useMemo(() => contarFiltros(guiones), [guiones])
   const visibles = guiones.filter((g) => enFiltro(g.estado, filtro) || fijos.has(g.id))
@@ -126,15 +159,25 @@ export function Guiones({ guiones, filtro: inicial, hoy, ahora, error }: { guion
                     ahora={ahoraFecha}
                     resaltado={resaltado === g.id}
                     subidas={subidas.porGuion(g.id)}
-                    alLeer={() => setLeyendo(g.id)}
+                    alLeer={() => {
+                      despertar()
+                      setLeyendo(g.id)
+                    }}
                     alSubir={(archivos) => {
+                      despertar()
                       fijar(g.id)
                       subidas.subir(g.id, archivos)
                     }}
-                    alReintentar={subidas.reintentar}
+                    alReintentar={(clave) => {
+                      despertar()
+                      subidas.reintentar(clave)
+                    }}
                     alQuitar={subidas.quitar}
                     alCerrarSubidas={() => subidas.limpiar(g.id)}
-                    alCambiar={() => fijar(g.id)}
+                    alCambiar={() => {
+                      despertar()
+                      fijar(g.id)
+                    }}
                   />
                 </li>
               ))}

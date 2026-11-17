@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   avanceLegible,
+  comoReintentar,
   errorDeSubida,
   esRutaDe,
   leerPedidoSubida,
@@ -9,8 +10,10 @@ import {
   nombreDeRuta,
   nombreLimpio,
   revisarArchivo,
+  revisarSubido,
   rutaSubida,
   SE_CORTO,
+  SIN_TAMANO,
   tipoDeVideo,
 } from './subida.ts'
 
@@ -125,4 +128,30 @@ test('avanceLegible: cómo va cada video', () => {
   assert.equal(avanceLegible('revisando', 1), 'Revisando…')
   assert.equal(avanceLegible('lista', 1), 'Subido')
   assert.equal(avanceLegible('error', 0.3), 'No subió')
+  assert.equal(avanceLegible('error', 1, true), 'Falta avisar')
+})
+
+test('revisarSubido: lo que dice Storage del archivo ya subido', () => {
+  assert.deepEqual(revisarSubido({ bytes: 5000, tipo: 'video/quicktime' }), { ok: true, bytes: 5000 })
+  assert.deepEqual(revisarSubido({ bytes: 5000, tipo: null }), { ok: true, bytes: 5000 })
+  // sin tamaño no se anota con 0 bytes, y tampoco se borra: puede ser que Storage todavía no lo diga
+  for (const bytes of [null, Number.NaN]) assert.deepEqual(revisarSubido({ bytes, tipo: 'video/mp4' }), { ok: false, borrar: false, status: 409, error: SIN_TAMANO })
+  // lo que no sirve se borra
+  assert.deepEqual(revisarSubido({ bytes: 0, tipo: 'video/mp4' }), { ok: false, borrar: true, status: 400, error: 'Ese archivo está vacío' })
+  assert.deepEqual(revisarSubido({ bytes: MAX_BYTES + 1, tipo: 'video/mp4' }), {
+    ok: false,
+    borrar: true,
+    status: 400,
+    error: 'Ese video pesa más de 2 GB y no cabe. Grábalo en 1080p o córtalo en partes.',
+  })
+  assert.equal(revisarSubido({ bytes: 10, tipo: 'image/png' }).ok, false)
+  assert.equal((revisarSubido({ bytes: 10, tipo: 'image/png' }) as { borrar: boolean }).borrar, true)
+})
+
+test('comoReintentar: si el PUT llegó, solo se avisa; si no se sabe, se revisa antes de volver a subir', () => {
+  const ruta = '3f1c2a7e-1111-4a1a-9a9a-000000000001/mi2k3x9fa1b2c3-toma-1.mov'
+  assert.deepEqual(comoReintentar({ ruta, subido: true }), { paso: 'avisar', ruta })
+  assert.deepEqual(comoReintentar({ ruta, subido: false }), { paso: 'revisar', ruta })
+  assert.deepEqual(comoReintentar({ ruta: null, subido: false }), { paso: 'subir', reemplaza: null })
+  assert.deepEqual(comoReintentar({ ruta: null, subido: true }), { paso: 'subir', reemplaza: null })
 })

@@ -3,20 +3,30 @@ import assert from 'node:assert/strict'
 import {
   cambioPorAccion,
   contarFiltros,
+  debeRefrescar,
   estadoEnSimple,
   filtrarGuiones,
   filtroDe,
+  firmaGuiones,
   leerAccion,
   leerFiltro,
   puedeSubir,
+  QUIETO_MS,
+  quitarPendiente,
   resumenGuiones,
+  sumarPendiente,
   sumarVideo,
+  VENCE_PENDIENTE_MS,
+  vigentes,
 } from './reglas.ts'
-import { ESTADOS, type EstadoGuion, type VideoGuion } from './tipos.ts'
+import { ESTADOS, type EstadoGuion, type Pendiente, type VideoGuion } from './tipos.ts'
 
 const ID = '3f1c2a7e-1111-4a1a-9a9a-000000000001'
+const AHORA = new Date('2026-11-16T20:30:00.000Z')
+const hace = (min: number) => new Date(AHORA.getTime() - min * 60_000).toISOString()
 const video = (n: number): VideoGuion => ({ ruta: `${ID}/mi2k3x9fa1b2c${n}-toma-${n}.mov`, nombre: `toma-${n}.mov`, bytes: 1000 * n, subido_en: `2026-11-16T20:0${n}:00.000Z` })
-const fila = (estado: EstadoGuion, videos: VideoGuion[] = []) => ({ estado, videos })
+const pendiente = (n: number, min = 5): Pendiente => ({ ruta: video(n).ruta, pedido_en: hace(min) })
+const fila = (estado: EstadoGuion, videos: VideoGuion[] = [], pendientes: Pendiente[] = [], grabado_en: string | null = null) => ({ estado, videos, pendientes, grabado_en })
 
 test('cada estado va en su pestaña (los que fallaron, con los que se editan) y Todos tiene todo', () => {
   assert.deepEqual(
@@ -63,20 +73,83 @@ test('reabrir: vuelve a «Por grabar», o a «Subido» si ya tiene videos (y se 
   }
 })
 
-test('sumarVideo: lo agrega, pasa a «Subido» y anota cuándo llegó', () => {
-  assert.deepEqual(sumarVideo(fila('listo'), video(1)), { cambios: { videos: [video(1)], estado: 'subido', subido_en: video(1).subido_en } })
-  assert.deepEqual(sumarVideo(fila('subido', [video(1)]), video(2)), { cambios: { videos: [video(1), video(2)], estado: 'subido', subido_en: video(2).subido_en } })
+test('sumarVideo: lo agrega, sale de las pendientes, pasa a «Subido» y el primero anota grabado_en', () => {
+  assert.deepEqual(sumarVideo(fila('listo', [], [pendiente(1), pendiente(2)]), video(1), AHORA), {
+    cambios: { videos: [video(1)], estado: 'subido', subido_en: video(1).subido_en, pendientes: [pendiente(2)], grabado_en: video(1).subido_en },
+  })
 })
 
-test('sumarVideo: el mismo video dos veces no se repite', () => {
-  assert.deepEqual(sumarVideo(fila('subido', [video(1)]), { ...video(1), subido_en: '2026-11-16T21:00:00.000Z' }), { repetido: true })
+test('sumarVideo: el segundo video no vuelve a tocar grabado_en', () => {
+  const r = sumarVideo(fila('subido', [video(1)], [pendiente(2)], video(1).subido_en), video(2), AHORA)
+  assert.deepEqual(r, { cambios: { videos: [video(1), video(2)], estado: 'subido', subido_en: video(2).subido_en, pendientes: [] } })
 })
 
-test('sumarVideo: si ya no recibe videos, lo dice', () => {
-  assert.deepEqual(sumarVideo(fila('editando'), video(1)), { status: 409, error: 'Este guion ya no recibe videos: ahora está «Editando»' })
-  assert.deepEqual(sumarVideo(fila('descartado'), video(1)), { status: 409, error: 'Este guion ya no recibe videos: ahora está «Descartado»' })
-  assert.equal('status' in sumarVideo(fila('programado'), video(1)), true)
-  assert.equal('status' in sumarVideo(fila('error'), video(1)), true)
+test('sumarVideo: de paso se van las pendientes vencidas (más de 2 horas)', () => {
+  const r = sumarVideo(fila('subido', [], [pendiente(1), pendiente(3, 121)]), video(1), AHORA)
+  assert.ok('cambios' in r && r.cambios)
+  assert.deepEqual('pendientes' in r.cambios ? r.cambios.pendientes : null, [])
+})
+
+test('sumarVideo: el mismo video dos veces no se repite (solo se quita de pendientes si seguía ahí)', () => {
+  assert.deepEqual(sumarVideo(fila('subido', [video(1)]), { ...video(1), subido_en: '2026-11-16T21:00:00.000Z' }, AHORA), { repetido: true, cambios: null })
+  assert.deepEqual(sumarVideo(fila('subido', [video(1)], [pendiente(1), pendiente(2)]), video(1), AHORA), {
+    repetido: true,
+    cambios: { pendientes: [pendiente(2)] },
+  })
+  // aunque el guion ya esté en otro estado: ya estaba anotado
+  assert.deepEqual(sumarVideo(fila('editando', [video(1)]), video(1), AHORA), { repetido: true, cambios: null })
+})
+
+test('sumarVideo: si ya no recibe videos, lo dice y no cambia nada', () => {
+  assert.deepEqual(sumarVideo(fila('editando', [], [pendiente(1)]), video(1), AHORA), { status: 409, error: 'Este guion ya no recibe videos: ahora está «Editando»' })
+  assert.deepEqual(sumarVideo(fila('descartado'), video(1), AHORA), { status: 409, error: 'Este guion ya no recibe videos: ahora está «Descartado»' })
+  assert.equal('status' in sumarVideo(fila('programado'), video(1), AHORA), true)
+  assert.equal('status' in sumarVideo(fila('error'), video(1), AHORA), true)
+})
+
+test('vigentes: una pendiente vale 2 horas (lo que vale la URL firmada)', () => {
+  const justo = { ruta: 'a', pedido_en: new Date(AHORA.getTime() - VENCE_PENDIENTE_MS).toISOString() }
+  const casi = { ruta: 'b', pedido_en: new Date(AHORA.getTime() - VENCE_PENDIENTE_MS + 1000).toISOString() }
+  assert.deepEqual(vigentes([justo, casi, { ruta: 'c', pedido_en: 'no es fecha' }], AHORA), [casi])
+})
+
+test('sumarPendiente: al pedir la URL, la subida queda pendiente con su hora', () => {
+  assert.deepEqual(sumarPendiente(fila('listo', [], [pendiente(1)]), video(2).ruta, AHORA), {
+    cambios: { pendientes: [pendiente(1), { ruta: video(2).ruta, pedido_en: AHORA.toISOString() }] },
+  })
+})
+
+test('sumarPendiente: «Reintentar» suelta la del intento que no subió, y las vencidas se van', () => {
+  const r = sumarPendiente(fila('subido', [], [pendiente(1), pendiente(2), pendiente(3, 200)]), video(4).ruta, AHORA, video(1).ruta)
+  assert.deepEqual(r, { cambios: { pendientes: [pendiente(2), { ruta: video(4).ruta, pedido_en: AHORA.toISOString() }] } })
+})
+
+test('sumarPendiente: solo mientras el guion recibe videos, y con un tope', () => {
+  assert.deepEqual(sumarPendiente(fila('editando'), video(1).ruta, AHORA), { status: 409, error: 'Este guion ya no recibe videos: ahora está «Editando»' })
+  const muchas = Array.from({ length: 30 }, (_, i) => ({ ruta: `r${i}`, pedido_en: hace(1) }))
+  assert.equal(sumarPendiente(fila('listo', [], muchas), 'otra', AHORA).hasOwnProperty('status'), true)
+})
+
+test('quitarPendiente: al cancelar sale de la lista; si no estaba, no hay nada que escribir', () => {
+  assert.deepEqual(quitarPendiente(fila('subido', [], [pendiente(1), pendiente(2)]), video(1).ruta, AHORA), { cambios: { pendientes: [pendiente(2)] } })
+  assert.equal(quitarPendiente(fila('subido', [], [pendiente(2)]), video(1).ruta, AHORA), null)
+})
+
+test('debeRefrescar: pregunta mientras se ve y algo cambió o alguien hizo algo en los últimos 15 minutos', () => {
+  const t = AHORA.getTime()
+  assert.equal(debeRefrescar({ ahora: t, visible: true, ultimoCambio: t - 60_000, ultimaActividad: 0 }), true)
+  assert.equal(debeRefrescar({ ahora: t, visible: false, ultimoCambio: t - 60_000, ultimaActividad: 0 }), false)
+  assert.equal(debeRefrescar({ ahora: t, visible: true, ultimoCambio: t - QUIETO_MS, ultimaActividad: t - QUIETO_MS - 1 }), false)
+  assert.equal(debeRefrescar({ ahora: t, visible: true, ultimoCambio: t - 2 * QUIETO_MS, ultimaActividad: t - 1000 }), true)
+})
+
+test('firmaGuiones: cambia cuando cambia un estado o una hora, no cuando solo se reordena la lista', () => {
+  const a = { id: 'a', estado: 'subido' as const, actualizado_en: '2026-11-16T20:00:00Z' }
+  const b = { id: 'b', estado: 'listo' as const, actualizado_en: '2026-11-16T19:00:00Z' }
+  assert.equal(firmaGuiones([a, b]), firmaGuiones([b, a]))
+  assert.notEqual(firmaGuiones([a, b]), firmaGuiones([{ ...a, estado: 'editando' }, b]))
+  assert.notEqual(firmaGuiones([a, b]), firmaGuiones([{ ...a, actualizado_en: '2026-11-16T20:05:00Z' }, b]))
+  assert.notEqual(firmaGuiones([a]), firmaGuiones([a, b]))
 })
 
 test('estadoEnSimple: cada estado dicho en simple', () => {

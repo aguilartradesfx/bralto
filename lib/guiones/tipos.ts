@@ -27,12 +27,17 @@ export const ESTADOS: EstadoGuion[] = ['listo', 'subido', 'editando', 'programad
 // Un video en el bucket privado «crudos»: `ruta` es la de adentro del bucket (<id>/<único>-<nombre limpio>)
 export type VideoGuion = { ruta: string; nombre: string; bytes: number; subido_en: string }
 
+// Una subida pedida que todavía no avisó que terminó. Mientras haya una de menos de 2 horas, el editor del servidor no
+// toma el guion (el contrato está junto a la columna, en la migración 018)
+export type Pendiente = { ruta: string; pedido_en: string }
+
 // Una fila de redes_guiones (supabase/migrations/20261116_018_guiones.sql)
 export type GuionFila = Guion & {
   id: string
   dia: string // el día del tema, AAAA-MM-DD
   estado: EstadoGuion
   videos: VideoGuion[]
+  pendientes: Pendiente[]
   carpeta: string | null // la carpeta del guion en el servidor
   detalle: string | null // por qué falló, o una nota
   grabado_en: string | null
@@ -45,7 +50,7 @@ export type GuionFila = Guion & {
 export const TABLA_GUIONES = 'redes_guiones'
 export const BUCKET_CRUDOS = 'crudos'
 export const COLUMNAS_GUION =
-  'id, dia, titulo, tema, comenta, guia, duracion_s, lineas, ganchos, estado, videos, carpeta, detalle, grabado_en, subido_en, editado_en, creado_en, actualizado_en'
+  'id, dia, titulo, tema, comenta, guia, duracion_s, lineas, ganchos, estado, videos, pendientes, carpeta, detalle, grabado_en, subido_en, editado_en, creado_en, actualizado_en'
 
 // Cada gancho se graba aparte y da una versión de prueba
 export const GANCHOS_POR_GUION = 5
