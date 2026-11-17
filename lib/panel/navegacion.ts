@@ -12,7 +12,7 @@ export type IconoNav =
   | 'finanzas' | 'resumen' | 'ingresos' | 'gastos' | 'flujo'
   | 'plan' | 'plan-inicio' | 'plan-tareas' | 'plan-etapas' | 'plan-equipo' | 'plan-estrategia'
   | 'documentos' | 'reportes' | 'rendimiento' | 'redes' | 'ventas-analitica' | 'a-la-medida'
-  | 'ideas' | 'analisis' | 'oficina' | 'ayuda' | 'ajustes'
+  | 'ideas' | 'guiones' | 'analisis' | 'oficina' | 'ayuda' | 'ajustes'
 
 // Los contadores del menú: conversaciones sin contestar y tareas pendientes
 export type Cuenta = 'mensajes' | 'tareas'
@@ -75,6 +75,7 @@ export const NAV: EntradaNav[] = [
     items: [
       { href: '/calendario', label: 'Calendario de redes', icono: 'calendario' },
       { href: '/ideas', label: 'Ideas', icono: 'ideas' },
+      { href: '/guiones', label: 'Guiones', icono: 'guiones' },
       { href: '/analisis', label: 'Análisis de reels', icono: 'analisis' },
       { href: '/knox-office', label: 'Oficina', icono: 'oficina', nueva: true },
       pronto('campanas', 'Campañas', 'campanas'),
