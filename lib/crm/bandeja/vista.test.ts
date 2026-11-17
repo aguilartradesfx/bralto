@@ -1,6 +1,23 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { adjuntoLabel, cuandoVuelve, estadoKnox, leerCuantas, leerFiltro, nombreConversacion, textoHistoria, vistaPrevia } from './vista.ts'
+import {
+  adjuntoLabel,
+  avisoVentana,
+  busquedaDeVista,
+  cuandoVuelve,
+  esVistaInicial,
+  estadoKnox,
+  leerBusqueda,
+  leerCuantas,
+  leerFiltro,
+  leerRed,
+  leerVista,
+  nombreConversacion,
+  textoHistoria,
+  textoVacio,
+  VISTA_INICIAL,
+  vistaPrevia,
+} from './vista.ts'
 import { validarAjustes, validarEnvio, validarPrueba } from './validar.ts'
 
 const AHORA = new Date('2026-10-30T21:00:00Z')
@@ -102,4 +119,39 @@ test('cuandoVuelve: la hora en que Knox vuelve, dicha como una persona (hora de 
   assert.equal(cuandoVuelve('2026-10-31T04:15:00Z', AHORA), 'hoy a las 22:15')
   assert.equal(cuandoVuelve('2026-10-31T15:30:00Z', AHORA), 'mañana a las 09:30')
   assert.equal(cuandoVuelve('2026-11-02T16:00:00Z', AHORA), 'el lunes 2 de noviembre a las 10:00')
+})
+
+test('leerVista: filtro, red y búsqueda de la URL, con valores seguros', () => {
+  const de = (q: string) => leerVista(new URLSearchParams(q))
+  assert.deepEqual(de(''), VISTA_INICIAL)
+  assert.deepEqual(de('filtro=todas&red=messenger&q=%20%20Ana%20%20Prueba%20'), { filtro: 'todas', red: 'messenger', q: 'Ana Prueba' })
+  assert.deepEqual(de('red=tiktok&filtro=x'), VISTA_INICIAL)
+  assert.equal(leerRed('whatsapp'), 'whatsapp')
+  assert.equal(leerRed(undefined), null)
+  assert.equal(leerBusqueda('x'.repeat(200)).length, 80)
+  assert.equal(esVistaInicial(VISTA_INICIAL), true)
+  assert.equal(esVistaInicial({ ...VISTA_INICIAL, q: 'ana' }), false)
+})
+
+test('busquedaDeVista: solo lo que no es lo de siempre, y de ida y vuelta', () => {
+  assert.equal(busquedaDeVista(VISTA_INICIAL), '')
+  assert.equal(busquedaDeVista({ filtro: 'trabajo', red: 'instagram', q: 'ana' }), '?filtro=trabajo&red=instagram&q=ana')
+  const v = { filtro: 'todas', red: null, q: 'José & Ana' } as const
+  assert.deepEqual(leerVista(new URLSearchParams(busquedaDeVista(v).slice(1))), v)
+})
+
+test('textoVacio: según lo que se está viendo', () => {
+  assert.equal(textoVacio({ filtro: 'todas', red: null, q: 'ana' }), 'Nada coincide con «ana».')
+  assert.equal(textoVacio({ filtro: 'por_responder', red: 'messenger', q: '' }), 'No hay nada por responder por Messenger. ¡Todo al día!')
+  assert.equal(textoVacio({ filtro: 'todas', red: 'whatsapp', q: '' }), 'Todavía no hay conversaciones por WhatsApp.')
+})
+
+test('avisoVentana: lo que se puede contestar según la ventana de Meta', () => {
+  const hace = (h: number) => new Date(AHORA.getTime() - h * 3600_000).toISOString()
+  assert.deepEqual(avisoVentana('instagram', hace(2), AHORA), { bloqueado: false, texto: 'Sale por Instagram. Si le escribes tú, Knox se aparta 12 horas.' })
+  assert.equal(avisoVentana('messenger', hace(30), AHORA).bloqueado, false)
+  assert.match(avisoVentana('messenger', hace(30), AHORA).texto, /hasta 7 días/)
+  assert.equal(avisoVentana('instagram', hace(24 * 8), AHORA).bloqueado, true)
+  assert.equal(avisoVentana('whatsapp', hace(30), AHORA).bloqueado, true)
+  assert.equal(avisoVentana('whatsapp', null, AHORA).bloqueado, false)
 })
