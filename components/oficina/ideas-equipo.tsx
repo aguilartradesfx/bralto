@@ -4,6 +4,7 @@ import { useEffect, useId, useLayoutEffect, useRef } from 'react'
 import type { EstadoIdea, Idea, Post, Ronda } from '@/lib/oficina/tipos'
 import { accionIdea, avisoRonda, contarIdeas, cuandoCorto, filtrarIdeas, focoAlDecidir, type FiltroIdeas } from '@/lib/oficina/foro'
 import { fechaCR, horaCR } from '@/lib/oficina/horario'
+import { HORAS_TERTULIA } from '@/lib/oficina/turnos'
 import { nombreDe, type AgenteSnap } from '@/lib/oficina/pagina'
 import { Cara } from './cara'
 import { citar } from './ficha'
@@ -20,7 +21,7 @@ type Accion = 'sirve' | 'no_va' | 'deshacer'
 const FILTROS: [FiltroIdeas, string][] = [['todas', 'Todas'], ['nueva', 'Nuevas'], ['sirve', 'Me sirven'], ['no_va', 'No van']]
 const ESTADO: Record<EstadoIdea, string> = { nueva: 'Nueva', sirve: 'Te sirve', no_va: 'No va' }
 const SIN_IDEAS: Record<FiltroIdeas, string> = {
-  todas: 'Todavía no hay ideas del equipo. Salen del chat y del foro, después de la tertulia, que corre todos los días a las 12:30 p. m.',
+  todas: `Todavía no hay ideas del equipo. Salen del chat y del foro, después de la tertulia, que corre tres veces al día: ${HORAS_TERTULIA}.`,
   nueva: 'No hay ideas nuevas: ya respondiste todas.',
   sirve: 'Todavía no marcaste ninguna con «Me sirve».',
   no_va: 'Todavía no marcaste ninguna con «No va».',

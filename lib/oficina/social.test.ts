@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { armarSocial, firmaSocial, fnv1a, leerAccionIdea, leerMeGusta, socialVencido, type SocialCrudo } from './social.ts'
-import type { Comentario, EstadoOficina, Idea, Post } from './tipos.ts'
+import { armarSocial, firmaSocial, fnv1a, leerAccionIdea, leerMeGusta, socialVencido, ultimaRonda, type SocialCrudo } from './social.ts'
+import type { Comentario, EstadoOficina, Idea, Post, Ronda } from './tipos.ts'
 
 // Lunes 16/11/2026, 2:00 p. m. en Costa Rica
 const AHORA = new Date('2026-11-16T20:00:00Z')
@@ -35,7 +35,7 @@ function crudo(o: Partial<SocialCrudo> = {}): SocialCrudo {
     ],
     ideas: [idea('i1', en(-200)), idea('i2', en(-20)), idea('i-futura', en(60))],
     fotos: [{ id: 'f1', tipo: 'retrato', agentes: ['ana'], ruta: 'retratos/ana.jpg', pie: null }],
-    ronda: { fecha: '2026-11-16', resultado: 'ok', detalle: '' },
+    ronda: { fecha: '2026-11-16', turno: 'mediodia', resultado: 'ok', detalle: '' },
     ...o,
   }
 }
@@ -47,11 +47,11 @@ test('armarSocial: esconde el post y el comentario del futuro, y cada respuesta 
   assert.deepEqual(s.foro[0].comentarios, [])
   assert.deepEqual(s.ideas.map((i) => i.id), ['i2', 'i1'])
   assert.deepEqual(s.fotos, [{ id: 'f1', tipo: 'retrato', agentes: ['ana'], ruta: 'retratos/ana.jpg', pie: null }])
-  assert.deepEqual(s.ronda, { fecha: '2026-11-16', resultado: 'ok', detalle: '' })
+  assert.deepEqual(s.ronda, { fecha: '2026-11-16', turno: 'mediodia', resultado: 'ok', detalle: '' })
 })
 
 test('armarSocial: la ronda de ayer no sale', () => {
-  assert.equal(armarSocial(crudo({ ronda: { fecha: '2026-11-15', resultado: 'falla', detalle: 'x' } }), AHORA, DESPIERTA).ronda, null)
+  assert.equal(armarSocial(crudo({ ronda: { fecha: '2026-11-15', turno: 'tarde', resultado: 'falla', detalle: 'x' } }), AHORA, DESPIERTA).ronda, null)
   assert.equal(armarSocial(crudo({ ronda: null }), AHORA, DESPIERTA).ronda, null)
 })
 
@@ -162,4 +162,18 @@ test('armarSocial: proxima es null con la oficina dormida', () => {
 
 test('armarSocial: proxima es null si no hay posts por salir', () => {
   assert.equal(armarSocial(crudo({ posts: [post('p1', en(-120))] }), AHORA, DESPIERTA).proxima, null)
+})
+
+test('ultimaRonda: la del día más nuevo y, ese día, la del último turno', () => {
+  const r = (fecha: string, turno: Ronda['turno'], resultado: Ronda['resultado'] = 'ok'): Ronda => ({ fecha, turno, resultado, detalle: '' })
+  assert.equal(ultimaRonda([]), null)
+  assert.deepEqual(ultimaRonda([r('2026-11-16', 'manana'), r('2026-11-15', 'tarde'), r('2026-11-15', 'mediodia')]), r('2026-11-16', 'manana'))
+  assert.deepEqual(ultimaRonda([r('2026-11-16', 'tarde', 'falla'), r('2026-11-16', 'manana'), r('2026-11-16', 'mediodia')]), r('2026-11-16', 'tarde', 'falla'))
+  assert.deepEqual(ultimaRonda([r('2026-11-16', 'mediodia'), r('2026-11-16', 'manana', 'saltada')]), r('2026-11-16', 'mediodia'))
+})
+
+test('firmaSocial: cambia cuando corre otro turno de la tertulia (aunque el resultado sea el mismo)', () => {
+  const manana = firmaSocial(armarSocial(crudo({ ronda: { fecha: '2026-11-16', turno: 'manana', resultado: 'falla', detalle: 'x' } }), AHORA, DESPIERTA))
+  const mediodia = firmaSocial(armarSocial(crudo({ ronda: { fecha: '2026-11-16', turno: 'mediodia', resultado: 'falla', detalle: 'x' } }), AHORA, DESPIERTA))
+  assert.notEqual(manana, mediodia)
 })

@@ -7,8 +7,8 @@ import { armarSnapshot } from './estado.ts'
 import type { FilaNumeros, Pub } from './estado.ts'
 import { escenaPendiente } from './fotos.ts'
 import { aLaHoraCR } from './horario.ts'
-import { POSTS_MAX, type SocialCrudo } from './social.ts'
-import type { Agente, Comentario, EstadoIdea, EstadoOficina, FilaSemana, Idea, LineaTertulia, Marca, NuevaMarca, Ronda, Snapshot } from './tipos.ts'
+import { POSTS_MAX, ultimaRonda, type SocialCrudo } from './social.ts'
+import type { Agente, Comentario, EstadoIdea, EstadoOficina, FilaSemana, Idea, LineaTertulia, Marca, NuevaMarca, Ronda, RinconChat, Snapshot, Turno } from './tipos.ts'
 import type { DatosRonda } from './tertulia.ts'
 import type { RondaLimpia } from './validar.ts'
 
@@ -174,8 +174,9 @@ export async function leerOficina(ahora: Date): Promise<Snapshot> {
       c.from('oficina_numeros').select('*'),
       c.from('oficina_estado').select('dormida,desde,por').eq('id', idEstado()).maybeSingle(),
       c.from('redes_publicaciones').select('id,titulo,publicar_en,prueba').eq('estado', 'programado').gte('publicar_en', ahora.toISOString()).order('publicar_en', { ascending: true }).limit(50),
-      // La tertulia de hoy entera, también lo que sale más tarde: la página lo destapa a su hora
-      c.from('oficina_chat').select('id,de,para,texto,rincon,idea_id,mostrar_desde').gte('mostrar_desde', hoy).order('mostrar_desde', { ascending: true }).limit(200),
+      // La tertulia de hoy entera, también lo que sale más tarde: la página lo destapa a su hora (y de las visitas
+      // que vienen solo sabe quién, a dónde y cuándo)
+      c.from('oficina_chat').select('id,de,para,texto,rincon,donde,hilo,idea_id,mostrar_desde').gte('mostrar_desde', hoy).order('mostrar_desde', { ascending: true }).limit(200),
       c.from('oficina_semana').select('agente,dia,tareas,falla'),
     ])
     const agentes = (ok('oficina_agentes', ag) ?? []) as Agente[]
@@ -204,7 +205,7 @@ export async function leerOficina(ahora: Date): Promise<Snapshot> {
     console.error('[oficina] leerOficina', e)
     return {
       ahora: ahora.toISOString(), oficina: { ...DESPIERTA }, agentes: [], marcas: [], paraTi: [], proximos: [],
-      chat: [], escribiendo: null, pubs: [],
+      chat: [], escribiendo: null, pubs: [], visitas: [],
     }
   }
 }
@@ -240,7 +241,8 @@ export async function leerSocialCrudo(ahora: Date): Promise<SocialCrudo> {
     c.from('oficina_fotos').select(COLUMNAS_FOTO).eq('tipo', 'retrato').eq('estado', 'lista').not('ruta', 'is', null),
     c.from('oficina_fotos').select(COLUMNAS_FOTO).eq('tipo', 'grupo').eq('estado', 'lista').not('ruta', 'is', null)
       .order('creada_en', { ascending: false }).limit(FOTOS_GRUPO_LEIDAS),
-    c.from('oficina_rondas').select('fecha,resultado,detalle').order('fecha', { ascending: false }).limit(1),
+    // Las de los últimos días (tres por día como mucho): basta para tener todas las de hoy y quedarse con la última
+    c.from('oficina_rondas').select('fecha,turno,resultado,detalle').order('fecha', { ascending: false }).limit(3),
   ])
   const posts = (ok('oficina_posts', po) ?? []) as SocialCrudo['posts']
   const comentarios = posts.length
@@ -252,7 +254,7 @@ export async function leerSocialCrudo(ahora: Date): Promise<SocialCrudo> {
     comentarios,
     ideas: (ok('oficina_ideas', id) ?? []) as Idea[],
     fotos: ([...(ok('oficina_fotos', re) ?? []), ...(ok('oficina_fotos', gr) ?? [])] as FilaFoto[]).flatMap((f) => fotoDeFila(f) ?? []),
-    ronda: ((ok('oficina_rondas', ro) ?? []) as Ronda[])[0] ?? null,
+    ronda: ultimaRonda((ok('oficina_rondas', ro) ?? []) as Ronda[]),
   }
 }
 
@@ -306,7 +308,8 @@ export async function leerDatosRonda(ahora: Date): Promise<DatosRonda> {
   const ahoraIso = ahora.toISOString()
   const hace24 = new Date(ahora.getTime() - DIA).toISOString()
   const hace7d = new Date(ahora.getTime() - SIETE_DIAS).toISOString()
-  const [ag, ma, se, pr, an, id, po, re, es, clientes, contactos] = await Promise.all([
+  const hoy = aLaHoraCR(ahora, 0, 0).toISOString()
+  const [ag, ma, se, pr, an, id, po, re, es, clientes, contactos, chHoy, poHoy, coHoy] = await Promise.all([
     c.from('oficina_agentes').select(COLUMNAS_AGENTE).eq('activo', true).order('puesto', { ascending: true }),
     c.from('oficina_marcas').select('*').gte('creado_en', hace24).order('creado_en', { ascending: false }).limit(2000),
     c.from('oficina_semana').select('agente,dia,tareas,falla'),
@@ -322,6 +325,10 @@ export async function leerDatosRonda(ahora: Date): Promise<DatosRonda> {
       (d, h) => c.from('clients').select('empresa_nombre,representante_nombre').order('id').range(d, h), 'clients'),
     leerPaginas<{ nombre: string | null, apellido: string | null, empresa: string | null }>(
       (d, h) => c.from('crm_contactos').select('nombre,apellido,empresa').order('id').range(d, h), 'crm_contactos'),
+    // Lo que ya se habló hoy en las rondas de antes (para seguir la plática sin repetir)
+    c.from('oficina_chat').select('de,para,texto,rincon,donde,mostrar_desde').gte('mostrar_desde', hoy).order('mostrar_desde', { ascending: true }).limit(200),
+    c.from('oficina_posts').select('de,tipo,titulo,texto,mostrar_desde').gte('mostrar_desde', hoy).order('mostrar_desde', { ascending: true }).limit(20),
+    c.from('oficina_comentarios').select('de,post_id,texto,mostrar_desde').gte('mostrar_desde', hoy).order('mostrar_desde', { ascending: true }).limit(60),
   ])
   const posts = (ok('oficina_posts', po) ?? []) as { id: string, de: string, tipo: string, titulo: string }[]
   const cuentas = new Map<string, number>()
@@ -331,6 +338,13 @@ export async function leerDatosRonda(ahora: Date): Promise<DatosRonda> {
     for (const f of filas) cuentas.set(f.post_id, (cuentas.get(f.post_id) ?? 0) + 1)
   }
   const completos = contactos.map(k => (k.nombre?.trim() && k.apellido?.trim() ? `${k.nombre.trim()} ${k.apellido.trim()}` : null))
+  const comentariosHoy = (ok('oficina_comentarios', coHoy) ?? []) as { de: string, post_id: string, texto: string, mostrar_desde: string }[]
+  const titulos = new Map<string, string>()
+  const idsPost = [...new Set(comentariosHoy.map(k => k.post_id))]
+  if (idsPost.length) {
+    const filas = ok<{ id: string, titulo: string }[]>('oficina_posts', await c.from('oficina_posts').select('id,titulo').in('id', idsPost)) ?? []
+    for (const f of filas) titulos.set(f.id, f.titulo)
+  }
   return {
     agentes: (ok('oficina_agentes', ag) ?? []) as Agente[],
     marcas: (ok('oficina_marcas', ma) ?? []) as Marca[],
@@ -348,17 +362,63 @@ export async function leerDatosRonda(ahora: Date): Promise<DatosRonda> {
     ]),
     // Con la misma regla del generador: espera si es de los últimos 7 días (una más vieja ya no se hará)
     escenaEsperando: escenaPendiente((ok('oficina_fotos', es) ?? []) as { id: string, creada_en: string }[], ahora).escena !== null,
+    hoy: {
+      chat: (ok('oficina_chat', chHoy) ?? []) as DatosRonda['hoy']['chat'],
+      posts: (ok('oficina_posts', poHoy) ?? []) as DatosRonda['hoy']['posts'],
+      comentarios: comentariosHoy.map(k => ({ de: k.de, post_titulo: titulos.get(k.post_id) ?? null, texto: k.texto, mostrar_desde: k.mostrar_desde })),
+    },
   }
 }
 
-export async function rondaDe(fecha: string): Promise<Ronda | null> {
-  const f = ok<Ronda>('oficina_rondas', await db().from('oficina_rondas').select('fecha,resultado,detalle').eq('fecha', fecha).maybeSingle())
+// ¿Ya hay líneas de la tertulia guardadas entre `desde` (entra) y `hasta` (no entra)? Para no repetir una ronda que se
+// guardó pero no alcanzó a anotarse
+export async function hayChatEntre(desde: Date, hasta: Date): Promise<boolean> {
+  const { count, error } = await db().from('oficina_chat').select('id', { count: 'exact', head: true })
+    .gte('mostrar_desde', desde.toISOString()).lt('mostrar_desde', hasta.toISOString())
+  if (error) throw new Error(`oficina_chat: ${error.message}`)
+  return (count ?? 0) > 0
+}
+
+// La ronda de ese turno de ese día (una por turno)
+export async function rondaDe(fecha: string, turno: Turno): Promise<Ronda | null> {
+  const f = ok<Ronda>('oficina_rondas', await db().from('oficina_rondas').select('fecha,turno,resultado,detalle').eq('fecha', fecha).eq('turno', turno).maybeSingle())
   return f ?? null
 }
 
 export async function anotarRonda(r: Ronda): Promise<void> {
-  const { error } = await db().from('oficina_rondas').upsert({ fecha: r.fecha, resultado: r.resultado, detalle: r.detalle }, { onConflict: 'fecha' })
+  const { error } = await db().from('oficina_rondas')
+    .upsert({ fecha: r.fecha, turno: r.turno, resultado: r.resultado, detalle: r.detalle }, { onConflict: 'fecha,turno' })
   if (error) throw new Error(`oficina_rondas: ${error.message}`)
+}
+
+export type FilaChat = {
+  id: string
+  de: string
+  para: string | null
+  texto: string
+  rincon: RinconChat | null
+  donde: string | null
+  hilo: string | null
+  idea_id: string | null
+  mostrar_desde: string
+}
+
+// Las filas de oficina_chat de una ronda, por hora: las líneas sueltas y, de cada charla, sus líneas seguidas con un
+// mismo hilo nuevo, cada una para el otro, con su rincón y, en una visita, el anfitrión en «donde».
+// idea: el id con que se guardó la idea de esa clave (o null si no se guardó).
+export function filasChat(l: Pick<RondaLimpia, 'chat' | 'charlas'>, nuevo: () => string, idea: (clave: string) => string | null): FilaChat[] {
+  const sueltas: FilaChat[] = l.chat.map(m => ({
+    id: nuevo(), de: m.de, para: m.para, texto: m.texto, rincon: m.rincon, donde: null, hilo: null,
+    idea_id: m.idea ? idea(m.idea) : null, mostrar_desde: m.mostrar_desde,
+  }))
+  const deCharlas: FilaChat[] = l.charlas.flatMap(c => {
+    const hilo = nuevo()
+    return c.lineas.map(x => ({
+      id: nuevo(), de: x.de, para: x.para, texto: x.texto, rincon: c.donde, donde: c.donde === 'visita' ? c.anfitrion : null, hilo,
+      idea_id: null, mostrar_desde: x.mostrar_desde,
+    }))
+  })
+  return [...sueltas, ...deCharlas].sort((a, b) => Date.parse(a.mostrar_desde) - Date.parse(b.mostrar_desde))
 }
 
 // Guarda la ronda ya limpia. Las «claves» de Claude solo sirven aquí para enlazar: nunca se guardan.
@@ -369,7 +429,8 @@ export async function guardarRonda(l: RondaLimpia, _ahora: Date): Promise<void> 
   const idPost = new Map(l.posts.map(p => [p.clave, nuevo()]))
   const idIdea = new Map(l.ideas.map(i => [i.origen, nuevo()]))
   const idCom = new Map(l.comentarios.map(k => [k.clave, nuevo()]))
-  const idsChat = l.chat.map(nuevo)
+  const delChat = filasChat(l, nuevo, clave => idIdea.get(clave) ?? null)
+  const idsChat = delChat.map(f => f.id)
   const idFoto = l.escena ? nuevo() : null
   const post_de = (post: string) => idPost.get(post) ?? post
   const insertados: string[] = []
@@ -401,10 +462,7 @@ export async function guardarRonda(l: RondaLimpia, _ahora: Date): Promise<void> 
       en_respuesta_a: k.responde_a ? idCom.get(k.responde_a) ?? null : null,
       idea_id: idIdea.get(k.clave) ?? null, mostrar_desde: k.mostrar_desde,
     })))
-    await insertar('oficina_chat', l.chat.map((m, i) => ({
-      id: idsChat[i], de: m.de, para: m.para, texto: m.texto, rincon: m.rincon,
-      idea_id: m.idea ? idIdea.get(m.idea) ?? null : null, mostrar_desde: m.mostrar_desde,
-    })))
+    await insertar('oficina_chat', delChat)
     if (l.escena && idFoto) {
       await insertar('oficina_fotos', [{ id: idFoto, tipo: 'grupo', estado: 'pendiente', agentes: l.escena.agentes, escena: l.escena }])
     }

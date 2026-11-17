@@ -4,6 +4,7 @@
 import type { Comentario, EstadoIdea, EstadoOficina, Foto, Idea, Post, Ronda, Social } from './tipos.ts'
 import { fechaCR } from './horario.ts'
 import { corteDormida } from './estado.ts'
+import { ORDEN_TURNOS } from './turnos.ts'
 
 export type SocialCrudo = {
   posts: Omit<Post, 'comentarios'>[]
@@ -64,6 +65,15 @@ export function armarSocial(c: SocialCrudo, ahora: Date, oficina: EstadoOficina)
   }
 }
 
+// La ronda más nueva: la del día más reciente y, ese día, la del último turno (mañana, mediodía, tarde)
+export function ultimaRonda(rondas: Ronda[]): Ronda | null {
+  let mejor: Ronda | null = null
+  for (const r of rondas) {
+    if (!mejor || r.fecha > mejor.fecha || (r.fecha === mejor.fecha && ORDEN_TURNOS.indexOf(r.turno) > ORDEN_TURNOS.indexOf(mejor.turno))) mejor = r
+  }
+  return mejor
+}
+
 // FNV-1a de 32 bits sobre los bytes UTF-8, en 8 letras hexadecimales
 export function fnv1a(s: string): string {
   let h = 0x811c9dc5
@@ -80,7 +90,7 @@ export function firmaSocial(s: SocialArmado): string {
     s.foro.map((p) => `${p.id}:${p.likes}:${p.te_gusta ? 1 : 0}:${p.comentarios.length}`).join(','),
     s.ideas.map((i) => `${i.id}:${i.estado}`).join(','),
     s.fotos.map((f) => `${f.id}:${f.ruta}`).join(','),
-    s.ronda ? `${s.ronda.fecha}:${s.ronda.resultado}` : '',
+    s.ronda ? `${s.ronda.fecha}:${s.ronda.turno}:${s.ronda.resultado}` : '',
   ].join('|'))
 }
 

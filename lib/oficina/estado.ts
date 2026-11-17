@@ -1,6 +1,6 @@
 // Lógica pura de la Oficina de Knox: estado de cada agente, números, «Para ti», «Lo próximo», su semana y el chat.
 import type {
-  Agente, DiaSemana, EstadoAgente, EstadoOficina, FilaSemana, LineaTertulia, Marca, Numeros, Proximo, Pub, Snapshot,
+  Agente, DiaSemana, EstadoAgente, EstadoOficina, FilaSemana, LineaTertulia, LineaVisita, Marca, Numeros, Proximo, Pub, Snapshot,
 } from './tipos.ts'
 import { fechaCR, horaCR, siguienteCorrida } from './horario.ts'
 
@@ -122,6 +122,24 @@ export function chatVisible(lineas: LineaTertulia[], ahora: Date, oficina: Estad
   return { chat, escribiendo }
 }
 
+// Las líneas de las visitas de hoy, también las que salen más tarde, sin su texto: la página mueve al visitante desde
+// un minuto antes de que hable (repartirVisitas). Dormida, solo las de antes de dormirse (lo de después no sale).
+export function visitasDelDia(lineas: LineaTertulia[], ahora: Date, oficina: EstadoOficina): LineaVisita[] {
+  const hoy = fechaCR(ahora)
+  const corte = corteDormida(oficina)
+  return lineas
+    .filter((l) => l.rincon === 'visita' && !!l.donde && !!l.hilo && fechaCR(new Date(l.mostrar_desde)) === hoy && t(l.mostrar_desde) < corte)
+    .sort((x, y) => t(x.mostrar_desde) - t(y.mostrar_desde))
+    .map(({ id, de, para, rincon, donde, hilo, mostrar_desde }) => ({ id, de, para, rincon, donde, hilo, mostrar_desde }))
+}
+
+// Las líneas de una visita van al chat de la página con rincon null (con su «donde» y su hilo): una página de antes
+// (una pestaña abierta desde antes del cambio o la app de la Mac) no conoce el rincón 'visita' y su sala se caía con
+// él. Quién está de visita sale de `visitas`, que lleva el rincón de verdad.
+export function lineaParaLaPagina(l: LineaTertulia): LineaTertulia {
+  return l.rincon === 'visita' ? { ...l, rincon: null } : l
+}
+
 export function armarSnapshot(d: {
   agentes: Agente[]
   marcas: Marca[]
@@ -136,7 +154,8 @@ export function armarSnapshot(d: {
   const ids = new Set(d.agentes.map((a) => a.id))
   const marcas = d.marcas.filter((m) => ids.has(m.agente))
   const pendientes = paraTi(d.entregas.filter((m) => ids.has(m.agente)), d.resueltas, ahora)
-  const { chat, escribiendo } = chatVisible(d.tertulia.filter((l) => ids.has(l.de)), ahora, d.oficina)
+  const tertulia = d.tertulia.filter((l) => ids.has(l.de))
+  const { chat, escribiendo } = chatVisible(tertulia, ahora, d.oficina)
   return {
     ahora: ahora.toISOString(),
     oficina: d.oficina,
@@ -149,11 +168,12 @@ export function armarSnapshot(d: {
     marcas,
     paraTi: pendientes,
     proximos: proximos(d.agentes, d.pubs, ahora),
-    chat,
+    chat: chat.map(lineaParaLaPagina),
     escribiendo,
     pubs: d.pubs
       .filter((p) => t(p.publicar_en) > ahora.getTime())
       .sort((x, y) => t(x.publicar_en) - t(y.publicar_en))
       .slice(0, 10),
+    visitas: visitasDelDia(tertulia, ahora, d.oficina),
   }
 }

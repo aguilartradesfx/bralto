@@ -2,6 +2,7 @@
 // último que escribió en el foro y sus fotos. Puro: lo usa components/oficina y se prueba con node --test.
 import type { Agente, AgenteSnap, Foto, Marca, Post, Pub } from './tipos.ts'
 import { textoSala, type LugarSala } from './sala.ts'
+import { textoVisita } from './visitas.ts'
 import { FRECUENTE_MIN } from './estado.ts'
 import { siguienteCorrida } from './horario.ts'
 import { cuandoCR, diaCR, enlaceSeguro, lasCR, lineaAhora, momentoCR, proximoDe } from './pagina.ts'
@@ -13,14 +14,23 @@ const porId = (x: { id: string }, y: { id: string }) => (x.id < y.id ? -1 : x.id
 // A los «cuando lo pidas» se les pide en Claude Code, en la compu: la ficha no tiene botón para pedirles nada
 const SE_LO_PIDES = 'Se lo pides a Claude en tu compu'
 
-// «Ahora» en la ficha (y en «Ahora» al lado o en grande), en este orden: la oficina dormida; lo que tiene en marcha;
-// la sala; los que todavía no empiezan o esperan que les pidas algo; los que revisan cada pocos minutos; hasta cuándo
-// descansa.
+// «Ahora» en la ficha (y en «Ahora» al lado o en grande), en este orden: la oficina dormida; de visita en la oficina de
+// otro (mientras dura, aunque te haya dejado algo); lo que tiene en marcha; la sala; los que todavía no empiezan o
+// esperan que les pidas algo; los que revisan cada pocos minutos; hasta cuándo descansa.
 export function ahoraFicha(
   a: AgenteSnap,
-  d: { marcas: Marca[]; paraTi: Marca[]; ahora: Date; dormida: boolean; lugar: LugarSala | null; nombreDe(id: string): string },
+  d: {
+    marcas: Marca[]
+    paraTi: Marca[]
+    ahora: Date
+    dormida: boolean
+    lugar: LugarSala | null
+    visita?: { anfitrion: string } | null // repartirVisitas
+    nombreDe(id: string): string
+  },
 ): string {
   if (d.dormida) return !a.despierto_siempre ? 'Duerme en su escritorio' : a.id === 'echo' ? 'Atiende a la gente' : 'De guardia'
+  if (d.visita) return textoVisita(d.visita, d.nombreDe)
   const enMarcha = lineaAhora(a, d.marcas, d.paraTi, d.ahora)
   if (enMarcha) return enMarcha
   if (d.lugar) return textoSala(d.lugar, d.nombreDe)

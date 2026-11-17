@@ -5,6 +5,7 @@ import type { EstadoIdea, Foto, Idea, Post, Ronda } from './tipos.ts'
 import { horaCR } from './horario.ts'
 import { diaCR } from './pagina.ts'
 import { masNuevasPrimero } from './ficha.ts'
+import { TURNOS } from './turnos.ts'
 
 const HORA = 3_600_000
 const DIA = 24 * HORA
@@ -137,10 +138,12 @@ export function focoAlDecidir(
 }
 
 // ---------- La ronda ----------
-// El aviso al lado del foro cuando la tertulia de hoy no salió o se la saltó (hoy: AAAA-MM-DD de Costa Rica)
+// El aviso al lado del foro cuando la última tertulia de hoy (hay tres) no salió o se la saltó (hoy: AAAA-MM-DD de
+// Costa Rica)
 export function avisoRonda(r: Ronda | null, hoy: string): string | null {
   if (!r || r.fecha !== hoy) return null
-  if (r.resultado === 'falla') return 'La tertulia de hoy no salió'
-  if (r.resultado === 'saltada') return 'Hoy no hubo tertulia: la oficina dormía'
+  const de = TURNOS[r.turno]?.de ?? 'de hoy'
+  if (r.resultado === 'falla') return `La tertulia ${de} no salió`
+  if (r.resultado === 'saltada') return `No hubo tertulia ${de}: la oficina dormía`
   return null
 }

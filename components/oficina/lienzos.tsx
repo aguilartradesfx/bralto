@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { AgenteSnap, EstadoAgente } from '@/lib/oficina/tipos'
 import type { LugarSala } from '@/lib/oficina/sala'
+import type { Visita } from '@/lib/oficina/visitas'
 import { MEDIDAS, MUNDO_H, MUNDO_W, crearMundo } from '@/lib/oficina/mundo'
 import { Icono, NOMBRE } from './grande'
 import { crearPlano } from './pixel/plano'
@@ -10,7 +11,8 @@ import { crearVista } from './pixel/vista'
 
 // Los dos dibujos de la Oficina. Cada uno crea su dibujo al montarse y lo destruye al desmontarse; mientras vive,
 // solo se rehace si cambia el catálogo (quién está, en qué puesto y cómo se ve). Los estados, la bandeja, el modo
-// dormir y quién está en la sala le llegan sin rehacerlo, y si su caja cambia de tamaño (al lado) solo se vuelve a medir.
+// dormir, quién está en la sala y quién de visita le llegan sin rehacerlo, y si su caja cambia de tamaño (al lado) solo
+// se vuelve a medir.
 // Con enGrande, su ⤢ va junto a + − Ver todo; en grande va sin él (la ventana tiene su ✕).
 
 type Vista2D = ReturnType<typeof crearVista>
@@ -71,6 +73,7 @@ export function Maqueta(p: {
   bandeja: number
   dormida: boolean
   sala: Record<string, LugarSala> // quién está en la sala y dónde (repartirSala)
+  visitas: Record<string, Visita> // quién está de visita y en la oficina de quién (repartirVisitas)
   aLoAlto: boolean
   alTocar(id: string | null): void
   api(v: Vista2D | null): void
@@ -102,7 +105,7 @@ export function Maqueta(p: {
     v.estados(estadosDe(agentes))
     v.bandeja(ultimo.current.bandeja)
     v.dormir(ultimo.current.dormida)
-    v.sala(ultimo.current.sala) // la primera vez, cada uno aparece ya en su lugar
+    v.sala(ultimo.current.sala, ultimo.current.visitas) // la primera vez, cada uno aparece ya en su lugar
     ultimo.current.api(v)
     const ro = new ResizeObserver(() => v.medir())
     ro.observe(box)
@@ -124,15 +127,15 @@ export function Maqueta(p: {
     vista.current?.dormir(p.dormida)
   }, [p.dormida])
   useEffect(() => {
-    vista.current?.sala(p.sala)
-  }, [p.sala])
+    vista.current?.sala(p.sala, p.visitas)
+  }, [p.sala, p.visitas])
 
   return (
     <div className="of-lienzo of-escena" ref={caja} style={CAJA} data-of-ficha>
       <canvas
         ref={lienzo}
         role="img"
-        aria-label="La oficina en pixel art, con la sala abajo. Toca una oficina o a un Knox en la sala para ver su ficha; tu oficina lleva a «Para ti»."
+        aria-label="La oficina en pixel art, con la sala abajo. Toca una oficina, a un Knox en la sala o a uno de visita para ver su ficha; tu oficina lleva a «Para ti»."
       />
       {p.cartel && <p className="of-cartel">{juntarHora(p.cartel)}</p>}
       {pista && (

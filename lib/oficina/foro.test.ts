@@ -95,11 +95,12 @@ test('las ideas por estado y su cuenta en cada filtro', () => {
   assert.equal(filtrarIdeas(ideas, 'todas'), ideas)
 })
 
-test('el aviso de la ronda: solo la de hoy, si falló o se la saltó', () => {
-  assert.equal(avisoRonda({ fecha: '2026-11-15', resultado: 'falla', detalle: 'x' }, '2026-11-16'), null, 'la falla de ayer ya no se avisa')
-  assert.equal(avisoRonda({ fecha: '2026-11-16', resultado: 'falla', detalle: 'x' }, '2026-11-16'), 'La tertulia de hoy no salió')
-  assert.equal(avisoRonda({ fecha: '2026-11-16', resultado: 'saltada', detalle: 'x' }, '2026-11-16'), 'Hoy no hubo tertulia: la oficina dormía')
-  assert.equal(avisoRonda({ fecha: '2026-11-16', resultado: 'ok', detalle: '' }, '2026-11-16'), null)
+test('el aviso de la ronda: solo la de hoy, si falló o se la saltó, con su turno', () => {
+  assert.equal(avisoRonda({ fecha: '2026-11-15', turno: 'tarde', resultado: 'falla', detalle: 'x' }, '2026-11-16'), null, 'la falla de ayer ya no se avisa')
+  assert.equal(avisoRonda({ fecha: '2026-11-16', turno: 'manana', resultado: 'falla', detalle: 'x' }, '2026-11-16'), 'La tertulia de la mañana no salió')
+  assert.equal(avisoRonda({ fecha: '2026-11-16', turno: 'mediodia', resultado: 'falla', detalle: 'x' }, '2026-11-16'), 'La tertulia del mediodía no salió')
+  assert.equal(avisoRonda({ fecha: '2026-11-16', turno: 'tarde', resultado: 'saltada', detalle: 'x' }, '2026-11-16'), 'No hubo tertulia de la tarde: la oficina dormía')
+  assert.equal(avisoRonda({ fecha: '2026-11-16', turno: 'mediodia', resultado: 'ok', detalle: '' }, '2026-11-16'), null)
   assert.equal(avisoRonda(null, '2026-11-16'), null)
 })
 

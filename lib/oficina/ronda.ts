@@ -1,13 +1,18 @@
-// La ronda diaria de la tertulia: lee los datos, le pide el JSON a Claude, lo limpia, lo guarda y anota cómo salió.
+// Una ronda de la tertulia (hay tres al día: mañana, mediodía y tarde; el turno sale de la hora): lee los datos, le
+// pide el JSON a Claude, lo limpia, lo guarda y anota cómo salió. Un turno que ya salió bien hoy no se repite, y uno
+// que falló o se saltó tampoco si ya dejó líneas guardadas.
 // Las dependencias entran por parámetro: aquí no se toca la base ni se lanza Claude (eso va en servidor.ts y tertulia.ts del script).
 import { fechaCR, horaDecimalCR } from './horario.ts'
-import type { Ronda } from './tipos.ts'
+import type { Ronda, Turno } from './tipos.ts'
 import { armarContexto, ctxValidar, leerRespuesta, pedidoTertulia, type DatosRonda } from './tertulia.ts'
+import { TURNOS, tramoDeTurno, turnoDe } from './turnos.ts'
 import { validarRonda, type RondaLimpia } from './validar.ts'
 
 export type DepsRonda = {
   dormida(): Promise<boolean>
-  rondaDe(fecha: string): Promise<Ronda | null>
+  rondaDe(fecha: string, turno: Turno): Promise<Ronda | null>
+  // ¿Hay líneas de la tertulia guardadas entre `desde` (entra) y `hasta` (no entra)?
+  hayChat(desde: Date, hasta: Date): Promise<boolean>
   leerDatos(ahora: Date): Promise<DatosRonda>
   preguntar(pedido: string): Promise<string>
   guardar(l: RondaLimpia, ahora: Date): Promise<void>
@@ -15,7 +20,7 @@ export type DepsRonda = {
 }
 
 export type OpRonda = { modo: 'real' | 'probar' | 'simular', respuesta?: string }
-export type SalidaRonda = { resultado: Ronda['resultado'] | 'nada', detalle: string, pedido?: string, limpia?: RondaLimpia }
+export type SalidaRonda = { resultado: Ronda['resultado'] | 'nada', turno: Turno, detalle: string, pedido?: string, limpia?: RondaLimpia }
 
 // De 7:00 a. m. a 6:59 p. m. de Costa Rica: la noche es de la producción.
 export function puedeCorrer(ahora: Date): boolean {
@@ -42,21 +47,34 @@ const mensaje = (e: unknown) => unaLinea(e instanceof Error ? e.message : String
 const cuenta = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
 
 function resumen(l: RondaLimpia): string {
-  const base = `${cuenta(l.posts.length, 'publicación', 'publicaciones')}, ${cuenta(l.comentarios.length, 'comentario', 'comentarios')}, ${cuenta(l.chat.length, 'línea', 'líneas')} y ${cuenta(l.ideas.length, 'idea', 'ideas')}`
+  const lineas = l.charlas.reduce((s, c) => s + c.lineas.length, 0)
+  const charlas = l.charlas.length ? `${cuenta(l.charlas.length, 'charla', 'charlas')} (${cuenta(lineas, 'línea', 'líneas')})` : '0 charlas'
+  const base = `${cuenta(l.posts.length, 'publicación', 'publicaciones')}, ${cuenta(l.comentarios.length, 'comentario', 'comentarios')}, ${charlas}, ${cuenta(l.chat.length, 'línea suelta', 'líneas sueltas')} y ${cuenta(l.ideas.length, 'idea', 'ideas')}`
   return l.botadas.length ? `${base} · ${cuenta(l.botadas.length, 'botada', 'botadas')}` : base
 }
 
 export async function correrRonda(deps: DepsRonda, ahora: Date, op: OpRonda): Promise<SalidaRonda> {
   const real = op.modo === 'real'
   const fecha = fechaCR(ahora)
+  const turno = turnoDe(ahora)
   const anotar = async (resultado: Ronda['resultado'], detalle: string): Promise<SalidaRonda> => {
-    try { await deps.anotar({ fecha, resultado, detalle }) } catch (e) { console.error('[tertulia] anotar', mensaje(e)) }
-    return { resultado, detalle }
+    try { await deps.anotar({ fecha, turno, resultado, detalle }) } catch (e) { console.error('[tertulia] anotar', mensaje(e)) }
+    return { resultado, turno, detalle }
   }
 
   if (real) {
-    if (!puedeCorrer(ahora)) return { resultado: 'nada', detalle: 'Fuera de hora' }
-    if (await deps.rondaDe(fecha)) return { resultado: 'nada', detalle: 'Ya hubo ronda hoy' }
+    if (!puedeCorrer(ahora)) return { resultado: 'nada', turno, detalle: 'Fuera de hora' }
+    // Si ya salió bien, correrla otra vez no duplica nada
+    const previa = await deps.rondaDe(fecha, turno)
+    if (previa?.resultado === 'ok') return { resultado: 'nada', turno, detalle: `Ya hubo tertulia ${TURNOS[turno].de} hoy` }
+    // Una que falló o se saltó se puede volver a correr a mano, salvo que ya haya líneas suyas guardadas (la cortaron
+    // después de guardar y antes de anotarse): correrla otra vez la repetiría
+    if (previa) {
+      const { desde, hasta } = tramoDeTurno(ahora, turno)
+      if (await deps.hayChat(desde, hasta)) {
+        return anotar('saltada', `Ya había líneas de la tertulia ${TURNOS[turno].de} guardadas: no se vuelve a correr para no repetirla`)
+      }
+    }
     if (await deps.dormida()) return anotar('saltada', 'La oficina dormía')
   }
 
@@ -64,19 +82,19 @@ export async function correrRonda(deps: DepsRonda, ahora: Date, op: OpRonda): Pr
   let limpia: RondaLimpia
   try {
     const datos = await deps.leerDatos(ahora)
-    const contexto = armarContexto(datos, ahora)
+    const contexto = armarContexto(datos, ahora, turno)
     pedido = pedidoTertulia(contexto)
-    if (op.modo === 'simular' && op.respuesta === undefined) return { resultado: 'ok', detalle: 'Solo el pedido', pedido }
+    if (op.modo === 'simular' && op.respuesta === undefined) return { resultado: 'ok', turno, detalle: 'Solo el pedido', pedido }
     const salida = op.modo === 'simular' ? op.respuesta! : await deps.preguntar(pedido)
     const v = validarRonda(leerRespuesta(salida), ctxValidar(datos, contexto, ahora))
     if ('error' in v) throw new Error(v.error)
     limpia = v
   } catch (e) {
     const detalle = mensaje(e)
-    return real ? anotar('falla', detalle) : { resultado: 'falla', detalle }
+    return real ? anotar('falla', detalle) : { resultado: 'falla', turno, detalle }
   }
 
-  if (!real) return { resultado: 'ok', detalle: resumen(limpia), pedido, limpia }
+  if (!real) return { resultado: 'ok', turno, detalle: resumen(limpia), pedido, limpia }
 
   if (await deps.dormida()) return anotar('saltada', 'La oficina se durmió a media ronda')
   try {

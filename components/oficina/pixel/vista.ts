@@ -3,6 +3,9 @@
 // La sala: quien tiene lugar camina por la ruta real hasta su sitio y se sienta (en el café, en un banco alto con su
 // taza; en la plática, en un sillón o en el sofá, mirando a quien vino con él; en la siesta, acostado o en un puf, dormido).
 // Si lo pierde, vuelve a su escritorio. Estar en la sala no saca nubes: solo hablan las líneas de verdad (decir).
+// De visita (repartirVisitas): el que llega camina hasta la oficina del otro, se queda de pie mientras dura (el
+// anfitrión se voltea a verlo) y después vuelve a su lugar. Es el mismo mecanismo de la sala: mientras dura la visita,
+// su «casa» es esa oficina.
 // aLoAlto (el teléfono): arranca con la escala que llena el alto, pegada a la izquierda, y el resto se arrastra.
 import type { Agente, EstadoAgente } from '../../../lib/oficina/tipos'
 import type { Mundo, Punto, Sala } from '../../../lib/oficina/mundo'
@@ -17,7 +20,8 @@ export const COL: Record<EstadoAgente, string> = {
   pendiente: '#3f444c', 'a-medias': '#f59e0b', durmiendo: '#7c83c9',
 }
 
-// quieto: en su lugar (su escritorio o su sitio en la sala); ida y charla: de visita; vuelta: camino a su lugar
+// quieto: en su lugar (su escritorio, su sitio en la sala o la oficina que visita); ida y charla: la vuelta corta de una
+// marca «pasa» o «entrega»; vuelta: camino a su lugar
 type Modo = 'quieto' | 'ida' | 'charla' | 'vuelta'
 // Lo que hay bajo el dedo o el mouse: la oficina de un Knox, la tuya ('ale') o un Knox en la sala, en pixeles del mundo
 type Zona = { id: string; x: number; y: number; w: number; h: number }
@@ -43,6 +47,7 @@ type K = {
   habla: string | null
   hablaHasta: number
   lugar: LugarSala | null // su sitio en la sala; null: su escritorio
+  visitaA: string | null // de visita en la oficina de este Knox (gana a la sala)
 }
 
 export function crearVista(
@@ -67,7 +72,7 @@ export function crearVista(
     const k: K = {
       a: ag, sala, pos: mundo.asiento(ag.id), modo: 'quieto', dir: 1, espera: 0, estado: ag.estado_fijo || 'descansando',
       camino: [], paso: 0, ev: null, dest: '', hasta: 0, dice: null, responde: null, rDesde: 0, rHasta: 0, habla: null, hablaHasta: 0,
-      lugar: null,
+      lugar: null, visitaA: null,
     }
     equipo.push(k); porId[ag.id] = k; porPuesto[ag.puesto] = k
   })
@@ -110,8 +115,9 @@ export function crearVista(
   const alejar = () => zoom(1 / 1.5, cv.width / 2, cv.height / 2)
   medir()
 
-  // ---- dónde está cada uno: su escritorio o su sitio en la sala ----
+  // ---- dónde está cada uno: la oficina que visita, su sitio en la sala o su escritorio ----
   function casa(k: K): Punto {
+    if (k.visitaA) return mundo.visita(k.visitaA)
     return k.lugar ? mundo.sitio(k.lugar.rincon, k.lugar.sitio) : mundo.asiento(k.a.id)
   }
   function irACasa(k: K) {
@@ -122,9 +128,16 @@ export function crearVista(
   }
   // cómo está sentado en la sala (solo cuando ya llegó a su sitio)
   const postura = (k: K): Postura | null => (k.modo === 'quieto' && k.lugar ? posturaSala(k.lugar.rincon, k.lugar.sitio) : null)
-  // con los ojos cerrados: dormida, todos menos los de guardia; en la sala, los de la siesta; en su escritorio, los que descansan
-  const duerme = (k: K) =>
-    dormida ? !k.a.despierto_siempre : k.lugar ? k.lugar.rincon === 'siesta' : k.estado === 'descansando' || k.estado === 'durmiendo'
+  // recibe una visita: alguien ya llegó y está de pie en su oficina
+  const recibe = (k: K) => equipo.some((o) => o.visitaA === k.a.id && o.modo === 'quieto')
+  // con los ojos cerrados: dormida, todos menos los de guardia; en la sala, los de la siesta; de visita (o recibiéndola),
+  // nadie; en su escritorio, los que descansan
+  function duerme(k: K): boolean {
+    if (dormida) return !k.a.despierto_siempre
+    if (k.lugar) return k.lugar.rincon === 'siesta'
+    if (k.visitaA || recibe(k)) return false
+    return k.estado === 'descansando' || k.estado === 'durmiendo'
+  }
   // sentado, mira a quien vino con él (o al centro de su rincón)
   function mirada(k: K): number {
     const l = k.lugar as LugarSala
@@ -196,17 +209,22 @@ export function crearVista(
   }
   function dormir(si: boolean) {
     dormida = si
-    if (si) equipo.forEach((k) => { k.modo = 'quieto'; k.lugar = null; k.pos = mundo.asiento(k.a.id); k.dice = null; k.espera = 0; k.dir = 1; k.ev = null })
+    if (si) equipo.forEach((k) => { k.modo = 'quieto'; k.lugar = null; k.visitaA = null; k.pos = mundo.asiento(k.a.id); k.dice = null; k.espera = 0; k.dir = 1; k.ev = null })
   }
-  // Quién está en la sala (repartirSala): el que recibe lugar camina hasta su sitio y el que lo pierde vuelve a su
-  // escritorio. Al abrir la página, cada uno ya está en su lugar; el de visita va a su lugar nuevo cuando termina.
-  function ponerSala(asig: Record<string, LugarSala>) {
+  // Quién está en la sala (repartirSala) y quién de visita (repartirVisitas): el que recibe lugar camina hasta su sitio
+  // (o hasta la oficina que visita) y el que lo pierde vuelve a su escritorio. Al abrir la página, cada uno ya está en
+  // su lugar, también el que está a media visita; el que anda en la vuelta corta de una marca va a su lugar nuevo
+  // cuando termina.
+  function ponerSala(asig: Record<string, LugarSala>, visitas: Record<string, { anfitrion: string }> = {}) {
     const primera = !salaLista
     salaLista = true
     equipo.forEach((k) => {
-      const l = dormida ? null : asig[k.a.id] ?? null
-      const igual = k.lugar && l ? k.lugar.rincon === l.rincon && k.lugar.sitio === l.sitio : k.lugar === l
+      const v = dormida ? null : visitas[k.a.id]?.anfitrion ?? null
+      const visitaA = v && v !== k.a.id && porId[v] ? v : null
+      const l = dormida || visitaA ? null : asig[k.a.id] ?? null
+      const igual = k.visitaA === visitaA && (k.lugar && l ? k.lugar.rincon === l.rincon && k.lugar.sitio === l.sitio : k.lugar === l)
       k.lugar = l
+      k.visitaA = visitaA
       if (igual || k.modo === 'ida' || k.modo === 'charla') return
       if (primera && k.modo === 'quieto') k.pos = casa(k)
       else irACasa(k)
@@ -228,8 +246,8 @@ export function crearVista(
     const anda = k.modo === 'ida' || k.modo === 'vuelta', quieto = k.modo === 'quieto', p = postura(k)
     let f6 = Math.floor(ahora * 6) % 2
     if (anda && k.espera > 0) f6 = 0
-    // en la sala nadie se ve apagado: el que espera que le pidas algo también se toma su café
-    const apagado = !p && (k.estado === 'pedido' || k.estado === 'pendiente')
+    // en la sala y en una visita nadie se ve apagado: el que espera que le pidas algo también se toma su café
+    const apagado = !p && !k.visitaA && !recibe(k) && (k.estado === 'pedido' || k.estado === 'pendiente')
     const fr = {
       paso: anda && !k.espera ? 1 + f6 : 0,
       tecleo: quieto && !p && !dormida && (k.estado === 'trabajando' || k.estado === 'publicando') && !!(Math.floor(ahora * 4) % 2),
@@ -238,7 +256,8 @@ export function crearVista(
     const bob = anda ? f6 : (apagado ? 0 : Math.floor(ahora * 1.6 + k.a.id.length) % 2)
     const spr = sprite(k.a.aspecto, fr), x = Math.round(k.pos[0])
     if (p === 'acostado') { acostado(a, spr, x, Math.round(k.pos[1]), Math.floor(ahora * 0.8 + k.a.id.length) % 2); return }
-    const dir = p ? mirada(k) : k.dir
+    // sentado en la sala, mira a quien vino con él; en su escritorio, si lo visitan y no está tecleando, al visitante
+    const dir = p ? mirada(k) : quieto && !k.visitaA && !fr.tecleo && recibe(k) ? -1 : k.dir
     const y = Math.round(k.pos[1]) - 37 - bob - (p === 'banco' ? ALTO_BANCO : 0)
     a.save(); if (apagado && quieto) a.globalAlpha = 0.5
     if (dir < 0) { a.translate(x, 0); a.scale(-1, 1); a.drawImage(spr, -14, y) } else a.drawImage(spr, x - 14, y)
@@ -369,10 +388,11 @@ export function crearVista(
   function local(e: MouseEvent): [number, number] { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * (cv.width / r.width), (e.clientY - r.top) * (cv.height / r.height)] }
   function queHay(e: MouseEvent): Zona | null {
     const p = local(e), x = cam.ox + p[0] / cam.s, y = cam.oy + p[1] / cam.s
-    // en la sala, el Knox: a 16 px de sus pies o encima de su dibujo (el más cercano, si hay varios)
+    // en la sala (o de visita en otra oficina), el Knox: a 16 px de sus pies o encima de su dibujo (el más cercano, si
+    // hay varios)
     let enSala: { z: Zona; d: number } | null = null
     for (const k of equipo) {
-      if (k.pos[1] < HO) continue
+      if (k.pos[1] < HO && !(k.visitaA && k.modo === 'quieto')) continue
       const z = cajaDe(k), d = Math.hypot(x - k.pos[0], y - k.pos[1])
       if ((d <= 16 || (x >= z.x && x < z.x + z.w && y >= z.y && y < z.y + z.h)) && (!enSala || d < enSala.d)) enSala = { z, d }
     }

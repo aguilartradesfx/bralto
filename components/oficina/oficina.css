@@ -232,6 +232,7 @@
 .of-raiz .of-msg-cuerpo { min-width: 0; }
 .of-raiz .of-msg-cab { display: block; font-size: 12.5px; line-height: 1.3; color: var(--of-muted); }
 .of-raiz .of-msg-cab b { margin-right: 3px; font-weight: 700; color: var(--of-fg); }
+.of-raiz .of-msg-donde { font-size: 11.5px; white-space: nowrap; }
 .of-raiz .of-msg-tx { display: block; font-size: 13.5px; line-height: 1.38; color: var(--of-fg); overflow-wrap: anywhere; }
 .of-raiz .of-msg-h { padding-top: 1px; font-size: 11.5px; color: var(--of-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .of-raiz .of-msg.of-sueno .of-msg-tx { color: var(--of-noche-tx); font-style: italic; }
@@ -505,6 +506,7 @@
 .of-raiz .of-t-grande .of-btn.of-chico { padding: 8px 14px; font-size: 14px; }
 .of-raiz .of-t-grande .of-msg { grid-template-columns: 48px minmax(0, 1fr) auto; gap: 0 14px; padding: 10px; border-radius: 12px; }
 .of-raiz .of-t-grande .of-msg-cab { font-size: 14px; }
+.of-raiz .of-t-grande .of-msg-donde { font-size: 13px; }
 .of-raiz .of-t-grande .of-msg-tx { font-size: 16.5px; line-height: 1.45; }
 .of-raiz .of-t-grande .of-msg-h { font-size: 13px; }
 .of-raiz .of-t-grande .of-chip-idea { font-size: 13.5px; }

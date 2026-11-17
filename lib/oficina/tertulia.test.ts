@@ -31,10 +31,19 @@ const datos = (extra: Partial<DatosRonda> = {}): DatosRonda => ({
   conFoto: ['ana'],
   prohibidos: ['Cliente Secreto'],
   escenaEsperando: false,
+  hoy: {
+    chat: [
+      { de: 'beto', para: 'ana', texto: '¿Y el reel de café?', rincon: 'visita', donde: 'ana', mostrar_desde: '2026-11-16T16:10:00Z' },
+      { de: 'ana', para: null, texto: 'Ya salió la prueba', rincon: null, donde: null, mostrar_desde: '2026-11-16T15:00:00Z' },
+      { de: 'ana', para: 'beto', texto: 'Mae, ¿un café?', rincon: 'cafe', donde: null, mostrar_desde: '2026-11-16T15:30:00Z' },
+    ],
+    posts: [{ de: 'ana', tipo: 'nota', titulo: 'Lo de hoy', texto: 'Probé  algo\nnuevo', mostrar_desde: '2026-11-16T14:40:00Z' }],
+    comentarios: [{ de: 'beto', post_titulo: 'Lo de hoy', texto: 'Buenísimo', mostrar_desde: '2026-11-16T16:00:00Z' }],
+  },
   ...extra,
 })
 
-const AHORA = new Date('2026-11-16T20:30:00Z')
+const AHORA = new Date('2026-11-16T20:30:00Z') // 2:30 p. m.: la ronda del mediodía
 
 test('armarContexto deja fuera al pendiente, marca con_foto y numera los hechos', () => {
   const c = armarContexto(datos(), AHORA)
@@ -71,6 +80,33 @@ test('ctxValidar arma hechos y postsViejos, y deja prohibidos igual', () => {
   assert.deepEqual([...v.conFoto], ['ana'])
   assert.deepEqual(v.prohibidos, ['Cliente Secreto'])
   assert.equal(v.ahora, AHORA)
+  assert.equal(v.turno, 'mediodia')
+})
+
+test('el contexto dice el turno y hasta qué hora salen sus cosas (sin turno, el de la hora)', () => {
+  const c = armarContexto(datos(), AHORA)
+  assert.deepEqual([c.turno, c.hasta], ['mediodia', '4:00 p. m.'])
+  const m = armarContexto(datos(), new Date('2026-11-16T14:30:00Z'), 'manana')
+  assert.deepEqual([m.turno, m.hora, m.hasta], ['manana', '8:30 a. m.', '12:30 p. m.'])
+  assert.equal(ctxValidar(datos(), m, new Date('2026-11-16T14:30:00Z')).turno, 'manana')
+  assert.deepEqual([armarContexto(datos(), new Date('2026-11-16T22:00:00Z')).turno, armarContexto(datos(), new Date('2026-11-16T22:00:00Z')).hasta], ['tarde', '6:30 p. m.'])
+})
+
+test('el contexto lleva lo que ya se habló hoy, por hora, con dónde fue y sin nombres de clientes', () => {
+  const d = datos()
+  d.hoy.chat.push({ de: 'beto', para: null, texto: 'Hablé con Cliente Secreto', rincon: null, donde: null, mostrar_desde: '2026-11-16T16:20:00Z' })
+  const c = armarContexto(d, AHORA)
+  assert.deepEqual(c.ya_se_hablo.chat, [
+    { hora: '9:00 a. m.', de: 'ana', para: null, donde: null, texto: 'Ya salió la prueba' },
+    { hora: '9:30 a. m.', de: 'ana', para: 'beto', donde: 'el café', texto: 'Mae, ¿un café?' },
+    { hora: '10:10 a. m.', de: 'beto', para: 'ana', donde: 'la oficina de ana', texto: '¿Y el reel de café?' },
+    { hora: '10:20 a. m.', de: 'beto', para: null, donde: null, texto: 'Hablé con un cliente' },
+  ])
+  assert.deepEqual(c.ya_se_hablo.publicaciones, [{ hora: '8:40 a. m.', de: 'ana', tipo: 'nota', titulo: 'Lo de hoy', texto: 'Probé algo nuevo' }])
+  assert.deepEqual(c.ya_se_hablo.comentarios, [{ hora: '10:00 a. m.', de: 'beto', en: 'Lo de hoy', texto: 'Buenísimo' }])
+  // un texto largo de una publicación va corto
+  const largo = armarContexto(datos({ hoy: { chat: [], comentarios: [], posts: [{ de: 'ana', tipo: 'nota', titulo: 'T', texto: 'palabra '.repeat(80), mostrar_desde: '2026-11-16T14:40:00Z' }] } }), AHORA)
+  assert.ok(largo.ya_se_hablo.publicaciones[0].texto.length <= 200)
 })
 
 test('armarContexto tapa los nombres de clientes en todo el texto libre', () => {
@@ -92,10 +128,46 @@ test('armarContexto tapa los nombres de clientes en todo el texto libre', () => 
 test('pedidoTertulia trae el contexto y las reglas', () => {
   const c = armarContexto(datos(), AHORA)
   const p = pedidoTertulia(c)
-  for (const t of ['pana', 'tantito', 'chévere', 'mae', 'deay', 'compa', 'basada_en', 'rincon', 'usted', 'tenés', 'sin texto antes ni después', '30', '12', '120']) {
+  for (const t of ['pana', 'tantito', 'chévere', 'mae', 'deay', 'compa', 'basada_en', 'rincon', 'usted', 'tenés', 'sin texto antes ni después', '120']) {
     assert.ok(p.includes(t), `falta ${t}`)
   }
+  assert.ok(p.includes('«deay» (así, nunca «diay»)'))
   assert.ok(p.includes(JSON.stringify(c)))
+})
+
+test('pedidoTertulia: los topes son los de la ronda', () => {
+  const p = pedidoTertulia(armarContexto(datos(), AHORA))
+  assert.ok(p.includes('Topes de esta ronda: hasta 30 líneas en total (las sueltas más las de las charlas), 6 charlas, 1 publicación, 4 comentarios y 1 idea.'), p)
+})
+
+test('pedidoTertulia explica las charlas: 2 Knox que se turnan, café, sala o visita, y quién habla primero', () => {
+  const p = pedidoTertulia(armarContexto(datos(), AHORA))
+  for (const t of [
+    'exactamente 2 Knox que se turnan', 'de 2 a 5 líneas', '«cafe»', '«platica»', '«visita»', '«visita_a»', 'el que llega habla primero',
+    'trabajo de verdad', 'un gancho, un número, una prueba, una idea o una publicación', 'pueden hablar más suelto',
+    'Mezcla café, sala y visitas: unas 3 a 6 charlas por ronda', 'primera persona', 'bota la charla entera', '"charlas":[',
+  ]) assert.ok(p.includes(t), `falta ${t}`)
+})
+
+test('pedidoTertulia: dice qué tertulia es y pide seguir lo que ya se habló sin repetir', () => {
+  const p = pedidoTertulia(armarContexto(datos(), AHORA))
+  assert.ok(p.includes('Hay tres tertulias al día'))
+  assert.ok(p.includes('ahora escribes la del mediodía (2026-11-16, 2:30 p. m. en Costa Rica): lo que pasa de ahora a las 4:00 p. m.'))
+  assert.ok(p.includes('«ya_se_hablo»') && p.includes('nunca repitas lo que ya se dijo'))
+  assert.ok(p.includes('"ya_se_hablo":{'))
+})
+
+test('pedidoTertulia: la escena solo se ofrece en la ronda del mediodía, y no cuenta como su publicación', () => {
+  const mediodia = pedidoTertulia(armarContexto(datos(), AHORA))
+  assert.ok(mediodia.includes('La escena no cuenta como la publicación de la ronda: puede ir junto con ella.'))
+  assert.ok(!mediodia.includes('no escribas otra publicación'))
+  assert.ok(mediodia.includes('"escena":{"de":"id_agente"'))
+  for (const ahora of [new Date('2026-11-16T14:30:00Z'), new Date('2026-11-16T22:00:00Z')]) {
+    const p = pedidoTertulia(armarContexto(datos(), ahora))
+    assert.ok(p.includes('En esta ronda no va escena'), ahora.toISOString())
+    assert.ok(p.includes('"escena":null'), ahora.toISOString())
+    assert.ok(!p.includes('almuerzo en una soda'), ahora.toISOString())
+  }
 })
 
 test('la escena que ya espera su foto pasa al contexto y al validador', () => {

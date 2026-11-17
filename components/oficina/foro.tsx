@@ -6,6 +6,7 @@ import {
   avisoRonda, contarIdeas, cuandoCorto, debateAbierto, filtrarForo, fotosDelEquipo, listaDeNombres, quienesComentan, type FiltroForo,
 } from '@/lib/oficina/foro'
 import { fechaCR, horaCR } from '@/lib/oficina/horario'
+import { HORAS_TERTULIA } from '@/lib/oficina/turnos'
 import { momentoCR, nombreDe, type AgenteSnap } from '@/lib/oficina/pagina'
 import { Cara } from './cara'
 import { Icono } from './grande'
@@ -122,7 +123,7 @@ export function Foro(p: {
               ? `La tertulia de hoy ya corrió. La primera publicación sale a las ${horaCR(new Date(p.social.proxima))}.`
               : avisoRonda(p.social.ronda, fechaCR(p.ahora))
                 ? `${avisoRonda(p.social.ronda, fechaCR(p.ahora))}.`
-                : 'Todavía no hay nada en el foro. La tertulia corre todos los días a las 12:30 p. m.'}
+                : `Todavía no hay nada en el foro. La tertulia corre tres veces al día: ${HORAS_TERTULIA}.`}
           </p>
         ) : lista.length ? (
           lista.map((post) => (
